@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
-// Mock data
 const mockParks = [
   {
     id: 'disneyland-paris',
@@ -13,7 +12,7 @@ const mockParks = [
     region: 'Europe',
     company: 'Disney',
     park_type: 'Theme Park',
-    location: 'Marne-la-VallÃ©e, France'
+    location: 'Marne-la-Vallée, France'
   },
   {
     id: 'universal-florida',
@@ -85,7 +84,7 @@ const mockItems = {
     {
       id: 'ratatouille-restaurant',
       category_id: 'restaurants',
-      name: 'Bistrot Chez RÃ©my',
+      name: 'Bistrot Chez Rémy',
       description: 'Experience fine French dining inspired by Ratatouille.',
       location_in_park: 'Main Street, U.S.A.'
     },
@@ -247,16 +246,15 @@ interface ParkPageProps {
 }
 
 export default function ParkPage({ params }: ParkPageProps) {
-  const park = mockParks.find(p => p.id === params.parkId)
+  const park = mockParks.find((p) => p.id === params.parkId)
   const items = mockItems[params.parkId as keyof typeof mockItems] || []
 
   if (!park) {
     notFound()
   }
 
-  // Group items by category
   const itemsByCategory = items.reduce((acc, item) => {
-    const category = mockCategories.find(c => c.id === item.category_id)
+    const category = mockCategories.find((c) => c.id === item.category_id)
     if (category) {
       if (!acc[category.name]) {
         acc[category.name] = []
@@ -268,7 +266,6 @@ export default function ParkPage({ params }: ParkPageProps) {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
-      {/* Hero Section */}
       <div className="relative">
         <img
           src={park.cover_image_url}
@@ -277,11 +274,11 @@ export default function ParkPage({ params }: ParkPageProps) {
         />
         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center">
           <div className="container mx-auto px-4">
-            <div className="flex items-center mb-4">
+            <div className="flex items-center mb-4 gap-4 flex-wrap">
               <img
                 src={park.logo_url}
                 alt={`${park.name} logo`}
-                className="w-16 h-16 rounded mr-4"
+                className="w-16 h-16 rounded"
               />
               <div>
                 <h1 className="text-4xl font-bold">{park.name}</h1>
@@ -293,7 +290,25 @@ export default function ParkPage({ params }: ParkPageProps) {
       </div>
 
       <div className="container mx-auto px-4 py-8">
-        {/* Park Info */}
+        <div className="bg-gray-800 p-6 rounded-lg mb-8">
+          <h2 className="text-2xl font-semibold mb-4">Explore other parks</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {mockParks.map((otherPark) => (
+              <Link
+                key={otherPark.id}
+                href={`/parks/${otherPark.id}`}
+                className={`block rounded-lg px-4 py-3 transition-colors ${
+                  otherPark.id === park.id
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
+                }`}
+              >
+                {otherPark.name}
+              </Link>
+            ))}
+          </div>
+        </div>
+
         <div className="bg-gray-800 p-6 rounded-lg mb-8">
           <h2 className="text-2xl font-semibold mb-4">About</h2>
           <p className="text-gray-300 mb-4">{park.description}</p>
@@ -310,12 +325,11 @@ export default function ParkPage({ params }: ParkPageProps) {
           </div>
         </div>
 
-        {/* Categories and Items */}
         {Object.entries(itemsByCategory).map(([categoryName, categoryItems]) => (
           <div key={categoryName} className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">{categoryName}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {categoryItems.map(item => (
+              {categoryItems.map((item) => (
                 <Link key={item.id} href={`/parks/${park.id}/${item.id}`}>
                   <div className="bg-gray-800 p-4 rounded-lg hover:bg-gray-700 transition-colors">
                     <h3 className="text-lg font-semibold mb-2">{item.name}</h3>

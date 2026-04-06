@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import RatingComponent from '@/components/RatingComponent'
 
 // Mock data (same as park page)
 const mockParks = [
@@ -297,6 +298,9 @@ export default function ItemPage({ params }: ItemPageProps) {
             Location: {item.location_in_park}
           </div>
         </div>
+
+        {/* Rating System */}
+        <RatingComponent item={item} category={category} />
 
         {/* Images */}
         {images.length > 0 && (

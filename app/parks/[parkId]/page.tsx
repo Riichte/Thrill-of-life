@@ -26,6 +26,42 @@ const mockParks = [
     company: 'Universal',
     park_type: 'Theme Park',
     location: 'Orlando, Florida, USA'
+  },
+  {
+    id: 'six-flags-magic-mountain',
+    name: 'Six Flags Magic Mountain',
+    description: 'California\'s premier theme park featuring over 100 rides and attractions, including the world\'s tallest roller coaster.',
+    logo_url: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=200&h=200&fit=crop&crop=center',
+    cover_image_url: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1200&h=400&fit=crop&crop=center',
+    country: 'United States',
+    region: 'North America',
+    company: 'Six Flags',
+    park_type: 'Theme Park',
+    location: 'Valencia, California, USA'
+  },
+  {
+    id: 'alton-towers',
+    name: 'Alton Towers',
+    description: 'Britain\'s most visited theme park with over 40 rides and attractions, plus a water park and hotel resort.',
+    logo_url: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&h=200&fit=crop&crop=center',
+    cover_image_url: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=400&fit=crop&crop=center',
+    country: 'United Kingdom',
+    region: 'Europe',
+    company: 'Alton Towers',
+    park_type: 'Theme Park',
+    location: 'Alton, Staffordshire, UK'
+  },
+  {
+    id: 'port-adventure',
+    name: 'PortAventura World',
+    description: 'Spain\'s largest theme park resort featuring Mediterranean-themed areas, thrilling rides, and a Ferrari Land.',
+    logo_url: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=200&h=200&fit=crop&crop=center',
+    cover_image_url: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1200&h=400&fit=crop&crop=center',
+    country: 'Spain',
+    region: 'Europe',
+    company: 'PortAventura',
+    park_type: 'Theme Park',
+    location: 'Salou, Catalonia, Spain'
   }
 ]
 
@@ -110,6 +146,96 @@ const mockItems = {
       name: 'Universal Studios Store',
       description: 'Official Universal merchandise.',
       location_in_park: 'Main Street'
+    }
+  ],
+  'six-flags-magic-mountain': [
+    {
+      id: 'goliath-ride',
+      category_id: 'rides',
+      name: 'Goliath',
+      description: 'One of the tallest, fastest roller coasters in the world.',
+      location_in_park: 'Colossus County Fair'
+    },
+    {
+      id: 'revolution-ride',
+      category_id: 'rides',
+      name: 'Revolution',
+      description: 'The world\'s first modern roller coaster loop.',
+      location_in_park: 'Frontier Town'
+    },
+    {
+      id: 'magic-mountain-grill',
+      category_id: 'restaurants',
+      name: 'Magic Mountain Grill',
+      description: 'Premium dining with park views.',
+      location_in_park: 'Main Plaza'
+    },
+    {
+      id: 'magic-mountain-circus',
+      category_id: 'shows',
+      name: 'Circus Spectacular',
+      description: 'Acrobatic performances and entertainment.',
+      location_in_park: 'Colossus County Fair'
+    }
+  ],
+  'alton-towers': [
+    {
+      id: 'smiler-ride',
+      category_id: 'rides',
+      name: 'The Smiler',
+      description: 'The world\'s most looped roller coaster with 14 inversions.',
+      location_in_park: 'The Smiler Area'
+    },
+    {
+      id: 'nemesis-ride',
+      category_id: 'rides',
+      name: 'Nemesis',
+      description: 'An iconic inverted roller coaster.',
+      location_in_park: 'X-Sector'
+    },
+    {
+      id: 'alton-towers-hotel',
+      category_id: 'hotels',
+      name: 'Alton Towers Hotel',
+      description: 'Stay overnight in the heart of the park.',
+      location_in_park: 'Hotel Area'
+    },
+    {
+      id: 'woodland-restaurant',
+      category_id: 'restaurants',
+      name: 'Woodland Restaurant',
+      description: 'Casual dining surrounded by nature.',
+      location_in_park: 'Woodland Path'
+    }
+  ],
+  'port-adventure': [
+    {
+      id: 'shambhala-ride',
+      category_id: 'rides',
+      name: 'Shambhala',
+      description: 'Europe\'s highest and steepest hypercoaster.',
+      location_in_park: 'Far West'
+    },
+    {
+      id: 'furius-baco-ride',
+      category_id: 'rides',
+      name: 'Furius Baco',
+      description: 'A high-speed roller coaster experience.',
+      location_in_park: 'Mediterranean'
+    },
+    {
+      id: 'ferrari-land',
+      category_id: 'shops',
+      name: 'Ferrari Land Shop',
+      description: 'Exclusive Ferrari merchandise and memorabilia.',
+      location_in_park: 'Ferrari Land'
+    },
+    {
+      id: 'mediterranean-restaurant',
+      category_id: 'restaurants',
+      name: 'Mediterranean Grill',
+      description: 'Authentic Mediterranean cuisine.',
+      location_in_park: 'Mediterranean Area'
     }
   ]
 }

@@ -12,6 +12,21 @@ const mockParks = [
     id: 'universal-florida',
     name: 'Universal Studios Florida',
     logo_url: 'https://images.unsplash.com/photo-1551632436-cbf8dd35adfa?w=200&h=200&fit=crop&crop=center'
+  },
+  {
+    id: 'six-flags-magic-mountain',
+    name: 'Six Flags Magic Mountain',
+    logo_url: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=200&h=200&fit=crop&crop=center'
+  },
+  {
+    id: 'alton-towers',
+    name: 'Alton Towers',
+    logo_url: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&h=200&fit=crop&crop=center'
+  },
+  {
+    id: 'port-adventure',
+    name: 'PortAventura World',
+    logo_url: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=200&h=200&fit=crop&crop=center'
   }
 ]
 
@@ -62,6 +77,75 @@ const mockItems = {
       description: 'Authentic British pub fare in Hogsmeade. Enjoy shepherd\'s pie, fish and chips, and butterbeer in a magical setting.',
       location_in_park: 'The Wizarding World of Harry Potter'
     }
+  ],
+  'six-flags-magic-mountain': [
+    {
+      id: 'goliath-ride',
+      category_id: 'rides',
+      name: 'Goliath',
+      description: 'One of the tallest, fastest roller coasters in the world. Experience weightlessness and breathtaking drops on this legendary coaster.',
+      location_in_park: 'Colossus County Fair'
+    },
+    {
+      id: 'revolution-ride',
+      category_id: 'rides',
+      name: 'Revolution',
+      description: 'The world\'s first modern roller coaster loop. A historic and thrilling experience since 1976.',
+      location_in_park: 'Frontier Town'
+    },
+    {
+      id: 'magic-mountain-grill',
+      category_id: 'restaurants',
+      name: 'Magic Mountain Grill',
+      description: 'Premium dining with spectacular park views.',
+      location_in_park: 'Main Plaza'
+    }
+  ],
+  'alton-towers': [
+    {
+      id: 'smiler-ride',
+      category_id: 'rides',
+      name: 'The Smiler',
+      description: 'The world\'s most looped roller coaster with 14 inversions. A record-breaking wonder of engineering.',
+      location_in_park: 'The Smiler Area'
+    },
+    {
+      id: 'nemesis-ride',
+      category_id: 'rides',
+      name: 'Nemesis',
+      description: 'An iconic inverted roller coaster that has thrilled guests for decades.',
+      location_in_park: 'X-Sector'
+    },
+    {
+      id: 'alton-towers-hotel',
+      category_id: 'hotels',
+      name: 'Alton Towers Hotel',
+      description: 'Luxury accommodation in the historic grounds of Alton Towers.',
+      location_in_park: 'Hotel Area'
+    }
+  ],
+  'port-adventure': [
+    {
+      id: 'shambhala-ride',
+      category_id: 'rides',
+      name: 'Shambhala',
+      description: 'Europe\'s highest and steepest hypercoaster. An extremely thrilling experience.',
+      location_in_park: 'Far West'
+    },
+    {
+      id: 'furius-baco-ride',
+      category_id: 'rides',
+      name: 'Furius Baco',
+      description: 'A high-speed roller coaster that launches you at incredible velocity.',
+      location_in_park: 'Mediterranean'
+    },
+    {
+      id: 'ferrari-land',
+      category_id: 'shops',
+      name: 'Ferrari Land Shop',
+      description: 'Exclusive Ferrari merchandise and memorabilia for collectors.',
+      location_in_park: 'Ferrari Land'
+    }
   ]
 }
 
@@ -85,6 +169,36 @@ const mockItemImages = {
   ],
   'hogwarts-express': [
     'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop&crop=center'
+  ],
+  'goliath-ride': [
+    'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&h=600&fit=crop&crop=center',
+    'https://images.unsplash.com/photo-1551632436-cbf8dd35adfa?w=800&h=600&fit=crop&crop=center'
+  ],
+  'revolution-ride': [
+    'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop&crop=center'
+  ],
+  'magic-mountain-grill': [
+    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop&crop=center'
+  ],
+  'smiler-ride': [
+    'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&h=600&fit=crop&crop=center',
+    'https://images.unsplash.com/photo-1551632436-cbf8dd35adfa?w=800&h=600&fit=crop&crop=center'
+  ],
+  'nemesis-ride': [
+    'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop&crop=center'
+  ],
+  'alton-towers-hotel': [
+    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop&crop=center'
+  ],
+  'shambhala-ride': [
+    'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&h=600&fit=crop&crop=center',
+    'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop&crop=center'
+  ],
+  'furius-baco-ride': [
+    'https://images.unsplash.com/photo-1551632436-cbf8dd35adfa?w=800&h=600&fit=crop&crop=center'
+  ],
+  'ferrari-land': [
+    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop&crop=center'
   ]
 }
 
@@ -103,6 +217,33 @@ const mockItemVideos = {
     'https://www.youtube.com/embed/watch?v=dQw4w9WgXcQ'
   ],
   'hogwarts-express': [
+    'https://www.youtube.com/embed/watch?v=dQw4w9WgXcQ'
+  ],
+  'goliath-ride': [
+    'https://www.youtube.com/embed/watch?v=dQw4w9WgXcQ'
+  ],
+  'revolution-ride': [
+    'https://www.youtube.com/embed/watch?v=dQw4w9WgXcQ'
+  ],
+  'magic-mountain-grill': [
+    'https://www.youtube.com/embed/watch?v=dQw4w9WgXcQ'
+  ],
+  'smiler-ride': [
+    'https://www.youtube.com/embed/watch?v=dQw4w9WgXcQ'
+  ],
+  'nemesis-ride': [
+    'https://www.youtube.com/embed/watch?v=dQw4w9WgXcQ'
+  ],
+  'alton-towers-hotel': [
+    'https://www.youtube.com/embed/watch?v=dQw4w9WgXcQ'
+  ],
+  'shambhala-ride': [
+    'https://www.youtube.com/embed/watch?v=dQw4w9WgXcQ'
+  ],
+  'furius-baco-ride': [
+    'https://www.youtube.com/embed/watch?v=dQw4w9WgXcQ'
+  ],
+  'ferrari-land': [
     'https://www.youtube.com/embed/watch?v=dQw4w9WgXcQ'
   ]
 }

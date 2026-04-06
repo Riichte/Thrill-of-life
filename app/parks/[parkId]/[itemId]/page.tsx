@@ -250,19 +250,20 @@ const mockItemVideos = {
 }
 
 interface ItemPageProps {
-  params: {
+  params: Promise<{
     parkId: string
     itemId: string
-  }
+  }>
 }
 
-export default function ItemPage({ params }: ItemPageProps) {
-  const park = mockParks.find(p => p.id === params.parkId)
-  const items = mockItems[params.parkId as keyof typeof mockItems] || []
-  const item = items.find(i => i.id === params.itemId)
+export default async function ItemPage({ params }: ItemPageProps) {
+  const { parkId, itemId } = await params
+  const park = mockParks.find(p => p.id === parkId)
+  const items = mockItems[parkId as keyof typeof mockItems] || []
+  const item = items.find(i => i.id === itemId)
   const category = mockCategories.find(c => c.id === item?.category_id)
-  const images = mockItemImages[params.itemId as keyof typeof mockItemImages] || []
-  const videos = mockItemVideos[params.itemId as keyof typeof mockItemVideos] || []
+  const images = mockItemImages[itemId as keyof typeof mockItemImages] || []
+  const videos = mockItemVideos[itemId as keyof typeof mockItemVideos] || []
 
   if (!park || !item || !category) {
     notFound()

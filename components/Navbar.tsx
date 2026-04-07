@@ -26,11 +26,13 @@ export default function Navbar() {
         <div className="container mx-auto">
           <div className="flex items-center justify-between gap-4">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-              <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">TP</span>
-              </div>
-              <span className="text-xl font-bold text-white hidden sm:inline">ToPark</span>
+            <Link href="/" className="flex items-center gap-3 flex-shrink-0">
+              <img
+                src="/logo.svg"
+                alt="Thrill of Life logo"
+                className="w-10 h-10 sm:w-12 sm:h-12"
+              />
+              <span className="text-xl font-bold text-white hidden sm:inline">Thrill of Life</span>
             </Link>
 
             {/* Search Bar (hidden on mobile) */}

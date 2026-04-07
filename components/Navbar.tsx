@@ -28,11 +28,11 @@ export default function Navbar() {
             {/* Logo */}
             <Link href="/" className="flex items-center gap-3 flex-shrink-0">
               <img
-                src="/logo.svg"
+                src="/ThrillOfLife_Logo.jpg"
                 alt="Thrill of Life logo"
-                className="w-10 h-10 sm:w-12 sm:h-12"
+                className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
               />
-              <span className="text-xl font-bold text-white hidden sm:inline">Thrill of Life</span>
+              <span className="text-xl font-bold text-white hidden sm:inline font-logo">Thrill of Life</span>
             </Link>
 
             {/* Search Bar (hidden on mobile) */}

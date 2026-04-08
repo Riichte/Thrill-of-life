@@ -32,6 +32,11 @@ const mockParks = [
     id: 'port-adventure',
     name: 'PortAventura World',
     logo_url: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=200&h=200&fit=crop&crop=center'
+  },
+  {
+    id: 'europa-park',
+    name: 'Europa Park',
+    logo_url: '/Parks/Europa Park/Logo.png'
   }
 ]
 
@@ -215,6 +220,38 @@ const mockItems = {
       description: 'Exclusive Ferrari merchandise and memorabilia for collectors.',
       location_in_park: 'Ferrari Land'
     }
+  ],
+  'europa-park': [
+    {
+      id: 'wodan',
+      category_id: 'rides',
+      name: 'Wodan',
+      description: 'A thrilling wooden roller coaster with breathtaking drops and high speeds. Experience the power of the Norse god on this legendary coaster.',
+      location_in_park: 'Europa Park',
+      specs: {
+        height: '40m',
+        speed: '100 km/h',
+        length: '1050m',
+        drop: '35m',
+        manufacturer: 'Bolliger & Mabillard',
+        type: 'Wooden Roller Coaster'
+      }
+    },
+    {
+      id: 'euromir',
+      category_id: 'rides',
+      name: 'Euromir',
+      description: 'A looping roller coaster that simulates a journey to space. Experience weightlessness and cosmic thrills on this inverted coaster.',
+      location_in_park: 'Europa Park',
+      specs: {
+        height: '35m',
+        speed: '80 km/h',
+        length: '850m',
+        drop: '30m',
+        manufacturer: 'Bolliger & Mabillard',
+        type: 'Inverted Roller Coaster'
+      }
+    }
   ]
 }
 
@@ -268,6 +305,17 @@ const mockItemImages = {
   ],
   'ferrari-land': [
     'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop&crop=center'
+  ],
+  'wodan': [
+    '/Parks/Europa Park/Roller Coasters/Wodan/1.jpg',
+    '/Parks/Europa Park/Roller Coasters/Wodan/2.jpg',
+    '/Parks/Europa Park/Roller Coasters/Wodan/3.jpg',
+    '/Parks/Europa Park/Roller Coasters/Wodan/4.jpg'
+  ],
+  'euromir': [
+    '/Parks/Europa Park/Roller Coasters/Euromir/1.jpg',
+    '/Parks/Europa Park/Roller Coasters/Euromir/2.jpg',
+    '/Parks/Europa Park/Roller Coasters/Euromir/3.jpg'
   ]
 }
 
@@ -313,6 +361,12 @@ const mockItemVideos = {
     'https://www.youtube.com/embed/watch?v=dQw4w9WgXcQ'
   ],
   'ferrari-land': [
+    'https://www.youtube.com/embed/watch?v=dQw4w9WgXcQ'
+  ],
+  'wodan': [
+    'https://www.youtube.com/embed/watch?v=dQw4w9WgXcQ'
+  ],
+  'euromir': [
     'https://www.youtube.com/embed/watch?v=dQw4w9WgXcQ'
   ]
 }

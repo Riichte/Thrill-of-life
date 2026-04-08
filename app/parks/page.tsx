@@ -3,50 +3,14 @@
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
 
-// Mock data
+// Park data based on public/Parks/ folder structure
 const mockParks = [
-  {
-    id: 'disneyland-paris',
-    name: 'Disneyland Paris',
-    description: 'The most magical place on Earth in Europe, featuring two theme parks, seven Disney hotels, and a shopping and entertainment district.',
-    logo_url: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=200&h=200&fit=crop&crop=center',
-    cover_image_url: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=400&fit=crop&crop=center',
-    country: 'France',
-    region: 'Europe',
-    company: 'Disney',
-    park_type: 'Theme Park',
-    location: 'Marne-la-Vallée, France'
-  },
-  {
-    id: 'universal-florida',
-    name: 'Universal Studios Florida',
-    description: 'Experience the magic of movies at Universal Orlando Resort, featuring thrilling rides, shows, and character meet-and-greets.',
-    logo_url: 'https://images.unsplash.com/photo-1551632436-cbf8dd35adfa?w=200&h=200&fit=crop&crop=center',
-    cover_image_url: 'https://images.unsplash.com/photo-1551632436-cbf8dd35adfa?w=800&h=400&fit=crop&crop=center',
-    country: 'United States',
-    region: 'North America',
-    company: 'Universal',
-    park_type: 'Theme Park',
-    location: 'Orlando, Florida, USA'
-  },
-  {
-    id: 'six-flags-magic-mountain',
-    name: 'Six Flags Magic Mountain',
-    description: 'California\'s premier theme park featuring over 100 rides and attractions, including the world\'s tallest roller coaster.',
-    logo_url: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=200&h=200&fit=crop&crop=center',
-    cover_image_url: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&h=400&fit=crop&crop=center',
-    country: 'United States',
-    region: 'North America',
-    company: 'Six Flags',
-    park_type: 'Theme Park',
-    location: 'Valencia, California, USA'
-  },
   {
     id: 'alton-towers',
     name: 'Alton Towers',
     description: 'Britain\'s most visited theme park with over 40 rides and attractions, plus a water park and hotel resort.',
-    logo_url: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&h=200&fit=crop&crop=center',
-    cover_image_url: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=400&fit=crop&crop=center',
+    logo_url: '/Parks/Alton Towers/main.jpg',
+    cover_image_url: '/Parks/Alton Towers/main.jpg',
     country: 'United Kingdom',
     region: 'Europe',
     company: 'Alton Towers',
@@ -54,16 +18,76 @@ const mockParks = [
     location: 'Alton, Staffordshire, UK'
   },
   {
-    id: 'port-adventure',
-    name: 'PortAventura World',
-    description: 'Spain\'s largest theme park resort featuring Mediterranean-themed areas, thrilling rides, and a Ferrari Land.',
-    logo_url: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=200&h=200&fit=crop&crop=center',
-    cover_image_url: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&h=400&fit=crop&crop=center',
-    country: 'Spain',
+    id: 'bellewaerde',
+    name: 'Bellewaerde',
+    description: 'A family-friendly theme park in Belgium featuring rides, shows, and animal encounters.',
+    logo_url: '/Parks/Bellewaerde/main.jpg',
+    cover_image_url: '/Parks/Bellewaerde/main.jpg',
+    country: 'Belgium',
     region: 'Europe',
-    company: 'PortAventura',
+    company: 'Bellewaerde',
     park_type: 'Theme Park',
-    location: 'Salou, Catalonia, Spain'
+    location: 'Ypres, Belgium'
+  },
+  {
+    id: 'blackpool-pleasure-beach',
+    name: 'Blackpool Pleasure Beach',
+    description: 'One of the oldest amusement parks in the world, featuring classic rides and modern attractions.',
+    logo_url: '/Parks/Blackpool Pleasure Beach/main.jpg',
+    cover_image_url: '/Parks/Blackpool Pleasure Beach/main.jpg',
+    country: 'United Kingdom',
+    region: 'Europe',
+    company: 'Blackpool Pleasure Beach',
+    park_type: 'Amusement Park',
+    location: 'Blackpool, Lancashire, UK'
+  },
+  {
+    id: 'bobbejaanland',
+    name: 'Bobbejaanland',
+    description: 'A Belgian theme park known for its diverse attractions and family-friendly environment.',
+    logo_url: '/Parks/Bobbejaanland/main.jpg',
+    cover_image_url: '/Parks/Bobbejaanland/main.jpg',
+    country: 'Belgium',
+    region: 'Europe',
+    company: 'Bobbejaanland',
+    park_type: 'Theme Park',
+    location: 'Kasterlee, Belgium'
+  },
+  {
+    id: 'disneyland-paris',
+    name: 'Disneyland Paris',
+    description: 'The most magical place on Earth in Europe, featuring two theme parks, seven Disney hotels, and a shopping and entertainment district.',
+    logo_url: '/Parks/Disneyland Paris/main.jpg',
+    cover_image_url: '/Parks/Disneyland Paris/main.jpg',
+    country: 'France',
+    region: 'Europe',
+    company: 'Disney',
+    park_type: 'Theme Park',
+    location: 'Marne-la-Vallée, France'
+  },
+  {
+    id: 'europa-park',
+    name: 'Europa Park',
+    description: 'Europe\'s second most popular theme park resort with thrilling rides, shows, and European-themed areas.',
+    logo_url: '/Parks/Europa Park/Logo.png',
+    cover_image_url: '/Parks/Europa Park/Main.jpg',
+    country: 'Germany',
+    region: 'Europe',
+    company: 'Europa Park',
+    park_type: 'Theme Park',
+    location: 'Rust, Germany'
+  },
+  {
+    id: 'six-flags-great-escape',
+    name: 'Six Flags Great Escape',
+    description: 'A Six Flags park featuring roller coasters, water rides, and family attractions.',
+    logo_url: '/Parks/Six Flags Great Escape/main.jpg',
+    cover_image_url: '/Parks/Six Flags Great Escape/main.jpg',
+    country: 'United States',
+    region: 'North America',
+    company: 'Six Flags',
+    park_type: 'Theme Park',
+    location: 'Queensbury, New York, USA'
   }
 ]
 

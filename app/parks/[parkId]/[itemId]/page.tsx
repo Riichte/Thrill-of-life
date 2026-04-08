@@ -520,6 +520,8 @@ const mockItems = {
     }
 ]
 
+}
+
 const mockItemImages = {
   'space-mountain': [
     'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&h=600&fit=crop&crop=center',
@@ -665,19 +667,9 @@ const mockItemImages = {
   'arthur': [
     '/Parks/Europa Park/Roller Coasters/Arthur/02.jpg',
     '/Parks/Europa Park/Roller Coasters/Arthur/03.jpg'
-  ],
-  'eurosat': [
-    '/Parks/Europa Park/Roller Coasters/Eurosat/01.jpg',
-    '/Parks/Europa Park/Roller Coasters/Eurosat/02.jpg',
-    '/Parks/Europa Park/Roller Coasters/Eurosat/03.jpg',
-    '/Parks/Europa Park/Roller Coasters/Eurosat/04.jpg'
-  ],
-  'poseidon': [
-    '/Parks/Europa Park/Roller Coasters/Poseidon/01.jpg',
-    '/Parks/Europa Park/Roller Coasters/Poseidon/02.jpg',
-    '/Parks/Europa Park/Roller Coasters/Poseidon/03.jpg',
-    '/Parks/Europa Park/Roller Coasters/Poseidon/05.jpg'
   ]
+
+}
 
 const mockItemVideos = {
   'space-mountain': [
@@ -753,9 +745,6 @@ const mockItemVideos = {
   'poseidon': [
     'https://www.youtube.com/embed/watch?v=dQw4w9WgXcQ'
   ],
-  'eurosat': [
-    'https://www.youtube.com/embed/watch?v=dQw4w9WgXcQ'
-  ],
   'vindjammer': [
     'https://www.youtube.com/embed/watch?v=dQw4w9WgXcQ'
   ],
@@ -779,10 +768,9 @@ const mockItemVideos = {
   ],
   'eurosat': [
     'https://www.youtube.com/embed/watch?v=dQw4w9WgXcQ'
-  ],
-  'poseidon': [
-    'https://www.youtube.com/embed/watch?v=dQw4w9WgXcQ'
   ]
+
+}
 
 interface ItemPageProps {
   params: Promise<{

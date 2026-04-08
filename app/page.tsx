@@ -1,84 +1,106 @@
+import Link from 'next/link'
+import { HomeMarqueeRow } from '@/components/HomeMarqueeRow'
+import {
+  homeMoreHighlightCards,
+  homeParkCards,
+  homeRollerCoasterCards,
+  homeWaterRideCards
+} from '@/lib/homeCarouselData'
+
 export default function Home() {
   return (
     <div className="min-h-screen bg-gray-900 text-white">
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold mb-2 text-center">Theme Park Review</h1>
-        <p className="text-gray-400 text-center mb-12">Navigation Test Page</p>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Theme Parks Section */}
-          <div className="bg-gray-800 p-6 rounded-lg">
-            <h2 className="text-2xl font-semibold mb-4 text-blue-400">Parks</h2>
-            <ul className="space-y-2">
-              <li>
-                <a href="/parks" className="block px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded transition-colors">
-                  → All Parks
-                </a>
-              </li>
-              <li>
-                <a href="/parks/disneyland-paris" className="block px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded transition-colors text-sm">
-                  Disneyland Paris
-                </a>
-              </li>
-              <li>
-                <a href="/parks/universal-florida" className="block px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded transition-colors text-sm">
-                  Universal Studios Florida
-                </a>
-              </li>
-              <li>
-                <a href="/parks/six-flags-magic-mountain" className="block px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded transition-colors text-sm">
-                  Six Flags Magic Mountain
-                </a>
-              </li>
-              <li>
-                <a href="/parks/alton-towers" className="block px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded transition-colors text-sm">
-                  Alton Towers
-                </a>
-              </li>
-              <li>
-                <a href="/parks/port-adventure" className="block px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded transition-colors text-sm">
-                  PortAventura World
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Authentication Section */}
-          <div className="bg-gray-800 p-6 rounded-lg">
-            <h2 className="text-2xl font-semibold mb-4 text-green-400">Authentication</h2>
-            <ul className="space-y-2">
-              <li>
-                <a href="/auth/login" className="block px-4 py-2 bg-green-600 hover:bg-green-700 rounded transition-colors">
-                  Login
-                </a>
-              </li>
-              <li>
-                <a href="/auth/signup" className="block px-4 py-2 bg-green-600 hover:bg-green-700 rounded transition-colors">
-                  Sign Up
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* User Area Section */}
-          <div className="bg-gray-800 p-6 rounded-lg">
-            <h2 className="text-2xl font-semibold mb-4 text-purple-400">User Area</h2>
-            <ul className="space-y-2">
-              <li>
-                <a href="/dashboard" className="block px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded transition-colors">
-                  Dashboard
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        {/* Info Box */}
-        <div className="mt-12 bg-gray-800 p-6 rounded-lg">
-          <h3 className="text-lg font-semibold mb-2">Quick Links Guide</h3>
-          <p className="text-gray-300 text-sm">
-            Use this page to navigate through all sections of the theme park review website. Click on any link to test the pages and their functionality. The site includes a parks listing with filters, individual park details, and item information with photos and videos.
+      <div className="border-b border-white/10 bg-[#0a0f16]">
+        <div className="container mx-auto px-4 py-10 text-center md:py-14">
+          <h1 className="font-logo text-4xl font-bold tracking-tight text-white md:text-5xl">
+            Theme Park Review
+          </h1>
+          <p className="mx-auto mt-3 max-w-2xl text-gray-400">
+            Browse parks and standout rides—each row scrolls slowly on its own. Hover a row to pause.
           </p>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 py-10 md:py-14">
+        <HomeMarqueeRow
+          title="Theme parks"
+          subtitle="Featured destinations"
+          items={homeParkCards}
+          durationSec={130}
+          viewAllHref="/parks"
+          viewAllLabel="All parks"
+        />
+
+        <HomeMarqueeRow
+          title="Roller coasters"
+          subtitle="Europa Park"
+          items={homeRollerCoasterCards}
+          durationSec={150}
+          viewAllHref="/parks/europa-park/category/roller-coasters"
+          viewAllLabel="Roller coasters"
+        />
+
+        <HomeMarqueeRow
+          title="Water rides"
+          subtitle="Europa Park"
+          items={homeWaterRideCards}
+          durationSec={85}
+          viewAllHref="/parks/europa-park/category/water-rides"
+          viewAllLabel="Water rides"
+        />
+
+        <HomeMarqueeRow
+          title="More highlights"
+          subtitle="Dark rides, flat rides, stay & transport"
+          items={homeMoreHighlightCards}
+          durationSec={95}
+          viewAllHref="/parks/europa-park"
+          viewAllLabel="Europa Park"
+        />
+
+        <div className="mt-6 grid grid-cols-1 gap-6 border-t border-white/10 pt-12 md:grid-cols-3">
+          <div className="rounded-xl border border-white/10 bg-gray-800/80 p-6">
+            <h2 className="mb-3 text-lg font-semibold text-[#66c0f4]">Explore</h2>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <Link href="/parks" className="text-gray-300 hover:text-white">
+                  All parks
+                </Link>
+              </li>
+              <li>
+                <Link href="/parks/europa-park" className="text-gray-300 hover:text-white">
+                  Europa Park
+                </Link>
+              </li>
+            </ul>
+          </div>
+          <div className="rounded-xl border border-white/10 bg-gray-800/80 p-6">
+            <h2 className="mb-3 text-lg font-semibold text-emerald-400">Account</h2>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <Link href="/auth/login" className="text-gray-300 hover:text-white">
+                  Login
+                </Link>
+              </li>
+              <li>
+                <Link href="/auth/signup" className="text-gray-300 hover:text-white">
+                  Sign up
+                </Link>
+              </li>
+              <li>
+                <Link href="/dashboard" className="text-gray-300 hover:text-white">
+                  Dashboard
+                </Link>
+              </li>
+            </ul>
+          </div>
+          <div className="rounded-xl border border-white/10 bg-gray-800/80 p-6">
+            <h2 className="mb-3 text-lg font-semibold text-gray-200">About this page</h2>
+            <p className="text-sm leading-relaxed text-gray-400">
+              Marquees loop smoothly; motion is reduced automatically if you prefer less movement in
+              system settings.
+            </p>
+          </div>
         </div>
       </div>
     </div>

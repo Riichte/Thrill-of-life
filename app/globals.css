@@ -28,3 +28,25 @@ body {
 .font-logo {
   font-family: var(--font-logo), cursive;
 }
+
+/* Home page: slow horizontal marquee (duplicated track moves -50%) */
+@keyframes home-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.home-marquee-track {
+  animation: home-marquee linear infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-marquee-track {
+    animation: none;
+    transform: none !important;
+  }
+}

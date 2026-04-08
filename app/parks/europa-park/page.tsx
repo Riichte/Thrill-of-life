@@ -104,71 +104,111 @@ export default function EuropaParkPage() {
           <p className="text-gray-400 text-lg">{europaPark.location}</p>
         </div>
 
-        {/* Image Carousel */}
-        <div className="mb-12">
-          <div className="relative bg-gray-800 rounded-lg overflow-hidden">
-            {/* Main Image */}
-            <div className="relative w-full h-96">
-              <img
-                src={carouselImages[currentImageIndex]}
-                alt={`${europaPark.name} ${currentImageIndex + 1}`}
-                className="w-full h-full object-cover"
-              />
+        {/* Main Content Grid - Carousel and Score */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+          {/* Left Column - Image Carousel (60% on desktop) */}
+          <div className="lg:col-span-2">
+            <div className="relative bg-gray-800 rounded-lg overflow-hidden">
+              {/* Main Image */}
+              <div className="relative w-full h-96">
+                <img
+                  src={carouselImages[currentImageIndex]}
+                  alt={`${europaPark.name} ${currentImageIndex + 1}`}
+                  className="w-full h-full object-cover"
+                />
 
-              {/* Navigation Arrows */}
+                {/* Navigation Arrows */}
+                {carouselImages.length > 1 && (
+                  <>
+                    <button
+                      onClick={handlePrevImage}
+                      className="absolute left-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-75 rounded-full p-3 transition-all"
+                    >
+                      <ChevronLeft className="w-8 h-8 text-white" />
+                    </button>
+                    <button
+                      onClick={handleNextImage}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-75 rounded-full p-3 transition-all"
+                    >
+                      <ChevronRight className="w-8 h-8 text-white" />
+                    </button>
+
+                    {/* Image Counter */}
+                    <div className="absolute bottom-4 right-4 bg-black bg-opacity-70 px-3 py-1 rounded text-sm">
+                      {currentImageIndex + 1} / {carouselImages.length}
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* Thumbnail Strip */}
               {carouselImages.length > 1 && (
-                <>
-                  <button
-                    onClick={handlePrevImage}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-75 rounded-full p-3 transition-all"
-                  >
-                    <ChevronLeft className="w-8 h-8 text-white" />
-                  </button>
-                  <button
-                    onClick={handleNextImage}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-75 rounded-full p-3 transition-all"
-                  >
-                    <ChevronRight className="w-8 h-8 text-white" />
-                  </button>
-
-                  {/* Image Counter */}
-                  <div className="absolute bottom-4 right-4 bg-black bg-opacity-70 px-3 py-1 rounded text-sm">
-                    {currentImageIndex + 1} / {carouselImages.length}
-                  </div>
-                </>
+                <div className="flex gap-2 p-4 bg-gray-900 overflow-x-auto">
+                  {carouselImages.map((image, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentImageIndex(index)}
+                      className={`flex-shrink-0 w-20 h-20 rounded overflow-hidden border-2 transition-all ${
+                        index === currentImageIndex
+                          ? 'border-blue-500'
+                          : 'border-gray-700 hover:border-gray-600'
+                      }`}
+                    >
+                      <img
+                        src={image}
+                        alt={`Thumbnail ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </button>
+                  ))}
+                </div>
               )}
             </div>
-
-            {/* Thumbnail Strip */}
-            {carouselImages.length > 1 && (
-              <div className="flex gap-2 p-4 bg-gray-900 overflow-x-auto">
-                {carouselImages.map((image, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentImageIndex(index)}
-                    className={`flex-shrink-0 w-20 h-20 rounded overflow-hidden border-2 transition-all ${
-                      index === currentImageIndex
-                        ? 'border-blue-500'
-                        : 'border-gray-700 hover:border-gray-600'
-                    }`}
-                  >
-                    <img
-                      src={image}
-                      alt={`Thumbnail ${index + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
-        </div>
 
-        {/* Description */}
-        <div className="mb-12">
-          <p className="text-gray-300 text-lg leading-relaxed max-w-4xl">
-            {europaPark.description}
-          </p>
+          {/* Right Column - Score Panel (40% on desktop) */}
+          <div className="lg:col-span-1">
+            <div className="bg-gray-800 rounded-lg p-8">
+              {/* Score Circle */}
+              <div className="flex flex-col items-center justify-center">
+                <div className="relative w-40 h-40 mb-4">
+                  <svg className="w-full h-full" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="#374151" strokeWidth="2" />
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r="45"
+                      fill="none"
+                      stroke="#3b82f6"
+                      strokeWidth="3"
+                      strokeDasharray={`${(overallScore / 100) * 282.7}`}
+                      strokeDashoffset="0"
+                      strokeLinecap="round"
+                      style={{ transform: 'rotate(-90deg)', transformOrigin: '50% 50%' }}
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="text-5xl font-bold text-blue-400">{overallScore}</div>
+                    </div>
+                  </div>
+                </div>
+                <p className="text-gray-300 text-sm text-center mb-6">Overall Score</p>
+              </div>
+
+              {/* Park Info */}
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">Location</h3>
+                  <p className="text-gray-300">{europaPark.location}</p>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">Description</h3>
+                  <p className="text-gray-300 text-sm leading-relaxed">{europaPark.description}</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Categories */}
@@ -232,79 +272,49 @@ export default function EuropaParkPage() {
           </div>
         </div>
 
-        {/* Score and Rating Bars Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-          {/* Score Circle */}
-          <div className="flex flex-col items-center justify-center bg-gray-800 rounded-lg p-8">
-            <div className="relative w-40 h-40 mb-4">
-              <svg className="w-full h-full" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="45" fill="none" stroke="#374151" strokeWidth="2" />
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="45"
-                  fill="none"
-                  stroke="#3b82f6"
-                  strokeWidth="3"
-                  strokeDasharray={`${(overallScore / 100) * 282.7}`}
-                  strokeDashoffset="0"
-                  strokeLinecap="round"
-                  style={{ transform: 'rotate(-90deg)', transformOrigin: '50% 50%' }}
-                />
-              </svg>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="text-5xl font-bold text-blue-400">{overallScore}</div>
-                </div>
+        {/* Rating Breakdown */}
+        <div className="bg-gray-800 rounded-lg p-8 mb-12">
+          <h3 className="text-lg font-semibold mb-6">Recent Reviews</h3>
+          <div className="space-y-6">
+            {/* Positive */}
+            <div>
+              <div className="flex justify-between items-center mb-3">
+                <span className="text-green-400 font-semibold">Overwhelmingly Positive</span>
+                <span className="text-gray-400 text-sm">({ratingBreakdown.positive}%)</span>
+              </div>
+              <div className="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
+                <div
+                  className="bg-green-500 h-full rounded-full"
+                  style={{ width: `${ratingBreakdown.positive}%` }}
+                ></div>
               </div>
             </div>
-            <p className="text-gray-300 text-sm text-center">Overall Score</p>
-          </div>
 
-          {/* Rating Breakdown */}
-          <div className="lg:col-span-2 bg-gray-800 rounded-lg p-8">
-            <h3 className="text-lg font-semibold mb-6">Recent Reviews</h3>
-            <div className="space-y-6">
-              {/* Positive */}
-              <div>
-                <div className="flex justify-between items-center mb-3">
-                  <span className="text-green-400 font-semibold">Overwhelmingly Positive</span>
-                  <span className="text-gray-400 text-sm">({ratingBreakdown.positive}%)</span>
-                </div>
-                <div className="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
-                  <div
-                    className="bg-green-500 h-full rounded-full"
-                    style={{ width: `${ratingBreakdown.positive}%` }}
-                  ></div>
-                </div>
+            {/* Mixed */}
+            <div>
+              <div className="flex justify-between items-center mb-3">
+                <span className="text-yellow-400 font-semibold">Mixed</span>
+                <span className="text-gray-400 text-sm">({ratingBreakdown.mixed}%)</span>
               </div>
-
-              {/* Mixed */}
-              <div>
-                <div className="flex justify-between items-center mb-3">
-                  <span className="text-yellow-400 font-semibold">Mixed</span>
-                  <span className="text-gray-400 text-sm">({ratingBreakdown.mixed}%)</span>
-                </div>
-                <div className="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
-                  <div
-                    className="bg-yellow-500 h-full rounded-full"
-                    style={{ width: `${ratingBreakdown.mixed}%` }}
-                  ></div>
-                </div>
+              <div className="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
+                <div
+                  className="bg-yellow-500 h-full rounded-full"
+                  style={{ width: `${ratingBreakdown.mixed}%` }}
+                ></div>
               </div>
+            </div>
 
-              {/* Negative */}
-              <div>
-                <div className="flex justify-between items-center mb-3">
-                  <span className="text-red-400 font-semibold">Overwhelmingly Negative</span>
-                  <span className="text-gray-400 text-sm">({ratingBreakdown.negative}%)</span>
-                </div>
-                <div className="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
-                  <div
-                    className="bg-red-500 h-full rounded-full"
-                    style={{ width: `${ratingBreakdown.negative}%` }}
-                  ></div>
-                </div>
+            {/* Negative */}
+            <div>
+              <div className="flex justify-between items-center mb-3">
+                <span className="text-red-400 font-semibold">Overwhelmingly Negative</span>
+                <span className="text-gray-400 text-sm">({ratingBreakdown.negative}%)</span>
+              </div>
+              <div className="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
+                <div
+                  className="bg-red-500 h-full rounded-full"
+                  style={{ width: `${ratingBreakdown.negative}%` }}
+                ></div>
               </div>
             </div>
           </div>

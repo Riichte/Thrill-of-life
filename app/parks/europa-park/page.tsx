@@ -1,10 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import RatingComponent from '@/components/RatingComponent'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { SteamMediaCarousel } from '@/components/SteamMediaCarousel'
+import { SteamInfoPanel } from '@/components/SteamInfoPanel'
 
 // Mock data for Europa Park
 const europaPark = {
@@ -62,23 +62,12 @@ const carouselImages = [
 ]
 
 export default function EuropaParkPage() {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [reviewFilter, setReviewFilter] = useState('all')
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % carouselImages.length)
-    }, 5000)
-    return () => clearInterval(interval)
-  }, [])
-
-  const handlePrevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + carouselImages.length) % carouselImages.length)
-  }
-
-  const handleNextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % carouselImages.length)
-  }
+  const mediaSlides = carouselImages.map((src) => ({
+    src,
+    alt: europaPark.name
+  }))
 
   // Mock ratings data
   const overallScore = 85
@@ -104,110 +93,38 @@ export default function EuropaParkPage() {
           <p className="text-gray-400 text-lg">{europaPark.location}</p>
         </div>
 
-        {/* Main Content Grid - Carousel and Score */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-          {/* Left Column - Image Carousel (60% on desktop) */}
+        {/* Steam-style hero: media + sidebar */}
+        <div className="mb-12 grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8">
           <div className="lg:col-span-2">
-            <div className="relative bg-gray-800 rounded-lg overflow-hidden">
-              {/* Main Image */}
-              <div className="relative w-full h-96">
-                <img
-                  src={carouselImages[currentImageIndex]}
-                  alt={`${europaPark.name} ${currentImageIndex + 1}`}
-                  className="w-full h-full object-cover"
-                />
-
-                {/* Navigation Arrows */}
-                {carouselImages.length > 1 && (
-                  <>
-                    <button
-                      onClick={handlePrevImage}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-75 rounded-full p-3 transition-all"
-                    >
-                      <ChevronLeft className="w-8 h-8 text-white" />
-                    </button>
-                    <button
-                      onClick={handleNextImage}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-75 rounded-full p-3 transition-all"
-                    >
-                      <ChevronRight className="w-8 h-8 text-white" />
-                    </button>
-
-                    {/* Image Counter */}
-                    <div className="absolute bottom-4 right-4 bg-black bg-opacity-70 px-3 py-1 rounded text-sm">
-                      {currentImageIndex + 1} / {carouselImages.length}
-                    </div>
-                  </>
-                )}
-              </div>
-
-              {/* Thumbnail Strip */}
-              {carouselImages.length > 1 && (
-                <div className="flex gap-2 p-4 bg-gray-900 overflow-x-auto">
-                  {carouselImages.map((image, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentImageIndex(index)}
-                      className={`flex-shrink-0 w-20 h-20 rounded overflow-hidden border-2 transition-all ${
-                        index === currentImageIndex
-                          ? 'border-blue-500'
-                          : 'border-gray-700 hover:border-gray-600'
-                      }`}
-                    >
-                      <img
-                        src={image}
-                        alt={`Thumbnail ${index + 1}`}
-                        className="w-full h-full object-cover"
-                      />
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+            <SteamMediaCarousel slides={mediaSlides} autoAdvanceMs={5000} />
           </div>
-
-          {/* Right Column - Score Panel (40% on desktop) */}
           <div className="lg:col-span-1">
-            <div className="bg-gray-800 rounded-lg p-8">
-              {/* Score Circle */}
-              <div className="flex flex-col items-center justify-center">
-                <div className="relative w-40 h-40 mb-4">
-                  <svg className="w-full h-full" viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="45" fill="none" stroke="#374151" strokeWidth="2" />
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="45"
-                      fill="none"
-                      stroke="#3b82f6"
-                      strokeWidth="3"
-                      strokeDasharray={`${(overallScore / 100) * 282.7}`}
-                      strokeDashoffset="0"
-                      strokeLinecap="round"
-                      style={{ transform: 'rotate(-90deg)', transformOrigin: '50% 50%' }}
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center">
-                      <div className="text-5xl font-bold text-blue-400">{overallScore}</div>
-                    </div>
-                  </div>
-                </div>
-                <p className="text-gray-300 text-sm text-center mb-6">Overall Score</p>
-              </div>
-
-              {/* Park Info */}
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">Location</h3>
-                  <p className="text-gray-300">{europaPark.location}</p>
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">Description</h3>
-                  <p className="text-gray-300 text-sm leading-relaxed">{europaPark.description}</p>
-                </div>
-              </div>
-            </div>
+            <SteamInfoPanel
+              headerImage={europaPark.banner_url}
+              headerImageAlt={europaPark.name}
+              logoUrl={europaPark.logo_url}
+              logoAlt={`${europaPark.name} logo`}
+              title={europaPark.name}
+              description={europaPark.description}
+              score={overallScore}
+              scoreLabel="Overall score"
+              metadata={[
+                {
+                  label: 'Recent reviews',
+                  value: `Mostly positive (${ratingBreakdown.positive}%)`
+                },
+                {
+                  label: 'All reviews',
+                  value: 'Very positive (1,240)'
+                },
+                { label: 'Location', value: europaPark.location },
+                {
+                  label: 'Resort',
+                  value: 'Europa-Park Rust'
+                }
+              ]}
+              tags={['Theme park', 'Germany', 'Family', 'Roller coasters', 'Hotels']}
+            />
           </div>
         </div>
 

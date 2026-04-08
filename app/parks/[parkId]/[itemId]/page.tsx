@@ -2,9 +2,10 @@
 
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import RatingComponent from '@/components/RatingComponent'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { SteamMediaCarousel } from '@/components/SteamMediaCarousel'
+import { SteamInfoPanel } from '@/components/SteamInfoPanel'
 
 // Mock data (same as park page)
 const mockParks = [
@@ -761,23 +762,13 @@ function ItemPageContent({ park, item, category, images, videos }: {
   images: string[]
   videos: string[]
 }) {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [reviewFilter, setReviewFilter] = useState('all')
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % images.length)
-    }, 5000)
-    return () => clearInterval(interval)
-  }, [images.length])
-
-  const handlePrevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length)
-  }
-
-  const handleNextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % images.length)
-  }
+  const mediaSlides = images.map((src, i) => ({
+    src,
+    alt: item.name,
+    isVideo: Boolean(videos[i])
+  }))
 
   const specs = item.specs || {}
   const hasSpecs = Object.keys(specs).length > 0
@@ -808,159 +799,78 @@ function ItemPageContent({ park, item, category, images, videos }: {
           <p className="text-gray-400 text-lg">{park.name} • {item.location_in_park}</p>
         </div>
 
-        {/* Main Content Grid - Carousel and Info */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-          {/* Left Column - Image Carousel (60% on desktop) */}
+        <div className="mb-12 grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8">
           <div className="lg:col-span-2">
-            <div className="relative bg-gray-800 rounded-lg overflow-hidden">
-              {/* Main Image */}
-              <div className="relative w-full h-96">
-                <img
-                  src={images[currentImageIndex]}
-                  alt={`${item.name} ${currentImageIndex + 1}`}
-                  className="w-full h-full object-cover"
-                />
-
-                {/* Navigation Arrows */}
-                {images.length > 1 && (
-                  <>
-                    <button
-                      onClick={handlePrevImage}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-75 rounded-full p-3 transition-all"
-                    >
-                      <ChevronLeft className="w-8 h-8 text-white" />
-                    </button>
-                    <button
-                      onClick={handleNextImage}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-75 rounded-full p-3 transition-all"
-                    >
-                      <ChevronRight className="w-8 h-8 text-white" />
-                    </button>
-
-                    {/* Image Counter */}
-                    <div className="absolute bottom-4 right-4 bg-black bg-opacity-70 px-3 py-1 rounded text-sm">
-                      {currentImageIndex + 1} / {images.length}
-                    </div>
-                  </>
-                )}
-              </div>
-
-              {/* Thumbnail Strip */}
-              {images.length > 1 && (
-                <div className="flex gap-2 p-4 bg-gray-900 overflow-x-auto">
-                  {images.map((image, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentImageIndex(index)}
-                      className={`flex-shrink-0 w-20 h-20 rounded overflow-hidden border-2 transition-all ${
-                        index === currentImageIndex
-                          ? 'border-blue-500'
-                          : 'border-gray-700 hover:border-gray-600'
-                      }`}
-                    >
-                      <img
-                        src={image}
-                        alt={`Thumbnail ${index + 1}`}
-                        className="w-full h-full object-cover"
-                      />
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+            <SteamMediaCarousel
+              key={item.id}
+              slides={mediaSlides}
+              autoAdvanceMs={images.length > 1 ? 5000 : undefined}
+            />
           </div>
-
-          {/* Right Column - Info Panel (40% on desktop) */}
           <div className="lg:col-span-1">
-            <div className="bg-gray-800 rounded-lg p-8">
-              {/* Category Badge */}
-              <div className="inline-block bg-blue-600 px-3 py-1 rounded-full text-sm font-semibold mb-6">
-                {category.name}
-              </div>
-
-              {/* Technical Specs */}
+            <SteamInfoPanel
+              headerImage={images[0]}
+              headerImageAlt={item.name}
+              title={item.name}
+              description={item.description}
+              score={overallScore}
+              scoreLabel="Overall score"
+              metadata={[
+                {
+                  label: 'Recent reviews',
+                  value: `Mostly positive (${ratingBreakdown.positive}%)`
+                },
+                { label: 'Category', value: category.name },
+                { label: 'Area in park', value: item.location_in_park },
+                ...(specs.type ? [{ label: 'Ride type', value: specs.type }] : [])
+              ]}
+              tags={[specs.type, specs.manufacturer, category.name].filter(Boolean) as string[]}
+            >
               {hasSpecs && (
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold">Quick Facts</h3>
-                  <div className="space-y-3 text-sm">
-                    {specs.type && (
-                      <div className="flex justify-between items-center pb-2 border-b border-gray-700">
-                        <span className="text-gray-400">{specs.type}</span>
-                      </div>
-                    )}
+                <div className="border-t border-[#2a475e] pt-4">
+                  <h3 className="mb-3 text-xs font-medium uppercase tracking-wider text-[#8f98a0]">
+                    Quick facts
+                  </h3>
+                  <div className="space-y-2 text-sm">
                     {specs.height && (
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-400">Height</span>
-                        <span className="font-semibold text-gray-200">{specs.height}</span>
+                      <div className="flex justify-between gap-4 text-[#acb2b8]">
+                        <span>Height</span>
+                        <span className="text-[#c6d4df]">{specs.height}</span>
                       </div>
                     )}
                     {specs.speed && (
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-400">Speed</span>
-                        <span className="font-semibold text-gray-200">{specs.speed}</span>
+                      <div className="flex justify-between gap-4 text-[#acb2b8]">
+                        <span>Speed</span>
+                        <span className="text-[#c6d4df]">{specs.speed}</span>
                       </div>
                     )}
                     {specs.length && (
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-400">Length</span>
-                        <span className="font-semibold text-gray-200">{specs.length}</span>
+                      <div className="flex justify-between gap-4 text-[#acb2b8]">
+                        <span>Length</span>
+                        <span className="text-[#c6d4df]">{specs.length}</span>
                       </div>
                     )}
                     {specs.drop && (
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-400">Drop</span>
-                        <span className="font-semibold text-gray-200">{specs.drop}</span>
+                      <div className="flex justify-between gap-4 text-[#acb2b8]">
+                        <span>Drop</span>
+                        <span className="text-[#c6d4df]">{specs.drop}</span>
                       </div>
                     )}
                     {specs.manufacturer && (
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-400">Manufacturer</span>
-                        <span className="font-semibold text-gray-200">{specs.manufacturer}</span>
+                      <div className="flex justify-between gap-4 text-[#acb2b8]">
+                        <span>Manufacturer</span>
+                        <span className="text-[#c6d4df]">{specs.manufacturer}</span>
                       </div>
                     )}
                   </div>
                 </div>
               )}
-
-              {/* Description */}
-              <div className="mt-8 pt-8 border-t border-gray-700">
-                <p className="text-gray-300 text-sm leading-relaxed">{item.description}</p>
-              </div>
-            </div>
+            </SteamInfoPanel>
           </div>
         </div>
 
-        {/* Score and Rating Bars Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-          {/* Score Circle */}
-          <div className="flex flex-col items-center justify-center bg-gray-800 rounded-lg p-8">
-            <div className="relative w-40 h-40 mb-4">
-              <svg className="w-full h-full" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="45" fill="none" stroke="#374151" strokeWidth="2" />
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="45"
-                  fill="none"
-                  stroke="#3b82f6"
-                  strokeWidth="3"
-                  strokeDasharray={`${(overallScore / 100) * 282.7}`}
-                  strokeDashoffset="0"
-                  strokeLinecap="round"
-                  style={{ transform: 'rotate(-90deg)', transformOrigin: '50% 50%' }}
-                />
-              </svg>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="text-5xl font-bold text-blue-400">{overallScore}</div>
-                </div>
-              </div>
-            </div>
-            <p className="text-gray-300 text-sm text-center">Overall Score</p>
-          </div>
-
-          {/* Rating Breakdown */}
-          <div className="lg:col-span-2 bg-gray-800 rounded-lg p-8">
+        {/* Rating breakdown */}
+        <div className="mb-12 rounded-lg bg-gray-800 p-8">
             <h3 className="text-lg font-semibold mb-6">Recent Reviews</h3>
             <div className="space-y-6">
               {/* Positive */}
@@ -1005,7 +915,6 @@ function ItemPageContent({ park, item, category, images, videos }: {
                 </div>
               </div>
             </div>
-          </div>
         </div>
 
         {/* Rating System */}

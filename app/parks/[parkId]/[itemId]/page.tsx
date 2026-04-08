@@ -42,6 +42,11 @@ const mockParks = [
 
 const mockCategories = [
   { id: 'rides', name: 'Rides' },
+  { id: 'roller-coasters', name: 'Roller Coasters' },
+  { id: 'dark-rides', name: 'Dark Rides' },
+  { id: 'flat-rides', name: 'Flat Rides' },
+  { id: 'water-rides', name: 'Water Rides' },
+  { id: 'transport', name: 'Transport' },
   { id: 'restaurants', name: 'Restaurants' },
   { id: 'shows', name: 'Shows & Entertainment' },
   { id: 'hotels', name: 'Hotels & Resorts' },
@@ -224,7 +229,7 @@ const mockItems = {
   'europa-park': [
     {
       id: 'wodan',
-      category_id: 'rides',
+      category_id: 'roller-coasters',
       name: 'Wodan',
       description: 'A thrilling wooden roller coaster with breathtaking drops and high speeds. Experience the power of the Norse god on this legendary coaster.',
       location_in_park: 'Europa Park',
@@ -239,7 +244,7 @@ const mockItems = {
     },
     {
       id: 'euromir',
-      category_id: 'rides',
+      category_id: 'roller-coasters',
       name: 'Euromir',
       description: 'A looping roller coaster that simulates a journey to space. Experience weightlessness and cosmic thrills on this inverted coaster.',
       location_in_park: 'Europa Park',
@@ -254,7 +259,7 @@ const mockItems = {
     },
     {
       id: 'blue-fire',
-      category_id: 'rides',
+      category_id: 'roller-coasters',
       name: 'Blue Fire',
       description: 'A high-speed launched coaster that propels riders through intense inversions and thrilling drops at incredible speeds.',
       location_in_park: 'Europa Park',
@@ -269,7 +274,7 @@ const mockItems = {
     },
     {
       id: 'silver-star',
-      category_id: 'rides',
+      category_id: 'roller-coasters',
       name: 'Silver Star',
       description: 'A towering hypercoaster with breathtaking views and heart-pounding drops from its impressive height.',
       location_in_park: 'Europa Park',
@@ -284,7 +289,7 @@ const mockItems = {
     },
     {
       id: 'matterhorn-blitz',
-      category_id: 'rides',
+      category_id: 'roller-coasters',
       name: 'Matterhorn Blitz',
       description: 'A wild bobsled coaster that twists and turns through alpine scenery with sudden drops and sharp curves.',
       location_in_park: 'Europa Park',
@@ -299,7 +304,7 @@ const mockItems = {
     },
     {
       id: 'pegasus',
-      category_id: 'rides',
+      category_id: 'roller-coasters',
       name: 'Pegasus',
       description: 'A family-friendly coaster with gentle drops and smooth curves, perfect for younger riders and families.',
       location_in_park: 'Europa Park',
@@ -314,7 +319,7 @@ const mockItems = {
     },
     {
       id: 'tiroler-wildwasserbahn',
-      category_id: 'rides',
+      category_id: 'water-rides',
       name: 'Tiroler Wildwasserbahn',
       description: 'An exciting log flume ride through alpine scenery with thrilling drops and splash landings.',
       location_in_park: 'Europa Park',
@@ -329,7 +334,7 @@ const mockItems = {
     },
     {
       id: 'fjord-rafting',
-      category_id: 'rides',
+      category_id: 'water-rides',
       name: 'Fjord Rafting',
       description: 'A rapid river adventure ride through Norwegian fjord scenery with exciting rapids and waterfalls.',
       location_in_park: 'Europa Park',
@@ -344,7 +349,7 @@ const mockItems = {
     },
     {
       id: 'dschungel-flossfahrt',
-      category_id: 'rides',
+      category_id: 'dark-rides',
       name: 'Dschungel-Floßfahrt',
       description: 'A relaxing boat ride through lush jungle scenery with gentle rapids and tropical atmosphere.',
       location_in_park: 'Europa Park',
@@ -359,7 +364,7 @@ const mockItems = {
     },
     {
       id: 'poseidon',
-      category_id: 'rides',
+      category_id: 'roller-coasters',
       name: 'Poseidon',
       description: 'A thrilling water coaster that combines roller coaster elements with water ride excitement.',
       location_in_park: 'Europa Park',
@@ -374,7 +379,7 @@ const mockItems = {
     },
     {
       id: 'eurosat',
-      category_id: 'rides',
+      category_id: 'roller-coasters',
       name: 'Eurosat',
       description: 'A high-speed roller coaster with multiple inversions and thrilling maneuvers.',
       location_in_park: 'Europa Park',
@@ -389,7 +394,7 @@ const mockItems = {
     },
     {
       id: 'vindjammer',
-      category_id: 'rides',
+      category_id: 'flat-rides',
       name: 'Vindjammer',
       description: 'A swinging ship ride that provides a thrilling rocking motion with increasing intensity.',
       location_in_park: 'Europa Park',
@@ -430,7 +435,7 @@ const mockItems = {
     },
     {
       id: 'atlantica-super-splash',
-      category_id: 'rides',
+      category_id: 'roller-coasters',
       name: 'Atlantica Super Splash',
       description: 'A thrilling water coaster with high-speed drops and splash landings.',
       location_in_park: 'Europa Park',
@@ -445,7 +450,7 @@ const mockItems = {
     },
     {
       id: 'bobsleigh',
-      category_id: 'rides',
+      category_id: 'roller-coasters',
       name: 'Bobsleigh',
       description: 'A bobsled coaster that simulates the thrill of Olympic bobsledding with twists and turns.',
       location_in_park: 'Europa Park',
@@ -460,7 +465,7 @@ const mockItems = {
     },
     {
       id: 'alpenexpress',
-      category_id: 'rides',
+      category_id: 'roller-coasters',
       name: 'Alpenexpress',
       description: 'A mountain train ride that takes passengers through scenic alpine landscapes.',
       location_in_park: 'Europa Park',
@@ -475,7 +480,7 @@ const mockItems = {
     },
     {
       id: 'arthur',
-      category_id: 'rides',
+      category_id: 'roller-coasters',
       name: 'Arthur',
       description: 'A family-friendly roller coaster with gentle curves and exciting drops.',
       location_in_park: 'Europa Park',
@@ -486,36 +491,6 @@ const mockItems = {
         drop: '9m',
         manufacturer: 'Mack Rides',
         type: 'Family Coaster'
-      }
-    },
-    {
-      id: 'eurosat',
-      category_id: 'rides',
-      name: 'Eurosat',
-      description: 'A high-speed roller coaster with multiple inversions and thrilling maneuvers.',
-      location_in_park: 'Europa Park',
-      specs: {
-        height: '32m',
-        speed: '90 km/h',
-        length: '380m',
-        drop: '28m',
-        manufacturer: 'Bolliger & Mabillard',
-        type: 'Inverted Coaster'
-      }
-    },
-    {
-      id: 'poseidon',
-      category_id: 'rides',
-      name: 'Poseidon',
-      description: 'A thrilling water coaster that combines roller coaster elements with water ride excitement.',
-      location_in_park: 'Europa Park',
-      specs: {
-        height: '28m',
-        speed: '70 km/h',
-        length: '430m',
-        drop: '23m',
-        manufacturer: 'Mack Rides',
-        type: 'Water Coaster'
       }
     }
 ]

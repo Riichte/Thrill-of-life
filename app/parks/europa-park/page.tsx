@@ -19,8 +19,8 @@ const europaPark = {
 const categories = [
   { id: 'roller-coasters', name: 'Roller Coasters', image: '/Parks/Europa Park/Roller Coasters/Wodan/Main.jpg' },
   { id: 'dark-rides', name: 'Dark Rides', image: '/Parks/Europa Park/Dark Rides/Abenteuer Atlantis/Logo.jpg' },
-  { id: 'flat-rides', name: 'Flat Rides', image: '/Parks/Europa Park/Main.jpg' }, // placeholder
-  { id: 'water-rides', name: 'Water Rides', image: '/Parks/Europa Park/Main.jpg' }, // placeholder
+  { id: 'flat-rides', name: 'Flat Rides', image: '/Parks/Europa Park/Flat Rides/Vindjammer/01.jpg' },
+  { id: 'water-rides', name: 'Water Rides', image: '/Parks/Europa Park/Water Rides/Tiroler Wildwasserbahn/02.jpg' },
   { id: 'shows', name: 'Shows', image: '/Parks/Europa Park/Main.jpg' }, // placeholder
   { id: 'restaurants', name: 'Restaurants', image: '/Parks/Europa Park/Main.jpg' }, // placeholder
   { id: 'hotels', name: 'Hotels', image: '/Parks/Europa Park/Main.jpg' } // placeholder
@@ -218,7 +218,7 @@ export default function EuropaParkPage() {
             {categories.map((category) => (
               <Link
                 key={category.id}
-                href={`/parks/${europaPark.id}/${category.id}`}
+                href={`/parks/${europaPark.id}/category/${category.id}`}
                 className="bg-gray-800 hover:bg-gray-700 rounded-lg overflow-hidden transition-colors"
               >
                 <img
@@ -241,7 +241,7 @@ export default function EuropaParkPage() {
             {featuredRides.map((ride) => (
               <Link
                 key={ride.id}
-                href={`/parks/${europaPark.id}/roller-coasters/${ride.id}`}
+                href={`/parks/${europaPark.id}/${ride.id}`}
                 className="bg-gray-800 hover:bg-gray-700 rounded-lg overflow-hidden transition-colors"
               >
                 <div className="relative h-48">

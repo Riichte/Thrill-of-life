@@ -62,11 +62,28 @@ const mockParks = [
     company: 'PortAventura',
     park_type: 'Theme Park',
     location: 'Salou, Catalonia, Spain'
+  },
+  {
+    id: 'europa-park',
+    name: 'Europa Park',
+    description: 'Europe\'s second most popular theme park resort with thrilling rides, shows, and European-themed areas.',
+    logo_url: '/Parks/Europa Park/Logo.png',
+    cover_image_url: '/Parks/Europa Park/Main.jpg',
+    country: 'Germany',
+    region: 'Europe',
+    company: 'Europa Park',
+    park_type: 'Theme Park',
+    location: 'Rust, Germany'
   }
 ]
 
 const mockCategories = [
   { id: 'rides', name: 'Rides' },
+  { id: 'roller-coasters', name: 'Roller Coasters' },
+  { id: 'dark-rides', name: 'Dark Rides' },
+  { id: 'flat-rides', name: 'Flat Rides' },
+  { id: 'water-rides', name: 'Water Rides' },
+  { id: 'transport', name: 'Transport' },
   { id: 'restaurants', name: 'Restaurants' },
   { id: 'shows', name: 'Shows & Entertainment' },
   { id: 'hotels', name: 'Hotels & Resorts' },
@@ -237,6 +254,26 @@ const mockItems = {
       description: 'Authentic Mediterranean cuisine.',
       location_in_park: 'Mediterranean Area'
     }
+  ],
+  'europa-park': [
+    { id: 'wodan', category_id: 'roller-coasters', name: 'Wodan', description: 'A thrilling wooden roller coaster with breathtaking drops and high speeds.', location_in_park: 'Iceland' },
+    { id: 'euromir', category_id: 'roller-coasters', name: 'Euromir', description: 'A looping coaster themed as a journey into space.', location_in_park: 'France' },
+    { id: 'blue-fire', category_id: 'roller-coasters', name: 'Blue Fire', description: 'A launched coaster with inversions and smooth transitions.', location_in_park: 'Iceland' },
+    { id: 'silver-star', category_id: 'roller-coasters', name: 'Silver Star', description: 'A towering B&M hypercoaster with massive drops.', location_in_park: 'France' },
+    { id: 'matterhorn-blitz', category_id: 'roller-coasters', name: 'Matterhorn Blitz', description: 'A wild bobsled coaster through alpine scenery.', location_in_park: 'Switzerland' },
+    { id: 'pegasus', category_id: 'roller-coasters', name: 'Pegasus', description: 'A family-friendly coaster for younger riders.', location_in_park: 'Greece' },
+    { id: 'poseidon', category_id: 'roller-coasters', name: 'Poseidon', description: 'A water coaster blending coaster thrills with a splash finale.', location_in_park: 'Greece' },
+    { id: 'eurosat', category_id: 'roller-coasters', name: 'Eurosat', description: 'An indoor coaster through a futuristic space station.', location_in_park: 'France' },
+    { id: 'atlantica-super-splash', category_id: 'roller-coasters', name: 'Atlantica Super Splash', description: 'A water coaster with a steep drop into the splash zone.', location_in_park: 'Portugal' },
+    { id: 'bobsleigh', category_id: 'roller-coasters', name: 'Bobsleigh', description: 'A bobsled-style coaster with tight twists.', location_in_park: 'Switzerland' },
+    { id: 'alpenexpress', category_id: 'roller-coasters', name: 'Alpenexpress', description: 'A mine train coaster through the Alpine landscape.', location_in_park: 'Austria' },
+    { id: 'arthur', category_id: 'roller-coasters', name: 'Arthur', description: 'A family inverted dark ride coaster experience.', location_in_park: 'Kingdom of the Minimoys' },
+    { id: 'tiroler-wildwasserbahn', category_id: 'water-rides', name: 'Tiroler Wildwasserbahn', description: 'A classic log flume with alpine theming.', location_in_park: 'Austria' },
+    { id: 'fjord-rafting', category_id: 'water-rides', name: 'Fjord Rafting', description: 'River rapids through Norwegian fjord scenery.', location_in_park: 'Scandinavia' },
+    { id: 'dschungel-flossfahrt', category_id: 'dark-rides', name: 'Dschungel-Floßfahrt', description: 'A gentle jungle boat voyage with surprises along the way.', location_in_park: 'Adventureland' },
+    { id: 'vindjammer', category_id: 'flat-rides', name: 'Vindjammer', description: 'A swinging ship ride with sweeping views.', location_in_park: 'Scandinavia' },
+    { id: 'kronasar', category_id: 'hotels', name: 'Hotel Kronasar', description: 'A luxury hotel with Scandinavian theming.', location_in_park: 'Resort' },
+    { id: 'monorail-bahn', category_id: 'transport', name: 'Monorail Bahn', description: 'Park monorail connecting themed areas.', location_in_park: 'Parkwide' }
   ]
 }
 

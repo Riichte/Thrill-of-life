@@ -251,9 +251,274 @@ const mockItems = {
         manufacturer: 'Bolliger & Mabillard',
         type: 'Inverted Roller Coaster'
       }
+    },
+    {
+      id: 'blue-fire',
+      category_id: 'rides',
+      name: 'Blue Fire',
+      description: 'A high-speed launched coaster that propels riders through intense inversions and thrilling drops at incredible speeds.',
+      location_in_park: 'Europa Park',
+      specs: {
+        height: '38m',
+        speed: '100 km/h',
+        length: '1056m',
+        drop: '30m',
+        manufacturer: 'Mack Rides',
+        type: 'Launched Roller Coaster'
+      }
+    },
+    {
+      id: 'silver-star',
+      category_id: 'rides',
+      name: 'Silver Star',
+      description: 'A towering hypercoaster with breathtaking views and heart-pounding drops from its impressive height.',
+      location_in_park: 'Europa Park',
+      specs: {
+        height: '73m',
+        speed: '127 km/h',
+        length: '1620m',
+        drop: '73m',
+        manufacturer: 'Bolliger & Mabillard',
+        type: 'Hypercoaster'
+      }
+    },
+    {
+      id: 'matterhorn-blitz',
+      category_id: 'rides',
+      name: 'Matterhorn Blitz',
+      description: 'A wild bobsled coaster that twists and turns through alpine scenery with sudden drops and sharp curves.',
+      location_in_park: 'Europa Park',
+      specs: {
+        height: '12m',
+        speed: '50 km/h',
+        length: '320m',
+        drop: '10m',
+        manufacturer: 'Mack Rides',
+        type: 'Bobsled Coaster'
+      }
+    },
+    {
+      id: 'pegasus',
+      category_id: 'rides',
+      name: 'Pegasus',
+      description: 'A family-friendly coaster with gentle drops and smooth curves, perfect for younger riders and families.',
+      location_in_park: 'Europa Park',
+      specs: {
+        height: '8m',
+        speed: '40 km/h',
+        length: '200m',
+        drop: '6m',
+        manufacturer: 'Mack Rides',
+        type: 'Family Coaster'
+      }
+    },
+    {
+      id: 'tiroler-wildwasserbahn',
+      category_id: 'rides',
+      name: 'Tiroler Wildwasserbahn',
+      description: 'An exciting log flume ride through alpine scenery with thrilling drops and splash landings.',
+      location_in_park: 'Europa Park',
+      specs: {
+        height: '15m',
+        speed: 'Variable',
+        length: '450m',
+        drop: '12m',
+        manufacturer: 'Mack Rides',
+        type: 'Log Flume'
+      }
+    },
+    {
+      id: 'fjord-rafting',
+      category_id: 'rides',
+      name: 'Fjord Rafting',
+      description: 'A rapid river adventure ride through Norwegian fjord scenery with exciting rapids and waterfalls.',
+      location_in_park: 'Europa Park',
+      specs: {
+        height: '8m',
+        speed: 'Variable',
+        length: '360m',
+        drop: '5m',
+        manufacturer: 'Intamin',
+        type: 'River Rapids Ride'
+      }
+    },
+    {
+      id: 'dschungel-flossfahrt',
+      category_id: 'rides',
+      name: 'Dschungel-Floßfahrt',
+      description: 'A relaxing boat ride through lush jungle scenery with gentle rapids and tropical atmosphere.',
+      location_in_park: 'Europa Park',
+      specs: {
+        height: '3m',
+        speed: 'Variable',
+        length: '300m',
+        drop: '2m',
+        manufacturer: 'Mack Rides',
+        type: 'Boat Ride'
+      }
+    },
+    {
+      id: 'poseidon',
+      category_id: 'rides',
+      name: 'Poseidon',
+      description: 'A thrilling water coaster that combines roller coaster elements with water ride excitement.',
+      location_in_park: 'Europa Park',
+      specs: {
+        height: '28m',
+        speed: '70 km/h',
+        length: '430m',
+        drop: '23m',
+        manufacturer: 'Mack Rides',
+        type: 'Water Coaster'
+      }
+    },
+    {
+      id: 'eurosat',
+      category_id: 'rides',
+      name: 'Eurosat',
+      description: 'A high-speed roller coaster with multiple inversions and thrilling maneuvers.',
+      location_in_park: 'Europa Park',
+      specs: {
+        height: '32m',
+        speed: '90 km/h',
+        length: '380m',
+        drop: '28m',
+        manufacturer: 'Bolliger & Mabillard',
+        type: 'Inverted Coaster'
+      }
+    },
+    {
+      id: 'vindjammer',
+      category_id: 'rides',
+      name: 'Vindjammer',
+      description: 'A swinging ship ride that provides a thrilling rocking motion with increasing intensity.',
+      location_in_park: 'Europa Park',
+      specs: {
+        height: '15m',
+        speed: 'Variable',
+        length: 'N/A',
+        drop: 'N/A',
+        manufacturer: 'HUSS Park Attractions',
+        type: 'Swinging Ship'
+      }
+    },
+    {
+      id: 'kronasar',
+      category_id: 'hotels',
+      name: 'Hotel Kronasar',
+      description: 'A luxurious hotel inspired by Scandinavian design, offering comfortable rooms and modern amenities.',
+      location_in_park: 'Europa Park',
+      specs: {
+        rooms: '120',
+        theme: 'Scandinavian',
+        facilities: 'Restaurant, Bar, Spa',
+        rating: '4-star'
+      }
+    },
+    {
+      id: 'monorail-bahn',
+      category_id: 'transport',
+      name: 'Monorail Bahn',
+      description: 'A convenient monorail system that transports guests between different areas of the park.',
+      location_in_park: 'Europa Park',
+      specs: {
+        type: 'Monorail',
+        capacity: '60 passengers',
+        speed: '20 km/h',
+        length: '2.8 km'
+      }
+    },
+    {
+      id: 'atlantica-super-splash',
+      category_id: 'rides',
+      name: 'Atlantica Super Splash',
+      description: 'A thrilling water coaster with high-speed drops and splash landings.',
+      location_in_park: 'Europa Park',
+      specs: {
+        height: '25m',
+        speed: '70 km/h',
+        length: '400m',
+        drop: '20m',
+        manufacturer: 'Mack Rides',
+        type: 'Water Coaster'
+      }
+    },
+    {
+      id: 'bobsleigh',
+      category_id: 'rides',
+      name: 'Bobsleigh',
+      description: 'A bobsled coaster that simulates the thrill of Olympic bobsledding with twists and turns.',
+      location_in_park: 'Europa Park',
+      specs: {
+        height: '10m',
+        speed: '45 km/h',
+        length: '280m',
+        drop: '8m',
+        manufacturer: 'Mack Rides',
+        type: 'Bobsled Coaster'
+      }
+    },
+    {
+      id: 'alpenexpress',
+      category_id: 'rides',
+      name: 'Alpenexpress',
+      description: 'A mountain train ride that takes passengers through scenic alpine landscapes.',
+      location_in_park: 'Europa Park',
+      specs: {
+        height: '5m',
+        speed: 'Variable',
+        length: '350m',
+        drop: '3m',
+        manufacturer: 'Mack Rides',
+        type: 'Train Ride'
+      }
+    },
+    {
+      id: 'arthur',
+      category_id: 'rides',
+      name: 'Arthur',
+      description: 'A family-friendly roller coaster with gentle curves and exciting drops.',
+      location_in_park: 'Europa Park',
+      specs: {
+        height: '12m',
+        speed: '50 km/h',
+        length: '250m',
+        drop: '9m',
+        manufacturer: 'Mack Rides',
+        type: 'Family Coaster'
+      }
+    },
+    {
+      id: 'eurosat',
+      category_id: 'rides',
+      name: 'Eurosat',
+      description: 'A high-speed roller coaster with multiple inversions and thrilling maneuvers.',
+      location_in_park: 'Europa Park',
+      specs: {
+        height: '32m',
+        speed: '90 km/h',
+        length: '380m',
+        drop: '28m',
+        manufacturer: 'Bolliger & Mabillard',
+        type: 'Inverted Coaster'
+      }
+    },
+    {
+      id: 'poseidon',
+      category_id: 'rides',
+      name: 'Poseidon',
+      description: 'A thrilling water coaster that combines roller coaster elements with water ride excitement.',
+      location_in_park: 'Europa Park',
+      specs: {
+        height: '28m',
+        speed: '70 km/h',
+        length: '430m',
+        drop: '23m',
+        manufacturer: 'Mack Rides',
+        type: 'Water Coaster'
+      }
     }
-  ]
-}
+]
 
 const mockItemImages = {
   'space-mountain': [
@@ -316,8 +581,103 @@ const mockItemImages = {
     '/Parks/Europa Park/Roller Coasters/Euromir/1.jpg',
     '/Parks/Europa Park/Roller Coasters/Euromir/2.jpg',
     '/Parks/Europa Park/Roller Coasters/Euromir/3.jpg'
+  ],
+  'blue-fire': [
+    '/Parks/Europa Park/Roller Coasters/Blue Fire/02.jpg',
+    '/Parks/Europa Park/Roller Coasters/Blue Fire/03.jpg',
+    '/Parks/Europa Park/Roller Coasters/Blue Fire/04.jpg',
+    '/Parks/Europa Park/Roller Coasters/Blue Fire/05.jpg',
+    '/Parks/Europa Park/Roller Coasters/Blue Fire/06.jpg'
+  ],
+  'silver-star': [
+    '/Parks/Europa Park/Roller Coasters/Silver Star/02.jpg',
+    '/Parks/Europa Park/Roller Coasters/Silver Star/03.jpg',
+    '/Parks/Europa Park/Roller Coasters/Silver Star/04.jpg',
+    '/Parks/Europa Park/Roller Coasters/Silver Star/05.jpg',
+    '/Parks/Europa Park/Roller Coasters/Silver Star/main.jpg'
+  ],
+  'matterhorn-blitz': [
+    '/Parks/Europa Park/Roller Coasters/Matterhorn Blitz/03.jpg',
+    '/Parks/Europa Park/Roller Coasters/Matterhorn Blitz/04.jpg'
+  ],
+  'pegasus': [
+    '/Parks/Europa Park/Roller Coasters/Pegasus/02.jpg'
+  ],
+  'tiroler-wildwasserbahn': [
+    '/Parks/Europa Park/Water Rides/Tiroler Wildwasserbahn/02.jpg',
+    '/Parks/Europa Park/Water Rides/Tiroler Wildwasserbahn/03.jpg',
+    '/Parks/Europa Park/Water Rides/Tiroler Wildwasserbahn/04.jpg',
+    '/Parks/Europa Park/Water Rides/Tiroler Wildwasserbahn/05.jpg',
+    '/Parks/Europa Park/Water Rides/Tiroler Wildwasserbahn/06.jpg',
+    '/Parks/Europa Park/Water Rides/Tiroler Wildwasserbahn/07.jpg'
+  ],
+  'fjord-rafting': [
+    '/Parks/Europa Park/Water Rides/Fjord Rafting/02.jpg',
+    '/Parks/Europa Park/Water Rides/Fjord Rafting/03.jpg',
+    '/Parks/Europa Park/Water Rides/Fjord Rafting/04.jpg'
+  ],
+  'dschungel-flossfahrt': [
+    '/Parks/Europa Park/Dark Rides/Dschungel-Floßfahrt/01.jpg',
+    '/Parks/Europa Park/Dark Rides/Dschungel-Floßfahrt/02.jpg',
+    '/Parks/Europa Park/Dark Rides/Dschungel-Floßfahrt/03.jpg',
+    '/Parks/Europa Park/Dark Rides/Dschungel-Floßfahrt/04.jpg',
+    '/Parks/Europa Park/Dark Rides/Dschungel-Floßfahrt/05.jpg',
+    '/Parks/Europa Park/Dark Rides/Dschungel-Floßfahrt/06.jpg',
+    '/Parks/Europa Park/Dark Rides/Dschungel-Floßfahrt/main.jpg'
+  ],
+  'poseidon': [
+    '/Parks/Europa Park/Roller Coasters/Poseidon/01.jpg',
+    '/Parks/Europa Park/Roller Coasters/Poseidon/02.jpg',
+    '/Parks/Europa Park/Roller Coasters/Poseidon/03.jpg',
+    '/Parks/Europa Park/Roller Coasters/Poseidon/05.jpg'
+  ],
+  'eurosat': [
+    '/Parks/Europa Park/Roller Coasters/Eurosat/01.jpg',
+    '/Parks/Europa Park/Roller Coasters/Eurosat/02.jpg',
+    '/Parks/Europa Park/Roller Coasters/Eurosat/03.jpg',
+    '/Parks/Europa Park/Roller Coasters/Eurosat/04.jpg'
+  ],
+  'vindjammer': [
+    '/Parks/Europa Park/Flat Rides/Vindjammer/01.jpg',
+    '/Parks/Europa Park/Flat Rides/Vindjammer/02.jpg',
+    '/Parks/Europa Park/Flat Rides/Vindjammer/03.jpg'
+  ],
+  'kronasar': [
+    '/Parks/Europa Park/Hotels/Kronasar/01.jpg'
+  ],
+  'monorail-bahn': [
+    '/Parks/Europa Park/Transport/Monorail Bahn/01.jpg',
+    '/Parks/Europa Park/Transport/Monorail Bahn/02.jpg',
+    '/Parks/Europa Park/Transport/Monorail Bahn/main.jpg'
+  ],
+  'atlantica-super-splash': [
+    '/Parks/Europa Park/Roller Coasters/Atlantica Super Splash/01.jpg',
+    '/Parks/Europa Park/Roller Coasters/Atlantica Super Splash/03.jpg',
+    '/Parks/Europa Park/Roller Coasters/Atlantica Super Splash/main.jpg'
+  ],
+  'bobsleigh': [
+    '/Parks/Europa Park/Roller Coasters/Bobsleigh/main.jpg'
+  ],
+  'alpenexpress': [
+    '/Parks/Europa Park/Roller Coasters/AlpenExpress/02.jpg',
+    '/Parks/Europa Park/Roller Coasters/AlpenExpress/03.jpg'
+  ],
+  'arthur': [
+    '/Parks/Europa Park/Roller Coasters/Arthur/02.jpg',
+    '/Parks/Europa Park/Roller Coasters/Arthur/03.jpg'
+  ],
+  'eurosat': [
+    '/Parks/Europa Park/Roller Coasters/Eurosat/01.jpg',
+    '/Parks/Europa Park/Roller Coasters/Eurosat/02.jpg',
+    '/Parks/Europa Park/Roller Coasters/Eurosat/03.jpg',
+    '/Parks/Europa Park/Roller Coasters/Eurosat/04.jpg'
+  ],
+  'poseidon': [
+    '/Parks/Europa Park/Roller Coasters/Poseidon/01.jpg',
+    '/Parks/Europa Park/Roller Coasters/Poseidon/02.jpg',
+    '/Parks/Europa Park/Roller Coasters/Poseidon/03.jpg',
+    '/Parks/Europa Park/Roller Coasters/Poseidon/05.jpg'
   ]
-}
 
 const mockItemVideos = {
   'space-mountain': [
@@ -368,8 +728,61 @@ const mockItemVideos = {
   ],
   'euromir': [
     'https://www.youtube.com/embed/watch?v=dQw4w9WgXcQ'
+  ],
+  'blue-fire': [
+    'https://www.youtube.com/embed/watch?v=dQw4w9WgXcQ'
+  ],
+  'silver-star': [
+    'https://www.youtube.com/embed/watch?v=dQw4w9WgXcQ'
+  ],
+  'matterhorn-blitz': [
+    'https://www.youtube.com/embed/watch?v=dQw4w9WgXcQ'
+  ],
+  'pegasus': [
+    'https://www.youtube.com/embed/watch?v=dQw4w9WgXcQ'
+  ],
+  'tiroler-wildwasserbahn': [
+    'https://www.youtube.com/embed/watch?v=dQw4w9WgXcQ'
+  ],
+  'fjord-rafting': [
+    'https://www.youtube.com/embed/watch?v=dQw4w9WgXcQ'
+  ],
+  'dschungel-flossfahrt': [
+    'https://www.youtube.com/embed/watch?v=dQw4w9WgXcQ'
+  ],
+  'poseidon': [
+    'https://www.youtube.com/embed/watch?v=dQw4w9WgXcQ'
+  ],
+  'eurosat': [
+    'https://www.youtube.com/embed/watch?v=dQw4w9WgXcQ'
+  ],
+  'vindjammer': [
+    'https://www.youtube.com/embed/watch?v=dQw4w9WgXcQ'
+  ],
+  'kronasar': [
+    'https://www.youtube.com/embed/watch?v=dQw4w9WgXcQ'
+  ],
+  'monorail-bahn': [
+    'https://www.youtube.com/embed/watch?v=dQw4w9WgXcQ'
+  ],
+  'atlantica-super-splash': [
+    'https://www.youtube.com/embed/watch?v=dQw4w9WgXcQ'
+  ],
+  'bobsleigh': [
+    'https://www.youtube.com/embed/watch?v=dQw4w9WgXcQ'
+  ],
+  'alpenexpress': [
+    'https://www.youtube.com/embed/watch?v=dQw4w9WgXcQ'
+  ],
+  'arthur': [
+    'https://www.youtube.com/embed/watch?v=dQw4w9WgXcQ'
+  ],
+  'eurosat': [
+    'https://www.youtube.com/embed/watch?v=dQw4w9WgXcQ'
+  ],
+  'poseidon': [
+    'https://www.youtube.com/embed/watch?v=dQw4w9WgXcQ'
   ]
-}
 
 interface ItemPageProps {
   params: Promise<{

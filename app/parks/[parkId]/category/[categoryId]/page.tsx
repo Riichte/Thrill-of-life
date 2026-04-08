@@ -277,6 +277,56 @@ const mockItems = {
   ]
 }
 
+/**
+ * Hero / “main” image per Europa attraction: prefers Main.jpg / main.jpg where used in the repo,
+ * otherwise the primary gallery image for that ride.
+ */
+const EUROPA_ITEM_MAIN_IMAGE: Record<string, string> = {
+  wodan: '/Parks/Europa Park/Roller Coasters/Wodan/Main.jpg',
+  euromir: '/Parks/Europa Park/Roller Coasters/Euromir/Main.jpg',
+  'blue-fire': '/Parks/Europa Park/Roller Coasters/Blue Fire/Main.jpg',
+  'silver-star': '/Parks/Europa Park/Roller Coasters/Silver Star/main.jpg',
+  'matterhorn-blitz': '/Parks/Europa Park/Roller Coasters/Matterhorn Blitz/Main.jpg',
+  pegasus: '/Parks/Europa Park/Roller Coasters/Pegasus/Main.jpg',
+  poseidon: '/Parks/Europa Park/Roller Coasters/Poseidon/Main.jpg',
+  eurosat: '/Parks/Europa Park/Roller Coasters/Eurosat/Main.jpg',
+  'atlantica-super-splash': '/Parks/Europa Park/Roller Coasters/Atlantica Super Splash/main.jpg',
+  bobsleigh: '/Parks/Europa Park/Roller Coasters/Bobsleigh/main.jpg',
+  alpenexpress: '/Parks/Europa Park/Roller Coasters/AlpenExpress/Main.jpg',
+  arthur: '/Parks/Europa Park/Roller Coasters/Arthur/Main.jpg',
+  'tiroler-wildwasserbahn': '/Parks/Europa Park/Water Rides/Tiroler Wildwasserbahn/Main.jpg',
+  'fjord-rafting': '/Parks/Europa Park/Water Rides/Fjord Rafting/Main.jpg',
+  'dschungel-flossfahrt': '/Parks/Europa Park/Dark Rides/Dschungel-Floßfahrt/main.jpg',
+  vindjammer: '/Parks/Europa Park/Flat Rides/Vindjammer/Main.jpg',
+  kronasar: '/Parks/Europa Park/Hotels/Kronasar/Main.jpg',
+  'monorail-bahn': '/Parks/Europa Park/Transport/Monorail Bahn/main.jpg'
+}
+
+/** First / main image for non-Europa items (aligned with detail page galleries). */
+const ITEM_MAIN_THUMB: Partial<Record<string, string>> = {
+  'space-mountain': 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&h=600&fit=crop&crop=center',
+  'ratatouille-restaurant': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=600&fit=crop&crop=center',
+  'disney-stars-on-parade': 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=600&h=600&fit=crop&crop=center',
+  'harry-potter-ride': 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&h=600&fit=crop&crop=center',
+  'hogwarts-express': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=600&fit=crop&crop=center',
+  'goliath-ride': 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&h=600&fit=crop&crop=center',
+  'revolution-ride': 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=600&h=600&fit=crop&crop=center',
+  'magic-mountain-grill': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=600&fit=crop&crop=center',
+  'smiler-ride': 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&h=600&fit=crop&crop=center',
+  'nemesis-ride': 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=600&h=600&fit=crop&crop=center',
+  'alton-towers-hotel': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=600&fit=crop&crop=center',
+  'shambhala-ride': 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&h=600&fit=crop&crop=center',
+  'furius-baco-ride': 'https://images.unsplash.com/photo-1551632436-cbf8dd35adfa?w=600&h=600&fit=crop&crop=center',
+  'ferrari-land': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=600&fit=crop&crop=center'
+}
+
+function categoryItemThumbnail(parkId: string, itemId: string, coverFallback: string): string {
+  if (parkId === 'europa-park') {
+    return EUROPA_ITEM_MAIN_IMAGE[itemId] ?? coverFallback
+  }
+  return ITEM_MAIN_THUMB[itemId] ?? coverFallback
+}
+
 export default async function CategoryPage({
   params
 }: {
@@ -312,19 +362,41 @@ export default async function CategoryPage({
 
       <div className="container mx-auto px-4 py-12">
         {categoryItems.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {categoryItems.map(item => (
-              <Link key={item.id} href={`/parks/${park.id}/${item.id}`}>
-                <div className="bg-gray-800 p-6 rounded-lg hover:bg-gray-700 transition-colors h-full">
-                  <h2 className="text-2xl font-semibold mb-3">{item.name}</h2>
-                  <p className="text-gray-300 mb-4">{item.description}</p>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-blue-400">{item.location_in_park}</span>
-                    <span className="text-gray-500">→</span>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {categoryItems.map((item) => {
+              const thumb = categoryItemThumbnail(parkId, item.id, park.cover_image_url)
+              return (
+                <Link
+                  key={item.id}
+                  href={`/parks/${park.id}/${item.id}`}
+                  className="group block outline-none focus-visible:ring-2 focus-visible:ring-[#66c0f4] focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
+                >
+                  <div className="flex h-full flex-col overflow-hidden rounded-2xl bg-gray-800 shadow-lg ring-1 ring-white/10 transition hover:bg-[#2a3340] hover:ring-white/20">
+                    <div className="aspect-square w-full shrink-0 overflow-hidden bg-[#0e1621]">
+                      <img
+                        src={thumb}
+                        alt={item.name}
+                        className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
+                      />
+                    </div>
+                    <div className="flex flex-1 flex-col p-4">
+                      <h2 className="line-clamp-2 text-lg font-semibold leading-snug text-white">
+                        {item.name}
+                      </h2>
+                      <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-gray-400">
+                        {item.description}
+                      </p>
+                      <div className="mt-auto flex items-center justify-between gap-2 border-t border-white/10 pt-3 text-sm">
+                        <span className="min-w-0 truncate text-[#66c0f4]">{item.location_in_park}</span>
+                        <span className="shrink-0 text-gray-500" aria-hidden>
+                          →
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              )
+            })}
           </div>
         ) : (
           <div className="text-center py-16">

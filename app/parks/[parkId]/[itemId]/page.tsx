@@ -37,7 +37,7 @@ const mockParks = [
   {
     id: 'europa-park',
     name: 'Europa Park',
-    logo_url: '/Parks/Europa Park/logo.png'
+    logo_url: '/parks/europa park/logo.png'
   }
 ]
 

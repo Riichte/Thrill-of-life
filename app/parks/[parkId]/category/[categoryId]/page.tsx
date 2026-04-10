@@ -282,24 +282,24 @@ const mockItems = {
  * otherwise the primary gallery image for that ride.
  */
 const EUROPA_ITEM_MAIN_IMAGE: Record<string, string> = {
-  'wodan': '/Parks/Europa Park/Roller Coasters/Wodan/main.jpg',
-  'euromir': '/Parks/Europa Park/Roller Coasters/Euromir/main.jpg',
-  'blue-fire': '/Parks/Europa Park/Roller Coasters/Blue Fire/main.jpg',
-  'silver-star': '/Parks/Europa Park/Roller Coasters/Silver Star/main.jpg',
-  'matterhorn-blitz': '/Parks/Europa Park/Roller Coasters/Matterhorn Blitz/main.jpg',
-  'pegasus': '/Parks/Europa Park/Roller Coasters/Pegasus/main.jpg',
-  'poseidon': '/Parks/Europa Park/Roller Coasters/Poseidon/main.jpg',
-  'eurosat': '/Parks/Europa Park/Roller Coasters/Eurosat/main.jpg',
-  'atlantica-super-splash': '/Parks/Europa Park/Roller Coasters/Atlantica Super Splash/main.jpg',
-  'bobsleigh': '/Parks/Europa Park/Roller Coasters/Bobsleigh/main.jpg',
-  'alpenexpress': '/Parks/Europa Park/Roller Coasters/AlpenExpress/main.jpg',
-  'arthur': '/Parks/Europa Park/Roller Coasters/Arthur/main.jpg',
-  'tiroler-wildwasserbahn': '/Parks/Europa Park/Water Rides/Tiroler Wildwasserbahn/main.jpg',
-  'fjord-rafting': '/Parks/Europa Park/Water Rides/Fjord Rafting/main.jpg',
-  'dschungel-flossfahrt': '/Parks/Europa Park/Dark Rides/Dschungel-Floßfahrt/main.jpg',
-  'vindjammer': '/Parks/Europa Park/Flat Rides/Vindjammer/main.jpg',
-  'kronasar': '/Parks/Europa Park/Hotels/Kronasar/main.jpg',
-  'monorail-bahn': '/Parks/Europa Park/Transport/Monorail Bahn/main.jpg'
+  'wodan': '/parks/europa park/roller coasters/wodan/main.jpg',
+  'euromir': '/parks/europa park/roller coasters/euromir/main.jpg',
+  'blue-fire': '/parks/europa park/roller coasters/blue fire/main.jpg',
+  'silver-star': '/parks/europa park/roller coasters/silver star/main.jpg',
+  'matterhorn-blitz': '/parks/europa park/roller coasters/matterhorn blitz/main.jpg',
+  'pegasus': '/parks/europa park/roller coasters/pegasus/main.jpg',
+  'poseidon': '/parks/europa park/roller coasters/poseidon/main.jpg',
+  'eurosat': '/parks/europa park/roller coasters/eurosat/main.jpg',
+  'atlantica-super-splash': '/parks/europa park/roller coasters/atlantica super splash/main.jpg',
+  'bobsleigh': '/parks/europa park/roller coasters/bobsleigh/main.jpg',
+  'alpenexpress': '/parks/europa park/roller coasters/alpenexpress/main.jpg',
+  'arthur': '/parks/europa park/roller coasters/arthur/main.jpg',
+  'tiroler-wildwasserbahn': '/parks/europa park/water rides/tiroler wildwasserbahn/main.jpg',
+  'fjord-rafting': '/parks/europa park/water rides/fjord rafting/main.jpg',
+  'dschungel-flossfahrt': '/parks/europa park/dark rides/dschungel-flossfahrt/main.jpg',
+  'vindjammer': '/parks/europa park/flat rides/vindjammer/main.jpg',
+  'kronasar': '/parks/europa park/hotels/kronasar/main.jpg',
+  'monorail-bahn': '/parks/europa park/transport/monorail bahn/main.jpg'
 }
 
 /** First / main image for non-Europa items (aligned with detail page galleries). */

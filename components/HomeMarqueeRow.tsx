@@ -74,12 +74,15 @@ export function HomeMarqueeRow({
       </div>
 
       <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-[#0e1621]/90 shadow-xl">
-        <div className="flex w-full gap-4 px-4 py-5">
+        <div
+          className="flex w-full gap-4 px-4 py-5 justify-center transition-transform"
+          style={{ transform: `translateX(-${(currentPage - 1) * (1 / visibleItemsCount) * 100}%)` }}
+        >
           {items.slice(startIndex, endIndex).map((item, i) => (
             <Link
               key={`${item.id}-${i}`}
               href={item.href}
-              className="w-[260px] overflow-hidden rounded-xl bg-gray-800/90 ring-1 ring-white/10 transition hover:bg-gray-800 hover:ring-[#66c0f4]/40 sm:w-[260px]"
+              className="flex-1 overflow-hidden rounded-xl bg-gray-800/90 ring-1 ring-white/10 transition hover:bg-gray-800 hover:ring-[#66c0f4]/40"
             >
               <div className="aspect-[4/3] overflow-hidden bg-black/80">
                 <img

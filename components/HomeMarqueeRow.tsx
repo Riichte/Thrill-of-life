@@ -1,5 +1,8 @@
+'use client'
+
 import Link from 'next/link'
 import type { HomeMarqueeCard } from '@/lib/homeCarouselData'
+import { useState, useEffect } from 'react'
 
 type HomeMarqueeRowProps = {
   title: string
@@ -21,7 +24,39 @@ export function HomeMarqueeRow({
 }: HomeMarqueeRowProps) {
   if (items.length === 0) return null
 
-  const track = [...items, ...items]
+  const visibleItemsCount = 5
+  const totalItems = items.length
+  const totalPages = Math.ceil(totalItems / visibleItemsCount)
+  const [currentPage, setCurrentPage] = useState(1)
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null
+
+    if (totalPages > 1) {
+      interval = setInterval(() => {
+        setCurrentPage((prevPage) => (prevPage === totalPages ? 1 : prevPage + 1))
+      }, 5000)
+    }
+
+    return () => {
+      clearInterval(interval || undefined)
+    }
+  }, [currentPage, totalPages])
+
+  const handlePrevClick = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prevPage) => prevPage - 1)
+    }
+  }
+
+  const handleNextClick = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage((prevPage) => prevPage + 1)
+    }
+  }
+
+  const startIndex = (currentPage - 1) * visibleItemsCount
+  const endIndex = Math.min(startIndex + visibleItemsCount, totalItems)
 
   return (
     <section className="mb-16">
@@ -38,16 +73,13 @@ export function HomeMarqueeRow({
         </Link>
       </div>
 
-      <div className="group/marquee relative overflow-hidden rounded-2xl border border-white/10 bg-[#0e1621]/90 shadow-xl">
-        <div
-          className="home-marquee-track flex w-max gap-4 px-4 py-5 group-hover/marquee:[animation-play-state:paused] md:gap-5 md:px-5 md:py-6"
-          style={{ animationDuration: `${durationSec}s` }}
-        >
-          {track.map((item, i) => (
+      <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-[#0e1621]/90 shadow-xl">
+        <div className="flex w-full gap-4 px-4 py-5">
+          {items.slice(startIndex, endIndex).map((item, i) => (
             <Link
               key={`${item.id}-${i}`}
               href={item.href}
-              className="group/card w-[220px] shrink-0 overflow-hidden rounded-xl bg-gray-800/90 ring-1 ring-white/10 transition hover:bg-gray-800 hover:ring-[#66c0f4]/40 sm:w-[260px]"
+              className="w-[260px] overflow-hidden rounded-xl bg-gray-800/90 ring-1 ring-white/10 transition hover:bg-gray-800 hover:ring-[#66c0f4]/40 sm:w-[260px]"
             >
               <div className="aspect-[4/3] overflow-hidden bg-black/80">
                 <img
@@ -65,7 +97,25 @@ export function HomeMarqueeRow({
             </Link>
           ))}
         </div>
+
+        <div className="flex justify-center gap-3 py-2">
+          <button
+            onClick={handlePrevClick}
+            disabled={currentPage === 1}
+            className="shrink-0 text-sm font-medium text-gray-400 hover:text-[#66c0f4]"
+          >
+            Previous
+          </button>
+          <button
+            onClick={handleNextClick}
+            disabled={currentPage === totalPages}
+            className="shrink-0 text-sm font-medium text-gray-400 hover:text-[#66c0f4]"
+          >
+            Next
+          </button>
+        </div>
       </div>
     </section>
   )
 }
+

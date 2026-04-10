@@ -15,35 +15,35 @@ export const homeParkCards: HomeMarqueeCard[] = [
   {
     id: 'alton-towers',
     href: '/parks/alton-towers',
-    image: '/Parks/Alton Towers/main.jpg',
+    image: '/parks/Alton Towers/main.jpg',
     title: 'Alton Towers',
     subtitle: 'United Kingdom'
   },
   {
     id: 'bellewaerde',
     href: '/parks/bellewaerde',
-    image: '/Parks/Bellewaerde/main.jpg',
+    image: '/parks/Bellewaerde/main.jpg',
     title: 'Bellewaerde',
     subtitle: 'Belgium'
   },
   {
     id: 'blackpool-pleasure-beach',
     href: '/parks/blackpool-pleasure-beach',
-    image: '/Parks/Blackpool Pleasure Beach/main.jpg',
+    image: '/parks/Blackpool Pleasure Beach/main.jpg',
     title: 'Blackpool Pleasure Beach',
     subtitle: 'United Kingdom'
   },
   {
     id: 'bobbejaanland',
     href: '/parks/bobbejaanland',
-    image: '/Parks/Bobbejaanland/main.jpg',
+    image: '/parks/Bobbejaanland/main.jpg',
     title: 'Bobbejaanland',
     subtitle: 'Belgium'
   },
   {
     id: 'disneyland-paris',
     href: '/parks/disneyland-paris',
-    image: '/Parks/Disneyland Paris/main.jpg',
+    image: '/parks/Disneyland Paris/main.jpg',
     title: 'Disneyland Paris',
     subtitle: 'France'
   },
@@ -57,7 +57,7 @@ export const homeParkCards: HomeMarqueeCard[] = [
   {
     id: 'six-flags-great-escape',
     href: '/parks/six-flags-great-escape',
-    image: '/Parks/Six Flags Great Escape/main.jpg',
+    image: '/parks/Six Flags Great Escape/main.jpg',
     title: 'Six Flags Great Escape',
     subtitle: 'United States'
   }

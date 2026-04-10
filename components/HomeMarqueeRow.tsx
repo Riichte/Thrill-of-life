@@ -18,8 +18,7 @@ const RightChevronIcon = () => (
 const HomeMarqueeRow = () => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const timeoutRef = useRef(null)
-
-  const itemsPerSlide = 5
+  const itemsPerSlide = 3
   const autoAdvanceInterval = 5000
 
   const handleNext = () => {
@@ -38,12 +37,16 @@ const HomeMarqueeRow = () => {
     timeoutRef.current = setTimeout(() => {
       handleNext()
     }, autoAdvanceInterval)
-
     return () => clearTimeout(timeoutRef.current)
   }, [currentIndex])
 
   const items = [
-    // Your list of items here
+    { id: 1, name: 'Item 1' },
+    { id: 2, name: 'Item 2' },
+    { id: 3, name: 'Item 3' },
+    { id: 4, name: 'Item 4' },
+    { id: 5, name: 'Item 5' },
+    { id: 6, name: 'Item 6' }
   ]
 
   const startIndex = currentIndex * itemsPerSlide
@@ -64,7 +67,6 @@ const HomeMarqueeRow = () => {
       >
         <RightChevronIcon />
       </button>
-
       {/* Carousel container */}
       <div
         className="flex justify-center space-x-4 transition-transform duration-500"
@@ -81,3 +83,4 @@ const HomeMarqueeRow = () => {
 }
 
 export default HomeMarqueeRow
+

@@ -276,7 +276,7 @@ const mockItems = {
     {
       id: 'silver-star',
       category_id: 'roller-coasters',
-      name: 'Silver Star',
+      name: 'silver-star',
       description: 'A towering hypercoaster with breathtaking views and heart-pounding drops from its impressive height.',
       location_in_park: 'Europa Park',
       specs: {
@@ -291,7 +291,7 @@ const mockItems = {
     {
       id: 'matterhorn-blitz',
       category_id: 'roller-coasters',
-      name: 'Matterhorn Blitz',
+      name: 'matterhorn-blitz',
       description: 'A wild bobsled coaster that twists and turns through alpine scenery with sudden drops and sharp curves.',
       location_in_park: 'Europa Park',
       specs: {
@@ -437,7 +437,7 @@ const mockItems = {
     {
       id: 'atlantica-super-splash',
       category_id: 'roller-coasters',
-      name: 'Atlantica Super Splash',
+      name: 'atlantica-super-splash',
       description: 'A thrilling water coaster with high-speed drops and splash landings.',
       location_in_park: 'Europa Park',
       specs: {
@@ -577,22 +577,22 @@ const mockItemImages = {
     '/parks/europa-park/roller-coasters/blue-fire/07.jpg'
   ],
   'silver-star': [
-    '/parks/europa-park/roller-coasters/silver star/01.jpg',
-    '/parks/europa-park/roller-coasters/silver star/02.jpg',
-    '/parks/europa-park/roller-coasters/silver star/03.jpg',
-    '/parks/europa-park/roller-coasters/silver star/04.jpg',
-    '/parks/europa-park/roller-coasters/silver star/05.jpg',
-    '/parks/europa-park/roller-coasters/silver star/06.jpg',
-    '/parks/europa-park/roller-coasters/silver star/07.jpg',
+    '/parks/europa-park/roller-coasters/silver-star/01.jpg',
+    '/parks/europa-park/roller-coasters/silver-star/02.jpg',
+    '/parks/europa-park/roller-coasters/silver-star/03.jpg',
+    '/parks/europa-park/roller-coasters/silver-star/04.jpg',
+    '/parks/europa-park/roller-coasters/silver-star/05.jpg',
+    '/parks/europa-park/roller-coasters/silver-star/06.jpg',
+    '/parks/europa-park/roller-coasters/silver-star/07.jpg',
   ],
   'matterhorn-blitz': [
-    '/parks/europa-park/roller-coasters/matterhorn blitz/01.jpg',
-    '/parks/europa-park/roller-coasters/matterhorn blitz/02.jpg',
-    '/parks/europa-park/roller-coasters/matterhorn blitz/03.jpg',
-    '/parks/europa-park/roller-coasters/matterhorn blitz/04.jpg',
-    '/parks/europa-park/roller-coasters/matterhorn blitz/05.jpg',
-    '/parks/europa-park/roller-coasters/matterhorn blitz/06.jpg',
-    '/parks/europa-park/roller-coasters/matterhorn blitz/07.jpg'
+    '/parks/europa-park/roller-coasters/matterhorn-blitz/01.jpg',
+    '/parks/europa-park/roller-coasters/matterhorn-blitz/02.jpg',
+    '/parks/europa-park/roller-coasters/matterhorn-blitz/03.jpg',
+    '/parks/europa-park/roller-coasters/matterhorn-blitz/04.jpg',
+    '/parks/europa-park/roller-coasters/matterhorn-blitz/05.jpg',
+    '/parks/europa-park/roller-coasters/matterhorn-blitz/06.jpg',
+    '/parks/europa-park/roller-coasters/matterhorn-blitz/07.jpg'
   ],
   'pegasus': [
     '/parks/europa-park/roller-coasters/pegasus/01.jpg',
@@ -676,13 +676,13 @@ const mockItemImages = {
     '/parks/europa-park/Transport/monorail bahn/07.jpg'
   ],
   'atlantica-super-splash': [
-    '/parks/europa-park/roller-coasters/atlantica super splash/01.jpg',
-    '/parks/europa-park/roller-coasters/atlantica super splash/02.jpg',
-    '/parks/europa-park/roller-coasters/atlantica super splash/03.jpg',
-    '/parks/europa-park/roller-coasters/atlantica super splash/04.jpg',
-    '/parks/europa-park/roller-coasters/atlantica super splash/05.jpg',
-    '/parks/europa-park/roller-coasters/atlantica super splash/06.jpg',
-    '/parks/europa-park/roller-coasters/atlantica super splash/07.jpg'
+    '/parks/europa-park/roller-coasters/atlantica-super-splash/01.jpg',
+    '/parks/europa-park/roller-coasters/atlantica-super-splash/02.jpg',
+    '/parks/europa-park/roller-coasters/atlantica-super-splash/03.jpg',
+    '/parks/europa-park/roller-coasters/atlantica-super-splash/04.jpg',
+    '/parks/europa-park/roller-coasters/atlantica-super-splash/05.jpg',
+    '/parks/europa-park/roller-coasters/atlantica-super-splash/06.jpg',
+    '/parks/europa-park/roller-coasters/atlantica-super-splash/07.jpg'
   ],
   'bobsleigh': [
     '/parks/europa-park/roller-coasters/bobsleigh/01.jpg',

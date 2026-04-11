@@ -69,12 +69,12 @@ export const homeRollerCoasterCards: HomeMarqueeCard[] = [
   { id: 'wodan', href: `${EP}/wodan`, image: epImg('roller-coasters/wodan/main.jpg'), title: 'Wodan', subtitle: 'Europa Park' },
   { id: 'euromir', href: `${EP}/euromir`, image: epImg('roller-coasters/euromir/main.jpg'), title: 'Euromir', subtitle: 'Europa Park' },
   { id: 'blue-fire', href: `${EP}/blue-fire`, image: epImg('roller-coasters/blue-fire/main.jpg'), title: 'Blue Fire', subtitle: 'Europa Park' },
-  { id: 'silver-star', href: `${EP}/silver-star`, image: epImg('roller-coasters/silver star/main.jpg'), title: 'Silver Star', subtitle: 'Europa Park' },
-  { id: 'matterhorn-blitz', href: `${EP}/matterhorn-blitz`, image: epImg('roller-coasters/matterhorn blitz/main.jpg'), title: 'Matterhorn Blitz', subtitle: 'Europa Park' },
+  { id: 'silver-star', href: `${EP}/silver-star`, image: epImg('roller-coasters/silver-star/main.jpg'), title: 'silver-star', subtitle: 'Europa Park' },
+  { id: 'matterhorn-blitz', href: `${EP}/matterhorn-blitz`, image: epImg('roller-coasters/matterhorn-blitz/main.jpg'), title: 'matterhorn-blitz', subtitle: 'Europa Park' },
   { id: 'pegasus', href: `${EP}/pegasus`, image: epImg('roller-coasters/pegasus/main.jpg'), title: 'Pegasus', subtitle: 'Europa Park' },
   { id: 'poseidon', href: `${EP}/poseidon`, image: epImg('roller-coasters/poseidon/main.jpg'), title: 'Poseidon', subtitle: 'Europa Park' },
   { id: 'eurosat', href: `${EP}/eurosat`, image: epImg('roller-coasters/eurosat/main.jpg'), title: 'Eurosat', subtitle: 'Europa Park' },
-  { id: 'atlantica-super-splash', href: `${EP}/atlantica-super-splash`, image: epImg('roller-coasters/atlantica super splash/main.jpg'), title: 'Atlantica Super Splash', subtitle: 'Europa Park' },
+  { id: 'atlantica-super-splash', href: `${EP}/atlantica-super-splash`, image: epImg('roller-coasters/atlantica-super-splash/main.jpg'), title: 'atlantica-super-splash', subtitle: 'Europa Park' },
   { id: 'bobsleigh', href: `${EP}/bobsleigh`, image: epImg('roller-coasters/bobsleigh/main.jpg'), title: 'Bobsleigh', subtitle: 'Europa Park' },
   { id: 'alpenexpress', href: `${EP}/alpenexpress`, image: epImg('roller-coasters/alpenexpress/main.jpg'), title: 'Alpenexpress', subtitle: 'Europa Park' },
   { id: 'arthur', href: `${EP}/arthur`, image: epImg('roller-coasters/arthur/main.jpg'), title: 'Arthur', subtitle: 'Europa Park' }
@@ -84,14 +84,14 @@ export const homeWaterRideCards: HomeMarqueeCard[] = [
   {
     id: 'tiroler-wildwasserbahn',
     href: `${EP}/tiroler-wildwasserbahn`,
-    image: epImg('water-rides/tiroler wildwasserbahn/main.jpg'),
+    image: epImg('water-rides/tiroler-wildwasserbahn/main.jpg'),
     title: 'Tiroler Wildwasserbahn',
     subtitle: 'Europa Park'
   },
   {
     id: 'fjord-rafting',
     href: `${EP}/fjord-rafting`,
-    image: epImg('water-rides/fjord rafting/main.jpg'),
+    image: epImg('water-rides/fjord-rafting/main.jpg'),
     title: 'Fjord Rafting',
     subtitle: 'Europa Park'
   }
@@ -122,7 +122,7 @@ export const homeMoreHighlightCards: HomeMarqueeCard[] = [
   {
     id: 'monorail-bahn',
     href: `${EP}/monorail-bahn`,
-    image: epImg('transport/monorail bahn/main.jpg'),
+    image: epImg('transport/monorail-bahn/main.jpg'),
     title: 'Monorail Bahn',
     subtitle: 'Transport · Europa Park'
   }

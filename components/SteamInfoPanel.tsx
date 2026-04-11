@@ -20,6 +20,7 @@ type SteamInfoPanelProps = {
   /** Large score number (0–100) shown in the sidebar */
   score?: number
   scoreLabel?: string
+  ratingBreakdown?: { positive: number; mixed: number; negative: number }
   metadata?: SteamMetaRow[]
   tags?: string[]
   /** Extra block (e.g. quick facts) */
@@ -37,6 +38,7 @@ export function SteamInfoPanel({
   description,
   score,
   scoreLabel = 'Overall score',
+  ratingBreakdown,
   metadata = [],
   tags = [],
   children,
@@ -92,6 +94,29 @@ export function SteamInfoPanel({
             </div>
           </div>
         )}
+        {ratingBreakdown && (
+          <div className="mt-3 space-y-1.5">
+            <div className="flex items-center gap-2">
+              <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#2a475e]">
+                <div className="h-full bg-green-500 rounded-full" style={{ width: `${ratingBreakdown.positive}%` }} />
+              </div>
+              <span className="text-xs text-green-400 w-8 text-right">{ratingBreakdown.positive}%</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#2a475e]">
+                <div className="h-full bg-yellow-500 rounded-full" style={{ width: `${ratingBreakdown.mixed}%` }} />
+              </div>
+              <span className="text-xs text-yellow-400 w-8 text-right">{ratingBreakdown.mixed}%</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#2a475e]">
+                <div className="h-full bg-red-500 rounded-full" style={{ width: `${ratingBreakdown.negative}%` }} />
+              </div>
+              <span className="text-xs text-red-400 w-8 text-right">{ratingBreakdown.negative}%</span>
+            </div>
+          </div>
+        )}
+
 
         {metadata.length > 0 && (
           <dl className="space-y-2.5 text-sm">

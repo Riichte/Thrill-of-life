@@ -75,6 +75,7 @@ function ItemPageContent({ park, item, category, images, videos }: {
               description={item.description}
               score={overallScore}
               scoreLabel="Overall score"
+              ratingBreakdown={ratingBreakdown}
               metadata={[
                 {
                   label: 'Recent reviews',
@@ -125,31 +126,7 @@ function ItemPageContent({ park, item, category, images, videos }: {
                   </div>
                 </div>
               )}
-              <div className="border-t border-[#2a475e] pt-4">
-                <h3 className="mb-3 text-xs font-medium uppercase tracking-wider text-[#8f98a0]">
-                  Recent Reviews
-                </h3>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#2a475e]">
-                      <div className="h-full bg-green-500 rounded-full" style={{ width: `${ratingBreakdown.positive}%` }} />
-                    </div>
-                    <span className="text-xs text-green-400 w-8 text-right">{ratingBreakdown.positive}%</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#2a475e]">
-                      <div className="h-full bg-yellow-500 rounded-full" style={{ width: `${ratingBreakdown.mixed}%` }} />
-                    </div>
-                    <span className="text-xs text-yellow-400 w-8 text-right">{ratingBreakdown.mixed}%</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#2a475e]">
-                      <div className="h-full bg-red-500 rounded-full" style={{ width: `${ratingBreakdown.negative}%` }} />
-                    </div>
-                    <span className="text-xs text-red-400 w-8 text-right">{ratingBreakdown.negative}%</span>
-                  </div>
-                </div>
-              </div>
+              
             </SteamInfoPanel>
           </div>
         </div>

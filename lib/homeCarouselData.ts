@@ -15,83 +15,83 @@ export const homeParkCards: HomeMarqueeCard[] = [
   {
     id: 'alton-towers',
     href: '/parks/alton-towers',
-    image: '/parks/Alton Towers/main.jpg',
+    image: '/parks/alton-towers/main.jpg',
     title: 'Alton Towers',
     subtitle: 'United Kingdom'
   },
   {
     id: 'bellewaerde',
     href: '/parks/bellewaerde',
-    image: '/parks/Bellewaerde/main.jpg',
+    image: '/parks/bellewaerde/main.jpg',
     title: 'Bellewaerde',
     subtitle: 'Belgium'
   },
   {
     id: 'blackpool-pleasure-beach',
     href: '/parks/blackpool-pleasure-beach',
-    image: '/parks/Blackpool Pleasure Beach/main.jpg',
+    image: '/parks/blackpool-pleasure-beach/main.jpg',
     title: 'Blackpool Pleasure Beach',
     subtitle: 'United Kingdom'
   },
   {
     id: 'bobbejaanland',
     href: '/parks/bobbejaanland',
-    image: '/parks/Bobbejaanland/main.jpg',
+    image: '/parks/bobbejaanland/main.jpg',
     title: 'Bobbejaanland',
     subtitle: 'Belgium'
   },
   {
     id: 'disneyland-paris',
     href: '/parks/disneyland-paris',
-    image: '/parks/Disneyland Paris/main.jpg',
+    image: '/parks/disneyland-paris/main.jpg',
     title: 'Disneyland Paris',
     subtitle: 'France'
   },
   {
     id: 'europa-park',
     href: EP,
-    image: '/parks/europa park/main.jpg',
+    image: '/parks/europa-park/main.jpg',
     title: 'Europa Park',
     subtitle: 'Germany'
   },
   {
     id: 'six-flags-great-escape',
     href: '/parks/six-flags-great-escape',
-    image: '/parks/Six Flags Great Escape/main.jpg',
+    image: '/parks/six-flags-great-escape/main.jpg',
     title: 'Six Flags Great Escape',
     subtitle: 'United States'
   }
 ]
 
-const epImg = (path: string) => `/parks/europa park/${path}`
+const epImg = (path: string) => `/parks/europa-park/${path}`
 
 export const homeRollerCoasterCards: HomeMarqueeCard[] = [
-  { id: 'wodan', href: `${EP}/wodan`, image: epImg('roller coasters/wodan/main.jpg'), title: 'Wodan', subtitle: 'Europa Park' },
-  { id: 'euromir', href: `${EP}/euromir`, image: epImg('roller coasters/euromir/main.jpg'), title: 'Euromir', subtitle: 'Europa Park' },
-  { id: 'blue-fire', href: `${EP}/blue-fire`, image: epImg('roller coasters/blue fire/main.jpg'), title: 'Blue Fire', subtitle: 'Europa Park' },
-  { id: 'silver-star', href: `${EP}/silver-star`, image: epImg('roller coasters/silver star/main.jpg'), title: 'Silver Star', subtitle: 'Europa Park' },
-  { id: 'matterhorn-blitz', href: `${EP}/matterhorn-blitz`, image: epImg('roller coasters/matterhorn blitz/main.jpg'), title: 'Matterhorn Blitz', subtitle: 'Europa Park' },
-  { id: 'pegasus', href: `${EP}/pegasus`, image: epImg('roller coasters/pegasus/main.jpg'), title: 'Pegasus', subtitle: 'Europa Park' },
-  { id: 'poseidon', href: `${EP}/poseidon`, image: epImg('roller coasters/poseidon/main.jpg'), title: 'Poseidon', subtitle: 'Europa Park' },
-  { id: 'eurosat', href: `${EP}/eurosat`, image: epImg('roller coasters/eurosat/main.jpg'), title: 'Eurosat', subtitle: 'Europa Park' },
-  { id: 'atlantica-super-splash', href: `${EP}/atlantica-super-splash`, image: epImg('roller coasters/atlantica super splash/main.jpg'), title: 'Atlantica Super Splash', subtitle: 'Europa Park' },
-  { id: 'bobsleigh', href: `${EP}/bobsleigh`, image: epImg('roller coasters/bobsleigh/main.jpg'), title: 'Bobsleigh', subtitle: 'Europa Park' },
-  { id: 'alpenexpress', href: `${EP}/alpenexpress`, image: epImg('roller coasters/alpenexpress/main.jpg'), title: 'Alpenexpress', subtitle: 'Europa Park' },
-  { id: 'arthur', href: `${EP}/arthur`, image: epImg('roller coasters/arthur/main.jpg'), title: 'Arthur', subtitle: 'Europa Park' }
+  { id: 'wodan', href: `${EP}/wodan`, image: epImg('roller-coasters/wodan/main.jpg'), title: 'Wodan', subtitle: 'Europa Park' },
+  { id: 'euromir', href: `${EP}/euromir`, image: epImg('roller-coasters/euromir/main.jpg'), title: 'Euromir', subtitle: 'Europa Park' },
+  { id: 'blue-fire', href: `${EP}/blue-fire`, image: epImg('roller-coasters/blue-fire/main.jpg'), title: 'Blue Fire', subtitle: 'Europa Park' },
+  { id: 'silver-star', href: `${EP}/silver-star`, image: epImg('roller-coasters/silver star/main.jpg'), title: 'Silver Star', subtitle: 'Europa Park' },
+  { id: 'matterhorn-blitz', href: `${EP}/matterhorn-blitz`, image: epImg('roller-coasters/matterhorn blitz/main.jpg'), title: 'Matterhorn Blitz', subtitle: 'Europa Park' },
+  { id: 'pegasus', href: `${EP}/pegasus`, image: epImg('roller-coasters/pegasus/main.jpg'), title: 'Pegasus', subtitle: 'Europa Park' },
+  { id: 'poseidon', href: `${EP}/poseidon`, image: epImg('roller-coasters/poseidon/main.jpg'), title: 'Poseidon', subtitle: 'Europa Park' },
+  { id: 'eurosat', href: `${EP}/eurosat`, image: epImg('roller-coasters/eurosat/main.jpg'), title: 'Eurosat', subtitle: 'Europa Park' },
+  { id: 'atlantica-super-splash', href: `${EP}/atlantica-super-splash`, image: epImg('roller-coasters/atlantica super splash/main.jpg'), title: 'Atlantica Super Splash', subtitle: 'Europa Park' },
+  { id: 'bobsleigh', href: `${EP}/bobsleigh`, image: epImg('roller-coasters/bobsleigh/main.jpg'), title: 'Bobsleigh', subtitle: 'Europa Park' },
+  { id: 'alpenexpress', href: `${EP}/alpenexpress`, image: epImg('roller-coasters/alpenexpress/main.jpg'), title: 'Alpenexpress', subtitle: 'Europa Park' },
+  { id: 'arthur', href: `${EP}/arthur`, image: epImg('roller-coasters/arthur/main.jpg'), title: 'Arthur', subtitle: 'Europa Park' }
 ]
 
 export const homeWaterRideCards: HomeMarqueeCard[] = [
   {
     id: 'tiroler-wildwasserbahn',
     href: `${EP}/tiroler-wildwasserbahn`,
-    image: epImg('water rides/tiroler wildwasserbahn/main.jpg'),
+    image: epImg('water-rides/tiroler wildwasserbahn/main.jpg'),
     title: 'Tiroler Wildwasserbahn',
     subtitle: 'Europa Park'
   },
   {
     id: 'fjord-rafting',
     href: `${EP}/fjord-rafting`,
-    image: epImg('water rides/fjord rafting/main.jpg'),
+    image: epImg('water-rides/fjord rafting/main.jpg'),
     title: 'Fjord Rafting',
     subtitle: 'Europa Park'
   }
@@ -101,14 +101,14 @@ export const homeMoreHighlightCards: HomeMarqueeCard[] = [
   {
     id: 'dschungel-flossfahrt',
     href: `${EP}/dschungel-flossfahrt`,
-    image: epImg('dark rides/dschungel-flossfahrt/main.jpg'),
+    image: epImg('dark-rides/dschungel-flossfahrt/main.jpg'),
     title: 'Dschungel-Floßfahrt',
     subtitle: 'Dark ride · Europa Park'
   },
   {
     id: 'vindjammer',
     href: `${EP}/vindjammer`,
-    image: epImg('flat rides/vindjammer/main.jpg'),
+    image: epImg('flat-rides/vindjammer/main.jpg'),
     title: 'Vindjammer',
     subtitle: 'Flat ride · Europa Park'
   },

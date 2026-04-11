@@ -37,7 +37,7 @@ const mockParks = [
   {
     id: 'europa-park',
     name: 'Europa Park',
-    logo_url: '/parks/europa park/logo.png'
+    logo_url: '/parks/europa-park/logo.png'
   }
 ]
 
@@ -550,166 +550,166 @@ const mockItemImages = {
     'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop&crop=center'
   ],
   'wodan': [
-    '/parks/europa park/roller coasters/wodan/01.jpg',
-    '/parks/europa park/roller coasters/wodan/02.jpg',
-    '/parks/europa park/roller coasters/wodan/03.jpg',
-    '/parks/europa park/roller coasters/wodan/04.jpg',
-    '/parks/europa park/roller coasters/wodan/05.jpg',
-    '/parks/europa park/roller coasters/wodan/06.jpg',
-    '/parks/europa park/roller coasters/wodan/07.jpg',
+    '/parks/europa-park/roller-coasters/wodan/01.jpg',
+    '/parks/europa-park/roller-coasters/wodan/02.jpg',
+    '/parks/europa-park/roller-coasters/wodan/03.jpg',
+    '/parks/europa-park/roller-coasters/wodan/04.jpg',
+    '/parks/europa-park/roller-coasters/wodan/05.jpg',
+    '/parks/europa-park/roller-coasters/wodan/06.jpg',
+    '/parks/europa-park/roller-coasters/wodan/07.jpg',
   ],
   'euromir': [
-    '/parks/europa park/roller coasters/euromir/01.jpg',
-    '/parks/europa park/roller coasters/euromir/02.jpg',
-    '/parks/europa park/roller coasters/euromir/03.jpg',
-    '/parks/europa park/roller coasters/euromir/04.jpg',
-    '/parks/europa park/roller coasters/euromir/05.jpg',
-    '/parks/europa park/roller coasters/euromir/06.jpg',
-    '/parks/europa park/roller coasters/euromir/07.jpg'
+    '/parks/europa-park/roller-coasters/euromir/01.jpg',
+    '/parks/europa-park/roller-coasters/euromir/02.jpg',
+    '/parks/europa-park/roller-coasters/euromir/03.jpg',
+    '/parks/europa-park/roller-coasters/euromir/04.jpg',
+    '/parks/europa-park/roller-coasters/euromir/05.jpg',
+    '/parks/europa-park/roller-coasters/euromir/06.jpg',
+    '/parks/europa-park/roller-coasters/euromir/07.jpg'
   ],
   'blue-fire': [
-    '/parks/europa park/roller coasters/blue fire/01.jpg',
-    '/parks/europa park/roller coasters/blue fire/02.jpg',
-    '/parks/europa park/roller coasters/blue fire/03.jpg',
-    '/parks/europa park/roller coasters/blue fire/04.jpg',
-    '/parks/europa park/roller coasters/blue fire/05.jpg',
-    '/parks/europa park/roller coasters/blue fire/06.jpg',
-    '/parks/europa park/roller coasters/blue fire/07.jpg'
+    '/parks/europa-park/roller-coasters/blue-fire/01.jpg',
+    '/parks/europa-park/roller-coasters/blue-fire/02.jpg',
+    '/parks/europa-park/roller-coasters/blue-fire/03.jpg',
+    '/parks/europa-park/roller-coasters/blue-fire/04.jpg',
+    '/parks/europa-park/roller-coasters/blue-fire/05.jpg',
+    '/parks/europa-park/roller-coasters/blue-fire/06.jpg',
+    '/parks/europa-park/roller-coasters/blue-fire/07.jpg'
   ],
   'silver-star': [
-    '/parks/europa park/roller coasters/silver star/01.jpg',
-    '/parks/europa park/roller coasters/silver star/02.jpg',
-    '/parks/europa park/roller coasters/silver star/03.jpg',
-    '/parks/europa park/roller coasters/silver star/04.jpg',
-    '/parks/europa park/roller coasters/silver star/05.jpg',
-    '/parks/europa park/roller coasters/silver star/06.jpg',
-    '/parks/europa park/roller coasters/silver star/07.jpg',
+    '/parks/europa-park/roller-coasters/silver star/01.jpg',
+    '/parks/europa-park/roller-coasters/silver star/02.jpg',
+    '/parks/europa-park/roller-coasters/silver star/03.jpg',
+    '/parks/europa-park/roller-coasters/silver star/04.jpg',
+    '/parks/europa-park/roller-coasters/silver star/05.jpg',
+    '/parks/europa-park/roller-coasters/silver star/06.jpg',
+    '/parks/europa-park/roller-coasters/silver star/07.jpg',
   ],
   'matterhorn-blitz': [
-    '/parks/europa park/roller coasters/matterhorn blitz/01.jpg',
-    '/parks/europa park/roller coasters/matterhorn blitz/02.jpg',
-    '/parks/europa park/roller coasters/matterhorn blitz/03.jpg',
-    '/parks/europa park/roller coasters/matterhorn blitz/04.jpg',
-    '/parks/europa park/roller coasters/matterhorn blitz/05.jpg',
-    '/parks/europa park/roller coasters/matterhorn blitz/06.jpg',
-    '/parks/europa park/roller coasters/matterhorn blitz/07.jpg'
+    '/parks/europa-park/roller-coasters/matterhorn blitz/01.jpg',
+    '/parks/europa-park/roller-coasters/matterhorn blitz/02.jpg',
+    '/parks/europa-park/roller-coasters/matterhorn blitz/03.jpg',
+    '/parks/europa-park/roller-coasters/matterhorn blitz/04.jpg',
+    '/parks/europa-park/roller-coasters/matterhorn blitz/05.jpg',
+    '/parks/europa-park/roller-coasters/matterhorn blitz/06.jpg',
+    '/parks/europa-park/roller-coasters/matterhorn blitz/07.jpg'
   ],
   'pegasus': [
-    '/parks/europa park/roller coasters/pegasus/01.jpg',
-    '/parks/europa park/roller coasters/pegasus/02.jpg',
-    '/parks/europa park/roller coasters/pegasus/03.jpg',
-    '/parks/europa park/roller coasters/pegasus/04.jpg',
-    '/parks/europa park/roller coasters/pegasus/05.jpg',
-    '/parks/europa park/roller coasters/pegasus/06.jpg',
-    '/parks/europa park/roller coasters/pegasus/07.jpg'
+    '/parks/europa-park/roller-coasters/pegasus/01.jpg',
+    '/parks/europa-park/roller-coasters/pegasus/02.jpg',
+    '/parks/europa-park/roller-coasters/pegasus/03.jpg',
+    '/parks/europa-park/roller-coasters/pegasus/04.jpg',
+    '/parks/europa-park/roller-coasters/pegasus/05.jpg',
+    '/parks/europa-park/roller-coasters/pegasus/06.jpg',
+    '/parks/europa-park/roller-coasters/pegasus/07.jpg'
   ],
   'tiroler-wildwasserbahn': [
-    '/parks/europa park/water rides/tiroler wildwasserbahn/01.jpg',
-    '/parks/europa park/water rides/tiroler wildwasserbahn/02.jpg',
-    '/parks/europa park/water rides/tiroler wildwasserbahn/03.jpg',
-    '/parks/europa park/water rides/tiroler wildwasserbahn/04.jpg',
-    '/parks/europa park/water rides/tiroler wildwasserbahn/05.jpg',
-    '/parks/europa park/water rides/tiroler wildwasserbahn/06.jpg',
-    '/parks/europa park/water rides/tiroler wildwasserbahn/07.jpg'
+    '/parks/europa-park/water-rides/tiroler wildwasserbahn/01.jpg',
+    '/parks/europa-park/water-rides/tiroler wildwasserbahn/02.jpg',
+    '/parks/europa-park/water-rides/tiroler wildwasserbahn/03.jpg',
+    '/parks/europa-park/water-rides/tiroler wildwasserbahn/04.jpg',
+    '/parks/europa-park/water-rides/tiroler wildwasserbahn/05.jpg',
+    '/parks/europa-park/water-rides/tiroler wildwasserbahn/06.jpg',
+    '/parks/europa-park/water-rides/tiroler wildwasserbahn/07.jpg'
   ],
   'fjord-rafting': [
-    '/parks/europa park/water rides/fjord rafting/01.jpg',
-    '/parks/europa park/water rides/fjord rafting/02.jpg',
-    '/parks/europa park/water rides/fjord rafting/03.jpg',
-    '/parks/europa park/water rides/fjord rafting/04.jpg',
-    '/parks/europa park/water rides/fjord rafting/05.jpg',
-    '/parks/europa park/water rides/fjord rafting/06.jpg',
-    '/parks/europa park/water rides/fjord rafting/07.jpg'
+    '/parks/europa-park/water-rides/fjord rafting/01.jpg',
+    '/parks/europa-park/water-rides/fjord rafting/02.jpg',
+    '/parks/europa-park/water-rides/fjord rafting/03.jpg',
+    '/parks/europa-park/water-rides/fjord rafting/04.jpg',
+    '/parks/europa-park/water-rides/fjord rafting/05.jpg',
+    '/parks/europa-park/water-rides/fjord rafting/06.jpg',
+    '/parks/europa-park/water-rides/fjord rafting/07.jpg'
   ],
   'dschungel-flossfahrt': [
-    '/parks/europa park/dark rides/dschungel-floßfahrt/01.jpg',
-    '/parks/europa park/dark rides/dschungel-floßfahrt/02.jpg',
-    '/parks/europa park/dark rides/dschungel-floßfahrt/03.jpg',
-    '/parks/europa park/dark rides/dschungel-floßfahrt/04.jpg',
-    '/parks/europa park/dark rides/dschungel-floßfahrt/05.jpg',
-    '/parks/europa park/dark rides/dschungel-floßfahrt/06.jpg',
-    '/parks/europa park/dark rides/dschungel-floßfahrt/07.jpg'
+    '/parks/europa-park/dark-rides/dschungel-floßfahrt/01.jpg',
+    '/parks/europa-park/dark-rides/dschungel-floßfahrt/02.jpg',
+    '/parks/europa-park/dark-rides/dschungel-floßfahrt/03.jpg',
+    '/parks/europa-park/dark-rides/dschungel-floßfahrt/04.jpg',
+    '/parks/europa-park/dark-rides/dschungel-floßfahrt/05.jpg',
+    '/parks/europa-park/dark-rides/dschungel-floßfahrt/06.jpg',
+    '/parks/europa-park/dark-rides/dschungel-floßfahrt/07.jpg'
   ],
   'poseidon': [
-    '/parks/europa park/roller coasters/poseidon/01.jpg',
-    '/parks/europa park/roller coasters/poseidon/02.jpg',
-    '/parks/europa park/roller coasters/poseidon/03.jpg',
-    '/parks/europa park/roller coasters/poseidon/04.jpg',
-    '/parks/europa park/roller coasters/poseidon/05.jpg',
-    '/parks/europa park/roller coasters/poseidon/06.jpg',
-    '/parks/europa park/roller coasters/poseidon/07.jpg'
+    '/parks/europa-park/roller-coasters/poseidon/01.jpg',
+    '/parks/europa-park/roller-coasters/poseidon/02.jpg',
+    '/parks/europa-park/roller-coasters/poseidon/03.jpg',
+    '/parks/europa-park/roller-coasters/poseidon/04.jpg',
+    '/parks/europa-park/roller-coasters/poseidon/05.jpg',
+    '/parks/europa-park/roller-coasters/poseidon/06.jpg',
+    '/parks/europa-park/roller-coasters/poseidon/07.jpg'
   ],
   'eurosat': [
-    '/parks/europa park/roller coasters/eurosat/01.jpg',
-    '/parks/europa park/roller coasters/eurosat/02.jpg',
-    '/parks/europa park/roller coasters/eurosat/03.jpg',
-    '/parks/europa park/roller coasters/eurosat/04.jpg',
-    '/parks/europa park/roller coasters/eurosat/05.jpg',
-    '/parks/europa park/roller coasters/eurosat/06.jpg',
-    '/parks/europa park/roller coasters/eurosat/07.jpg'
+    '/parks/europa-park/roller-coasters/eurosat/01.jpg',
+    '/parks/europa-park/roller-coasters/eurosat/02.jpg',
+    '/parks/europa-park/roller-coasters/eurosat/03.jpg',
+    '/parks/europa-park/roller-coasters/eurosat/04.jpg',
+    '/parks/europa-park/roller-coasters/eurosat/05.jpg',
+    '/parks/europa-park/roller-coasters/eurosat/06.jpg',
+    '/parks/europa-park/roller-coasters/eurosat/07.jpg'
   ],
   'vindjammer': [
-    '/parks/europa park/flat rides/vindjammer/01.jpg',
-    '/parks/europa park/flat rides/vindjammer/02.jpg',
-    '/parks/europa park/flat rides/vindjammer/03.jpg',
-    '/parks/europa park/flat rides/vindjammer/04.jpg',
-    '/parks/europa park/flat rides/vindjammer/05.jpg',
-    '/parks/europa park/flat rides/vindjammer/06.jpg',
-    '/parks/europa park/flat rides/vindjammer/07.jpg'
+    '/parks/europa-park/flat-rides/vindjammer/01.jpg',
+    '/parks/europa-park/flat-rides/vindjammer/02.jpg',
+    '/parks/europa-park/flat-rides/vindjammer/03.jpg',
+    '/parks/europa-park/flat-rides/vindjammer/04.jpg',
+    '/parks/europa-park/flat-rides/vindjammer/05.jpg',
+    '/parks/europa-park/flat-rides/vindjammer/06.jpg',
+    '/parks/europa-park/flat-rides/vindjammer/07.jpg'
   ],
   'kronasar': [
-    '/parks/europa park/Hotels/kronasar/01.jpg',
-    '/parks/europa park/Hotels/kronasar/02.jpg',
-    '/parks/europa park/Hotels/kronasar/03.jpg',
-    '/parks/europa park/Hotels/kronasar/04.jpg',
-    '/parks/europa park/Hotels/kronasar/05.jpg',
-    '/parks/europa park/Hotels/kronasar/06.jpg',
-    '/parks/europa park/Hotels/kronasar/07.jpg'
+    '/parks/europa-park/Hotels/kronasar/01.jpg',
+    '/parks/europa-park/Hotels/kronasar/02.jpg',
+    '/parks/europa-park/Hotels/kronasar/03.jpg',
+    '/parks/europa-park/Hotels/kronasar/04.jpg',
+    '/parks/europa-park/Hotels/kronasar/05.jpg',
+    '/parks/europa-park/Hotels/kronasar/06.jpg',
+    '/parks/europa-park/Hotels/kronasar/07.jpg'
   ],
   'monorail-bahn': [
-    '/parks/europa park/Transport/monorail bahn/01.jpg',
-    '/parks/europa park/Transport/monorail bahn/02.jpg',
-    '/parks/europa park/Transport/monorail bahn/03.jpg',
-    '/parks/europa park/Transport/monorail bahn/04.jpg',
-    '/parks/europa park/Transport/monorail bahn/05.jpg',
-    '/parks/europa park/Transport/monorail bahn/06.jpg',
-    '/parks/europa park/Transport/monorail bahn/07.jpg'
+    '/parks/europa-park/Transport/monorail bahn/01.jpg',
+    '/parks/europa-park/Transport/monorail bahn/02.jpg',
+    '/parks/europa-park/Transport/monorail bahn/03.jpg',
+    '/parks/europa-park/Transport/monorail bahn/04.jpg',
+    '/parks/europa-park/Transport/monorail bahn/05.jpg',
+    '/parks/europa-park/Transport/monorail bahn/06.jpg',
+    '/parks/europa-park/Transport/monorail bahn/07.jpg'
   ],
   'atlantica-super-splash': [
-    '/parks/europa park/roller coasters/atlantica super splash/01.jpg',
-    '/parks/europa park/roller coasters/atlantica super splash/02.jpg',
-    '/parks/europa park/roller coasters/atlantica super splash/03.jpg',
-    '/parks/europa park/roller coasters/atlantica super splash/04.jpg',
-    '/parks/europa park/roller coasters/atlantica super splash/05.jpg',
-    '/parks/europa park/roller coasters/atlantica super splash/06.jpg',
-    '/parks/europa park/roller coasters/atlantica super splash/07.jpg'
+    '/parks/europa-park/roller-coasters/atlantica super splash/01.jpg',
+    '/parks/europa-park/roller-coasters/atlantica super splash/02.jpg',
+    '/parks/europa-park/roller-coasters/atlantica super splash/03.jpg',
+    '/parks/europa-park/roller-coasters/atlantica super splash/04.jpg',
+    '/parks/europa-park/roller-coasters/atlantica super splash/05.jpg',
+    '/parks/europa-park/roller-coasters/atlantica super splash/06.jpg',
+    '/parks/europa-park/roller-coasters/atlantica super splash/07.jpg'
   ],
   'bobsleigh': [
-    '/parks/europa park/roller coasters/bobsleigh/01.jpg',
-    '/parks/europa park/roller coasters/bobsleigh/02.jpg',
-    '/parks/europa park/roller coasters/bobsleigh/03.jpg',
-    '/parks/europa park/roller coasters/bobsleigh/04.jpg',
-    '/parks/europa park/roller coasters/bobsleigh/05.jpg',
-    '/parks/europa park/roller coasters/bobsleigh/06.jpg',
-    '/parks/europa park/roller coasters/bobsleigh/07.jpg'
+    '/parks/europa-park/roller-coasters/bobsleigh/01.jpg',
+    '/parks/europa-park/roller-coasters/bobsleigh/02.jpg',
+    '/parks/europa-park/roller-coasters/bobsleigh/03.jpg',
+    '/parks/europa-park/roller-coasters/bobsleigh/04.jpg',
+    '/parks/europa-park/roller-coasters/bobsleigh/05.jpg',
+    '/parks/europa-park/roller-coasters/bobsleigh/06.jpg',
+    '/parks/europa-park/roller-coasters/bobsleigh/07.jpg'
   ],
   'alpenexpress': [
-    '/parks/europa park/roller coasters/alpenexpress/01.jpg',
-    '/parks/europa park/roller coasters/alpenexpress/02.jpg',
-    '/parks/europa park/roller coasters/alpenexpress/03.jpg',
-    '/parks/europa park/roller coasters/alpenexpress/04.jpg',
-    '/parks/europa park/roller coasters/alpenexpress/05.jpg',
-    '/parks/europa park/roller coasters/alpenexpress/06.jpg',
-    '/parks/europa park/roller coasters/alpenexpress/07.jpg'
+    '/parks/europa-park/roller-coasters/alpenexpress/01.jpg',
+    '/parks/europa-park/roller-coasters/alpenexpress/02.jpg',
+    '/parks/europa-park/roller-coasters/alpenexpress/03.jpg',
+    '/parks/europa-park/roller-coasters/alpenexpress/04.jpg',
+    '/parks/europa-park/roller-coasters/alpenexpress/05.jpg',
+    '/parks/europa-park/roller-coasters/alpenexpress/06.jpg',
+    '/parks/europa-park/roller-coasters/alpenexpress/07.jpg'
   ],
   'arthur': [
-    '/parks/europa park/roller coasters/arthur/01.jpg',
-    '/parks/europa park/roller coasters/arthur/02.jpg',
-    '/parks/europa park/roller coasters/arthur/03.jpg',
-    '/parks/europa park/roller coasters/arthur/04.jpg',
-    '/parks/europa park/roller coasters/arthur/05.jpg',
-    '/parks/europa park/roller coasters/arthur/06.jpg',
-    '/parks/europa park/roller coasters/arthur/07.jpg'
+    '/parks/europa-park/roller-coasters/arthur/01.jpg',
+    '/parks/europa-park/roller-coasters/arthur/02.jpg',
+    '/parks/europa-park/roller-coasters/arthur/03.jpg',
+    '/parks/europa-park/roller-coasters/arthur/04.jpg',
+    '/parks/europa-park/roller-coasters/arthur/05.jpg',
+    '/parks/europa-park/roller-coasters/arthur/06.jpg',
+    '/parks/europa-park/roller-coasters/arthur/07.jpg'
   ]
 
 }

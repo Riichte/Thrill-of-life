@@ -6,7 +6,7 @@ import { useState } from 'react'
 import RatingComponent from '@/components/RatingComponent'
 import { SteamMediaCarousel } from '@/components/SteamMediaCarousel'
 import { SteamInfoPanel } from '@/components/SteamInfoPanel'
-
+import { mockParks, mockCategories, mockItems, mockItemImages, mockItemVideos } from '@/lib/items-data'
 
 interface ItemPageProps {
   params: Promise<{

@@ -125,57 +125,35 @@ function ItemPageContent({ park, item, category, images, videos }: {
                   </div>
                 </div>
               )}
+              <div className="border-t border-[#2a475e] pt-4">
+                <h3 className="mb-3 text-xs font-medium uppercase tracking-wider text-[#8f98a0]">
+                  Recent Reviews
+                </h3>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#2a475e]">
+                      <div className="h-full bg-green-500 rounded-full" style={{ width: `${ratingBreakdown.positive}%` }} />
+                    </div>
+                    <span className="text-xs text-green-400 w-8 text-right">{ratingBreakdown.positive}%</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#2a475e]">
+                      <div className="h-full bg-yellow-500 rounded-full" style={{ width: `${ratingBreakdown.mixed}%` }} />
+                    </div>
+                    <span className="text-xs text-yellow-400 w-8 text-right">{ratingBreakdown.mixed}%</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#2a475e]">
+                      <div className="h-full bg-red-500 rounded-full" style={{ width: `${ratingBreakdown.negative}%` }} />
+                    </div>
+                    <span className="text-xs text-red-400 w-8 text-right">{ratingBreakdown.negative}%</span>
+                  </div>
+                </div>
+              </div>
             </SteamInfoPanel>
           </div>
         </div>
 
-        {/* Rating breakdown */}
-        <div className="mb-12 rounded-lg bg-gray-800 p-8">
-          <h3 className="text-lg font-semibold mb-6">Recent Reviews</h3>
-          <div className="space-y-6">
-            {/* Positive */}
-            <div>
-              <div className="flex justify-between items-center mb-3">
-                <span className="text-green-400 font-semibold">Overwhelmingly Positive</span>
-                <span className="text-gray-400 text-sm">({ratingBreakdown.positive}%)</span>
-              </div>
-              <div className="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
-                <div
-                  className="bg-green-500 h-full rounded-full"
-                  style={{ width: `${ratingBreakdown.positive}%` }}
-                ></div>
-              </div>
-            </div>
-
-            {/* Mixed */}
-            <div>
-              <div className="flex justify-between items-center mb-3">
-                <span className="text-yellow-400 font-semibold">Mixed</span>
-                <span className="text-gray-400 text-sm">({ratingBreakdown.mixed}%)</span>
-              </div>
-              <div className="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
-                <div
-                  className="bg-yellow-500 h-full rounded-full"
-                  style={{ width: `${ratingBreakdown.mixed}%` }}
-                ></div>
-              </div>
-            </div>
-
-            {/* Negative */}
-            <div>
-              <div className="flex justify-between items-center mb-3">
-                <span className="text-red-400 font-semibold">Overwhelmingly Negative</span>
-                <span className="text-gray-400 text-sm">({ratingBreakdown.negative}%)</span>
-              </div>
-              <div className="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
-                <div
-                  className="bg-red-500 h-full rounded-full"
-                  style={{ width: `${ratingBreakdown.negative}%` }}
-                ></div>
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* Rating System */}
         <div className="mb-12">
@@ -200,8 +178,8 @@ function ItemPageContent({ park, item, category, images, videos }: {
                 key={filter.id}
                 onClick={() => setReviewFilter(filter.id)}
                 className={`px-4 py-2 whitespace-nowrap font-medium transition-colors ${reviewFilter === filter.id
-                    ? 'text-blue-400 border-b-2 border-blue-400'
-                    : 'text-gray-400 hover:text-gray-300'
+                  ? 'text-blue-400 border-b-2 border-blue-400'
+                  : 'text-gray-400 hover:text-gray-300'
                   }`}
               >
                 {filter.label}

@@ -247,6 +247,28 @@ function ItemPageContent({ park, item, category, images, videos }: {
   const specs = item.specs || {}
   const hasSpecs = Object.keys(specs).length > 0
 
+  // Similar rides based on coaster type
+  const currentType = item.specs?.type
+  const similarRides = currentType
+    ? Object.entries(mockItems)
+        .flatMap(([pId, pItems]) =>
+          pItems
+            .filter(i => i.id !== item.id && i.specs?.type === currentType)
+            .map(i => ({
+              ...i,
+              parkId: pId,
+              parkName: mockParks.find(p => p.id === pId)?.name ?? '',
+              image: (mockItemImages[i.id as keyof typeof mockItemImages] ?? [])[0] ?? null
+            }))
+        )
+        .slice(0, 6)
+    : []
+
+  const [similarPage, setSimilarPage] = useState(0)
+  const similarPerPage = 3
+  const similarTotalPages = Math.ceil(similarRides.length / similarPerPage)
+  const visibleSimilar = similarRides.slice(similarPage * similarPerPage, similarPage * similarPerPage + similarPerPage)
+
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       <div className="container mx-auto px-4 py-8">
@@ -431,7 +453,7 @@ function ItemPageContent({ park, item, category, images, videos }: {
                 className={`px-4 py-2 whitespace-nowrap font-medium transition-colors ${reviewFilter === filter.id
                   ? 'text-blue-400 border-b-2 border-blue-400'
                   : 'text-gray-400 hover:text-gray-300'
-                }`}
+                  }`}
               >
                 {filter.label}
               </button>
@@ -451,7 +473,7 @@ function ItemPageContent({ park, item, category, images, videos }: {
                 reactions={initialReactions}
                 userReactions={initialUserReactions}
                 userPoints={userPoints}
-                onReact={() => {}}
+                onReact={() => { }}
               />
             )}
 
@@ -473,7 +495,69 @@ function ItemPageContent({ park, item, category, images, videos }: {
             ))}
           </div>
         </div>
+        {/* Similar Rides */}
+        {similarRides.length > 0 && (
+          <div className="mb-12">
+            <h2 className="text-2xl font-semibold mb-6">
+              Similar Rides
+              <span className="ml-3 text-sm font-normal text-[#8f98a0]">{currentType}</span>
+            </h2>
 
+            <div className="relative">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {visibleSimilar.map(ride => (
+                  <Link
+                    key={ride.id}
+                    href={`/parks/${ride.parkId}/${ride.id}`}
+                    className="group bg-[#1b2838] border border-[#2a475e] rounded-sm overflow-hidden hover:border-[#66c0f4] transition-colors"
+                  >
+                    <div className="h-36 overflow-hidden bg-[#0e1621]">
+                      {ride.image ? (
+                        <img
+                          src={ride.image}
+                          alt={ride.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-[#4a6a82] text-sm">
+                          No image
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-3">
+                      <p className="font-medium text-[#c6d4df] text-sm group-hover:text-white transition-colors">{ride.name}</p>
+                      <p className="text-xs text-[#8f98a0] mt-0.5">{ride.parkName}</p>
+                      <span className="inline-block mt-2 text-[10px] bg-[#2a475e] text-[#66c0f4] px-2 py-0.5 rounded-sm">
+                        {ride.specs?.type}
+                      </span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+
+              {/* Pagination */}
+              {similarTotalPages > 1 && (
+                <div className="flex items-center justify-center gap-4 mt-6">
+                  <button
+                    onClick={() => setSimilarPage(p => Math.max(0, p - 1))}
+                    disabled={similarPage === 0}
+                    className="px-4 py-2 bg-[#2a475e] text-[#c6d4df] rounded-sm disabled:opacity-30 hover:bg-[#3d6a8a] transition-colors text-sm"
+                  >
+                    ← Prev
+                  </button>
+                  <span className="text-sm text-[#8f98a0]">{similarPage + 1} / {similarTotalPages}</span>
+                  <button
+                    onClick={() => setSimilarPage(p => Math.min(similarTotalPages - 1, p + 1))}
+                    disabled={similarPage === similarTotalPages - 1}
+                    className="px-4 py-2 bg-[#2a475e] text-[#c6d4df] rounded-sm disabled:opacity-30 hover:bg-[#3d6a8a] transition-colors text-sm"
+                  >
+                    Next →
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
         {/* Back Button */}
         <div className="flex justify-center mb-8">
           <Link href={`/parks/${park.id}`} className="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-lg font-semibold transition-colors">
@@ -495,6 +579,6 @@ export default async function ItemPage({ params }: ItemPageProps) {
   const videos = mockItemVideos[itemId as keyof typeof mockItemVideos] || []
 
   if (!park || !item || !category) notFound()
-
+  
   return <ItemPageContent park={park} item={item} category={category} images={images} videos={videos} />
 }

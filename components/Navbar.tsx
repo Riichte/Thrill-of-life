@@ -1,12 +1,48 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import { Search, Menu, X, Globe } from 'lucide-react'
+import { useRouter, usePathname } from 'next/navigation'
+import { Search, Menu, X } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
+import type { User } from '@supabase/supabase-js'
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [language, setLanguage] = useState<'EN' | 'FR'>('EN')
+  const [user, setUser] = useState<User | null>(null)
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+  const router = useRouter()
+  const pathname = usePathname()
+  const supabase = createClient()
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setUser(data.user))
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+    })
+    return () => subscription.unsubscribe()
+  }, [])
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    setDropdownOpen(false)
+    router.push('/')
+    router.refresh()
+  }
+
+  const username = user?.user_metadata?.username ?? user?.email?.split('@')[0] ?? 'Account'
 
   const categories = [
     { name: 'Parks', href: '/parks' },
@@ -35,7 +71,7 @@ export default function Navbar() {
               <span className="text-xl font-bold text-white hidden sm:inline font-logo">Thrill of Life</span>
             </Link>
 
-            {/* Search Bar (hidden on mobile) */}
+            {/* Search Bar */}
             <div className="hidden md:flex flex-1 max-w-md">
               <div className="relative w-full">
                 <input
@@ -47,46 +83,79 @@ export default function Navbar() {
               </div>
             </div>
 
-            {/* Right Side Actions */}
+            {/* Right Side */}
             <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
-              {/* Language Selector */}
+              {/* Language */}
               <div className="flex items-center bg-gray-800 rounded-lg p-1">
                 <button
                   onClick={() => setLanguage('EN')}
-                  className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                    language === 'EN'
-                      ? 'bg-blue-600 text-white'
-                      : 'text-gray-400 hover:text-white'
-                  }`}
+                  className={`px-3 py-1 rounded text-sm font-medium transition-colors ${language === 'EN' ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'}`}
                 >
                   EN
                 </button>
                 <button
                   onClick={() => setLanguage('FR')}
-                  className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                    language === 'FR'
-                      ? 'bg-blue-600 text-white'
-                      : 'text-gray-400 hover:text-white'
-                  }`}
+                  className={`px-3 py-1 rounded text-sm font-medium transition-colors ${language === 'FR' ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'}`}
                 >
                   FR
                 </button>
               </div>
 
-              {/* Profile/Login Button */}
-              <Link
-                href="/auth/login"
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors hidden sm:inline-block"
-              >
-                Login
-              </Link>
+              {/* Auth */}
+              {user ? (
+                <div className="relative hidden sm:block" ref={dropdownRef}>
+                  <button
+                    onClick={() => setDropdownOpen(p => !p)}
+                    className="flex items-center gap-2 bg-[#2a475e] hover:bg-[#3d6a8a] text-[#c6d4df] px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                  >
+                    <div className="w-6 h-6 rounded-full bg-[#66c0f4] flex items-center justify-center text-[#1b2838] text-xs font-bold">
+                      {username[0].toUpperCase()}
+                    </div>
+                    {username}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M6 9l6 6 6-6" />
+                    </svg>
+                  </button>
 
-              {/* Mobile Search Icon */}
+                  {dropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-48 bg-[#1b2838] border border-[#2a475e] rounded-sm shadow-xl z-50">
+                      <Link
+                        href="/dashboard"
+                        onClick={() => setDropdownOpen(false)}
+                        className="block px-4 py-3 text-sm text-[#c6d4df] hover:bg-[#2a475e] hover:text-white transition-colors"
+                      >
+                        Dashboard
+                      </Link>
+                      <Link
+                        href="/profile"
+                        onClick={() => setDropdownOpen(false)}
+                        className="block px-4 py-3 text-sm text-[#c6d4df] hover:bg-[#2a475e] hover:text-white transition-colors"
+                      >
+                        My Profile
+                      </Link>
+                      <div className="border-t border-[#2a475e]" />
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-[#2a475e] hover:text-red-300 transition-colors"
+                      >
+                        Sign out
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <Link
+                  href={`/auth/login?redirect=${encodeURIComponent(pathname)}`}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors hidden sm:inline-block"
+                >
+                  Login
+                </Link>
+              )}
+
+              {/* Mobile icons */}
               <button className="md:hidden p-2 text-gray-400 hover:text-white">
                 <Search className="w-5 h-5" />
               </button>
-
-              {/* Hamburger Menu */}
               <button
                 onClick={() => setIsOpen(!isOpen)}
                 className="md:hidden p-2 text-gray-400 hover:text-white"
@@ -96,7 +165,7 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* Mobile Search Bar */}
+          {/* Mobile Search */}
           <div className="md:hidden mt-3">
             <div className="relative w-full">
               <input
@@ -110,10 +179,9 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Bottom Row - Category Navigation */}
+      {/* Category Nav */}
       <div className="bg-gray-800 border-t border-gray-700">
         <div className="container mx-auto">
-          {/* Desktop Categories */}
           <div className="hidden md:flex px-4 py-0">
             {categories.map((cat) => (
               <Link
@@ -126,7 +194,6 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* Mobile Categories Menu */}
           {isOpen && (
             <div className="md:hidden px-4 py-2 space-y-2 bg-gray-900">
               {categories.map((cat) => (
@@ -139,13 +206,24 @@ export default function Navbar() {
                   {cat.name}
                 </Link>
               ))}
-              <Link
-                href="/auth/login"
-                className="block mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors text-center"
-                onClick={() => setIsOpen(false)}
-              >
-                Login
-              </Link>
+              {user ? (
+                <>
+                  <Link href="/profile" className="block py-2 px-2 text-sm text-[#c6d4df]" onClick={() => setIsOpen(false)}>
+                    My Profile ({username})
+                  </Link>
+                  <button onClick={handleLogout} className="block w-full text-left py-2 px-2 text-sm text-red-400">
+                    Sign out
+                  </button>
+                </>
+              ) : (
+                <Link
+                  href={`/auth/login?redirect=${encodeURIComponent(pathname)}`}
+                  className="block mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors text-center"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Login
+                </Link>
+              )}
             </div>
           )}
         </div>

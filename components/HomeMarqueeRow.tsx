@@ -32,12 +32,12 @@ export function HomeMarqueeRow({
   if (items.length === 0) return null
 
   const [visibleCount, setVisibleCount] = useState(5)
-  const [cardWidth, setCardWidth] = useState(280)
+  const [cardWidth, setCardWidth] = useState(282)
 
   const PADDING = 40
   const GAP = 24
 
-  // Responsive layout
+  // Responsive layout – same balanced spacing on both sides
   useEffect(() => {
     const updateLayout = () => {
       const w = window.innerWidth
@@ -126,16 +126,19 @@ export function HomeMarqueeRow({
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        {/* Main sliding container */}
+        {/* FIXED: extra right padding + symmetric left/right */}
         <div
           className="flex transition-transform duration-500 ease-out"
           style={{
             transform: `translateX(-${currentPage * pageWidth}px)`,
             gap: `${GAP}px`,
-            padding: `32px ${PADDING}px`,           // Symmetric padding
+            paddingLeft: `${PADDING}px`,
+            paddingRight: `${PADDING + cardWidth + GAP}px`,   // ← This is the key fix
+            paddingTop: '32px',
+            paddingBottom: '32px',
           }}
         >
-          {items.map((item, index) => (
+          {items.map((item) => (
             <Link
               key={item.id}
               href={item.href}
@@ -162,7 +165,6 @@ export function HomeMarqueeRow({
           ))}
         </div>
 
-        {/* Navigation Buttons */}
         {totalPages > 1 && (
           <>
             <button

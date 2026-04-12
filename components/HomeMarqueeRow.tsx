@@ -32,21 +32,43 @@ export function HomeMarqueeRow({
   if (items.length === 0) return null
 
   const [visibleCount, setVisibleCount] = useState(5)
+  const [cardWidth, setCardWidth] = useState(280)
 
-  // Responsive visible items
+  const CONTAINER_PADDING = 40   // Same padding on left AND right
+  const GAP = 24
+
+  // Responsive logic: prioritize keeping good card size, then reduce count
   useEffect(() => {
-    const updateVisibleCount = () => {
-      const width = window.innerWidth
-      if (width >= 1280) setVisibleCount(5)
-      else if (width >= 1024) setVisibleCount(4)
-      else if (width >= 768) setVisibleCount(3)
-      else if (width >= 480) setVisibleCount(2)
-      else setVisibleCount(1)
+    const updateLayout = () => {
+      const viewportWidth = window.innerWidth
+      const availableWidth = viewportWidth - (CONTAINER_PADDING * 2) - (GAP * 4) // rough space for gaps
+
+      // Try to keep nice card sizes
+      if (viewportWidth >= 1280) {
+        setVisibleCount(5)
+        setCardWidth(280)
+      } 
+      else if (viewportWidth >= 1024) {
+        setVisibleCount(4)
+        setCardWidth(275)
+      } 
+      else if (viewportWidth >= 768) {
+        setVisibleCount(3)
+        setCardWidth(280)
+      } 
+      else if (viewportWidth >= 540) {
+        setVisibleCount(2)
+        setCardWidth(290)
+      } 
+      else {
+        setVisibleCount(1)
+        setCardWidth(300)
+      }
     }
 
-    updateVisibleCount()
-    window.addEventListener('resize', updateVisibleCount)
-    return () => window.removeEventListener('resize', updateVisibleCount)
+    updateLayout()
+    window.addEventListener('resize', updateLayout)
+    return () => window.removeEventListener('resize', updateLayout)
   }, [])
 
   const totalPages = Math.ceil(items.length / visibleCount)
@@ -88,13 +110,7 @@ export function HomeMarqueeRow({
     if (totalPages > 1) startAutoAdvance()
   }
 
-  // Responsive card width
-  const cardWidth = visibleCount === 5 ? 280 :
-                    visibleCount === 4 ? 270 :
-                    visibleCount === 3 ? 285 : 265
-
-  const gap = 24
-  const pageWidth = cardWidth + gap
+  const pageWidth = cardWidth + GAP
 
   return (
     <section className="mb-16">
@@ -116,14 +132,13 @@ export function HomeMarqueeRow({
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        {/* Sliding Track - FIXED CUTOFF */}
         <div
           className="flex transition-transform duration-500 ease-out"
           style={{
             transform: `translateX(-${currentPage * pageWidth}px)`,
-            gap: `${gap}px`,
-            paddingLeft: '40px',
-            paddingRight: '80px',     // ← Increased right padding (this fixes the cutoff)
+            gap: `${GAP}px`,
+            paddingLeft: `${CONTAINER_PADDING}px`,
+            paddingRight: `${CONTAINER_PADDING}px`,
             paddingTop: '32px',
             paddingBottom: '32px',
           }}
@@ -155,7 +170,6 @@ export function HomeMarqueeRow({
           ))}
         </div>
 
-        {/* Navigation Buttons */}
         {totalPages > 1 && (
           <>
             <button

@@ -31,38 +31,57 @@ export function HomeMarqueeRow({
 }: HomeMarqueeRowProps) {
   if (items.length === 0) return null
 
+  const containerRef = useRef<HTMLDivElement>(null)
   const trackRef = useRef<HTMLDivElement>(null)
-  const [currentPage, setCurrentPage] = useState(0)
-  const [totalPages, setTotalPages] = useState(1)
-  const [isAnimating, setIsAnimating] = useState(false)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
 
-  // Calculate total pages based on actual rendered widths
-  const calcPages = useCallback(() => {
-    const track = trackRef.current
-    if (!track) return
-    const container = track.parentElement
+  const [currentPage, setCurrentPage] = useState(0)
+  const [totalPages, setTotalPages] = useState(1)
+  const [offset, setOffset] = useState(0) // px to translate
+  const [isAnimating, setIsAnimating] = useState(false)
+
+  const GAP = 24
+
+  const getVisibleCount = (w: number) => {
+    if (w >= 1280) return 5
+    if (w >= 1024) return 4
+    if (w >= 768) return 3
+    if (w >= 520) return 2
+    return 1
+  }
+
+  const calcLayout = useCallback(() => {
+    const container = containerRef.current
     if (!container) return
-    const containerWidth = container.clientWidth
-    const firstCard = track.querySelector('[data-card]') as HTMLElement
-    if (!firstCard) return
-    const cardWidth = firstCard.offsetWidth + parseInt(getComputedStyle(track).gap || '0')
-    const visible = Math.max(1, Math.round(containerWidth / cardWidth))
-    setTotalPages(Math.ceil(items.length / visible))
-    setCurrentPage(p => Math.min(p, Math.ceil(items.length / visible) - 1))
+    const w = container.clientWidth
+    const visible = getVisibleCount(w)
+    const cardWidth = (w - GAP * (visible - 1)) / visible
+    const pages = Math.ceil(items.length / visible)
+    setTotalPages(pages)
+    setCurrentPage(p => {
+      const clamped = Math.min(p, pages - 1)
+      setOffset(clamped * (cardWidth + GAP) * visible)
+      return clamped
+    })
   }, [items.length])
 
   useEffect(() => {
-    calcPages()
-    const ro = new ResizeObserver(calcPages)
-    if (trackRef.current?.parentElement) ro.observe(trackRef.current.parentElement)
+    calcLayout()
+    const ro = new ResizeObserver(calcLayout)
+    if (containerRef.current) ro.observe(containerRef.current)
     return () => ro.disconnect()
-  }, [calcPages])
+  }, [calcLayout])
 
   const goToPage = useCallback((page: number) => {
     if (isAnimating) return
+    const container = containerRef.current
+    if (!container) return
+    const w = container.clientWidth
+    const visible = getVisibleCount(w)
+    const cardWidth = (w - GAP * (visible - 1)) / visible
     setIsAnimating(true)
     setCurrentPage(page)
+    setOffset(page * (cardWidth + GAP) * visible)
     setTimeout(() => setIsAnimating(false), 520)
   }, [isAnimating])
 
@@ -70,7 +89,16 @@ export function HomeMarqueeRow({
     if (timerRef.current) clearInterval(timerRef.current)
     if (totalPages <= 1) return
     timerRef.current = setInterval(() => {
-      setCurrentPage(p => (p + 1) % totalPages)
+      setCurrentPage(p => {
+        const next = (p + 1) % totalPages
+        const container = containerRef.current
+        if (!container) return next
+        const w = container.clientWidth
+        const visible = getVisibleCount(w)
+        const cardWidth = (w - GAP * (visible - 1)) / visible
+        setOffset(next * (cardWidth + GAP) * visible)
+        return next
+      })
     }, durationSec * 1000)
   }, [totalPages, durationSec])
 
@@ -99,42 +127,56 @@ export function HomeMarqueeRow({
       </div>
 
       <div
-        className="relative overflow-hidden rounded-3xl border border-white/10 bg-zinc-950 shadow-2xl"
+        className="relative rounded-3xl border border-white/10 bg-zinc-950 shadow-2xl overflow-hidden"
         onMouseEnter={stopTimer}
         onMouseLeave={startTimer}
       >
-        {/* Track */}
-        <div className="overflow-hidden px-6 py-8">
+        <div ref={containerRef} className="overflow-hidden px-6 py-8">
           <div
             ref={trackRef}
-            className="flex gap-6 transition-transform duration-500 ease-out"
-            style={{ transform: `translateX(calc(-${currentPage * 100}% - ${currentPage * 0}px))` }}
+            className="flex transition-transform duration-500 ease-out"
+            style={{
+              gap: `${GAP}px`,
+              transform: `translateX(-${offset}px)`
+            }}
           >
-            {items.map((item) => (
-              <Link
-                key={item.id}
-                href={item.href}
-                data-card
-                className="group flex-none w-[calc(20%-19.2px)] xl:w-[calc(20%-19.2px)] lg:w-[calc(25%-18px)] md:w-[calc(33.333%-16px)] sm:w-[calc(50%-12px)] w-full overflow-hidden bg-[#1b2838] border border-[#2a475e] rounded-2xl hover:border-[#66c0f4] hover:-translate-y-1 transition-all duration-300"
-              >
-                <div className="relative aspect-[16/9] overflow-hidden bg-black">
-                  <Image
-                    src={item.image}
-                    alt={item.title}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                </div>
-                <div className="p-5 space-y-2">
-                  <h3 className="font-semibold text-base md:text-lg leading-tight text-white line-clamp-2 group-hover:text-[#66c0f4] transition-colors">
-                    {item.title}
-                  </h3>
-                  {item.subtitle && (
-                    <p className="text-sm text-zinc-400 line-clamp-1">{item.subtitle}</p>
-                  )}
-                </div>
-              </Link>
-            ))}
+            {items.map((item) => {
+              return (
+                <Link
+                  key={item.id}
+                  href={item.href}
+                  className="group flex-none overflow-hidden bg-[#1b2838] border border-[#2a475e] rounded-2xl hover:border-[#66c0f4] hover:-translate-y-1 transition-all duration-300"
+                  style={{
+                    width: `calc((100% - ${GAP * (
+                      containerRef.current
+                        ? getVisibleCount(containerRef.current.clientWidth) - 1
+                        : 4
+                    )}px) / ${
+                      containerRef.current
+                        ? getVisibleCount(containerRef.current.clientWidth)
+                        : 5
+                    })`
+                  }}
+                >
+                  <div className="relative aspect-[16/9] overflow-hidden bg-black">
+                    <Image
+                      src={item.image}
+                      alt={item.title}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </div>
+                  <div className="p-5 space-y-2">
+                    <h3 className="font-semibold text-base md:text-lg leading-tight text-white line-clamp-2 group-hover:text-[#66c0f4] transition-colors">
+                      {item.title}
+                    </h3>
+                    {item.subtitle && (
+                      <p className="text-sm text-zinc-400 line-clamp-1">{item.subtitle}</p>
+                    )}
+                  </div>
+                </Link>
+              )
+            })}
           </div>
         </div>
 
@@ -143,19 +185,22 @@ export function HomeMarqueeRow({
             <button
               onClick={() => goToPage(currentPage === 0 ? totalPages - 1 : currentPage - 1)}
               disabled={isAnimating}
-              className="absolute left-6 top-1/2 -translate-y-1/2 z-20 bg-black/70 hover:bg-black/90 text-white rounded-full w-11 h-11 flex items-center justify-center transition-all border border-white/20 hover:border-white/40 disabled:opacity-40"
+              className="absolute left-3 top-1/2 -translate-y-1/2 z-20 bg-black/70 hover:bg-black/90 text-white rounded-full w-10 h-10 flex items-center justify-center transition-all border border-white/20 hover:border-white/40 disabled:opacity-40"
             >
-              ←
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M15 18l-6-6 6-6" />
+              </svg>
             </button>
             <button
               onClick={() => goToPage((currentPage + 1) % totalPages)}
               disabled={isAnimating}
-              className="absolute right-6 top-1/2 -translate-y-1/2 z-20 bg-black/70 hover:bg-black/90 text-white rounded-full w-11 h-11 flex items-center justify-center transition-all border border-white/20 hover:border-white/40 disabled:opacity-40"
+              className="absolute right-3 top-1/2 -translate-y-1/2 z-20 bg-black/70 hover:bg-black/90 text-white rounded-full w-10 h-10 flex items-center justify-center transition-all border border-white/20 hover:border-white/40 disabled:opacity-40"
             >
-              →
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 18l6-6-6-6" />
+              </svg>
             </button>
 
-            {/* Dots */}
             <div className="flex justify-center gap-2 pb-4">
               {Array.from({ length: totalPages }).map((_, i) => (
                 <button

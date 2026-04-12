@@ -51,35 +51,41 @@ export function HomeMarqueeRow({
     setTimeout(() => setIsAnimating(false), 500)
   }
 
-  // Auto-advance + pause on hover
-  useEffect(() => {
-    if (totalPages <= 1) return
+  // In useEffect, replace the old auto-advance with:
+useEffect(() => {
+  if (totalPages <= 1) return
+  startAutoAdvance()
 
-    const startAuto = () => {
-      timeoutRef.current = setInterval(() => {
-        const nextPage = (currentPage + 1) % totalPages
-        goToPage(nextPage)
-      }, durationSec * 1000)
-    }
+    const startAutoAdvance = () => {
+  if (timeoutRef.current) clearInterval(timeoutRef.current)
+  
+  timeoutRef.current = setInterval(() => {
+    const nextPage = (currentPage + 1) % totalPages
+    goToPage(nextPage)
+  }, durationSec * 1000)
+}
 
     startAuto()
 
-    return () => {
-      if (timeoutRef.current) clearInterval(timeoutRef.current)
-    }
-  }, [currentPage, totalPages, durationSec])
+    return () => stopAutoAdvance()
+}, [currentPage, totalPages, durationSec])
 
-  // Pause on hover
-  const handleMouseEnter = () => {
-    if (timeoutRef.current) clearInterval(timeoutRef.current)
+  const stopAutoAdvance = () => {
+  if (timeoutRef.current) {
+    clearInterval(timeoutRef.current)
+    timeoutRef.current = null
   }
-  const handleMouseLeave = () => {
-    // Restart auto-advance
-    if (totalPages > 1) {
-      const nextPage = (currentPage + 1) % totalPages
-      goToPage(nextPage)
-    }
+}
+  /// Hover handlers
+const handleMouseEnter = () => {
+  stopAutoAdvance()
+}
+
+const handleMouseLeave = () => {
+  if (totalPages > 1) {
+    startAutoAdvance()   // Restart the full timer — no immediate jump
   }
+}
 
   return (
     <section className="mb-16">

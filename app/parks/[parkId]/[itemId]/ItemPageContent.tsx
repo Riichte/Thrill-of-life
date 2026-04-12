@@ -277,43 +277,47 @@ export default function ItemPageContent({ park, item, category, images, videos, 
                 }
 
 
-      // Check favorite  👈 add this block
-      const { data: existingFav } = await supabase
-        .from('favorites')
-        .select('id')
-        .eq('item_id', item.id)
-        .eq('user_id', user.id)
-        .single()
-    setIsFavorited(!!existingFav)
-}
-load()
-  }, [item.id])
+                // Check favorite  👈 add this block
+                const { data: existingFav } = await supabase
+                    .from('favorites')
+                    .select('id')
+                    .eq('item_id', item.id)
+                    .eq('user_id', user.id)
+                    .single()
+                setIsFavorited(!!existingFav)
+            }
+            load()
+        }, [item.id])
 
-const handleReact = (reviewId: string, reaction: Reaction) => {
-    const current = myReactions[reviewId][reaction]
-    if (reaction === 'award' && !current && userPoints < 100) return
-    setReactions(prev => ({
-        ...prev,
-        [reviewId]: { ...prev[reviewId], [reaction]: prev[reviewId][reaction] + (current ? -1 : 1) }
-    }))
-    setMyReactions(prev => ({
-        ...prev,
-        [reviewId]: { ...prev[reviewId], [reaction]: !current }
-    }))
-    if (reaction === 'award') setUserPoints(prev => current ? prev + 100 : prev - 100)
-}
+        const handleReact = (reviewId: string, reaction: Reaction) => {
+            const current = myReactions[reviewId][reaction]
+            if (reaction === 'award' && !current && userPoints < 100) return
+            setReactions(prev => ({
+                ...prev,
+                [reviewId]: { ...prev[reviewId], [reaction]: prev[reviewId][reaction] + (current ? -1 : 1) }
+            }))
+            setMyReactions(prev => ({
+                ...prev,
+                [reviewId]: { ...prev[reviewId], [reaction]: !current }
+            }))
+            if (reaction === 'award') setUserPoints(prev => current ? prev + 100 : prev - 100)
+        }
 
-if (reaction === 'award') setUserPoints(prev => current ? prev + 100 : prev - 100)
-  }
-
-const handleFavoriteToggle = async () => {   // 👈 add from here
-    if (!user) {
-        window.location.href = `/auth/login?redirect=${encodeURIComponent(window.location.pathname)}`
-        return
-    }
-    if (isFavorited) {
-        await supabase.from('favorites').delete()
-            .eq('item_id', item.id).eq('user_id', user.id)
+        const handleFavoriteToggle = async () => {
+            if (!user) {
+                window.location.href = `/auth/login?redirect=${encodeURIComponent(window.location.pathname)}`
+                return
+            }
+            if (isFavorited) {
+                await supabase.from('favorites').delete()
+                    .eq('item_id', item.id).eq('user_id', user.id)
+                setIsFavorited(false)
+            } else {
+                await supabase.from('favorites').insert({ item_id: item.id, user_id: user.id })
+                setIsFavorited(true)
+            }
+        }     
+         .eq('item_id', item.id).eq('user_id', user.id)
         setIsFavorited(false)
     } else {
         await supabase.from('favorites').insert({ item_id: item.id, user_id: user.id })

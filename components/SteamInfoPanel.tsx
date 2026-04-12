@@ -1,4 +1,7 @@
+'use client'
+
 import type { ReactNode } from 'react'
+import { useState } from 'react'
 
 export type SteamMetaRow = {
   label: string
@@ -24,6 +27,10 @@ type SteamInfoPanelProps = {
   tags?: string[]
   children?: ReactNode
   className?: string
+  // Favorite props
+  isFavorited?: boolean
+  onFavoriteToggle?: () => void
+  showFavorite?: boolean
 }
 
 export function SteamInfoPanel({
@@ -43,8 +50,21 @@ export function SteamInfoPanel({
   metadata = [],
   tags = [],
   children,
-  className = ''
+  className = '',
+  isFavorited = false,
+  onFavoriteToggle,
+  showFavorite = false,
 }: SteamInfoPanelProps) {
+  const [favorited, setFavorited] = useState(isFavorited)
+  const [favAnimating, setFavAnimating] = useState(false)
+
+  const handleFavorite = () => {
+    setFavAnimating(true)
+    setTimeout(() => setFavAnimating(false), 300)
+    setFavorited(prev => !prev)
+    onFavoriteToggle?.()
+  }
+
   return (
     <div className={`flex flex-col overflow-hidden rounded-sm border border-[#2a475e] bg-[#1b2838] ${className}`}>
       {headerImage && (
@@ -121,6 +141,23 @@ export function SteamInfoPanel({
             </button>
           </div>
         </div>
+
+        {/* Favorite Button */}
+        {showFavorite && (
+          <button
+            onClick={handleFavorite}
+            className={`flex items-center justify-center gap-2 w-full py-2 rounded-sm border text-sm font-medium transition-all duration-200
+              ${favorited
+                ? 'border-red-500 bg-red-500/10 text-red-400 hover:bg-red-500/20'
+                : 'border-[#2a475e] bg-transparent text-[#8f98a0] hover:border-[#66c0f4] hover:text-[#66c0f4]'
+              } ${favAnimating ? 'scale-95' : 'scale-100'}`}
+          >
+            <span className={`text-lg transition-transform ${favAnimating ? 'scale-125' : ''}`}>
+              {favorited ? '❤️' : '🤍'}
+            </span>
+            {favorited ? 'Remove from Favorites' : 'Add to Favorites'}
+          </button>
+        )}
 
         {/* Rating breakdown bars */}
         {ratingBreakdown && (

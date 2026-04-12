@@ -235,6 +235,13 @@ export default function ItemPageContent({ park, item, category, images, videos, 
     dimensions.reduce((acc, dim) => ({ ...acc, [dim.id]: 50 }), {})
   )
 
+  const [userRatings, setUserRatings] = useState<Record<string, number>>(
+    dimensions.reduce((acc, dim) => ({ ...acc, [dim.id]: 50 }), {})
+  )
+  const [isFavorited, setIsFavorited] = useState(false)  // 👈 add this line
+
+  // Load auth user + existing rating on mount
+  useEffect(() => {
   // Load auth user + existing rating on mount
   useEffect(() => {
     const load = async () => {
@@ -272,6 +279,21 @@ export default function ItemPageContent({ park, item, category, images, videos, 
     load()
   }, [item.id])
 
+  setMyScore(avg)
+      }
+
+      // Check favorite  👈 add this block
+      const { data: existingFav } = await supabase
+        .from('favorites')
+        .select('id')
+        .eq('item_id', item.id)
+        .eq('user_id', user.id)
+        .single()
+      setIsFavorited(!!existingFav)
+    }
+    load()
+  }, [item.id])
+
   const handleReact = (reviewId: string, reaction: Reaction) => {
     const current = myReactions[reviewId][reaction]
     if (reaction === 'award' && !current && userPoints < 100) return
@@ -285,6 +307,24 @@ export default function ItemPageContent({ park, item, category, images, videos, 
     }))
     if (reaction === 'award') setUserPoints(prev => current ? prev + 100 : prev - 100)
   }
+
+  if (reaction === 'award') setUserPoints(prev => current ? prev + 100 : prev - 100)
+  }
+
+  const handleFavoriteToggle = async () => {   // 👈 add from here
+    if (!user) {
+      window.location.href = `/auth/login?redirect=${encodeURIComponent(window.location.pathname)}`
+      return
+    }
+    if (isFavorited) {
+      await supabase.from('favorites').delete()
+        .eq('item_id', item.id).eq('user_id', user.id)
+      setIsFavorited(false)
+    } else {
+      await supabase.from('favorites').insert({ item_id: item.id, user_id: user.id })
+      setIsFavorited(true)
+    }
+  }                                              // 👈 to here
 
   const calculateMyScore = () =>
     Math.round(dimensions.reduce((sum, dim) => sum + (userRatings[dim.id] || 0), 0) / dimensions.length)
@@ -329,7 +369,13 @@ export default function ItemPageContent({ park, item, category, images, videos, 
       setMyScore(score)
       setHasRated(true)
       setIsRatingOpen(false)
-      if (!hasRated) setUserPoints(prev => prev + 100)
+      if (!hasRated) {
+        setUserPoints(prev => prev + 100)
+        await supabase.from('user_points').upsert(
+          { user_id: user.id, points: userPoints + 100 },
+          { onConflict: 'user_id' }
+        )
+      }
       if (reviewTitle.trim() || reviewText.trim()) {
         setUserReview({ title: reviewTitle, text: reviewText })
       }
@@ -395,6 +441,9 @@ export default function ItemPageContent({ park, item, category, images, videos, 
               }}
               ratingBreakdown={COMMUNITY_BREAKDOWN}
               tags={[specs.type, specs.manufacturer, category.name].filter(Boolean) as string[]}
+              showFavorite={true}
+              isFavorited={isFavorited}
+              onFavoriteToggle={handleFavoriteToggle}
             >
               {hasSpecs && (
                 <div className="border-t border-[#2a475e] pt-4">

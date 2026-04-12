@@ -60,9 +60,9 @@ export default async function CategoryPage({
   params: Promise<{ parkId: string; categoryId: string }>
 }) {
   const { parkId, categoryId } = await params
-  const park = getParkById(parkId)
-  const category = getCategoryById(categoryId)
-  const categoryItems = getItemsByCategory(parkId, categoryId)
+  const park = await getParkById(parkId)
+  const category = await getCategoryById(categoryId)
+  const categoryItems = await getItemsByCategory(parkId, categoryId)
 
   if (!park || !category) {
     notFound()

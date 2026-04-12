@@ -17,8 +17,9 @@ export default async function ParkPage({
   params: Promise<{ parkId: string }>
 }) {
   const { parkId } = await params
-  const park = getParkById(parkId)
-  const items = getItemsByPark(parkId)
+  const park = await getParkById(parkId)
+  const items = await getItemsByPark(parkId)
+  const allCategories = await getAllCategories()
 
   if (!park) {
     notFound()
@@ -98,7 +99,7 @@ export default async function ParkPage({
             {allCategories.map(category => {
               const categoryItems = items.filter(item => item.category_id === category.id)
               const imageUrl = categoryBackgroundImages[category.id]
-              
+
               return (
                 <Link
                   key={category.id}

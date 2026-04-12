@@ -160,12 +160,13 @@ function ReviewCard({
   )
 }
 
-function ItemPageContent({ park, item, category, images, videos }: {
+function ItemPageContent({ park, item, category, images, videos, similarRides }: {
   park: any
   item: any
   category: any
   images: string[]
   videos: string[]
+  similarRides: any[]
 }) {
   const [reviewFilter, setReviewFilter] = useState('all')
   const [isRatingOpen, setIsRatingOpen] = useState(false)
@@ -248,14 +249,7 @@ function ItemPageContent({ park, item, category, images, videos }: {
   const specs = item.specs || {}
   const hasSpecs = Object.keys(specs).length > 0
 
-  // Similar rides based on coaster type
   const currentType = item.specs?.type
-  const similarRides = currentType ? getSimilarRides(item.id, currentType) : []
-
-  const [similarPage, setSimilarPage] = useState(0)
-  const similarPerPage = 3
-  const similarTotalPages = Math.ceil(similarRides.length / similarPerPage)
-  const visibleSimilar = similarRides.slice(similarPage * similarPerPage, similarPage * similarPerPage + similarPerPage)
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
@@ -505,13 +499,16 @@ function ItemPageContent({ park, item, category, images, videos }: {
 
 export default async function ItemPage({ params }: ItemPageProps) {
   const { parkId, itemId } = await params
-  const park = getParkById(parkId)
-  const item = getItemById(parkId, itemId)
-  const category = item ? getCategoryById(item.category_id) : null
-  const images = getItemImages(itemId)
-  const videos = getItemVideos(itemId)
+  const park = await getParkById(parkId)
+  const item = await getItemById(parkId, itemId)
+  const category = item ? await getCategoryById(item.category_id) : null
+  const images = await getItemImages(itemId)
+  const videos = await getItemVideos(itemId)
+  const similarRides = item?.specs?.type
+    ? await getSimilarRides(item.id, item.specs.type)
+    : []
 
   if (!park || !item || !category) notFound()
-  
-  return <ItemPageContent park={park} item={item} category={category} images={images} videos={videos} />
+
+  return <ItemPageContent park={park} item={item} category={category} images={images} videos={videos} similarRides={similarRides} />
 }

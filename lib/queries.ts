@@ -119,3 +119,78 @@ export async function getSimilarRides(itemId: string, type: string, limit = 6) {
     image: item.item_images?.[0]?.url ?? null
   }))
 }
+
+// ─── Profiles ────────────────────────────────────────────
+
+export async function getProfileById(userId: string) {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', userId)
+    .single()
+  if (error) return null
+  return data
+}
+
+export async function getProfileReviews(userId: string) {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('reviews')
+    .select('*, review_ratings(*), items(id, name, park_id, category_id)')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+  if (error) return []
+  return data ?? []
+}
+
+export async function getProfileFavorites(userId: string) {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('favorites')
+    .select('*, items(id, name, park_id, category_id, specs, item_images(url))')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+  if (error) return []
+  return data ?? []
+}
+
+export async function getProfilePoints(userId: string) {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('user_points')
+    .select('points')
+    .eq('user_id', userId)
+    .single()
+  if (error) return 0
+  return data?.points ?? 0
+}
+
+export async function getFollowerCount(userId: string) {
+  const supabase = await createClient()
+  const { count } = await supabase
+    .from('followers')
+    .select('*', { count: 'exact', head: true })
+    .eq('following_id', userId)
+  return count ?? 0
+}
+
+export async function getFollowingCount(userId: string) {
+  const supabase = await createClient()
+  const { count } = await supabase
+    .from('followers')
+    .select('*', { count: 'exact', head: true })
+    .eq('follower_id', userId)
+  return count ?? 0
+}
+
+export async function getIsFollowing(followerId: string, followingId: string) {
+  const supabase = await createClient()
+  const { data } = await supabase
+    .from('followers')
+    .select('follower_id')
+    .eq('follower_id', followerId)
+    .eq('following_id', followingId)
+    .single()
+  return !!data
+}

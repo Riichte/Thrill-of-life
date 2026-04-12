@@ -59,6 +59,9 @@ function ItemPageContent({ park, item, category, images, videos }: {
   const [isRatingOpen, setIsRatingOpen] = useState(false)
   const [hasRated, setHasRated] = useState(false)
   const [myScore, setMyScore] = useState<number | null>(null)
+  const [reviewTitle, setReviewTitle] = useState('')
+  const [reviewText, setReviewText] = useState('')
+  const [userReview, setUserReview] = useState<{ title: string; text: string } | null>(null)
 
   const dimensions = ratingDimensions[item.category_id] || ratingDimensions.rides
   const [userRatings, setUserRatings] = useState<Record<string, number>>(
@@ -73,6 +76,9 @@ function ItemPageContent({ park, item, category, images, videos }: {
     setMyScore(score)
     setHasRated(true)
     setIsRatingOpen(false)
+    if (reviewTitle.trim() || reviewText.trim()) {
+      setUserReview({ title: reviewTitle, text: reviewText })
+    }
   }
 
   // Blend community 60% + user 40% when rated
@@ -232,6 +238,24 @@ function ItemPageContent({ park, item, category, images, videos }: {
                   )
                 })}
               </div>
+              {/* Comment */}
+              <div className="px-6 pb-5 space-y-3 border-t border-[#2a475e] pt-5">
+                <p className="text-xs font-medium uppercase tracking-wider text-[#8f98a0]">Leave a review (optional)</p>
+                <input
+                  type="text"
+                  placeholder="Review title"
+                  value={reviewTitle}
+                  onChange={e => setReviewTitle(e.target.value)}
+                  className="w-full bg-[#2a475e] border border-[#3d6a8a] rounded-sm px-3 py-2 text-sm text-[#c6d4df] placeholder-[#6a8a9a] focus:outline-none focus:border-[#66c0f4]"
+                />
+                <textarea
+                  placeholder="Share your experience..."
+                  value={reviewText}
+                  onChange={e => setReviewText(e.target.value)}
+                  rows={3}
+                  className="w-full bg-[#2a475e] border border-[#3d6a8a] rounded-sm px-3 py-2 text-sm text-[#c6d4df] placeholder-[#6a8a9a] focus:outline-none focus:border-[#66c0f4] resize-none"
+                />
+              </div>
               {/* Footer */}
               <div className="flex items-center justify-between border-t border-[#2a475e] px-6 py-4">
                 <div className="text-sm text-[#8f98a0]">
@@ -274,6 +298,29 @@ function ItemPageContent({ park, item, category, images, videos }: {
             ))}
           </div>
           <div className="space-y-6">
+            {userReview && myScore !== null && (
+              <div className="bg-[#1b2838] border border-[#2a475e] rounded-lg p-6 flex gap-6 items-start">
+                <div className="flex-shrink-0">
+                  <svg className="w-20 h-20" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="#2a475e" strokeWidth="2" />
+                    <circle cx="50" cy="50" r="45" fill="none" stroke={myScore >= 75 ? '#10b981' : myScore >= 50 ? '#f59e0b' : '#ef4444'} strokeWidth="2"
+                      strokeDasharray={`${(myScore / 100) * 282.7}`} strokeDashoffset="0" strokeLinecap="round"
+                      style={{ transform: 'rotate(-90deg)', transformOrigin: '50% 50%' }} />
+                    <text x="50" y="50" textAnchor="middle" dy="0.3em" fill="#c6d4df" fontWeight="bold" fontSize="28">
+                      {myScore}
+                    </text>
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="font-semibold text-[#66c0f4] text-lg">You</span>
+                    <span className="text-xs text-[#8f98a0] bg-[#2a475e] px-2 py-0.5 rounded-sm">Your review</span>
+                  </div>
+                  {userReview.title && <p className="text-base font-medium text-[#c6d4df] mb-2">{userReview.title}</p>}
+                  {userReview.text && <p className="text-sm text-[#acb2b8] leading-relaxed">{userReview.text}</p>}
+                </div>
+              </div>
+            )}
             {[
               { author: 'Sarah M.', score: 92, title: 'Absolutely thrilling!', text: "One of the best rides I've ever experienced. The speed and intensity are incredible!" },
               { author: 'John D.', score: 68, title: 'Great but queue was long', text: 'The ride itself is fantastic, but I waited 90 minutes. Worth it, but plan accordingly.' },

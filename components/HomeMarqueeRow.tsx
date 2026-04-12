@@ -31,12 +31,25 @@ export function HomeMarqueeRow({
 }: HomeMarqueeRowProps) {
   if (items.length === 0) return null
 
-  const visibleItemsCount = 5
-  const cardWidth = 280
-  const gap = 24
-  const pageWidth = cardWidth + gap
+  const [visibleCount, setVisibleCount] = useState(5)
 
-  const totalPages = Math.ceil(items.length / visibleItemsCount)
+  // Responsive visible items
+  useEffect(() => {
+    const updateVisibleCount = () => {
+      const width = window.innerWidth
+      if (width >= 1280) setVisibleCount(5)      // Large desktop
+      else if (width >= 1024) setVisibleCount(4) // Desktop / large tablet
+      else if (width >= 768) setVisibleCount(3)  // Tablet
+      else if (width >= 480) setVisibleCount(2)  // Large mobile
+      else setVisibleCount(1)                    // Small mobile
+    }
+
+    updateVisibleCount()
+    window.addEventListener('resize', updateVisibleCount)
+    return () => window.removeEventListener('resize', updateVisibleCount)
+  }, [])
+
+  const totalPages = Math.ceil(items.length / visibleCount)
   const [currentPage, setCurrentPage] = useState(0)
   const [isAnimating, setIsAnimating] = useState(false)
 
@@ -44,20 +57,13 @@ export function HomeMarqueeRow({
 
   const goToPage = useCallback((page: number) => {
     if (isAnimating || page === currentPage) return
-
     setIsAnimating(true)
     setCurrentPage(page)
-
-    // Allow animation to finish
-    setTimeout(() => {
-      setIsAnimating(false)
-    }, 520)
+    setTimeout(() => setIsAnimating(false), 520)
   }, [isAnimating, currentPage])
 
-  // Auto-advance helpers
   const startAutoAdvance = useCallback(() => {
     if (timeoutRef.current) clearInterval(timeoutRef.current)
-
     timeoutRef.current = setInterval(() => {
       const nextPage = (currentPage + 1) % totalPages
       goToPage(nextPage)
@@ -71,24 +77,24 @@ export function HomeMarqueeRow({
     }
   }, [])
 
-  // Auto-advance effect
   useEffect(() => {
     if (totalPages <= 1) return
     startAutoAdvance()
-
     return () => stopAutoAdvance()
   }, [startAutoAdvance, stopAutoAdvance, totalPages])
 
-  // Hover handlers
-  const handleMouseEnter = () => {
-    stopAutoAdvance()
+  const handleMouseEnter = () => stopAutoAdvance()
+  const handleMouseLeave = () => {
+    if (totalPages > 1) startAutoAdvance()
   }
 
-  const handleMouseLeave = () => {
-    if (totalPages > 1) {
-      startAutoAdvance()   // Restart normal timer - no instant jump
-    }
-  }
+  // Responsive card width
+  const cardWidth = visibleCount === 5 ? 280 :
+                    visibleCount === 4 ? 265 :
+                    visibleCount === 3 ? 280 : 260
+
+  const gap = 24
+  const pageWidth = cardWidth + gap
 
   return (
     <section className="mb-16">
@@ -110,20 +116,20 @@ export function HomeMarqueeRow({
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        {/* Sliding Track */}
         <div
           className="flex transition-transform duration-500 ease-out"
           style={{
             transform: `translateX(-${currentPage * pageWidth}px)`,
             gap: `${gap}px`,
-            padding: '32px 40px',   // Increased right padding to prevent last card cutoff
+            padding: '32px 40px',
           }}
         >
           {items.map((item) => (
             <Link
               key={item.id}
               href={item.href}
-              className="group flex-none w-[270px] bg-[#1b2838] border border-[#2a475e] rounded-2xl overflow-hidden hover:border-[#66c0f4] hover:-translate-y-1 transition-all duration-300"
+              className="group flex-none overflow-hidden bg-[#1b2838] border border-[#2a475e] rounded-2xl hover:border-[#66c0f4] hover:-translate-y-1 transition-all duration-300"
+              style={{ width: `${cardWidth}px` }}
             >
               <div className="relative aspect-[16/9] overflow-hidden bg-black">
                 <Image
@@ -134,7 +140,7 @@ export function HomeMarqueeRow({
                 />
               </div>
               <div className="p-5 space-y-2">
-                <h3 className="font-semibold text-lg leading-tight text-white line-clamp-2 group-hover:text-[#66c0f4] transition-colors">
+                <h3 className="font-semibold text-base md:text-lg leading-tight text-white line-clamp-2 group-hover:text-[#66c0f4] transition-colors">
                   {item.title}
                 </h3>
                 {item.subtitle && (
@@ -145,20 +151,20 @@ export function HomeMarqueeRow({
           ))}
         </div>
 
-        {/* Navigation Buttons */}
+        {/* Navigation Buttons - hide on very small screens if only 1 card visible */}
         {totalPages > 1 && (
           <>
             <button
               onClick={() => goToPage(currentPage === 0 ? totalPages - 1 : currentPage - 1)}
               disabled={isAnimating}
-              className="absolute left-6 top-1/2 -translate-y-1/2 z-20 bg-black/70 hover:bg-black/90 text-white rounded-full w-12 h-12 flex items-center justify-center transition-all border border-white/20 hover:border-white/40 disabled:opacity-40"
+              className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 z-20 bg-black/70 hover:bg-black/90 text-white rounded-full w-10 h-10 md:w-12 md:h-12 flex items-center justify-center transition-all border border-white/20 hover:border-white/40 disabled:opacity-40"
             >
               ←
             </button>
             <button
               onClick={() => goToPage((currentPage + 1) % totalPages)}
               disabled={isAnimating}
-              className="absolute right-6 top-1/2 -translate-y-1/2 z-20 bg-black/70 hover:bg-black/90 text-white rounded-full w-12 h-12 flex items-center justify-center transition-all border border-white/20 hover:border-white/40 disabled:opacity-40"
+              className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 z-20 bg-black/70 hover:bg-black/90 text-white rounded-full w-10 h-10 md:w-12 md:h-12 flex items-center justify-center transition-all border border-white/20 hover:border-white/40 disabled:opacity-40"
             >
               →
             </button>

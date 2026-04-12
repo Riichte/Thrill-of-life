@@ -37,11 +37,11 @@ export function HomeMarqueeRow({
   useEffect(() => {
     const updateVisibleCount = () => {
       const width = window.innerWidth
-      if (width >= 1280) setVisibleCount(5)      // Large desktop
-      else if (width >= 1024) setVisibleCount(4) // Desktop / large tablet
-      else if (width >= 768) setVisibleCount(3)  // Tablet
-      else if (width >= 480) setVisibleCount(2)  // Large mobile
-      else setVisibleCount(1)                    // Small mobile
+      if (width >= 1280) setVisibleCount(5)
+      else if (width >= 1024) setVisibleCount(4)
+      else if (width >= 768) setVisibleCount(3)
+      else if (width >= 480) setVisibleCount(2)
+      else setVisibleCount(1)
     }
 
     updateVisibleCount()
@@ -90,8 +90,8 @@ export function HomeMarqueeRow({
 
   // Responsive card width
   const cardWidth = visibleCount === 5 ? 280 :
-                    visibleCount === 4 ? 265 :
-                    visibleCount === 3 ? 280 : 260
+                    visibleCount === 4 ? 270 :
+                    visibleCount === 3 ? 285 : 265
 
   const gap = 24
   const pageWidth = cardWidth + gap
@@ -116,12 +116,16 @@ export function HomeMarqueeRow({
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
+        {/* Sliding Track - FIXED CUTOFF */}
         <div
           className="flex transition-transform duration-500 ease-out"
           style={{
             transform: `translateX(-${currentPage * pageWidth}px)`,
             gap: `${gap}px`,
-            padding: '32px 40px',
+            paddingLeft: '40px',
+            paddingRight: '80px',     // ← Increased right padding (this fixes the cutoff)
+            paddingTop: '32px',
+            paddingBottom: '32px',
           }}
         >
           {items.map((item) => (
@@ -151,20 +155,20 @@ export function HomeMarqueeRow({
           ))}
         </div>
 
-        {/* Navigation Buttons - hide on very small screens if only 1 card visible */}
+        {/* Navigation Buttons */}
         {totalPages > 1 && (
           <>
             <button
               onClick={() => goToPage(currentPage === 0 ? totalPages - 1 : currentPage - 1)}
               disabled={isAnimating}
-              className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 z-20 bg-black/70 hover:bg-black/90 text-white rounded-full w-10 h-10 md:w-12 md:h-12 flex items-center justify-center transition-all border border-white/20 hover:border-white/40 disabled:opacity-40"
+              className="absolute left-6 top-1/2 -translate-y-1/2 z-20 bg-black/70 hover:bg-black/90 text-white rounded-full w-11 h-11 flex items-center justify-center transition-all border border-white/20 hover:border-white/40 disabled:opacity-40"
             >
               ←
             </button>
             <button
               onClick={() => goToPage((currentPage + 1) % totalPages)}
               disabled={isAnimating}
-              className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 z-20 bg-black/70 hover:bg-black/90 text-white rounded-full w-10 h-10 md:w-12 md:h-12 flex items-center justify-center transition-all border border-white/20 hover:border-white/40 disabled:opacity-40"
+              className="absolute right-6 top-1/2 -translate-y-1/2 z-20 bg-black/70 hover:bg-black/90 text-white rounded-full w-11 h-11 flex items-center justify-center transition-all border border-white/20 hover:border-white/40 disabled:opacity-40"
             >
               →
             </button>

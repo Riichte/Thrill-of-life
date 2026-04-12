@@ -88,21 +88,23 @@ export function SteamInfoPanel({
           </div>
         )}
 
-        {score !== undefined && (
-          <div className="flex items-center gap-4 border-b border-[#2a475e] pb-4">
-            <div
-              className="relative flex h-20 w-20 shrink-0 items-center justify-center rounded-full"
-              style={{ background: `conic-gradient(#66c0f4 ${score * 3.6}deg, #2a475e 0)` }}
-            >
-              <div className="flex h-[68px] w-[68px] items-center justify-center rounded-full bg-[#1b2838]">
-                <span className="text-2xl font-bold text-[#66c0f4]">{score}</span>
-              </div>
-            </div>
-            <div>
-              <p className="text-[10px] font-medium uppercase tracking-wider text-[#8f98a0]">My Score</p>
+        <div className="flex items-center gap-4 border-b border-[#2a475e] pb-4">
+          <div
+            className="relative flex h-20 w-20 shrink-0 items-center justify-center rounded-full"
+            style={{ background: '#2a475e' }}
+          >
+            <div className="flex h-[68px] w-[68px] items-center justify-center rounded-full bg-[#1b2838]">
+              <span className="text-2xl text-[#4a6a82]">—</span>
             </div>
           </div>
-        )}
+          <div className="flex flex-col gap-2">
+            <p className="text-[10px] font-medium uppercase tracking-wider text-[#8f98a0]">My Score</p>
+            <p className="text-xs text-[#8f98a0]">You have not rated this yet</p>
+            <button className="w-fit bg-[#4c6b22] hover:bg-[#5a7a28] text-white text-xs font-medium px-3 py-1.5 rounded-sm transition-colors">
+              Rate this ride
+            </button>
+          </div>
+        </div>
 
         {ratingBreakdown && (
           <div className="space-y-1.5">

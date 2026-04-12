@@ -148,11 +148,7 @@ function ItemPageContent({ park, item, category, images, videos }: {
         </div>
 
 
-        {/* Rating System */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-semibold mb-6">Rate This Experience</h2>
-          <RatingComponent item={item} category={category} />
-        </div>
+        
 
         {/* Reviews Section with Filter Tabs */}
         <div className="mb-12">

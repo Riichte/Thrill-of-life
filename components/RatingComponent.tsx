@@ -212,9 +212,6 @@ export default function RatingComponent({
                         background: `linear-gradient(to right, #66c0f4 0%, #66c0f4 ${userScore}%, #2a475e ${userScore}%, #2a475e 100%)`
                       }}
                     />
-                    <p className="text-[10px] text-[#8f98a0]">
-                      Community average: {dimension.communityAverage}
-                    </p>
                   </div>
                 )
               })}

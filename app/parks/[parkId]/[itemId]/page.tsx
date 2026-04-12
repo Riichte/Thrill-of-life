@@ -74,13 +74,6 @@ function ItemPageContent({ park, item, category, images, videos }: {
               score={overallScore}
               scoreLabel="Overall score"
               ratingBreakdown={ratingBreakdown}
-              metadata={[
-                {
-                  label: 'Recent reviews',
-                  value: `Mostly positive (${ratingBreakdown.positive}%)`
-                },
-
-              ]}
               tags={[specs.type, specs.manufacturer, category.name].filter(Boolean) as string[]}
             >
               {hasSpecs && (

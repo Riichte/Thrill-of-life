@@ -53,7 +53,8 @@ export function HomeMarqueeRow({
   const calcLayout = useCallback(() => {
     const container = containerRef.current
     if (!container) return
-    const w = container.clientWidth
+    const PADDING = 48 // 24px each side (px-6)
+    const w = container.clientWidth - PADDING
     const visible = getVisibleCount(w)
     const cw = (w - GAP * (visible - 1)) / visible
     const pages = Math.ceil(items.length / visible)

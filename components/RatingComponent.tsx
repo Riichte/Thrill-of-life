@@ -58,95 +58,149 @@ export default function RatingComponent({
   category: Category
 }) {
   const dimensions = ratingDimensions[item.category_id] || ratingDimensions.rides
+
+  const [isOpen, setIsOpen] = useState(false)
+  const [hasRated, setHasRated] = useState(false)
   const [userRatings, setUserRatings] = useState<Record<string, number>>(
     dimensions.reduce((acc, dim) => ({ ...acc, [dim.id]: 50 }), {})
   )
+  const [submittedScore, setSubmittedScore] = useState<number | null>(null)
 
   const handleRatingChange = (dimensionId: string, value: number) => {
     setUserRatings(prev => ({ ...prev, [dimensionId]: value }))
   }
 
-  const calculateAverage = (dimensionId: string): number => {
-    const dimension = dimensions.find(d => d.id === dimensionId)
-    if (!dimension) return 0
-    
-    const userScore = userRatings[dimensionId] || 0
-    const communityScore = dimension.communityAverage
-    
-    // Blend: 40% user, 60% community (since they just started rating)
-    return Math.round(userScore * 0.4 + communityScore * 0.6)
+  const calculateOverall = (): number => {
+    return Math.round(
+      dimensions.reduce((sum, dim) => sum + (userRatings[dim.id] || 0), 0) / dimensions.length
+    )
   }
 
-  const overallScore = Math.round(
-    dimensions.reduce((sum, dim) => sum + calculateAverage(dim.id), 0) / dimensions.length
-  )
+  const handleSubmit = () => {
+    setSubmittedScore(calculateOverall())
+    setHasRated(true)
+    setIsOpen(false)
+  }
+
+  const score = submittedScore ?? 0
 
   return (
-    <div className="bg-gray-800 p-8 rounded-lg mb-8">
-      {/* Overall Score */}
-      <div className="mb-8 text-center">
-        <div className="inline-block">
-          <div className="text-6xl font-bold text-blue-400 mb-2">{overallScore}</div>
-          <div className="text-gray-300 text-lg">Overall Rating</div>
+    <>
+      {/* Rate button + My Score circle */}
+      <div className="flex items-center gap-6 bg-[#1b2838] border border-[#2a475e] rounded-sm p-6">
+        {/* My Score circle */}
+        <div
+          className="relative flex h-24 w-24 shrink-0 items-center justify-center rounded-full"
+          style={{
+            background: hasRated
+              ? `conic-gradient(#66c0f4 ${score * 3.6}deg, #2a475e 0)`
+              : '#2a475e'
+          }}
+        >
+          <div className="flex h-[82px] w-[82px] items-center justify-center rounded-full bg-[#1b2838]">
+            {hasRated ? (
+              <span className="text-3xl font-bold text-[#66c0f4]">{score}</span>
+            ) : (
+              <span className="text-2xl text-[#4a6a82]">—</span>
+            )}
+          </div>
+        </div>
+
+        {/* Label + button */}
+        <div className="flex flex-col gap-3">
+          <div>
+            <p className="text-[10px] font-medium uppercase tracking-wider text-[#8f98a0]">My Score</p>
+            <p className="text-sm text-[#c6d4df]">
+              {hasRated ? 'Your rating has been submitted' : 'You have not rated this yet'}
+            </p>
+          </div>
+          <button
+            onClick={() => setIsOpen(true)}
+            className="w-fit bg-[#4c6b22] hover:bg-[#5a7a28] text-white text-sm font-medium px-5 py-2 rounded-sm transition-colors"
+          >
+            {hasRated ? 'Edit your rating' : 'Rate this ride'}
+          </button>
         </div>
       </div>
 
-      {/* Rating Dimensions */}
-      <div className="space-y-6">
-        {dimensions.map(dimension => {
-          const userScore = userRatings[dimension.id] || 0
-          const blendedScore = calculateAverage(dimension.id)
+      {/* Modal */}
+      {isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/70"
+            onClick={() => setIsOpen(false)}
+          />
 
-          return (
-            <div key={dimension.id} className="space-y-2">
-              <div className="flex justify-between items-center">
-                <label className="text-lg font-semibold text-gray-100">
-                  {dimension.label}
-                </label>
-                <div className="flex gap-4 items-center">
-                  <div className="text-right">
-                    <div className="text-2xl font-bold text-blue-400">
-                      {blendedScore}
+          {/* Panel */}
+          <div className="relative z-10 w-full max-w-lg bg-[#1b2838] border border-[#2a475e] rounded-sm shadow-2xl">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-[#2a475e] px-6 py-4">
+              <h2 className="text-lg font-semibold text-[#c6d4df]">Rate {item.name}</h2>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="text-[#8f98a0] hover:text-white text-xl leading-none"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Sliders */}
+            <div className="px-6 py-5 space-y-6 max-h-[60vh] overflow-y-auto">
+              {dimensions.map(dimension => {
+                const userScore = userRatings[dimension.id] || 0
+                return (
+                  <div key={dimension.id} className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <label className="text-sm font-medium text-[#c6d4df]">
+                        {dimension.label}
+                      </label>
+                      <span className="text-lg font-bold text-[#66c0f4] w-10 text-right">
+                        {userScore}
+                      </span>
                     </div>
-                    <div className="text-xs text-gray-500">
-                      Community: {dimension.communityAverage}
-                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={userScore}
+                      onChange={e => handleRatingChange(dimension.id, parseInt(e.target.value))}
+                      className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
+                      style={{
+                        background: `linear-gradient(to right, #66c0f4 0%, #66c0f4 ${userScore}%, #2a475e ${userScore}%, #2a475e 100%)`
+                      }}
+                    />
+                    <p className="text-[10px] text-[#8f98a0]">
+                      Community average: {dimension.communityAverage}
+                    </p>
                   </div>
-                </div>
-              </div>
+                )
+              })}
+            </div>
 
-              {/* Slider */}
-              <div className="flex items-center gap-4">
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={userScore}
-                  onChange={e => handleRatingChange(dimension.id, parseInt(e.target.value))}
-                  className="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
-                  style={{
-                    background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${userScore}%, #374151 ${userScore}%, #374151 100%)`
-                  }}
-                />
-                <div className="text-sm text-gray-400 w-12 text-right">{userScore}</div>
+            {/* Footer */}
+            <div className="flex items-center justify-between border-t border-[#2a475e] px-6 py-4">
+              <div className="text-sm text-[#8f98a0]">
+                Your score: <span className="text-[#66c0f4] font-bold">{calculateOverall()}</span>
               </div>
-
-              {/* Score indicator */}
-              <div className="h-1 bg-gray-700 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-red-500 via-yellow-500 to-green-500"
-                  style={{ width: `${blendedScore}%` }}
-                ></div>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="px-4 py-2 text-sm text-[#8f98a0] hover:text-white transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSubmit}
+                  className="px-5 py-2 bg-[#4c6b22] hover:bg-[#5a7a28] text-white text-sm font-medium rounded-sm transition-colors"
+                >
+                  Submit rating
+                </button>
               </div>
             </div>
-          )
-        })}
-      </div>
-
-      {/* Info text */}
-      <div className="mt-8 p-4 bg-gray-700 rounded-lg text-sm text-gray-300">
-        <p>✓ Your ratings are blended with {dimensions.length} community dimensions to create a fair overall score.</p>
-      </div>
-    </div>
+          </div>
+        </div>
+      )}
+    </>
   )
 }

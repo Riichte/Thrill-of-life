@@ -1,13 +1,9 @@
-import { createClient } from '@/lib/supabase/client'
-
-function getSupabase() {
-  return createClient()
-}
+import { createClient } from '@/lib/supabase/server'
 
 // ─── Parks ───────────────────────────────────────────────
 
 export async function getAllParks() {
-  const supabase = getSupabase()
+  const supabase = await createClient()
   const { data, error } = await supabase
     .from('parks')
     .select('*')
@@ -17,7 +13,7 @@ export async function getAllParks() {
 }
 
 export async function getParkById(parkId: string) {
-  const supabase = getSupabase()
+  const supabase = await createClient()
   const { data, error } = await supabase
     .from('parks')
     .select('*')
@@ -30,7 +26,7 @@ export async function getParkById(parkId: string) {
 // ─── Categories ──────────────────────────────────────────
 
 export async function getAllCategories() {
-  const supabase = getSupabase()
+  const supabase = await createClient()
   const { data, error } = await supabase
     .from('categories')
     .select('*')
@@ -40,7 +36,7 @@ export async function getAllCategories() {
 }
 
 export async function getCategoryById(categoryId: string) {
-  const supabase = getSupabase()
+  const supabase = await createClient()
   const { data, error } = await supabase
     .from('categories')
     .select('*')
@@ -53,7 +49,7 @@ export async function getCategoryById(categoryId: string) {
 // ─── Items ───────────────────────────────────────────────
 
 export async function getItemsByPark(parkId: string) {
-  const supabase = getSupabase()
+  const supabase = await createClient()
   const { data, error } = await supabase
     .from('items')
     .select('*')
@@ -64,7 +60,7 @@ export async function getItemsByPark(parkId: string) {
 }
 
 export async function getItemById(parkId: string, itemId: string) {
-  const supabase = getSupabase()
+  const supabase = await createClient()
   const { data, error } = await supabase
     .from('items')
     .select('*')
@@ -76,7 +72,7 @@ export async function getItemById(parkId: string, itemId: string) {
 }
 
 export async function getItemsByCategory(parkId: string, categoryId: string) {
-  const supabase = getSupabase()
+  const supabase = await createClient()
   const { data, error } = await supabase
     .from('items')
     .select('*')
@@ -90,7 +86,7 @@ export async function getItemsByCategory(parkId: string, categoryId: string) {
 // ─── Media ───────────────────────────────────────────────
 
 export async function getItemImages(itemId: string): Promise<string[]> {
-  const supabase = getSupabase()
+  const supabase = await createClient()
   const { data, error } = await supabase
     .from('item_images')
     .select('url')
@@ -101,7 +97,6 @@ export async function getItemImages(itemId: string): Promise<string[]> {
 }
 
 export async function getItemVideos(itemId: string): Promise<string[]> {
-  // Videos still from mock for now — wire to Supabase later
   const { mockItemVideos } = await import('@/lib/items-data')
   return mockItemVideos[itemId as keyof typeof mockItemVideos] ?? []
 }
@@ -109,7 +104,7 @@ export async function getItemVideos(itemId: string): Promise<string[]> {
 // ─── Similar rides ───────────────────────────────────────
 
 export async function getSimilarRides(itemId: string, type: string, limit = 6) {
-  const supabase = getSupabase()
+  const supabase = await createClient()
   const { data, error } = await supabase
     .from('items')
     .select('*, item_images(url)')

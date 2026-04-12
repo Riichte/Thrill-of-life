@@ -1,9 +1,8 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { getParkById, getItemsByPark, getAllCategories, getItemImages, getFollowerCount, getIsFollowing } from '@/lib/queries'
-import ParkPageClient from '@/components/ParkPageClient'
 import { getParkById, getItemsByPark, getAllCategories, getItemImages, getIsFollowing, getParkImages } from '@/lib/queries'
+import ParkPageClient from '@/components/ParkPageClient'
 
 export default async function ParkPage({ params }: { params: Promise<{ parkId: string }> }) {
   const { parkId } = await params

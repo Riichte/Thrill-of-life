@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getParkById, getItemsByPark, getAllCategories, getItemImages, getFollowerCount, getIsFollowing } from '@/lib/queries'
 import ParkPageClient from '@/components/ParkPageClient'
+import { getParkById, getItemsByPark, getAllCategories, getItemImages, getIsFollowing, getParkImages } from '@/lib/queries'
 
 export default async function ParkPage({ params }: { params: Promise<{ parkId: string }> }) {
   const { parkId } = await params
@@ -37,15 +38,7 @@ export default async function ParkPage({ params }: { params: Promise<{ parkId: s
     })
   )
 
-  // Get park carousel images from item_images
-  const { data: parkImages } = await supabase
-    .from('item_images')
-    .select('url')
-    .eq('item_id', parkId)
-    .order('sort_order')
-
-  const carouselImages = parkImages?.map(r => r.url) ?? []
-  // Fallback to cover image if no carousel images
+  const carouselImages = await getParkImages(parkId)
   const slides = carouselImages.length > 0
     ? carouselImages
     : park.cover_image_url ? [park.cover_image_url] : []

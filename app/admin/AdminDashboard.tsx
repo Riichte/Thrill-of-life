@@ -14,7 +14,7 @@ const emptyItem: Omit<Item, 'id'> = { park_id: '', category_id: '', name: '', de
 export default function AdminDashboard({ parks, categories, items }: { parks: Park[]; categories: Category[]; items: Item[] }) {
     const supabase = createClient()
     const router = useRouter()
-    const [tab, setTab] = useState<'parks' | 'items' | 'images'>('parks')
+    const [tab, setTab] = useState<'parks' | 'items' | 'images' | 'park-images'>('parks')
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
     const [success, setSuccess] = useState('')
@@ -37,6 +37,14 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
     const [imageSourceUrl, setImageSourceUrl] = useState('')
     const [imageLicense, setImageLicense] = useState('CC BY 4.0')
     const [itemImages, setItemImages] = useState<{ id: string; url: string; sort_order: number; attribution_author?: string; attribution_url?: string; license?: string }[]>([])
+
+    const [parkImageParkId, setParkImageParkId] = useState('')
+    const [parkImageUrl, setParkImageUrl] = useState('')
+    const [parkImageOrder, setParkImageOrder] = useState(0)
+    const [parkImageAuthor, setParkImageAuthor] = useState('')
+    const [parkImageSourceUrl, setParkImageSourceUrl] = useState('')
+    const [parkImageLicense, setParkImageLicense] = useState('CC BY 4.0')
+    const [parkImages, setParkImages] = useState<{ id: string; url: string; sort_order: number; attribution_author?: string; attribution_url?: string; license?: string }[]>([])
 
     const notify = (msg: string, isError = false) => {
         if (isError) setError(msg)
@@ -192,10 +200,10 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
 
                 {/* Tabs */}
                 <div className="flex gap-1 mb-8 border-b border-[#2a475e]">
-                    {(['parks', 'items', 'images'] as const).map(t => (
+                    {(['parks', 'items', 'images', 'park-images'] as const).map(t => (
                         <button key={t} onClick={() => setTab(t)}
                             className={`px-6 py-3 text-sm font-medium capitalize transition-colors border-b-2 -mb-px ${tab === t ? 'text-[#66c0f4] border-[#66c0f4]' : 'text-[#8f98a0] border-transparent hover:text-white'}`}>
-                            {t === 'items' ? 'Rides & Items' : t.charAt(0).toUpperCase() + t.slice(1)}
+                            {t === 'items' ? 'Rides & Items' : t === 'images' ? 'Ride Images' : t === 'park-images' ? 'Park Images' : t.charAt(0).toUpperCase() + t.slice(1)}
                         </button>
                     ))}
                 </div>

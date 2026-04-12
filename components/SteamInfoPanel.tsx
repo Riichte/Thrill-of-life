@@ -16,6 +16,9 @@ type SteamInfoPanelProps = {
   description?: string
   score?: number
   scoreLabel?: string
+  myScore?: number | null
+  hasRated?: boolean
+  onRateClick?: () => void
   ratingBreakdown?: { positive: number; mixed: number; negative: number }
   metadata?: SteamMetaRow[]
   tags?: string[]
@@ -33,6 +36,9 @@ export function SteamInfoPanel({
   description,
   score,
   scoreLabel = 'Overall score',
+  myScore = null,
+  hasRated = false,
+  onRateClick,
   ratingBreakdown,
   metadata = [],
   tags = [],
@@ -40,9 +46,7 @@ export function SteamInfoPanel({
   className = ''
 }: SteamInfoPanelProps) {
   return (
-    <div
-      className={`flex flex-col overflow-hidden rounded-sm border border-[#2a475e] bg-[#1b2838] ${className}`}
-    >
+    <div className={`flex flex-col overflow-hidden rounded-sm border border-[#2a475e] bg-[#1b2838] ${className}`}>
       {headerImage && (
         <div className="relative h-[140px] w-full shrink-0 overflow-hidden bg-[#0e1621] md:h-[160px]">
           <img src={headerImage} alt={headerImageAlt} className="h-full w-full object-contain p-4" />
@@ -64,9 +68,9 @@ export function SteamInfoPanel({
 
       <div className="flex flex-1 flex-col gap-4 p-4">
         {title && <h2 className="text-xl font-normal leading-snug text-[#c6d4df]">{title}</h2>}
-
         {description && <p className="text-sm leading-relaxed text-[#acb2b8]">{description}</p>}
 
+        {/* Overall Score */}
         {score !== undefined && (
           <div className="flex items-center gap-4 border-b border-[#2a475e] pb-4">
             <div
@@ -78,9 +82,7 @@ export function SteamInfoPanel({
               </div>
             </div>
             <div>
-              <p className="text-[10px] font-medium uppercase tracking-wider text-[#8f98a0]">
-                {scoreLabel}
-              </p>
+              <p className="text-[10px] font-medium uppercase tracking-wider text-[#8f98a0]">{scoreLabel}</p>
               <p className="text-sm text-[#c6d4df]">
                 {score >= 75 ? 'Mostly positive' : score >= 50 ? 'Mixed' : 'Needs improvement'}
               </p>
@@ -88,24 +90,39 @@ export function SteamInfoPanel({
           </div>
         )}
 
+        {/* My Score */}
         <div className="flex items-center gap-4 border-b border-[#2a475e] pb-4">
           <div
             className="relative flex h-20 w-20 shrink-0 items-center justify-center rounded-full"
-            style={{ background: '#2a475e' }}
+            style={{
+              background: hasRated && myScore !== null
+                ? `conic-gradient(#66c0f4 ${myScore * 3.6}deg, #2a475e 0)`
+                : '#2a475e'
+            }}
           >
             <div className="flex h-[68px] w-[68px] items-center justify-center rounded-full bg-[#1b2838]">
-              <span className="text-2xl text-[#4a6a82]">—</span>
+              {hasRated && myScore !== null ? (
+                <span className="text-2xl font-bold text-[#66c0f4]">{myScore}</span>
+              ) : (
+                <span className="text-2xl text-[#4a6a82]">—</span>
+              )}
             </div>
           </div>
           <div className="flex flex-col gap-2">
             <p className="text-[10px] font-medium uppercase tracking-wider text-[#8f98a0]">My Score</p>
-            <p className="text-xs text-[#8f98a0]">You have not rated this yet</p>
-            <button className="w-fit bg-[#4c6b22] hover:bg-[#5a7a28] text-white text-xs font-medium px-3 py-1.5 rounded-sm transition-colors">
-              Rate this ride
+            <p className="text-xs text-[#8f98a0]">
+              {hasRated ? 'Your rating has been submitted' : 'You have not rated this yet'}
+            </p>
+            <button
+              onClick={onRateClick}
+              className="w-fit bg-[#4c6b22] hover:bg-[#5a7a28] text-white text-xs font-medium px-3 py-1.5 rounded-sm transition-colors"
+            >
+              {hasRated ? 'Edit your rating' : 'Rate this ride'}
             </button>
           </div>
         </div>
 
+        {/* Rating breakdown bars */}
         {ratingBreakdown && (
           <div className="space-y-1.5">
             <div className="flex items-center gap-2">
@@ -133,14 +150,10 @@ export function SteamInfoPanel({
           <dl className="space-y-2.5 text-sm">
             {metadata.map((row) => (
               <div key={row.label} className="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
-                <dt className="shrink-0 text-[10px] font-medium uppercase tracking-wider text-[#8f98a0]">
-                  {row.label}
-                </dt>
+                <dt className="shrink-0 text-[10px] font-medium uppercase tracking-wider text-[#8f98a0]">{row.label}</dt>
                 <dd className="min-w-0 text-right text-[#66c0f4]">
                   {row.href ? (
-                    <a href={row.href} className="hover:text-white">
-                      {row.value}
-                    </a>
+                    <a href={row.href} className="hover:text-white">{row.value}</a>
                   ) : (
                     <span className="text-[#66c0f4]">{row.value}</span>
                   )}
@@ -154,15 +167,10 @@ export function SteamInfoPanel({
 
         {tags.length > 0 && (
           <div className="border-t border-[#2a475e] pt-4">
-            <p className="mb-2 text-[10px] font-medium uppercase tracking-wider text-[#8f98a0]">
-              Popular tags
-            </p>
+            <p className="mb-2 text-[10px] font-medium uppercase tracking-wider text-[#8f98a0]">Popular tags</p>
             <div className="flex flex-wrap gap-2">
               {tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="rounded-[2px] bg-[#2a475e] px-2 py-1 text-xs text-[#66c0f4] hover:bg-[#3d5a73]"
-                >
+                <span key={tag} className="rounded-[2px] bg-[#2a475e] px-2 py-1 text-xs text-[#66c0f4] hover:bg-[#3d5a73]">
                   {tag}
                 </span>
               ))}

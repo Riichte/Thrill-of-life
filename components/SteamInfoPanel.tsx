@@ -7,23 +7,18 @@ export type SteamMetaRow = {
 }
 
 type SteamInfoPanelProps = {
-  /** Wide image at top (e.g. hero / key art) */
   headerImage?: string
   headerImageAlt?: string
-  /** Small logo over the header */
   logoUrl?: string
   logoAlt?: string
-  /** e.g. red “NEW” ribbon */
   ribbon?: string
   title?: string
   description?: string
-  /** Large score number (0–100) shown in the sidebar */
   score?: number
   scoreLabel?: string
   ratingBreakdown?: { positive: number; mixed: number; negative: number }
   metadata?: SteamMetaRow[]
   tags?: string[]
-  /** Extra block (e.g. quick facts) */
   children?: ReactNode
   className?: string
 }
@@ -76,9 +71,7 @@ export function SteamInfoPanel({
           <div className="flex items-center gap-4 border-b border-[#2a475e] pb-4">
             <div
               className="relative flex h-20 w-20 shrink-0 items-center justify-center rounded-full"
-              style={{
-                background: `conic-gradient(#66c0f4 ${score * 3.6}deg, #2a475e 0)`
-              }}
+              style={{ background: `conic-gradient(#66c0f4 ${score * 3.6}deg, #2a475e 0)` }}
             >
               <div className="flex h-[68px] w-[68px] items-center justify-center rounded-full bg-[#1b2838]">
                 <span className="text-2xl font-bold text-[#66c0f4]">{score}</span>
@@ -94,13 +87,12 @@ export function SteamInfoPanel({
             </div>
           </div>
         )}
-        {ratingBreakdown && (
+
+        {score !== undefined && (
           <div className="flex items-center gap-4 border-b border-[#2a475e] pb-4">
             <div
               className="relative flex h-20 w-20 shrink-0 items-center justify-center rounded-full"
-              style={{
-                background: `conic-gradient(#66c0f4 ${score * 3.6}deg, #2a475e 0)`
-              }}
+              style={{ background: `conic-gradient(#66c0f4 ${score * 3.6}deg, #2a475e 0)` }}
             >
               <div className="flex h-[68px] w-[68px] items-center justify-center rounded-full bg-[#1b2838]">
                 <span className="text-2xl font-bold text-[#66c0f4]">{score}</span>
@@ -110,9 +102,10 @@ export function SteamInfoPanel({
               <p className="text-[10px] font-medium uppercase tracking-wider text-[#8f98a0]">My Score</p>
             </div>
           </div>
+        )}
 
         {ratingBreakdown && (
-          <div className="mt-3 space-y-1.5">
+          <div className="space-y-1.5">
             <div className="flex items-center gap-2">
               <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#2a475e]">
                 <div className="h-full bg-green-500 rounded-full" style={{ width: `${ratingBreakdown.positive}%` }} />
@@ -133,7 +126,6 @@ export function SteamInfoPanel({
             </div>
           </div>
         )}
-
 
         {metadata.length > 0 && (
           <dl className="space-y-2.5 text-sm">

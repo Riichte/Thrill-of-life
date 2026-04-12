@@ -2,12 +2,11 @@
 
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { SteamMediaCarousel } from '@/components/SteamMediaCarousel'
 import { SteamInfoPanel } from '@/components/SteamInfoPanel'
 import { getParkById, getCategoryById, getItemById, getItemImages, getItemVideos, getSimilarRides } from '@/lib/queries'
 import { SimilarRidesCarousel } from '@/components/SimilarRidesCarousel'
-import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
 interface ItemPageProps {

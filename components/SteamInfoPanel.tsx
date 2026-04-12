@@ -16,7 +16,7 @@ type SteamInfoPanelProps = {
   /** e.g. red “NEW” ribbon */
   ribbon?: string
   title?: string
-  description: string
+  description?: string
   /** Large score number (0–100) shown in the sidebar */
   score?: number
   scoreLabel?: string
@@ -70,7 +70,7 @@ export function SteamInfoPanel({
       <div className="flex flex-1 flex-col gap-4 p-4">
         {title && <h2 className="text-xl font-normal leading-snug text-[#c6d4df]">{title}</h2>}
 
-        <p className="text-sm leading-relaxed text-[#acb2b8]">{description}</p>
+        {description && <p className="text-sm leading-relaxed text-[#acb2b8]">{description}</p>}
 
         {score !== undefined && (
           <div className="flex items-center gap-4 border-b border-[#2a475e] pb-4">

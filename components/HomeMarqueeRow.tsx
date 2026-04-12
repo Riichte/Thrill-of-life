@@ -32,43 +32,54 @@ export function HomeMarqueeRow({
   if (items.length === 0) return null
 
   const visibleItemsCount = 5
+  const cardWidth = 280          // same as your card
+  const gap = 24                 // gap-6 = 1.5rem = 24px
+  const pageWidth = cardWidth + gap
+
   const totalPages = Math.ceil(items.length / visibleItemsCount)
   const [currentPage, setCurrentPage] = useState(0)
-  const [animating, setAnimating] = useState(false)
-  const [direction, setDirection] = useState<'left' | 'right'>('left')
+  const [isAnimating, setIsAnimating] = useState(false)
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
-  const goToPage = (page: number, dir: 'left' | 'right') => {
-    if (animating || page === currentPage) return
+  const goToPage = (page: number) => {
+    if (isAnimating || page === currentPage) return
+    setIsAnimating(true)
+    setCurrentPage(page)
 
-    setDirection(dir)
-    setAnimating(true)
-
-    // Smoother timing: fade out → change page → fade in
-    setTimeout(() => {
-      setCurrentPage(page)
-      setTimeout(() => {
-        setAnimating(false)
-      }, 180)
-    }, 180)
+    // Reset animation flag after transition ends
+    setTimeout(() => setIsAnimating(false), 500)
   }
 
-  // Auto-advance
+  // Auto-advance + pause on hover
   useEffect(() => {
     if (totalPages <= 1) return
 
-    timeoutRef.current = setInterval(() => {
-      const nextPage = (currentPage + 1) % totalPages
-      goToPage(nextPage, 'left')
-    }, durationSec * 1000)
+    const startAuto = () => {
+      timeoutRef.current = setInterval(() => {
+        const nextPage = (currentPage + 1) % totalPages
+        goToPage(nextPage)
+      }, durationSec * 1000)
+    }
+
+    startAuto()
 
     return () => {
       if (timeoutRef.current) clearInterval(timeoutRef.current)
     }
   }, [currentPage, totalPages, durationSec])
 
-  const startIndex = currentPage * visibleItemsCount
-  const visibleItems = items.slice(startIndex, startIndex + visibleItemsCount)
+  // Pause on hover
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) clearInterval(timeoutRef.current)
+  }
+  const handleMouseLeave = () => {
+    // Restart auto-advance
+    if (totalPages > 1) {
+      const nextPage = (currentPage + 1) % totalPages
+      goToPage(nextPage)
+    }
+  }
 
   return (
     <section className="mb-16">
@@ -85,22 +96,26 @@ export function HomeMarqueeRow({
         </Link>
       </div>
 
-      <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-zinc-950 shadow-2xl">
-        {/* Main carousel track */}
+      <div 
+        ref={containerRef}
+        className="relative overflow-hidden rounded-3xl border border-white/10 bg-zinc-950 shadow-2xl"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        {/* FULL TRACK - all cards in one row */}
         <div
-          className="flex gap-6 px-8 py-8 transition-all duration-300 ease-out"
+          className="flex transition-transform duration-500 ease-out"
           style={{
-            opacity: animating ? 0.4 : 1,
-            transform: animating 
-              ? `translateX(${direction === 'left' ? '-35px' : '35px'})` 
-              : 'translateX(0)'
+            transform: `translateX(-${currentPage * pageWidth}px)`,
+            gap: `${gap}px`,
+            padding: '32px 32px', // generous padding so last card never cuts
           }}
         >
-          {visibleItems.map((item, i) => (
+          {items.map((item) => (
             <Link
-              key={`${item.id}-${currentPage}-${i}`}
+              key={item.id}
               href={item.href}
-              className="group flex-none w-[270px] bg-[#1b2838] border border-[#2a475e] rounded-2xl overflow-hidden hover:border-[#66c0f4] hover:-translate-y-1 transition-all duration-300"
+              className="group flex-none w-[280px] bg-[#1b2838] border border-[#2a475e] rounded-2xl overflow-hidden hover:border-[#66c0f4] hover:-translate-y-1 transition-all duration-300"
             >
               <div className="relative aspect-[16/9] overflow-hidden bg-black">
                 <Image
@@ -126,16 +141,16 @@ export function HomeMarqueeRow({
         {totalPages > 1 && (
           <>
             <button
-              onClick={() => goToPage(currentPage === 0 ? totalPages - 1 : currentPage - 1, 'right')}
-              className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-black/70 hover:bg-black/90 text-white rounded-full w-12 h-12 flex items-center justify-center transition-all border border-white/20 hover:border-white/40 disabled:opacity-40"
-              disabled={animating}
+              onClick={() => goToPage(currentPage === 0 ? totalPages - 1 : currentPage - 1)}
+              disabled={isAnimating}
+              className="absolute left-6 top-1/2 -translate-y-1/2 z-20 bg-black/70 hover:bg-black/90 text-white rounded-full w-12 h-12 flex items-center justify-center transition-all border border-white/20 hover:border-white/40 disabled:opacity-40"
             >
               ←
             </button>
             <button
-              onClick={() => goToPage((currentPage + 1) % totalPages, 'left')}
-              className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-black/70 hover:bg-black/90 text-white rounded-full w-12 h-12 flex items-center justify-center transition-all border border-white/20 hover:border-white/40 disabled:opacity-40"
-              disabled={animating}
+              onClick={() => goToPage((currentPage + 1) % totalPages)}
+              disabled={isAnimating}
+              className="absolute right-6 top-1/2 -translate-y-1/2 z-20 bg-black/70 hover:bg-black/90 text-white rounded-full w-12 h-12 flex items-center justify-center transition-all border border-white/20 hover:border-white/40 disabled:opacity-40"
             >
               →
             </button>

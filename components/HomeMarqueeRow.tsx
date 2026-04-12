@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 
 type HomeMarqueeCard = {
   id: string
@@ -32,60 +32,63 @@ export function HomeMarqueeRow({
   if (items.length === 0) return null
 
   const visibleItemsCount = 5
-  const cardWidth = 280          // same as your card
-  const gap = 24                 // gap-6 = 1.5rem = 24px
+  const cardWidth = 280
+  const gap = 24
   const pageWidth = cardWidth + gap
 
   const totalPages = Math.ceil(items.length / visibleItemsCount)
   const [currentPage, setCurrentPage] = useState(0)
   const [isAnimating, setIsAnimating] = useState(false)
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
 
-  const goToPage = (page: number) => {
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  const goToPage = useCallback((page: number) => {
     if (isAnimating || page === currentPage) return
+
     setIsAnimating(true)
     setCurrentPage(page)
 
-    // Reset animation flag after transition ends
-    setTimeout(() => setIsAnimating(false), 500)
-  }
+    // Allow animation to finish
+    setTimeout(() => {
+      setIsAnimating(false)
+    }, 520)
+  }, [isAnimating, currentPage])
 
-  // In useEffect, replace the old auto-advance with:
-useEffect(() => {
-  if (totalPages <= 1) return
-  startAutoAdvance()
+  // Auto-advance helpers
+  const startAutoAdvance = useCallback(() => {
+    if (timeoutRef.current) clearInterval(timeoutRef.current)
 
-    const startAutoAdvance = () => {
-  if (timeoutRef.current) clearInterval(timeoutRef.current)
-  
-  timeoutRef.current = setInterval(() => {
-    const nextPage = (currentPage + 1) % totalPages
-    goToPage(nextPage)
-  }, durationSec * 1000)
-}
+    timeoutRef.current = setInterval(() => {
+      const nextPage = (currentPage + 1) % totalPages
+      goToPage(nextPage)
+    }, durationSec * 1000)
+  }, [currentPage, totalPages, durationSec, goToPage])
 
-    startAuto()
+  const stopAutoAdvance = useCallback(() => {
+    if (timeoutRef.current) {
+      clearInterval(timeoutRef.current)
+      timeoutRef.current = null
+    }
+  }, [])
+
+  // Auto-advance effect
+  useEffect(() => {
+    if (totalPages <= 1) return
+    startAutoAdvance()
 
     return () => stopAutoAdvance()
-}, [currentPage, totalPages, durationSec])
+  }, [startAutoAdvance, stopAutoAdvance, totalPages])
 
-  const stopAutoAdvance = () => {
-  if (timeoutRef.current) {
-    clearInterval(timeoutRef.current)
-    timeoutRef.current = null
+  // Hover handlers
+  const handleMouseEnter = () => {
+    stopAutoAdvance()
   }
-}
-  /// Hover handlers
-const handleMouseEnter = () => {
-  stopAutoAdvance()
-}
 
-const handleMouseLeave = () => {
-  if (totalPages > 1) {
-    startAutoAdvance()   // Restart the full timer — no immediate jump
+  const handleMouseLeave = () => {
+    if (totalPages > 1) {
+      startAutoAdvance()   // Restart normal timer - no instant jump
+    }
   }
-}
 
   return (
     <section className="mb-16">
@@ -103,18 +106,17 @@ const handleMouseLeave = () => {
       </div>
 
       <div 
-        ref={containerRef}
         className="relative overflow-hidden rounded-3xl border border-white/10 bg-zinc-950 shadow-2xl"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        {/* FULL TRACK - all cards in one row */}
+        {/* Sliding Track */}
         <div
           className="flex transition-transform duration-500 ease-out"
           style={{
             transform: `translateX(-${currentPage * pageWidth}px)`,
             gap: `${gap}px`,
-            padding: '32px 32px', // generous padding so last card never cuts
+            padding: '32px 40px',   // Increased right padding to prevent last card cutoff
           }}
         >
           {items.map((item) => (

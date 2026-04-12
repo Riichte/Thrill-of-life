@@ -5,8 +5,7 @@ import { notFound } from 'next/navigation'
 import { useState } from 'react'
 import { SteamMediaCarousel } from '@/components/SteamMediaCarousel'
 import { SteamInfoPanel } from '@/components/SteamInfoPanel'
-import { mockParks, mockItems, mockItemImages } from '@/lib/items-data'
-
+import { getParkById, getCategoryById, getItemById, getItemImages, getItemVideos, getSimilarRides } from '@/lib/queries'
 import { SimilarRidesCarousel } from '@/components/SimilarRidesCarousel'
 
 interface ItemPageProps {

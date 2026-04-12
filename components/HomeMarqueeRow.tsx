@@ -40,15 +40,20 @@ export function HomeMarqueeRow({
 
   const goToPage = (page: number, dir: 'left' | 'right') => {
     if (animating || page === currentPage) return
+
     setDirection(dir)
     setAnimating(true)
+
+    // Smoother timing: fade out → change page → fade in
     setTimeout(() => {
       setCurrentPage(page)
-      setAnimating(false)
-    }, 280)
+      setTimeout(() => {
+        setAnimating(false)
+      }, 180)
+    }, 180)
   }
 
-  // Auto-advance (only on homepage)
+  // Auto-advance
   useEffect(() => {
     if (totalPages <= 1) return
 
@@ -81,22 +86,22 @@ export function HomeMarqueeRow({
       </div>
 
       <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-zinc-950 shadow-2xl">
+        {/* Main carousel track */}
         <div
           className="flex gap-6 px-8 py-8 transition-all duration-300 ease-out"
           style={{
-            opacity: animating ? 0.75 : 1,
-            transform: animating
-              ? `translateX(${direction === 'left' ? '-30px' : '30px'})`
+            opacity: animating ? 0.4 : 1,
+            transform: animating 
+              ? `translateX(${direction === 'left' ? '-35px' : '35px'})` 
               : 'translateX(0)'
           }}
         >
           {visibleItems.map((item, i) => (
             <Link
-              key={`${item.id}-${i}`}
+              key={`${item.id}-${currentPage}-${i}`}
               href={item.href}
               className="group flex-none w-[280px] bg-[#1b2838] border border-[#2a475e] rounded-2xl overflow-hidden hover:border-[#66c0f4] hover:-translate-y-1 transition-all duration-300"
             >
-              {/* Image */}
               <div className="relative aspect-[16/9] overflow-hidden bg-black">
                 <Image
                   src={item.image}
@@ -105,8 +110,6 @@ export function HomeMarqueeRow({
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
                 />
               </div>
-
-              {/* Content */}
               <div className="p-5 space-y-2">
                 <h3 className="font-semibold text-lg leading-tight text-white line-clamp-2 group-hover:text-[#66c0f4] transition-colors">
                   {item.title}
@@ -119,18 +122,20 @@ export function HomeMarqueeRow({
           ))}
         </div>
 
-        {/* Navigation Buttons - Only show if more than one page */}
+        {/* Navigation Buttons */}
         {totalPages > 1 && (
           <>
             <button
               onClick={() => goToPage(currentPage === 0 ? totalPages - 1 : currentPage - 1, 'right')}
-              className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-black/70 hover:bg-black/90 text-white rounded-full w-12 h-12 flex items-center justify-center transition-all border border-white/20 hover:border-white/40"
+              className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-black/70 hover:bg-black/90 text-white rounded-full w-12 h-12 flex items-center justify-center transition-all border border-white/20 hover:border-white/40 disabled:opacity-40"
+              disabled={animating}
             >
               ←
             </button>
             <button
               onClick={() => goToPage((currentPage + 1) % totalPages, 'left')}
-              className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-black/70 hover:bg-black/90 text-white rounded-full w-12 h-12 flex items-center justify-center transition-all border border-white/20 hover:border-white/40"
+              className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-black/70 hover:bg-black/90 text-white rounded-full w-12 h-12 flex items-center justify-center transition-all border border-white/20 hover:border-white/40 disabled:opacity-40"
+              disabled={animating}
             >
               →
             </button>

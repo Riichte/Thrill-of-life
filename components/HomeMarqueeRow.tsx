@@ -34,33 +34,27 @@ export function HomeMarqueeRow({
   const [visibleCount, setVisibleCount] = useState(5)
   const [cardWidth, setCardWidth] = useState(280)
 
-  const CONTAINER_PADDING = 40   // Same padding on left AND right
+  const PADDING = 40
   const GAP = 24
 
-  // Responsive logic: prioritize keeping good card size, then reduce count
+  // Responsive layout
   useEffect(() => {
     const updateLayout = () => {
-      const viewportWidth = window.innerWidth
-      const availableWidth = viewportWidth - (CONTAINER_PADDING * 2) - (GAP * 4) // rough space for gaps
+      const w = window.innerWidth
 
-      // Try to keep nice card sizes
-      if (viewportWidth >= 1280) {
+      if (w >= 1280) {
         setVisibleCount(5)
-        setCardWidth(280)
-      } 
-      else if (viewportWidth >= 1024) {
+        setCardWidth(282)
+      } else if (w >= 1024) {
         setVisibleCount(4)
-        setCardWidth(275)
-      } 
-      else if (viewportWidth >= 768) {
+        setCardWidth(278)
+      } else if (w >= 768) {
         setVisibleCount(3)
-        setCardWidth(280)
-      } 
-      else if (viewportWidth >= 540) {
+        setCardWidth(285)
+      } else if (w >= 520) {
         setVisibleCount(2)
         setCardWidth(290)
-      } 
-      else {
+      } else {
         setVisibleCount(1)
         setCardWidth(300)
       }
@@ -132,18 +126,16 @@ export function HomeMarqueeRow({
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
+        {/* Main sliding container */}
         <div
           className="flex transition-transform duration-500 ease-out"
           style={{
             transform: `translateX(-${currentPage * pageWidth}px)`,
             gap: `${GAP}px`,
-            paddingLeft: `${CONTAINER_PADDING}px`,
-            paddingRight: `${CONTAINER_PADDING}px`,
-            paddingTop: '32px',
-            paddingBottom: '32px',
+            padding: `32px ${PADDING}px`,           // Symmetric padding
           }}
         >
-          {items.map((item) => (
+          {items.map((item, index) => (
             <Link
               key={item.id}
               href={item.href}
@@ -170,6 +162,7 @@ export function HomeMarqueeRow({
           ))}
         </div>
 
+        {/* Navigation Buttons */}
         {totalPages > 1 && (
           <>
             <button

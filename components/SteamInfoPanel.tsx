@@ -50,7 +50,7 @@ export function SteamInfoPanel({
     >
       {headerImage && (
         <div className="relative h-[140px] w-full shrink-0 overflow-hidden bg-[#0e1621] md:h-[160px]">
-          <img src={headerImage} alt={headerImageAlt} className="h-full w-full object-cover" />
+          <img src={headerImage} alt={headerImageAlt} className="h-full w-full object-contain p-4" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#1b2838] via-transparent to-transparent" />
           {ribbon && (
             <span className="absolute left-3 top-3 rounded-sm bg-[#a34c25] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">

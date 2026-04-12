@@ -22,12 +22,12 @@ const EUROPA_ITEM_MAIN_IMAGE: Record<string, string> = {
   'bobsleigh': '/parks/europa-park/roller-coasters/bobsleigh/main.jpg',
   'alpenexpress': '/parks/europa-park/roller-coasters/alpenexpress/main.jpg',
   'arthur': '/parks/europa-park/roller-coasters/arthur/main.jpg',
-  'tiroler-wildwasserbahn': '/parks/europa-park/water-rides/tiroler wildwasserbahn/main.jpg',
-  'fjord-rafting': '/parks/europa-park/water-rides/fjord rafting/main.jpg',
+  'tiroler-wildwasserbahn': '/parks/europa-park/water-rides/tiroler-wildwasserbahn/main.jpg',
+  'fjord-rafting': '/parks/europa-park/water-rides/fjord-rafting/main.jpg',
   'dschungel-flossfahrt': '/parks/europa-park/dark-rides/dschungel-flossfahrt/main.jpg',
   'vindjammer': '/parks/europa-park/flat-rides/vindjammer/main.jpg',
   'kronasar': '/parks/europa-park/hotels/kronasar/main.jpg',
-  'monorail-bahn': '/parks/europa-park/transport/monorail bahn/main.jpg'
+  'monorail-bahn': '/parks/europa-park/transport/monorail-bahn/main.jpg'
 }
 
 /** First / main image for non-Europa items (aligned with detail page galleries). */

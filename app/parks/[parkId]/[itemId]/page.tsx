@@ -56,7 +56,7 @@ function ItemPageContent({ park, item, category, images, videos }: {
         {/* Item Title */}
         <div className="mb-8">
           <h1 className="text-5xl font-bold mb-2">{item.name}</h1>
-          <p className="text-gray-400 text-lg">{park.name} • {item.location_in_park}</p>
+          
         </div>
 
         <div className="mb-12 grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8">
@@ -69,10 +69,8 @@ function ItemPageContent({ park, item, category, images, videos }: {
           </div>
           <div className="lg:col-span-1">
             <SteamInfoPanel
-              headerImage={images[0]}
+              headerImage={`/parks/${park.id}/roller-coasters/${item.id}/logo.png`}
               headerImageAlt={item.name}
-              title={item.name}
-              description={item.description}
               score={overallScore}
               scoreLabel="Overall score"
               ratingBreakdown={ratingBreakdown}
@@ -81,7 +79,6 @@ function ItemPageContent({ park, item, category, images, videos }: {
                   label: 'Recent reviews',
                   value: `Mostly positive (${ratingBreakdown.positive}%)`
                 },
-                { label: 'Category', value: category.name },
                 { label: 'Area in park', value: item.location_in_park },
                 ...(specs.type ? [{ label: 'Ride type', value: specs.type }] : [])
               ]}
@@ -89,14 +86,35 @@ function ItemPageContent({ park, item, category, images, videos }: {
             >
               {hasSpecs && (
                 <div className="border-t border-[#2a475e] pt-4">
-                  <h3 className="mb-3 text-xs font-medium uppercase tracking-wider text-[#8f98a0]">
-                    Quick facts
-                  </h3>
                   <div className="space-y-2 text-sm">
+                    {specs.type && (
+                      <div className="flex justify-between gap-4 text-[#acb2b8]">
+                        <span>Roller Coaster Type</span>
+                        <span className="text-[#c6d4df]">{specs.type}</span>
+                      </div>
+                    )}
+                    {specs.status && (
+                      <div className="flex justify-between gap-4 text-[#acb2b8]">
+                        <span>Status</span>
+                        <span className="text-[#c6d4df]">{specs.status}</span>
+                      </div>
+                    )}
+                    {specs.manufacturer && (
+                      <div className="flex justify-between gap-4 text-[#acb2b8]">
+                        <span>Manufacturer</span>
+                        <span className="text-[#c6d4df]">{specs.manufacturer}</span>
+                      </div>
+                    )}
                     {specs.height && (
                       <div className="flex justify-between gap-4 text-[#acb2b8]">
                         <span>Height</span>
                         <span className="text-[#c6d4df]">{specs.height}</span>
+                      </div>
+                    )}
+                    {specs.drop && (
+                      <div className="flex justify-between gap-4 text-[#acb2b8]">
+                        <span>Drop</span>
+                        <span className="text-[#c6d4df]">{specs.drop}</span>
                       </div>
                     )}
                     {specs.speed && (
@@ -111,16 +129,22 @@ function ItemPageContent({ park, item, category, images, videos }: {
                         <span className="text-[#c6d4df]">{specs.length}</span>
                       </div>
                     )}
-                    {specs.drop && (
+                    {specs.inversions !== undefined && (
                       <div className="flex justify-between gap-4 text-[#acb2b8]">
-                        <span>Drop</span>
-                        <span className="text-[#c6d4df]">{specs.drop}</span>
+                        <span>Inversions</span>
+                        <span className="text-[#c6d4df]">{specs.inversions}</span>
                       </div>
                     )}
-                    {specs.manufacturer && (
+                    {specs.gForce && (
                       <div className="flex justify-between gap-4 text-[#acb2b8]">
-                        <span>Manufacturer</span>
-                        <span className="text-[#c6d4df]">{specs.manufacturer}</span>
+                        <span>G-Forces</span>
+                        <span className="text-[#c6d4df]">{specs.gForce}</span>
+                      </div>
+                    )}
+                    {specs.duration && (
+                      <div className="flex justify-between gap-4 text-[#acb2b8]">
+                        <span>Duration</span>
+                        <span className="text-[#c6d4df]">{specs.duration}</span>
                       </div>
                     )}
                   </div>

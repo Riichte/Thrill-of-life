@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { mockCategories, mockItems } from '@/lib/items-data'
-import { parksData } from '@/lib/parks-data'
+import { getParkById, getCategoryById, getItemsByCategory } from '@/lib/queries'
 
 
 
@@ -61,10 +60,9 @@ export default async function CategoryPage({
   params: Promise<{ parkId: string; categoryId: string }>
 }) {
   const { parkId, categoryId } = await params
-  const park = parksData.find(p => p.id === parkId)
-  const category = mockCategories.find(c => c.id === categoryId)
-  const parkItems = mockItems[parkId as keyof typeof mockItems] || []
-  const categoryItems = parkItems.filter(item => item.category_id === categoryId)
+  const park = getParkById(parkId)
+  const category = getCategoryById(categoryId)
+  const categoryItems = getItemsByCategory(parkId, categoryId)
 
   if (!park || !category) {
     notFound()

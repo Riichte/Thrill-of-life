@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { mockParks, mockCategories, mockItems } from '@/lib/items-data'
-import { parksData } from '@/lib/parks-data'
+import { getParkById, getItemsByPark, getAllCategories } from '@/lib/queries'
 
 // Category background images
 const categoryBackgroundImages: Record<string, string> = {
@@ -18,16 +17,17 @@ export default async function ParkPage({
   params: Promise<{ parkId: string }>
 }) {
   const { parkId } = await params
-  const park = parksData.find(p => p.id === parkId)
-  const items = mockItems[parkId as keyof typeof mockItems] || []
+  const park = getParkById(parkId)
+  const items = getItemsByPark(parkId)
 
   if (!park) {
     notFound()
   }
 
   // Group items by category
+  const allCategories = getAllCategories()
   const itemsByCategory = items.reduce((acc, item) => {
-    const category = mockCategories.find(c => c.id === item.category_id)
+    const category = allCategories.find(c => c.id === item.category_id)
     if (category) {
       if (!acc[category.name]) {
         acc[category.name] = []
@@ -95,7 +95,7 @@ export default async function ParkPage({
         <div className="mb-12">
           <h2 className="text-3xl font-semibold mb-8">Explore by Category</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {mockCategories.map(category => {
+            {allCategories.map(category => {
               const categoryItems = items.filter(item => item.category_id === category.id)
               const imageUrl = categoryBackgroundImages[category.id]
               

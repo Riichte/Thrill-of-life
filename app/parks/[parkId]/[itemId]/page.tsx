@@ -5,7 +5,8 @@ import { notFound } from 'next/navigation'
 import { useState } from 'react'
 import { SteamMediaCarousel } from '@/components/SteamMediaCarousel'
 import { SteamInfoPanel } from '@/components/SteamInfoPanel'
-import { mockParks, mockCategories, mockItems, mockItemImages, mockItemVideos } from '@/lib/items-data'
+import { mockParks, mockItems, mockItemImages } from '@/lib/items-data'
+
 import { SimilarRidesCarousel } from '@/components/SimilarRidesCarousel'
 
 interface ItemPageProps {
@@ -250,20 +251,7 @@ function ItemPageContent({ park, item, category, images, videos }: {
 
   // Similar rides based on coaster type
   const currentType = item.specs?.type
-  const similarRides = currentType
-    ? Object.entries(mockItems)
-        .flatMap(([pId, pItems]) =>
-          pItems
-            .filter(i => i.id !== item.id && i.specs?.type === currentType)
-            .map(i => ({
-              ...i,
-              parkId: pId,
-              parkName: mockParks.find(p => p.id === pId)?.name ?? '',
-              image: (mockItemImages[i.id as keyof typeof mockItemImages] ?? [])[0] ?? null
-            }))
-        )
-        .slice(0, 6)
-    : []
+  const similarRides = currentType ? getSimilarRides(item.id, currentType) : []
 
   const [similarPage, setSimilarPage] = useState(0)
   const similarPerPage = 3
@@ -518,12 +506,11 @@ function ItemPageContent({ park, item, category, images, videos }: {
 
 export default async function ItemPage({ params }: ItemPageProps) {
   const { parkId, itemId } = await params
-  const park = mockParks.find(p => p.id === parkId)
-  const items = mockItems[parkId as keyof typeof mockItems] || []
-  const item = items.find(i => i.id === itemId)
-  const category = mockCategories.find(c => c.id === item?.category_id)
-  const images = mockItemImages[itemId as keyof typeof mockItemImages] || []
-  const videos = mockItemVideos[itemId as keyof typeof mockItemVideos] || []
+  const park = getParkById(parkId)
+  const item = getItemById(parkId, itemId)
+  const category = item ? getCategoryById(item.category_id) : null
+  const images = getItemImages(itemId)
+  const videos = getItemVideos(itemId)
 
   if (!park || !item || !category) notFound()
   

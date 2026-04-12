@@ -21,6 +21,16 @@ type HomeMarqueeRowProps = {
   viewAllLabel?: string
 }
 
+const GAP = 24
+
+function getVisibleCount(w: number) {
+  if (w >= 1280) return 5
+  if (w >= 1024) return 4
+  if (w >= 768) return 3
+  if (w >= 520) return 2
+  return 1
+}
+
 export function HomeMarqueeRow({
   title,
   subtitle,
@@ -32,37 +42,25 @@ export function HomeMarqueeRow({
   if (items.length === 0) return null
 
   const containerRef = useRef<HTMLDivElement>(null)
-  const trackRef = useRef<HTMLDivElement>(null)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
 
   const [currentPage, setCurrentPage] = useState(0)
   const [totalPages, setTotalPages] = useState(1)
-  const [offset, setOffset] = useState(0) // px to translate
+  const [visibleCount, setVisibleCount] = useState(5)
+  const [cardWidth, setCardWidth] = useState(0)
   const [isAnimating, setIsAnimating] = useState(false)
-
-  const GAP = 24
-
-  const getVisibleCount = (w: number) => {
-    if (w >= 1280) return 5
-    if (w >= 1024) return 4
-    if (w >= 768) return 3
-    if (w >= 520) return 2
-    return 1
-  }
 
   const calcLayout = useCallback(() => {
     const container = containerRef.current
     if (!container) return
     const w = container.clientWidth
     const visible = getVisibleCount(w)
-    const cardWidth = (w - GAP * (visible - 1)) / visible
+    const cw = (w - GAP * (visible - 1)) / visible
     const pages = Math.ceil(items.length / visible)
+    setVisibleCount(visible)
+    setCardWidth(cw)
     setTotalPages(pages)
-    setCurrentPage(p => {
-      const clamped = Math.min(p, pages - 1)
-      setOffset(clamped * (cardWidth + GAP) * visible)
-      return clamped
-    })
+    setCurrentPage(p => Math.min(p, pages - 1))
   }, [items.length])
 
   useEffect(() => {
@@ -72,16 +70,14 @@ export function HomeMarqueeRow({
     return () => ro.disconnect()
   }, [calcLayout])
 
+  const getOffset = useCallback((page: number) => {
+    return page * visibleCount * (cardWidth + GAP)
+  }, [visibleCount, cardWidth])
+
   const goToPage = useCallback((page: number) => {
     if (isAnimating) return
-    const container = containerRef.current
-    if (!container) return
-    const w = container.clientWidth
-    const visible = getVisibleCount(w)
-    const cardWidth = (w - GAP * (visible - 1)) / visible
     setIsAnimating(true)
     setCurrentPage(page)
-    setOffset(page * (cardWidth + GAP) * visible)
     setTimeout(() => setIsAnimating(false), 520)
   }, [isAnimating])
 
@@ -89,16 +85,7 @@ export function HomeMarqueeRow({
     if (timerRef.current) clearInterval(timerRef.current)
     if (totalPages <= 1) return
     timerRef.current = setInterval(() => {
-      setCurrentPage(p => {
-        const next = (p + 1) % totalPages
-        const container = containerRef.current
-        if (!container) return next
-        const w = container.clientWidth
-        const visible = getVisibleCount(w)
-        const cardWidth = (w - GAP * (visible - 1)) / visible
-        setOffset(next * (cardWidth + GAP) * visible)
-        return next
-      })
+      setCurrentPage(p => (p + 1) % totalPages)
     }, durationSec * 1000)
   }, [totalPages, durationSec])
 
@@ -127,36 +114,25 @@ export function HomeMarqueeRow({
       </div>
 
       <div
-        className="relative rounded-3xl border border-white/10 bg-zinc-950 shadow-2xl overflow-hidden"
+        className="relative rounded-3xl border border-white/10 bg-zinc-950 shadow-2xl"
         onMouseEnter={stopTimer}
         onMouseLeave={startTimer}
       >
         <div ref={containerRef} className="overflow-hidden px-6 py-8">
-          <div
-            ref={trackRef}
-            className="flex transition-transform duration-500 ease-out"
-            style={{
-              gap: `${GAP}px`,
-              transform: `translateX(-${offset}px)`
-            }}
-          >
-            {items.map((item) => {
-              return (
+          {cardWidth > 0 && (
+            <div
+              className="flex transition-transform duration-500 ease-out"
+              style={{
+                gap: `${GAP}px`,
+                transform: `translateX(-${getOffset(currentPage)}px)`
+              }}
+            >
+              {items.map((item) => (
                 <Link
                   key={item.id}
                   href={item.href}
                   className="group flex-none overflow-hidden bg-[#1b2838] border border-[#2a475e] rounded-2xl hover:border-[#66c0f4] hover:-translate-y-1 transition-all duration-300"
-                  style={{
-                    width: `calc((100% - ${GAP * (
-                      containerRef.current
-                        ? getVisibleCount(containerRef.current.clientWidth) - 1
-                        : 4
-                    )}px) / ${
-                      containerRef.current
-                        ? getVisibleCount(containerRef.current.clientWidth)
-                        : 5
-                    })`
-                  }}
+                  style={{ width: `${cardWidth}px` }}
                 >
                   <div className="relative aspect-[16/9] overflow-hidden bg-black">
                     <Image
@@ -175,9 +151,9 @@ export function HomeMarqueeRow({
                     )}
                   </div>
                 </Link>
-              )
-            })}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {totalPages > 1 && (

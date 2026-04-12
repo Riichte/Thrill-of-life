@@ -202,7 +202,7 @@ function ReviewCard({
   )
 }
 
-function ItemPageContent({ park, item, category, images, videos, similarRides }: {
+export default function ItemPageContent({ park, item, category, images, videos, similarRides }: {
   park: any
   item: any
   category: any

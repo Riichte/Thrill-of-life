@@ -142,21 +142,7 @@ function ItemPageContent({ park, item, category, images, videos }: {
                   </div>
                 </div>
               )}
-              <div className="border-t border-[#2a475e] pt-4 flex items-center gap-4">
-                <div
-                  className="relative flex h-20 w-20 shrink-0 items-center justify-center rounded-full"
-                  style={{
-                    background: `conic-gradient(#66c0f4 ${overallScore * 3.6}deg, #2a475e 0)`
-                  }}
-                >
-                  <div className="flex h-[68px] w-[68px] items-center justify-center rounded-full bg-[#1b2838]">
-                    <span className="text-2xl font-bold text-[#66c0f4]">{overallScore}</span>
-                  </div>
-                </div>
-                <div>
-                  <p className="text-[10px] font-medium uppercase tracking-wider text-[#8f98a0]">My Score</p>
-                </div>
-              </div>
+              
             </SteamInfoPanel>
           </div>
         </div>

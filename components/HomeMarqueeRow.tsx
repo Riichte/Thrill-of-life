@@ -31,80 +31,57 @@ export function HomeMarqueeRow({
 }: HomeMarqueeRowProps) {
   if (items.length === 0) return null
 
-  const [visibleCount, setVisibleCount] = useState(5)
-  const [cardWidth, setCardWidth] = useState(282)
-
-  const PADDING = 40
-  const GAP = 24
-
-  // Responsive layout – same balanced spacing on both sides
-  useEffect(() => {
-    const updateLayout = () => {
-      const w = window.innerWidth
-
-      if (w >= 1280) {
-        setVisibleCount(5)
-        setCardWidth(282)
-      } else if (w >= 1024) {
-        setVisibleCount(4)
-        setCardWidth(278)
-      } else if (w >= 768) {
-        setVisibleCount(3)
-        setCardWidth(285)
-      } else if (w >= 520) {
-        setVisibleCount(2)
-        setCardWidth(290)
-      } else {
-        setVisibleCount(1)
-        setCardWidth(300)
-      }
-    }
-
-    updateLayout()
-    window.addEventListener('resize', updateLayout)
-    return () => window.removeEventListener('resize', updateLayout)
-  }, [])
-
-  const totalPages = Math.ceil(items.length / visibleCount)
+  const trackRef = useRef<HTMLDivElement>(null)
   const [currentPage, setCurrentPage] = useState(0)
+  const [totalPages, setTotalPages] = useState(1)
   const [isAnimating, setIsAnimating] = useState(false)
+  const timerRef = useRef<NodeJS.Timeout | null>(null)
 
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+  // Calculate total pages based on actual rendered widths
+  const calcPages = useCallback(() => {
+    const track = trackRef.current
+    if (!track) return
+    const container = track.parentElement
+    if (!container) return
+    const containerWidth = container.clientWidth
+    const firstCard = track.querySelector('[data-card]') as HTMLElement
+    if (!firstCard) return
+    const cardWidth = firstCard.offsetWidth + parseInt(getComputedStyle(track).gap || '0')
+    const visible = Math.max(1, Math.round(containerWidth / cardWidth))
+    setTotalPages(Math.ceil(items.length / visible))
+    setCurrentPage(p => Math.min(p, Math.ceil(items.length / visible) - 1))
+  }, [items.length])
+
+  useEffect(() => {
+    calcPages()
+    const ro = new ResizeObserver(calcPages)
+    if (trackRef.current?.parentElement) ro.observe(trackRef.current.parentElement)
+    return () => ro.disconnect()
+  }, [calcPages])
 
   const goToPage = useCallback((page: number) => {
-    if (isAnimating || page === currentPage) return
+    if (isAnimating) return
     setIsAnimating(true)
     setCurrentPage(page)
     setTimeout(() => setIsAnimating(false), 520)
-  }, [isAnimating, currentPage])
+  }, [isAnimating])
 
-  const startAutoAdvance = useCallback(() => {
-    if (timeoutRef.current) clearInterval(timeoutRef.current)
-    timeoutRef.current = setInterval(() => {
-      const nextPage = (currentPage + 1) % totalPages
-      goToPage(nextPage)
+  const startTimer = useCallback(() => {
+    if (timerRef.current) clearInterval(timerRef.current)
+    if (totalPages <= 1) return
+    timerRef.current = setInterval(() => {
+      setCurrentPage(p => (p + 1) % totalPages)
     }, durationSec * 1000)
-  }, [currentPage, totalPages, durationSec, goToPage])
+  }, [totalPages, durationSec])
 
-  const stopAutoAdvance = useCallback(() => {
-    if (timeoutRef.current) {
-      clearInterval(timeoutRef.current)
-      timeoutRef.current = null
-    }
+  const stopTimer = useCallback(() => {
+    if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null }
   }, [])
 
   useEffect(() => {
-    if (totalPages <= 1) return
-    startAutoAdvance()
-    return () => stopAutoAdvance()
-  }, [startAutoAdvance, stopAutoAdvance, totalPages])
-
-  const handleMouseEnter = () => stopAutoAdvance()
-  const handleMouseLeave = () => {
-    if (totalPages > 1) startAutoAdvance()
-  }
-
-  const pageWidth = cardWidth + GAP
+    startTimer()
+    return stopTimer
+  }, [startTimer, stopTimer])
 
   return (
     <section className="mb-16">
@@ -113,56 +90,52 @@ export function HomeMarqueeRow({
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white">{title}</h2>
           {subtitle && <p className="mt-2 text-lg text-zinc-400">{subtitle}</p>}
         </div>
-        <Link 
-          href={viewAllHref} 
+        <Link
+          href={viewAllHref}
           className="shrink-0 text-sm font-medium text-[#66c0f4] hover:text-[#8fcefa] transition-colors flex items-center gap-1"
         >
           {viewAllLabel} →
         </Link>
       </div>
 
-      <div 
+      <div
         className="relative overflow-hidden rounded-3xl border border-white/10 bg-zinc-950 shadow-2xl"
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
+        onMouseEnter={stopTimer}
+        onMouseLeave={startTimer}
       >
-        {/* FIXED: extra right padding + symmetric left/right */}
-        <div
-          className="flex transition-transform duration-500 ease-out"
-          style={{
-            transform: `translateX(-${currentPage * pageWidth}px)`,
-            gap: `${GAP}px`,
-            paddingLeft: `${PADDING}px`,
-            paddingRight: `${PADDING + cardWidth + GAP}px`,   // ← This is the key fix
-            paddingTop: '32px',
-            paddingBottom: '32px',
-          }}
-        >
-          {items.map((item) => (
-            <Link
-              key={item.id}
-              href={item.href}
-              className="group flex-none overflow-hidden bg-[#1b2838] border border-[#2a475e] rounded-2xl hover:border-[#66c0f4] hover:-translate-y-1 transition-all duration-300"
-              style={{ width: `${cardWidth}px` }}
-            >
-              <div className="relative aspect-[16/9] overflow-hidden bg-black">
-                <Image
-                  src={item.image}
-                  alt={item.title}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-              </div>
-              <div className="p-5 space-y-2">
-                <h3 className="font-semibold text-base md:text-lg leading-tight text-white line-clamp-2 group-hover:text-[#66c0f4] transition-colors">
-                  {item.title}
-                </h3>
-                {item.subtitle && (
-                  <p className="text-sm text-zinc-400 line-clamp-1">{item.subtitle}</p>
-                )}
-              </div>
-            </Link>
-          ))}
+        {/* Track */}
+        <div className="overflow-hidden px-6 py-8">
+          <div
+            ref={trackRef}
+            className="flex gap-6 transition-transform duration-500 ease-out"
+            style={{ transform: `translateX(calc(-${currentPage * 100}% - ${currentPage * 0}px))` }}
+          >
+            {items.map((item) => (
+              <Link
+                key={item.id}
+                href={item.href}
+                data-card
+                className="group flex-none w-[calc(20%-19.2px)] xl:w-[calc(20%-19.2px)] lg:w-[calc(25%-18px)] md:w-[calc(33.333%-16px)] sm:w-[calc(50%-12px)] w-full overflow-hidden bg-[#1b2838] border border-[#2a475e] rounded-2xl hover:border-[#66c0f4] hover:-translate-y-1 transition-all duration-300"
+              >
+                <div className="relative aspect-[16/9] overflow-hidden bg-black">
+                  <Image
+                    src={item.image}
+                    alt={item.title}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                </div>
+                <div className="p-5 space-y-2">
+                  <h3 className="font-semibold text-base md:text-lg leading-tight text-white line-clamp-2 group-hover:text-[#66c0f4] transition-colors">
+                    {item.title}
+                  </h3>
+                  {item.subtitle && (
+                    <p className="text-sm text-zinc-400 line-clamp-1">{item.subtitle}</p>
+                  )}
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
 
         {totalPages > 1 && (
@@ -181,6 +154,17 @@ export function HomeMarqueeRow({
             >
               →
             </button>
+
+            {/* Dots */}
+            <div className="flex justify-center gap-2 pb-4">
+              {Array.from({ length: totalPages }).map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => goToPage(i)}
+                  className={`w-2 h-2 rounded-full transition-colors ${i === currentPage ? 'bg-[#66c0f4]' : 'bg-white/20 hover:bg-white/40'}`}
+                />
+              ))}
+            </div>
           </>
         )}
       </div>

@@ -26,7 +26,7 @@ export default async function ParkPage({
   }
 
   // Group items by category
-  const allCategories = getAllCategories()
+  
   const itemsByCategory = items.reduce((acc, item) => {
     const category = allCategories.find(c => c.id === item.category_id)
     if (category) {

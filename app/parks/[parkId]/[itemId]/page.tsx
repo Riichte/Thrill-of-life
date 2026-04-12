@@ -56,7 +56,7 @@ function ItemPageContent({ park, item, category, images, videos }: {
         {/* Item Title */}
         <div className="mb-8">
           <h1 className="text-5xl font-bold mb-2">{item.name}</h1>
-          
+
         </div>
 
         <div className="mb-12 grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8">
@@ -79,8 +79,7 @@ function ItemPageContent({ park, item, category, images, videos }: {
                   label: 'Recent reviews',
                   value: `Mostly positive (${ratingBreakdown.positive}%)`
                 },
-                { label: 'Area in park', value: item.location_in_park },
-                ...(specs.type ? [{ label: 'Ride type', value: specs.type }] : [])
+
               ]}
               tags={[specs.type, specs.manufacturer, category.name].filter(Boolean) as string[]}
             >
@@ -150,7 +149,21 @@ function ItemPageContent({ park, item, category, images, videos }: {
                   </div>
                 </div>
               )}
-              
+              <div className="border-t border-[#2a475e] pt-4 flex items-center gap-4">
+                <div
+                  className="relative flex h-20 w-20 shrink-0 items-center justify-center rounded-full"
+                  style={{
+                    background: `conic-gradient(#66c0f4 ${overallScore * 3.6}deg, #2a475e 0)`
+                  }}
+                >
+                  <div className="flex h-[68px] w-[68px] items-center justify-center rounded-full bg-[#1b2838]">
+                    <span className="text-2xl font-bold text-[#66c0f4]">{overallScore}</span>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-[10px] font-medium uppercase tracking-wider text-[#8f98a0]">My Score</p>
+                </div>
+              </div>
             </SteamInfoPanel>
           </div>
         </div>
@@ -271,7 +284,7 @@ function ItemPageContent({ park, item, category, images, videos }: {
           </Link>
         </div>
       </div>
-    </div>
+    </div >
   )
 }
 

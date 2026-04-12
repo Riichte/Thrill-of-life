@@ -100,7 +100,7 @@ export function HomeMarqueeRow({
             <Link
               key={`${item.id}-${currentPage}-${i}`}
               href={item.href}
-              className="group flex-none w-[280px] bg-[#1b2838] border border-[#2a475e] rounded-2xl overflow-hidden hover:border-[#66c0f4] hover:-translate-y-1 transition-all duration-300"
+              className="group flex-none w-[270px] bg-[#1b2838] border border-[#2a475e] rounded-2xl overflow-hidden hover:border-[#66c0f4] hover:-translate-y-1 transition-all duration-300"
             >
               <div className="relative aspect-[16/9] overflow-hidden bg-black">
                 <Image

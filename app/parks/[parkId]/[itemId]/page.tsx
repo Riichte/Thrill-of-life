@@ -7,6 +7,8 @@ import { SteamMediaCarousel } from '@/components/SteamMediaCarousel'
 import { SteamInfoPanel } from '@/components/SteamInfoPanel'
 import { getParkById, getCategoryById, getItemById, getItemImages, getItemVideos, getSimilarRides } from '@/lib/queries'
 import { SimilarRidesCarousel } from '@/components/SimilarRidesCarousel'
+import { useState, useEffect } from 'react'
+import { createClient } from '@/lib/supabase/client'
 
 interface ItemPageProps {
   params: Promise<{
@@ -15,35 +17,76 @@ interface ItemPageProps {
   }>
 }
 
-const ratingDimensions: Record<string, { id: string; label: string; communityAverage: number }[]> = {
+const ratingDimensions: Record<string, { id: string; label: string }[]> = {
   rides: [
-    { id: 'thrill', label: 'Thrill Level', communityAverage: 82 },
-    { id: 'queue', label: 'Queue Experience', communityAverage: 65 },
-    { id: 'comfort', label: 'Ride Comfort', communityAverage: 71 },
-    { id: 'overall', label: 'Overall Experience', communityAverage: 78 }
+    { id: 'intensity', label: 'Intensity' },
+    { id: 'comfort', label: 'Comfort' },
+    { id: 'theming', label: 'Theming' },
+    { id: 'fun_factor', label: 'Fun Factor' },
+    { id: 'capacity', label: 'Capacity' },
   ],
-  restaurants: [
-    { id: 'food', label: 'Food Quality', communityAverage: 79 },
-    { id: 'service', label: 'Service', communityAverage: 75 },
-    { id: 'value', label: 'Value for Money', communityAverage: 68 },
-    { id: 'atmosphere', label: 'Atmosphere', communityAverage: 81 }
+  roller_coasters: [
+    { id: 'intensity', label: 'Intensity' },
+    { id: 'comfort', label: 'Comfort' },
+    { id: 'theming', label: 'Theming' },
+    { id: 'fun_factor', label: 'Fun Factor' },
+    { id: 'capacity', label: 'Capacity' },
+  ],
+  flat_rides: [
+    { id: 'intensity', label: 'Intensity' },
+    { id: 'comfort', label: 'Comfort' },
+    { id: 'theming', label: 'Theming' },
+    { id: 'fun_factor', label: 'Fun Factor' },
+    { id: 'capacity', label: 'Capacity' },
+  ],
+  water_rides: [
+    { id: 'intensity', label: 'Intensity' },
+    { id: 'comfort', label: 'Comfort' },
+    { id: 'theming', label: 'Theming' },
+    { id: 'fun_factor', label: 'Fun Factor' },
+    { id: 'capacity', label: 'Capacity' },
+  ],
+  dark_rides: [
+    { id: 'theming', label: 'Theming' },
+    { id: 'fun_factor', label: 'Fun Factor' },
+    { id: 'capacity', label: 'Capacity' },
+    { id: 'technology', label: 'Technology / Effects' },
+    { id: 'story', label: 'Story / Immersion' },
   ],
   shows: [
-    { id: 'performance', label: 'Performance Quality', communityAverage: 84 },
-    { id: 'entertainment', label: 'Entertainment Value', communityAverage: 86 },
-    { id: 'audience', label: 'Audience Experience', communityAverage: 80 }
+    { id: 'theming', label: 'Theming' },
+    { id: 'fun_factor', label: 'Fun Factor' },
+    { id: 'capacity', label: 'Capacity' },
+    { id: 'story', label: 'Story / Immersion' },
+    { id: 'technology', label: 'Technology / Effects' },
+  ],
+  restaurants: [
+    { id: 'food_quality', label: 'Food Quality' },
+    { id: 'value', label: 'Value' },
+    { id: 'wait_time', label: 'Speed / Wait Time' },
+    { id: 'atmosphere', label: 'Atmosphere' },
+    { id: 'service', label: 'Service' },
   ],
   hotels: [
-    { id: 'room', label: 'Room Quality', communityAverage: 77 },
-    { id: 'service', label: 'Service', communityAverage: 74 },
-    { id: 'value', label: 'Value for Money', communityAverage: 70 },
-    { id: 'location', label: 'Location', communityAverage: 85 }
+    { id: 'comfort', label: 'Comfort' },
+    { id: 'value', label: 'Value' },
+    { id: 'atmosphere', label: 'Atmosphere' },
+    { id: 'service', label: 'Service' },
+    { id: 'cleanliness', label: 'Cleanliness' },
   ],
   shops: [
-    { id: 'quality', label: 'Product Quality', communityAverage: 76 },
-    { id: 'value', label: 'Value for Money', communityAverage: 69 },
-    { id: 'selection', label: 'Selection', communityAverage: 80 }
-  ]
+    { id: 'value', label: 'Value' },
+    { id: 'atmosphere', label: 'Atmosphere' },
+    { id: 'service', label: 'Service' },
+    { id: 'product_quality', label: 'Product Quality' },
+  ],
+  parks: [
+    { id: 'theming', label: 'Theming' },
+    { id: 'value', label: 'Value' },
+    { id: 'cleanliness', label: 'Cleanliness' },
+    { id: 'service', label: 'Staff / Service' },
+    { id: 'overall_experience', label: 'Overall Experience' },
+  ],
 }
 
 const COMMUNITY_OVERALL = 82
@@ -168,6 +211,7 @@ function ItemPageContent({ park, item, category, images, videos, similarRides }:
   videos: string[]
   similarRides: any[]
 }) {
+  const supabase = createClient()
   const [reviewFilter, setReviewFilter] = useState('all')
   const [isRatingOpen, setIsRatingOpen] = useState(false)
   const [hasRated, setHasRated] = useState(false)
@@ -175,11 +219,10 @@ function ItemPageContent({ park, item, category, images, videos, similarRides }:
   const [reviewTitle, setReviewTitle] = useState('')
   const [reviewText, setReviewText] = useState('')
   const [userReview, setUserReview] = useState<{ title: string; text: string } | null>(null)
-
-  // Points: earn 100 on first review submission
+  const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState('')
+  const [user, setUser] = useState<any>(null)
   const [userPoints, setUserPoints] = useState(0)
-
-  // Reactions state: { [reviewId]: { yes, no, funny, award } }
   const [reactions, setReactions] = useState<Record<string, ReviewReactions>>(
     Object.fromEntries(mockReviews.map(r => [r.id, { ...initialReactions }]))
   )
@@ -187,52 +230,114 @@ function ItemPageContent({ park, item, category, images, videos, similarRides }:
     Object.fromEntries(mockReviews.map(r => [r.id, { ...initialUserReactions }]))
   )
 
-  const handleReact = (reviewId: string, reaction: Reaction) => {
-    const current = myReactions[reviewId][reaction]
-    const isAward = reaction === 'award'
-
-    // If trying to give award but can't afford, block
-    if (isAward && !current && userPoints < 100) return
-
-    setReactions(prev => ({
-      ...prev,
-      [reviewId]: {
-        ...prev[reviewId],
-        [reaction]: prev[reviewId][reaction] + (current ? -1 : 1)
-      }
-    }))
-
-    setMyReactions(prev => ({
-      ...prev,
-      [reviewId]: {
-        ...prev[reviewId],
-        [reaction]: !current
-      }
-    }))
-
-    // Deduct or refund points for award
-    if (isAward) {
-      setUserPoints(prev => current ? prev + 100 : prev - 100)
-    }
-  }
-
   const dimensions = ratingDimensions[item.category_id] || ratingDimensions.rides
+
   const [userRatings, setUserRatings] = useState<Record<string, number>>(
     dimensions.reduce((acc, dim) => ({ ...acc, [dim.id]: 50 }), {})
   )
 
+  // Load auth user + existing rating on mount
+  useEffect(() => {
+    const load = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      setUser(user)
+      if (!user) return
+
+      // Check for existing review
+      const { data: existingReview } = await supabase
+        .from('reviews')
+        .select('*, review_ratings(*)')
+        .eq('item_id', item.id)
+        .eq('user_id', user.id)
+        .single()
+
+      if (existingReview) {
+        setHasRated(true)
+        setUserReview({
+          title: existingReview.title || '',
+          text: existingReview.body || ''
+        })
+        // Restore slider values
+        const restored: Record<string, number> = { ...dimensions.reduce((acc: Record<string, number>, dim) => ({ ...acc, [dim.id]: 50 }), {}) }
+        existingReview.review_ratings?.forEach((r: any) => {
+          restored[r.category] = r.score
+        })
+        setUserRatings(restored)
+        const avg = Math.round(
+          existingReview.review_ratings.reduce((sum: number, r: any) => sum + r.score, 0) /
+          existingReview.review_ratings.length
+        )
+        setMyScore(avg)
+      }
+    }
+    load()
+  }, [item.id])
+
+  const handleReact = (reviewId: string, reaction: Reaction) => {
+    const current = myReactions[reviewId][reaction]
+    if (reaction === 'award' && !current && userPoints < 100) return
+    setReactions(prev => ({
+      ...prev,
+      [reviewId]: { ...prev[reviewId], [reaction]: prev[reviewId][reaction] + (current ? -1 : 1) }
+    }))
+    setMyReactions(prev => ({
+      ...prev,
+      [reviewId]: { ...prev[reviewId], [reaction]: !current }
+    }))
+    if (reaction === 'award') setUserPoints(prev => current ? prev + 100 : prev - 100)
+  }
+
   const calculateMyScore = () =>
     Math.round(dimensions.reduce((sum, dim) => sum + (userRatings[dim.id] || 0), 0) / dimensions.length)
 
-  const handleSubmitRating = () => {
+  const handleSubmitRating = async () => {
+    if (!user) return
+    setSubmitting(true)
+    setSubmitError('')
+
     const score = calculateMyScore()
-    setMyScore(score)
-    setHasRated(true)
-    setIsRatingOpen(false)
-    // Grant 100 points on first review
-    if (!hasRated) setUserPoints(prev => prev + 100)
-    if (reviewTitle.trim() || reviewText.trim()) {
-      setUserReview({ title: reviewTitle, text: reviewText })
+
+    try {
+      // Upsert the review row
+      const { data: review, error: reviewError } = await supabase
+        .from('reviews')
+        .upsert({
+          item_id: item.id,
+          user_id: user.id,
+          title: reviewTitle.trim() || null,
+          body: reviewText.trim() || null,
+        }, { onConflict: 'item_id,user_id' })
+        .select()
+        .single()
+
+      if (reviewError) throw reviewError
+
+      // Delete old ratings then insert new ones
+      await supabase.from('review_ratings').delete().eq('review_id', review.id)
+
+      const ratingsToInsert = dimensions.map(dim => ({
+        review_id: review.id,
+        category: dim.id,
+        score: userRatings[dim.id] || 50,
+      }))
+
+      const { error: ratingsError } = await supabase
+        .from('review_ratings')
+        .insert(ratingsToInsert)
+
+      if (ratingsError) throw ratingsError
+
+      setMyScore(score)
+      setHasRated(true)
+      setIsRatingOpen(false)
+      if (!hasRated) setUserPoints(prev => prev + 100)
+      if (reviewTitle.trim() || reviewText.trim()) {
+        setUserReview({ title: reviewTitle, text: reviewText })
+      }
+    } catch (err: any) {
+      setSubmitError(err.message || 'Something went wrong. Please try again.')
+    } finally {
+      setSubmitting(false)
     }
   }
 
@@ -248,7 +353,6 @@ function ItemPageContent({ park, item, category, images, videos, similarRides }:
 
   const specs = item.specs || {}
   const hasSpecs = Object.keys(specs).length > 0
-
   const currentType = item.specs?.type
 
   return (
@@ -263,7 +367,6 @@ function ItemPageContent({ park, item, category, images, videos, similarRides }:
           <span className="text-gray-300 text-sm">{item.name}</span>
         </nav>
 
-        {/* Item Title */}
         <div className="mb-8">
           <h1 className="text-5xl font-bold mb-2">{item.name}</h1>
         </div>
@@ -284,73 +387,29 @@ function ItemPageContent({ park, item, category, images, videos, similarRides }:
               scoreLabel="Overall score"
               myScore={myScore}
               hasRated={hasRated}
-              onRateClick={() => setIsRatingOpen(true)}
+              onRateClick={() => {
+                if (!user) {
+                  window.location.href = `/auth/login?redirect=${encodeURIComponent(window.location.pathname)}`
+                  return
+                }
+                setIsRatingOpen(true)
+              }}
               ratingBreakdown={COMMUNITY_BREAKDOWN}
               tags={[specs.type, specs.manufacturer, category.name].filter(Boolean) as string[]}
             >
               {hasSpecs && (
                 <div className="border-t border-[#2a475e] pt-4">
                   <div className="space-y-2 text-sm">
-                    {specs.type && (
-                      <div className="flex justify-between gap-4 text-[#acb2b8]">
-                        <span>Roller Coaster Type</span>
-                        <span className="text-[#c6d4df]">{specs.type}</span>
-                      </div>
-                    )}
-                    {specs.status && (
-                      <div className="flex justify-between gap-4 text-[#acb2b8]">
-                        <span>Status</span>
-                        <span className="text-[#c6d4df]">{specs.status}</span>
-                      </div>
-                    )}
-                    {specs.manufacturer && (
-                      <div className="flex justify-between gap-4 text-[#acb2b8]">
-                        <span>Manufacturer</span>
-                        <span className="text-[#c6d4df]">{specs.manufacturer}</span>
-                      </div>
-                    )}
-                    {specs.height && (
-                      <div className="flex justify-between gap-4 text-[#acb2b8]">
-                        <span>Height</span>
-                        <span className="text-[#c6d4df]">{specs.height}</span>
-                      </div>
-                    )}
-                    {specs.drop && (
-                      <div className="flex justify-between gap-4 text-[#acb2b8]">
-                        <span>Drop</span>
-                        <span className="text-[#c6d4df]">{specs.drop}</span>
-                      </div>
-                    )}
-                    {specs.speed && (
-                      <div className="flex justify-between gap-4 text-[#acb2b8]">
-                        <span>Speed</span>
-                        <span className="text-[#c6d4df]">{specs.speed}</span>
-                      </div>
-                    )}
-                    {specs.length && (
-                      <div className="flex justify-between gap-4 text-[#acb2b8]">
-                        <span>Length</span>
-                        <span className="text-[#c6d4df]">{specs.length}</span>
-                      </div>
-                    )}
-                    {specs.inversions !== undefined && (
-                      <div className="flex justify-between gap-4 text-[#acb2b8]">
-                        <span>Inversions</span>
-                        <span className="text-[#c6d4df]">{specs.inversions}</span>
-                      </div>
-                    )}
-                    {specs.gForce && (
-                      <div className="flex justify-between gap-4 text-[#acb2b8]">
-                        <span>G-Forces</span>
-                        <span className="text-[#c6d4df]">{specs.gForce}</span>
-                      </div>
-                    )}
-                    {specs.duration && (
-                      <div className="flex justify-between gap-4 text-[#acb2b8]">
-                        <span>Duration</span>
-                        <span className="text-[#c6d4df]">{specs.duration}</span>
-                      </div>
-                    )}
+                    {specs.type && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>Roller Coaster Type</span><span className="text-[#c6d4df]">{specs.type}</span></div>}
+                    {specs.status && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>Status</span><span className="text-[#c6d4df]">{specs.status}</span></div>}
+                    {specs.manufacturer && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>Manufacturer</span><span className="text-[#c6d4df]">{specs.manufacturer}</span></div>}
+                    {specs.height && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>Height</span><span className="text-[#c6d4df]">{specs.height}</span></div>}
+                    {specs.drop && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>Drop</span><span className="text-[#c6d4df]">{specs.drop}</span></div>}
+                    {specs.speed && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>Speed</span><span className="text-[#c6d4df]">{specs.speed}</span></div>}
+                    {specs.length && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>Length</span><span className="text-[#c6d4df]">{specs.length}</span></div>}
+                    {specs.inversions !== undefined && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>Inversions</span><span className="text-[#c6d4df]">{specs.inversions}</span></div>}
+                    {specs.gForce && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>G-Forces</span><span className="text-[#c6d4df]">{specs.gForce}</span></div>}
+                    {specs.duration && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>Duration</span><span className="text-[#c6d4df]">{specs.duration}</span></div>}
                   </div>
                 </div>
               )}
@@ -367,6 +426,7 @@ function ItemPageContent({ park, item, category, images, videos, similarRides }:
                 <h2 className="text-lg font-semibold text-[#c6d4df]">Rate {item.name}</h2>
                 <button onClick={() => setIsRatingOpen(false)} className="text-[#8f98a0] hover:text-white text-xl leading-none">✕</button>
               </div>
+
               <div className="px-6 py-5 space-y-6 max-h-[40vh] overflow-y-auto">
                 {dimensions.map(dimension => {
                   const userScore = userRatings[dimension.id] || 0
@@ -382,11 +442,11 @@ function ItemPageContent({ park, item, category, images, videos, similarRides }:
                         className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
                         style={{ background: `linear-gradient(to right, #66c0f4 0%, #66c0f4 ${userScore}%, #2a475e ${userScore}%, #2a475e 100%)` }}
                       />
-                      <p className="text-[10px] text-[#8f98a0]">Community average: {dimension.communityAverage}</p>
                     </div>
                   )
                 })}
               </div>
+
               <div className="px-6 pb-5 space-y-3 border-t border-[#2a475e] pt-5">
                 <p className="text-xs font-medium uppercase tracking-wider text-[#8f98a0]">Leave a review (optional)</p>
                 <input
@@ -400,7 +460,11 @@ function ItemPageContent({ park, item, category, images, videos, similarRides }:
                   rows={3}
                   className="w-full bg-[#2a475e] border border-[#3d6a8a] rounded-sm px-3 py-2 text-sm text-[#c6d4df] placeholder-[#6a8a9a] focus:outline-none focus:border-[#66c0f4] resize-none"
                 />
+                {submitError && (
+                  <p className="text-sm text-red-400">{submitError}</p>
+                )}
               </div>
+
               <div className="flex items-center justify-between border-t border-[#2a475e] px-6 py-4">
                 <div className="text-sm text-[#8f98a0]">
                   Your score: <span className="text-[#66c0f4] font-bold">{calculateMyScore()}</span>
@@ -409,8 +473,12 @@ function ItemPageContent({ park, item, category, images, videos, similarRides }:
                   <button onClick={() => setIsRatingOpen(false)} className="px-4 py-2 text-sm text-[#8f98a0] hover:text-white transition-colors">
                     Cancel
                   </button>
-                  <button onClick={handleSubmitRating} className="px-5 py-2 bg-[#4c6b22] hover:bg-[#5a7a28] text-white text-sm font-medium rounded-sm transition-colors">
-                    Submit rating
+                  <button
+                    onClick={handleSubmitRating}
+                    disabled={submitting}
+                    className="px-5 py-2 bg-[#4c6b22] hover:bg-[#5a7a28] disabled:opacity-50 text-white text-sm font-medium rounded-sm transition-colors"
+                  >
+                    {submitting ? 'Saving...' : hasRated ? 'Update rating' : 'Submit rating'}
                   </button>
                 </div>
               </div>
@@ -422,28 +490,18 @@ function ItemPageContent({ park, item, category, images, videos, similarRides }:
         <div className="mb-12">
           <h2 className="text-2xl font-semibold mb-6">All Reviews</h2>
           <div className="flex gap-2 mb-8 overflow-x-auto pb-2 border-b border-gray-700">
-            {[
-              { id: 'all', label: 'All Reviews' },
-              { id: 'positive', label: 'Positive Reviews' },
-              { id: 'mixed', label: 'Mixed Reviews' },
-              { id: 'negative', label: 'Negative Reviews' },
-              { id: 'funny', label: 'Funny Reviews' }
-            ].map((filter) => (
+            {['all', 'positive', 'mixed', 'negative', 'funny'].map((f) => (
               <button
-                key={filter.id}
-                onClick={() => setReviewFilter(filter.id)}
-                className={`px-4 py-2 whitespace-nowrap font-medium transition-colors ${reviewFilter === filter.id
-                  ? 'text-blue-400 border-b-2 border-blue-400'
-                  : 'text-gray-400 hover:text-gray-300'
-                  }`}
+                key={f}
+                onClick={() => setReviewFilter(f)}
+                className={`px-4 py-2 whitespace-nowrap font-medium capitalize transition-colors ${reviewFilter === f ? 'text-blue-400 border-b-2 border-blue-400' : 'text-gray-400 hover:text-gray-300'}`}
               >
-                {filter.label}
+                {f} Reviews
               </button>
             ))}
           </div>
 
           <div className="space-y-6">
-            {/* User's own review — no reaction buttons */}
             {userReview && myScore !== null && (
               <ReviewCard
                 reviewId="user"
@@ -455,11 +513,9 @@ function ItemPageContent({ park, item, category, images, videos, similarRides }:
                 reactions={initialReactions}
                 userReactions={initialUserReactions}
                 userPoints={userPoints}
-                onReact={() => { }}
+                onReact={() => {}}
               />
             )}
-
-            {/* Community reviews */}
             {mockReviews.map(review => (
               <ReviewCard
                 key={review.id}
@@ -477,16 +533,16 @@ function ItemPageContent({ park, item, category, images, videos, similarRides }:
             ))}
           </div>
         </div>
-        {/* Similar Rides - Using the new carousel */}
-{similarRides.length > 0 && (
-  <SimilarRidesCarousel
-    title="Similar Rides"
-    subtitle={`Other ${currentType} coasters you might enjoy`}
-    items={similarRides}
-    currentRideId={item.id}
-  />
-)}
-        {/* Back Button */}
+
+        {similarRides.length > 0 && (
+          <SimilarRidesCarousel
+            title="Similar Rides"
+            subtitle={`Other ${currentType} coasters you might enjoy`}
+            items={similarRides}
+            currentRideId={item.id}
+          />
+        )}
+
         <div className="flex justify-center mb-8">
           <Link href={`/parks/${park.id}`} className="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-lg font-semibold transition-colors">
             Back to {park.name}

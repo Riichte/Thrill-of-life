@@ -19,35 +19,76 @@ interface RatingDimension {
   communityAverage: number
 }
 
-const ratingDimensions: Record<string, RatingDimension[]> = {
+const ratingDimensions: Record<string, { id: string; label: string }[]> = {
   rides: [
-    { id: 'thrill', label: 'Thrill Level', communityAverage: 82 },
-    { id: 'queue', label: 'Queue Experience', communityAverage: 65 },
-    { id: 'comfort', label: 'Ride Comfort', communityAverage: 71 },
-    { id: 'overall', label: 'Overall Experience', communityAverage: 78 }
+    { id: 'intensity', label: 'Intensity' },
+    { id: 'comfort', label: 'Comfort' },
+    { id: 'theming', label: 'Theming' },
+    { id: 'fun_factor', label: 'Fun Factor' },
+    { id: 'capacity', label: 'Capacity' },
   ],
-  restaurants: [
-    { id: 'food', label: 'Food Quality', communityAverage: 79 },
-    { id: 'service', label: 'Service', communityAverage: 75 },
-    { id: 'value', label: 'Value for Money', communityAverage: 68 },
-    { id: 'atmosphere', label: 'Atmosphere', communityAverage: 81 }
+  roller_coasters: [
+    { id: 'intensity', label: 'Intensity' },
+    { id: 'comfort', label: 'Comfort' },
+    { id: 'theming', label: 'Theming' },
+    { id: 'fun_factor', label: 'Fun Factor' },
+    { id: 'capacity', label: 'Capacity' },
+  ],
+  flat_rides: [
+    { id: 'intensity', label: 'Intensity' },
+    { id: 'comfort', label: 'Comfort' },
+    { id: 'theming', label: 'Theming' },
+    { id: 'fun_factor', label: 'Fun Factor' },
+    { id: 'capacity', label: 'Capacity' },
+  ],
+  water_rides: [
+    { id: 'intensity', label: 'Intensity' },
+    { id: 'comfort', label: 'Comfort' },
+    { id: 'theming', label: 'Theming' },
+    { id: 'fun_factor', label: 'Fun Factor' },
+    { id: 'capacity', label: 'Capacity' },
+  ],
+  dark_rides: [
+    { id: 'theming', label: 'Theming' },
+    { id: 'fun_factor', label: 'Fun Factor' },
+    { id: 'capacity', label: 'Capacity' },
+    { id: 'technology', label: 'Technology / Effects' },
+    { id: 'story', label: 'Story / Immersion' },
   ],
   shows: [
-    { id: 'performance', label: 'Performance Quality', communityAverage: 84 },
-    { id: 'entertainment', label: 'Entertainment Value', communityAverage: 86 },
-    { id: 'audience', label: 'Audience Experience', communityAverage: 80 }
+    { id: 'theming', label: 'Theming' },
+    { id: 'fun_factor', label: 'Fun Factor' },
+    { id: 'capacity', label: 'Capacity' },
+    { id: 'story', label: 'Story / Immersion' },
+    { id: 'technology', label: 'Technology / Effects' },
+  ],
+  restaurants: [
+    { id: 'food_quality', label: 'Food Quality' },
+    { id: 'value', label: 'Value' },
+    { id: 'wait_time', label: 'Speed / Wait Time' },
+    { id: 'atmosphere', label: 'Atmosphere' },
+    { id: 'service', label: 'Service' },
   ],
   hotels: [
-    { id: 'room', label: 'Room Quality', communityAverage: 77 },
-    { id: 'service', label: 'Service', communityAverage: 74 },
-    { id: 'value', label: 'Value for Money', communityAverage: 70 },
-    { id: 'location', label: 'Location', communityAverage: 85 }
+    { id: 'comfort', label: 'Comfort' },
+    { id: 'value', label: 'Value' },
+    { id: 'atmosphere', label: 'Atmosphere' },
+    { id: 'service', label: 'Service' },
+    { id: 'cleanliness', label: 'Cleanliness' },
   ],
   shops: [
-    { id: 'quality', label: 'Product Quality', communityAverage: 76 },
-    { id: 'value', label: 'Value for Money', communityAverage: 69 },
-    { id: 'selection', label: 'Selection', communityAverage: 80 }
-  ]
+    { id: 'value', label: 'Value' },
+    { id: 'atmosphere', label: 'Atmosphere' },
+    { id: 'service', label: 'Service' },
+    { id: 'product_quality', label: 'Product Quality' },
+  ],
+  parks: [
+    { id: 'theming', label: 'Theming' },
+    { id: 'value', label: 'Value' },
+    { id: 'cleanliness', label: 'Cleanliness' },
+    { id: 'service', label: 'Staff / Service' },
+    { id: 'overall_experience', label: 'Overall Experience' },
+  ],
 }
 
 export default function RatingComponent({

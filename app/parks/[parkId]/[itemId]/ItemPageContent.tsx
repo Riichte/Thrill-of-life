@@ -107,7 +107,7 @@ function ReviewCard({
   onEdit?: () => void
 }) {
   const getScoreColor = (s: number) =>
-  s >= 80 ? '#10b981' : s >= 60 ? '#f5f100' : s >= 40 ? '#f97316' : '#e80505fe'
+    s >= 80 ? '#10b981' : s >= 60 ? '#f5f100' : s >= 40 ? '#f97316' : '#e80505fe'
 
   const reactionButtons: { key: Reaction; label: string; activeClass: string }[] = [
     { key: 'yes', label: '👍 Yes', activeClass: 'text-green-400 border-green-500 bg-green-500/10' },
@@ -132,7 +132,7 @@ function ReviewCard({
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between gap-2 mb-3">
           <div className="flex items-center gap-2">
-            <span className={`font-semibold text-lg ${isOwn ? 'text-[#66c0f4]' : 'text-[#c6d4df]'}`}>{author}</span>
+            <span className={`font-bold text-lg ${isOwn ? 'text-[#66c0f4]' : 'text-[#f59e0b]'}`}>{author}</span>
             {isOwn && <span className="text-xs text-[#8f98a0] bg-[#2a475e] px-2 py-0.5 rounded-sm">Your review</span>}
           </div>
           {isOwn && onEdit && (
@@ -144,8 +144,10 @@ function ReviewCard({
             </button>
           )}
         </div>
-        {title && <p className="text-lg font-bold text-[#c6d4df] mb-2">{title}</p>}
-        {text && <p className="text-sm text-[#acb2b8] leading-relaxed mb-4">{text}</p>}
+        <div className="border-t border-[#2a475e] pt-3 mb-3">
+          {title && <p className="text-lg font-bold text-[#c6d4df] mb-1">{title}</p>}
+          {text && <p className="text-sm text-[#acb2b8] leading-relaxed">{text}</p>}
+        </div>
         {!isOwn && (
           <div className="border-t border-[#2a475e] pt-3 mt-2">
             <p className="text-xs text-[#8f98a0] mb-2">Helpful?</p>

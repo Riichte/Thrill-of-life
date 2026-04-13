@@ -104,8 +104,8 @@ export function SteamMediaCarousel({ slides, autoAdvanceMs, className = '' }: St
                 type="button"
                 onClick={() => setIndex(i)}
                 className={`rounded-full transition-all duration-300 ${i === safeIndex
-                    ? 'bg-white w-4 h-2'
-                    : 'bg-white/40 hover:bg-white/70 w-2 h-2'
+                  ? 'bg-white w-4 h-2'
+                  : 'bg-white/40 hover:bg-white/70 w-2 h-2'
                   }`}
               />
             ))}
@@ -134,8 +134,12 @@ export function SteamMediaCarousel({ slides, autoAdvanceMs, className = '' }: St
 
           <div
             ref={stripRef}
-            className="mx-9 flex gap-2 overflow-x-auto pb-1 scrollbar-hide"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            className="mx-9 flex gap-2 overflow-x-auto pb-1"
+            style={{
+              scrollbarWidth: 'thin',
+              scrollbarColor: '#2a475e #0e1621',
+              msOverflowStyle: 'none'
+            }}
           >
             {slides.map((slide, i) => (
               <button
@@ -143,8 +147,8 @@ export function SteamMediaCarousel({ slides, autoAdvanceMs, className = '' }: St
                 type="button"
                 onClick={() => setIndex(i)}
                 className={`relative h-[65px] w-[116px] flex-shrink-0 overflow-hidden rounded-sm transition-all ${i === safeIndex
-                    ? 'ring-2 ring-white ring-offset-2 ring-offset-[#0e1621]'
-                    : 'opacity-80 hover:opacity-100'
+                  ? 'ring-2 ring-white ring-offset-2 ring-offset-[#0e1621]'
+                  : 'opacity-80 hover:opacity-100'
                   }`}
               >
                 <img src={slide.src} alt={slide.alt ?? ''} className="h-full w-full object-cover" />

@@ -47,7 +47,9 @@ export default function ParkPageClient({
 
   const supabase = createClient()
   const [isFavorited, setIsFavorited] = useState(initialFavorited)
-
+  const [isFavorited, setIsFavorited] = useState(initialFavorited)
+  const COMMUNITY_OVERALL = 85
+  const COMMUNITY_BREAKDOWN = { positive: 72, mixed: 18, negative: 10 }
   const handleFavoriteToggle = async () => {
     if (!userId) {
       window.location.href = `/auth/login?redirect=/parks/${park.id}`
@@ -179,11 +181,6 @@ export default function ParkPageClient({
           </Link>
         </div>
 
-        <div className="flex justify-center mb-8">
-          <Link href="/parks" className="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-lg font-semibold transition-colors">
-            Back to All Parks
-          </Link>
-        </div>
 
         <PhotoCredits credits={credits} />
 

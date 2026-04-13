@@ -102,7 +102,7 @@ export default function CategoryPageClient({
                                 href={`/parks/${item.park_id}/${item.category_id}/${item.id}`}
                                 className="group bg-[#1b2838] border border-[#2a475e] rounded-sm overflow-hidden hover:border-[#66c0f4] transition-colors"
                             >
-                                <div className="h-36 overflow-hidden bg-[#0e1621]">
+                                <div className="aspect-square overflow-hidden bg-[#0e1621]">
                                     {image ? (
                                         <img
                                             src={image}

@@ -62,7 +62,6 @@ export default function ParksClient({ parks }: { parks: Park[] }) {
                 <img src={park.cover_image_url} alt={park.name} className="w-full h-48 object-cover" />
                 <div className="p-4">
                   <div className="flex items-center mb-2">
-                    <img src={park.logo_url} alt={`${park.name} logo`} className="w-8 h-8 rounded mr-2" />
                     <h3 className="text-xl font-semibold">{park.name}</h3>
                   </div>
                   <p className="text-gray-300 text-sm mb-2">{park.description}</p>

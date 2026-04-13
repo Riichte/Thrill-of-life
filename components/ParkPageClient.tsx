@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { SteamMediaCarousel } from '@/components/SteamMediaCarousel'
 import { SteamInfoPanel } from '@/components/SteamInfoPanel'
 import { createClient } from '@/lib/supabase/client'
+import PhotoCredits, { PhotoCredit } from '@/components/PhotoCredits'
+
 
 interface Park {
   id: string
@@ -25,7 +27,6 @@ interface Category {
   firstItemId: string | null
 }
 
-import PhotoCredits, { PhotoCredit } from '@/components/PhotoCredits'
 
 interface ParkPageClientProps {
   park: Park
@@ -196,7 +197,7 @@ export default function ParkPageClient({
 
         <PhotoCredits credits={credits} />
 
-        
+
       </div>
     </div>
   )

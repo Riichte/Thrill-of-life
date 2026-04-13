@@ -6,6 +6,7 @@ import { SteamMediaCarousel } from '@/components/SteamMediaCarousel'
 import { SteamInfoPanel } from '@/components/SteamInfoPanel'
 import { SimilarRidesCarousel } from '@/components/SimilarRidesCarousel'
 import { createClient } from '@/lib/supabase/client'
+import PhotoCredits, { PhotoCredit } from '@/components/PhotoCredits'
 
 const ratingDimensions: Record<string, { id: string; label: string }[]> = {
   rides: [
@@ -170,7 +171,7 @@ function ReviewCard({
   )
 }
 
-import PhotoCredits, { PhotoCredit } from '@/components/PhotoCredits'
+
 
 export default function ItemPageContent({ park, item, category, images, videos, similarRides, credits = [] }: {
   park: any

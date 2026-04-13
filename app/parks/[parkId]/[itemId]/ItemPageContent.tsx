@@ -224,6 +224,31 @@ export default function ItemPageContent({ park, item, category, images, videos, 
     const load = async () => {
       const { data: { user } } = await supabase.auth.getUser()
       setUser(user)
+
+      // Load reactions for all reviews (works for logged out too)
+      const reviewIds = reviews.map(r => r.id)
+      if (reviewIds.length > 0) {
+        const { data: existingReactions } = await supabase
+          .from('reactions')
+          .select('review_id, type, user_id')
+          .in('review_id', reviewIds)
+
+        if (existingReactions) {
+          const reactionCounts: Record<string, ReviewReactions> = {}
+          const userReactionMap: Record<string, UserReactions> = {}
+
+          existingReactions.forEach(r => {
+            if (!reactionCounts[r.review_id]) reactionCounts[r.review_id] = { ...initialReactions }
+            if (!userReactionMap[r.review_id]) userReactionMap[r.review_id] = { ...initialUserReactions }
+            reactionCounts[r.review_id][r.type as Reaction]++
+            if (user && r.user_id === user.id) userReactionMap[r.review_id][r.type as Reaction] = true
+          })
+
+          setReactions(reactionCounts)
+          setMyReactions(userReactionMap)
+        }
+      }
+
       if (!user) return
 
       // Check for existing review

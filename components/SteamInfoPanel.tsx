@@ -122,7 +122,7 @@ export function SteamInfoPanel({
           >
             <div className="flex h-[68px] w-[68px] items-center justify-center rounded-full bg-[#1b2838]">
               {hasRated && myScore !== null ? (
-                <span className="text-2xl font-bold text-[#66c0f4]">{myScore}</span>
+                <span className={`text-2xl font-bold ${myScore >= 80 ? 'text-[#10b981]' : myScore >= 60 ? 'text-[#f59e0b]' : myScore >= 40 ? 'text-[#f97316]' : 'text-[#ef4444]'}`}>{myScore}</span>
               ) : (
                 <span className="text-2xl text-[#4a6a82]">—</span>
               )}
@@ -138,7 +138,7 @@ export function SteamInfoPanel({
                 onClick={onRateClick}
                 className="w-fit bg-[#4c6b22] hover:bg-[#5a7a28] text-white text-xs font-medium px-3 py-1.5 rounded-sm transition-colors"
               >
-                Rate this ride
+                Rate
               </button>
             )}
           </div>

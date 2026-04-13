@@ -160,7 +160,7 @@ export default function RatingComponent({
             onClick={() => setIsOpen(true)}
             className="w-fit bg-[#4c6b22] hover:bg-[#5a7a28] text-white text-sm font-medium px-5 py-2 rounded-sm transition-colors"
           >
-            {hasRated ? 'Edit your rating' : 'Rate this ride'}
+            {hasRated ? 'Edit your rating' : 'Rate'}
           </button>
         </div>
       </div>

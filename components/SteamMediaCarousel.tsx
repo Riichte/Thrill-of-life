@@ -53,7 +53,7 @@ export function SteamMediaCarousel({ slides, autoAdvanceMs, className = '' }: St
     stripRef.current?.scrollBy({ left: dir * 220, behavior: 'smooth' })
   }
 
-  const progressPct = n ? ((safeIndex + 1) / n) * 100 : 100
+
 
   if (!n || !current) {
     return (
@@ -103,11 +103,10 @@ export function SteamMediaCarousel({ slides, autoAdvanceMs, className = '' }: St
                 key={i}
                 type="button"
                 onClick={() => setIndex(i)}
-                className={`rounded-full transition-all duration-300 ${
-                  i === safeIndex
+                className={`rounded-full transition-all duration-300 ${i === safeIndex
                     ? 'bg-white w-4 h-2'
                     : 'bg-white/40 hover:bg-white/70 w-2 h-2'
-                }`}
+                  }`}
               />
             ))}
           </div>
@@ -135,18 +134,18 @@ export function SteamMediaCarousel({ slides, autoAdvanceMs, className = '' }: St
 
           <div
             ref={stripRef}
-            className="mx-9 flex gap-2 overflow-x-auto pb-1"
+            className="mx-9 flex gap-2 overflow-x-auto pb-1 scrollbar-hide"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
             {slides.map((slide, i) => (
               <button
                 key={`${slide.src}-${i}`}
                 type="button"
                 onClick={() => setIndex(i)}
-                className={`relative h-[65px] w-[116px] flex-shrink-0 overflow-hidden rounded-sm transition-all ${
-                  i === safeIndex
+                className={`relative h-[65px] w-[116px] flex-shrink-0 overflow-hidden rounded-sm transition-all ${i === safeIndex
                     ? 'ring-2 ring-white ring-offset-2 ring-offset-[#0e1621]'
                     : 'opacity-80 hover:opacity-100'
-                }`}
+                  }`}
               >
                 <img src={slide.src} alt={slide.alt ?? ''} className="h-full w-full object-cover" />
                 {slide.isVideo && (

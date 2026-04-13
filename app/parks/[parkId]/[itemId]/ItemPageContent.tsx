@@ -492,6 +492,7 @@ export default function ItemPageContent({ park, item, category, images, videos, 
         {/* Reviews Section */}
         <div className="mb-12">
           <h2 className="text-2xl font-semibold mb-6">All Reviews</h2>
+          
           <div className="flex gap-2 mb-8 overflow-x-auto pb-2 border-b border-gray-700">
             {['all', 'positive', 'mixed', 'negative', 'funny'].map((f) => (
               <button
@@ -519,31 +520,31 @@ export default function ItemPageContent({ park, item, category, images, videos, 
               />
             )}
             {reviews
-  .filter(r => !user || r.user_id !== user.id)
-  .map(review => {
-    const avg = review.review_ratings?.length > 0
-      ? Math.round(review.review_ratings.reduce((s: number, r: any) => s + r.score, 0) / review.review_ratings.length)
-      : 0
-    const reviewReactions = reactions[review.id] ?? initialReactions
-    const reviewUserReactions = myReactions[review.id] ?? initialUserReactions
-    if (!reviewReactions || !reviewUserReactions) return null
-    return (
-      <ReviewCard
-        key={review.id}
-        reviewId={review.id}
-        author={review.profiles?.username ?? 'Anonymous'}
-        score={avg}
-        title={review.title}
-        text={review.body}
-        isOwn={false}
-        reactions={reviewReactions}
-        userReactions={reviewUserReactions}
-        userPoints={userPoints}
-        onReact={handleReact}
-      />
-    )
-  })
-}
+              .filter(r => !user || r.user_id !== user.id)
+              .map(review => {
+                const avg = review.review_ratings?.length > 0
+                  ? Math.round(review.review_ratings.reduce((s: number, r: any) => s + r.score, 0) / review.review_ratings.length)
+                  : 0
+                const reviewReactions = reactions[review.id] ?? initialReactions
+                const reviewUserReactions = myReactions[review.id] ?? initialUserReactions
+                if (!reviewReactions || !reviewUserReactions) return null
+                return (
+                  <ReviewCard
+                    key={review.id}
+                    reviewId={review.id}
+                    author={review.profiles?.username ?? 'Anonymous'}
+                    score={avg}
+                    title={review.title}
+                    text={review.body}
+                    isOwn={false}
+                    reactions={reviewReactions}
+                    userReactions={reviewUserReactions}
+                    userPoints={userPoints}
+                    onReact={handleReact}
+                  />
+                )
+              })
+            }
           </div>
         </div>
 

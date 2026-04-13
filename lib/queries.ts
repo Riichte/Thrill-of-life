@@ -239,18 +239,27 @@ export async function getItemReviews(itemId: string) {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('reviews')
-    .select(`
-      *,
-      review_ratings(*),
-      profiles(username)
-    `)
+    .select('*, review_ratings(*)')
     .eq('item_id', itemId)
     .order('created_at', { ascending: false })
   if (error) {
     console.error('getItemReviews error:', error)
     return []
   }
-  return data ?? []
+
+  // Fetch usernames separately
+  const userIds = [...new Set((data ?? []).map(r => r.user_id))]
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('id, username')
+    .in('id', userIds)
+
+  const profileMap = Object.fromEntries((profiles ?? []).map(p => [p.id, p.username]))
+
+  return (data ?? []).map(r => ({
+    ...r,
+    profiles: { username: profileMap[r.user_id] ?? 'Anonymous' }
+  }))
 }
 
 export async function getItemCommunityScore(itemId: string) {

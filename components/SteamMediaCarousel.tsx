@@ -95,13 +95,23 @@ export function SteamMediaCarousel({ slides, autoAdvanceMs, className = '' }: St
           </>
         )}
 
-        {/* Gallery position / progress bar (Steam-style) */}
-        <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#1b2838]">
-          <div
-            className="h-full bg-[#66c0f4] transition-[width] duration-300 ease-out"
-            style={{ width: `${progressPct}%` }}
-          />
-        </div>
+        {/* Dots */}
+        {n > 1 && (
+          <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5">
+            {slides.map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => setIndex(i)}
+                className={`rounded-full transition-all duration-300 ${
+                  i === safeIndex
+                    ? 'bg-white w-4 h-2'
+                    : 'bg-white/40 hover:bg-white/70 w-2 h-2'
+                }`}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       {n > 1 && (

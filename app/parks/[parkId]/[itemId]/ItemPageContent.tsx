@@ -132,7 +132,7 @@ function ReviewCard({
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between gap-2 mb-3">
           <div className="flex items-center gap-2">
-            <span className={`font-bold text-lg ${isOwn ? 'text-[#66c0f4]' : 'text-[#43509c]'}`}>{author}</span>
+            <span className={`font-bold text-lg ${isOwn ? 'text-[#66c0f4]' : 'text-[#7283e0]'}`}>{author}</span>
             {isOwn && <span className="text-xs text-[#8f98a0] bg-[#2a475e] px-2 py-0.5 rounded-sm">Your review</span>}
           </div>
           {isOwn && onEdit && (

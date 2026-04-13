@@ -197,13 +197,13 @@ export async function getIsFollowing(followerId: string, followingId: string) {
 
 // ─── Park Images ─────────────────────────────────────────
 
-export async function getParkImages(parkId: string): Promise<string[]> {
+export async function getParkImages(parkId: string): Promise<{ url: string; attribution_author?: string; attribution_url?: string; license?: string }[]> {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('park_images')
-    .select('url')
+    .select('url, attribution_author, attribution_url, license')
     .eq('park_id', parkId)
     .order('sort_order')
   if (error) return []
-  return data.map(row => row.url)
+  return data ?? []
 }

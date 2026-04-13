@@ -263,6 +263,31 @@ export default function ItemPageContent({ park, item, category, images, videos, 
         .single()
       setIsFavorited(!!existingFav)
 
+      // Load reactions for all reviews
+      const reviewIds = reviews.map(r => r.id)
+      if (reviewIds.length > 0) {
+        const { data: existingReactions } = await supabase
+          .from('reactions')
+          .select('review_id, type, user_id')
+          .in('review_id', reviewIds)
+
+        if (existingReactions) {
+          // Build reaction counts
+          const reactionCounts: Record<string, ReviewReactions> = {}
+          const userReactionMap: Record<string, UserReactions> = {}
+
+          existingReactions.forEach(r => {
+            if (!reactionCounts[r.review_id]) reactionCounts[r.review_id] = { ...initialReactions }
+            if (!userReactionMap[r.review_id]) userReactionMap[r.review_id] = { ...initialUserReactions }
+            reactionCounts[r.review_id][r.type as Reaction]++
+            if (r.user_id === user.id) userReactionMap[r.review_id][r.type as Reaction] = true
+          })
+
+          setReactions(reactionCounts)
+          setMyReactions(userReactionMap)
+        }
+      }
+
       // Load points
       const { data: pointsRow } = await supabase
         .from('user_points')
@@ -274,18 +299,43 @@ export default function ItemPageContent({ park, item, category, images, videos, 
     load()
   }, [item.id])
 
-  const handleReact = (reviewId: string, reaction: Reaction) => {
-    const current = myReactions[reviewId][reaction]
+  const handleReact = async (reviewId: string, reaction: Reaction) => {
+    if (!user) {
+      window.location.href = `/auth/login?redirect=${encodeURIComponent(window.location.pathname)}`
+      return
+    }
+    const current = myReactions[reviewId]?.[reaction] ?? false
     if (reaction === 'award' && !current && userPoints < 100) return
+
+    // Update UI immediately
     setReactions(prev => ({
       ...prev,
-      [reviewId]: { ...prev[reviewId], [reaction]: prev[reviewId][reaction] + (current ? -1 : 1) }
+      [reviewId]: { ...prev[reviewId], [reaction]: (prev[reviewId]?.[reaction] ?? 0) + (current ? -1 : 1) }
     }))
     setMyReactions(prev => ({
       ...prev,
       [reviewId]: { ...prev[reviewId], [reaction]: !current }
     }))
-    if (reaction === 'award') setUserPoints(prev => current ? prev + 100 : prev - 100)
+    if (reaction === 'award') {
+      const newPoints = current ? userPoints + 100 : userPoints - 100
+      setUserPoints(newPoints)
+      await supabase.from('user_points').upsert(
+        { user_id: user.id, points: newPoints },
+        { onConflict: 'user_id' }
+      )
+    }
+
+    // Save to Supabase
+    if (current) {
+      await supabase.from('reactions')
+        .delete()
+        .eq('review_id', reviewId)
+        .eq('user_id', user.id)
+        .eq('type', reaction)
+    } else {
+      await supabase.from('reactions')
+        .insert({ review_id: reviewId, user_id: user.id, type: reaction })
+    }
   }
 
   const handleFavoriteToggle = async () => {
@@ -399,11 +449,11 @@ export default function ItemPageContent({ park, item, category, images, videos, 
           <h1 className="text-5xl font-bold mb-2">{item.name}</h1>
           {item.status && item.status !== 'operating' && (
             <span className={`inline-block text-xs font-semibold px-3 py-1 rounded-sm uppercase tracking-wider ${item.status === 'defunct' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
-                item.status === 'sbno' ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30' :
-                  item.status === 'seasonal' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
-                    item.status === 'under_construction' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' :
-                      item.status === 'coming_soon' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' :
-                        'bg-gray-500/20 text-gray-400 border border-gray-500/30'
+              item.status === 'sbno' ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30' :
+                item.status === 'seasonal' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
+                  item.status === 'under_construction' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' :
+                    item.status === 'coming_soon' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' :
+                      'bg-gray-500/20 text-gray-400 border border-gray-500/30'
               }`}>
               {item.status === 'sbno' ? 'SBNO' : item.status.replace(/_/g, ' ')}
             </span>

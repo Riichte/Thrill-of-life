@@ -145,7 +145,6 @@ export default function Navbar() {
                         onClick={handleLogout}
                         className="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-[#2a475e] hover:text-red-300 transition-colors"
                       >
-                        Submission
                         <Link
                           href="/submit"
                           onClick={() => setDropdownOpen(false)}
@@ -154,7 +153,7 @@ export default function Navbar() {
                           📸 Submit an Image
                         </Link>
                         <div className="border-t border-[#2a475e]" />
-
+                                          
                         Sign out
                       </button>
                     </div>

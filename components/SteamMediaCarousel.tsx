@@ -33,18 +33,21 @@ export function SteamMediaCarousel({ slides, autoAdvanceMs, className = '' }: St
     setIndex((i) => (n ? i % n : 0))
   }, [n])
 
+  const [resetTimer, setResetTimer] = useState(0)
+
   useEffect(() => {
     if (!autoAdvanceMs || n <= 1) return
     const t = setInterval(() => {
       setIndex((prev) => (prev + 1) % n)
     }, autoAdvanceMs)
     return () => clearInterval(t)
-  }, [autoAdvanceMs, n])
+  }, [autoAdvanceMs, n, resetTimer])
 
   const go = useCallback(
     (delta: number) => {
       if (!n) return
       setIndex((prev) => (prev + delta + n) % n)
+      setResetTimer(prev => prev + 1)
     },
     [n]
   )
@@ -102,7 +105,7 @@ export function SteamMediaCarousel({ slides, autoAdvanceMs, className = '' }: St
               <button
                 key={i}
                 type="button"
-                onClick={() => setIndex(i)}
+                onClick={() => { setIndex(i); setResetTimer(prev => prev + 1) }}
                 className={`rounded-full transition-all duration-300 ${i === safeIndex
                   ? 'bg-white w-4 h-2'
                   : 'bg-white/40 hover:bg-white/70 w-2 h-2'
@@ -145,7 +148,7 @@ export function SteamMediaCarousel({ slides, autoAdvanceMs, className = '' }: St
               <button
                 key={`${slide.src}-${i}`}
                 type="button"
-                onClick={() => setIndex(i)}
+                onClick={() => { setIndex(i); setResetTimer(prev => prev + 1) }}
                 className={`relative h-[65px] w-[116px] flex-shrink-0 overflow-hidden rounded-sm transition-all ${i === safeIndex
                   ? 'ring-2 ring-white ring-offset-2 ring-offset-[#0e1621]'
                   : 'opacity-80 hover:opacity-100'

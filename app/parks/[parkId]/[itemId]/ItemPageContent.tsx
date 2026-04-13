@@ -503,7 +503,6 @@ export default function ItemPageContent({ park, item, category, images, videos, 
               </button>
             ))}
           </div>
-          {console.log('Reviews received:', reviews.length, reviews.map(r => ({ id: r.id, user_id: r.user_id, profile: r.profiles })))}
           <div className="space-y-6">
             {userReview && myScore !== null && (
               <ReviewCard

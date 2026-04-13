@@ -390,6 +390,8 @@ export default function ItemPageContent({ park, item, category, images, videos, 
           <span className="mx-2 text-gray-500">/</span>
           <Link href={`/parks/${park.id}`} className="text-blue-400 hover:text-blue-300 text-sm">{park.name}</Link>
           <span className="mx-2 text-gray-500">/</span>
+          <Link href={`/parks/${park.id}/category/${category.id}`} className="text-blue-400 hover:text-blue-300 text-sm">{category.name}</Link>
+          <span className="mx-2 text-gray-500">/</span>
           <span className="text-gray-300 text-sm">{item.name}</span>
         </nav>
 

@@ -47,13 +47,14 @@ export default function Navbar() {
   const categories = [
   { name: 'Parks', href: '/parks' },
   { name: 'Roller Coasters', href: '/category/roller-coasters' },
+  { name: 'Water Rides', href: '/category/water-rides' },
   { name: 'Flat Rides', href: '/category/flat-rides' },
   { name: 'Dark Rides', href: '/category/dark-rides' },
   { name: 'Restaurants', href: '/category/restaurants' },
   { name: 'Shows', href: '/category/shows' },
-  { name: 'Hotels', href: '/category/hotels' },
   { name: 'Shops', href: '/category/shops' },
-]
+  { name: 'Hotels', href: '/category/hotels' },
+  ]
 
   return (
     <nav className="sticky top-0 z-50 bg-gray-900 border-b border-gray-800">

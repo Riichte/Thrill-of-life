@@ -44,17 +44,7 @@ export default function ParkPageClient({
 }: ParkPageClientProps) {
 
 
-const COMMUNITY_OVERALL = 85
-const COMMUNITY_BREAKDOWN = { positive: 72, mixed: 18, negative: 10 }
 
-export default function ParkPageClient({
-  park,
-  slides,
-  categoriesWithImages,
-  categoryImages,
-  userId,
-  isFavorited: initialFavorited,
-}: ParkPageClientProps) {
   const supabase = createClient()
   const [isFavorited, setIsFavorited] = useState(initialFavorited)
 

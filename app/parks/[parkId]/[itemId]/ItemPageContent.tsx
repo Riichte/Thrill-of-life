@@ -106,7 +106,8 @@ function ReviewCard({
   onReact: (reviewId: string, reaction: Reaction) => void
   onEdit?: () => void
 }) {
-  const getScoreColor = (s: number) => s >= 75 ? '#10b981' : s >= 50 ? '#f59e0b' : '#ef4444'
+  const getScoreColor = (s: number) =>
+  s >= 80 ? '#10b981' : s >= 60 ? '#f5f100' : s >= 40 ? '#f97316' : '#e80505fe'
 
   const reactionButtons: { key: Reaction; label: string; activeClass: string }[] = [
     { key: 'yes', label: '👍 Yes', activeClass: 'text-green-400 border-green-500 bg-green-500/10' },
@@ -143,7 +144,7 @@ function ReviewCard({
             </button>
           )}
         </div>
-        {title && <p className="text-base font-medium text-[#c6d4df] mb-2">{title}</p>}
+        {title && <p className="text-lg font-bold text-[#c6d4df] mb-2">{title}</p>}
         {text && <p className="text-sm text-[#acb2b8] leading-relaxed mb-4">{text}</p>}
         {!isOwn && (
           <div className="border-t border-[#2a475e] pt-3 mt-2">

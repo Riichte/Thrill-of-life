@@ -95,10 +95,10 @@ export function SteamInfoPanel({
           <div className="flex items-center gap-4 border-b border-[#2a475e] pb-4">
             <div
               className="relative flex h-20 w-20 shrink-0 items-center justify-center rounded-full"
-              style={{ background: `conic-gradient(#66c0f4 ${score * 3.6}deg, #2a475e 0)` }}
+              style={{ background: `conic-gradient(${score >= 80 ? '#10b981' : score >= 60 ? '#f59e0b' : score >= 40 ? '#f97316' : '#ef4444'} ${score * 3.6}deg, #2a475e 0)` }}
             >
               <div className="flex h-[68px] w-[68px] items-center justify-center rounded-full bg-[#1b2838]">
-                <span className="text-2xl font-bold text-[#66c0f4]">{score}</span>
+                <span className={`text-2xl font-bold ${score >= 80 ? 'text-[#10b981]' : score >= 60 ? 'text-[#f59e0b]' : score >= 40 ? 'text-[#f97316]' : 'text-[#ef4444]'}`}>{score}</span>
               </div>
             </div>
             <div>
@@ -116,7 +116,7 @@ export function SteamInfoPanel({
             className="relative flex h-20 w-20 shrink-0 items-center justify-center rounded-full"
             style={{
               background: hasRated && myScore !== null
-                ? `conic-gradient(#66c0f4 ${myScore * 3.6}deg, #2a475e 0)`
+                ? `conic-gradient(${myScore >= 80 ? '#10b981' : myScore >= 60 ? '#f59e0b' : myScore >= 40 ? '#f97316' : '#ef4444'} ${myScore * 3.6}deg, #2a475e 0)`
                 : '#2a475e'
             }}
           >
@@ -155,8 +155,8 @@ export function SteamInfoPanel({
               <svg
                 viewBox="0 0 24 24"
                 className={`w-6 h-6 transition-colors duration-200 ${favorited
-                    ? 'fill-red-500 stroke-red-500'
-                    : 'fill-transparent stroke-[#8f98a0] hover:stroke-red-400'
+                  ? 'fill-red-500 stroke-red-500'
+                  : 'fill-transparent stroke-[#8f98a0] hover:stroke-red-400'
                   }`}
                 strokeWidth="2"
                 strokeLinecap="round"

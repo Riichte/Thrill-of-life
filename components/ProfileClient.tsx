@@ -46,9 +46,8 @@ interface ProfileClientProps {
   isFollowing?: boolean
 }
 
-function getScoreColor(s: number) {
-  return s >= 75 ? '#10b981' : s >= 50 ? '#f59e0b' : '#ef4444'
-}
+function getScoreColor = (s: number) =>
+  s >= 80 ? '#10b981' : s >= 60 ? '#f5f100' : s >= 40 ? '#f97316' : '#e80505fe'
 
 function ScoreCircle({ score }: { score: number }) {
   return (

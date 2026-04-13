@@ -75,8 +75,8 @@ const ratingDimensions: Record<string, { id: string; label: string }[]> = {
     { id: 'theming', label: 'Theming' },
     { id: 'value', label: 'Value' },
     { id: 'cleanliness', label: 'Cleanliness' },
-    { id: 'service', label: 'Staff / Service' },
-    { id: 'overall_experience', label: 'Overall Experience' },
+    { id: 'operation', label: 'Staff operation' },
+    { id: 'line_up', label: 'Ride Line Up' },
   ],
 }
 

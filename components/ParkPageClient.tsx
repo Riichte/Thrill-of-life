@@ -39,11 +39,11 @@ interface ParkPageClientProps {
 }
 
 const parkDimensions = [
-  { id: 'theming', label: 'Theming' },
-  { id: 'value', label: 'Value' },
-  { id: 'cleanliness', label: 'Cleanliness' },
-  { id: 'service', label: 'Staff / Service' },
-  { id: 'overall_experience', label: 'Overall Experience' },
+    { id: 'theming', label: 'Theming' },
+    { id: 'value', label: 'Value' },
+    { id: 'cleanliness', label: 'Cleanliness' },
+    { id: 'operation', label: 'Staff operation' },
+    { id: 'line_up', label: 'Ride Line Up' },
 ]
 
 type Reaction = 'yes' | 'no' | 'funny' | 'award'

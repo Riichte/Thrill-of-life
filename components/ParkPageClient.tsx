@@ -47,8 +47,7 @@ export default function ParkPageClient({
 
   const supabase = createClient()
   const [isFavorited, setIsFavorited] = useState(initialFavorited)
-  const [isFavorited, setIsFavorited] = useState(initialFavorited)
-  const COMMUNITY_OVERALL = 85
+    const COMMUNITY_OVERALL = 85
   const COMMUNITY_BREAKDOWN = { positive: 72, mixed: 18, negative: 10 }
   const handleFavoriteToggle = async () => {
     if (!userId) {

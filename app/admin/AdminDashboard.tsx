@@ -224,6 +224,64 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
     const btnDanger = 'px-3 py-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-400 text-xs rounded-sm transition-colors'
     const btnEdit = 'px-3 py-1.5 bg-[#2a475e] hover:bg-[#3d6a8a] text-[#66c0f4] text-xs rounded-sm transition-colors'
 
+    const getSpecFields = (categoryId: string): { key: string; label: string; type?: 'number' | 'text' }[] => {
+        switch (categoryId) {
+            case 'roller-coasters': return [
+                { key: 'manufacturer', label: 'Manufacturer' },
+                { key: 'height', label: 'Height (e.g. 40m)' },
+                { key: 'drop', label: 'Drop (e.g. 35m)' },
+                { key: 'speed', label: 'Speed (e.g. 100 km/h)' },
+                { key: 'length', label: 'Length (e.g. 1050m)' },
+                { key: 'gForce', label: 'G-Force (e.g. 4.5g)' },
+                { key: 'inversions', label: 'Inversions', type: 'number' },
+                { key: 'duration', label: 'Duration (e.g. 2min 30s)' },
+                { key: 'year_opened', label: 'Year Opened', type: 'number' },
+            ]
+            case 'water-rides': return [
+                { key: 'manufacturer', label: 'Manufacturer' },
+                { key: 'height', label: 'Height (e.g. 20m)' },
+                { key: 'drop', label: 'Drop (e.g. 18m)' },
+                { key: 'duration', label: 'Duration (e.g. 3min)' },
+                { key: 'year_opened', label: 'Year Opened', type: 'number' },
+            ]
+            case 'flat-rides': return [
+                { key: 'manufacturer', label: 'Manufacturer' },
+                { key: 'height', label: 'Height (e.g. 30m)' },
+                { key: 'duration', label: 'Duration (e.g. 2min)' },
+                { key: 'year_opened', label: 'Year Opened', type: 'number' },
+            ]
+            case 'dark-rides': return [
+                { key: 'manufacturer', label: 'Manufacturer' },
+                { key: 'duration', label: 'Duration (e.g. 5min)' },
+                { key: 'year_opened', label: 'Year Opened', type: 'number' },
+                { key: 'technology', label: 'Technology (e.g. trackless, screens)' },
+            ]
+            case 'restaurants': return [
+                { key: 'cuisine', label: 'Cuisine (e.g. Italian, Burgers)' },
+                { key: 'capacity', label: 'Capacity (e.g. 200 seats)' },
+                { key: 'price_range', label: 'Price Range (e.g. €€)' },
+            ]
+            case 'hotels': return [
+                { key: 'stars', label: 'Stars (e.g. 4)', type: 'number' },
+                { key: 'rooms', label: 'Number of Rooms', type: 'number' },
+                { key: 'theme', label: 'Theme (e.g. Scandinavian)' },
+            ]
+            case 'shows': return [
+                { key: 'duration', label: 'Duration (e.g. 30min)' },
+                { key: 'capacity', label: 'Capacity (e.g. 500 seats)' },
+                { key: 'year_opened', label: 'Year Opened', type: 'number' },
+            ]
+            case 'transport': return [
+                { key: 'manufacturer', label: 'Manufacturer' },
+                { key: 'year_opened', label: 'Year Opened', type: 'number' },
+            ]
+            case 'shops': return [
+                { key: 'theme', label: 'Theme (e.g. Souvenirs, Candy)' },
+            ]
+            default: return []
+        }
+    }
+
     return (
         <div className="min-h-screen bg-gray-900 text-white">
             <div className="container mx-auto px-4 py-8 max-w-6xl">
@@ -360,10 +418,10 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                         <option value="coming_soon">Coming Soon</option>
                                     </select>
                                 </div>
-                                {/* Roller Coaster Type */}
-                                {itemForm.category_id === 'roller-coasters' && (
+                                {/* Type dropdown based on category */}
+                                {['roller-coasters', 'flat-rides', 'water-rides', 'dark-rides', 'restaurants', 'transport'].includes(itemForm.category_id) && (
                                     <div>
-                                        <label className={labelClass}>Roller Coaster Type</label>
+                                        <label className={labelClass}>Type</label>
                                         <select
                                             className={inputClass}
                                             value={(() => { try { return JSON.parse(specsText)?.type ?? '' } catch { return '' } })()}
@@ -377,7 +435,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                             }}
                                         >
                                             <option value="">Select type</option>
-                                            {[
+                                            {itemForm.category_id === 'roller-coasters' && [
                                                 'Steel Coaster', 'Wooden Coaster', 'Hybrid Coaster',
                                                 'Kiddie Coaster', 'Family Coaster', 'Sit Down Coaster',
                                                 'Inverted Coaster', 'Suspended Coaster', 'Wing Coaster',
@@ -390,134 +448,29 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                                 'Powered Coaster', 'Fourth Dimension Coaster', 'Mine Train Coaster',
                                                 'Motorbike Coaster'
                                             ].map(t => <option key={t} value={t}>{t}</option>)}
-                                        </select>
-                                    </div>
-                                )}
-
-                                {/* Flat Ride Type */}
-                                {itemForm.category_id === 'flat-rides' && (
-                                    <div>
-                                        <label className={labelClass}>Flat Ride Type</label>
-                                        <select
-                                            className={inputClass}
-                                            value={(() => { try { return JSON.parse(specsText)?.type ?? '' } catch { return '' } })()}
-                                            onChange={e => {
-                                                try {
-                                                    const parsed = JSON.parse(specsText)
-                                                    setSpecsText(JSON.stringify({ ...parsed, type: e.target.value }, null, 2))
-                                                } catch {
-                                                    setSpecsText(JSON.stringify({ type: e.target.value }, null, 2))
-                                                }
-                                            }}
-                                        >
-                                            <option value="">Select type</option>
-                                            {[
+                                            {itemForm.category_id === 'flat-rides' && [
                                                 'Drop Tower', 'Ferris Wheel', 'Carousel', 'Swing Ride',
                                                 'Tilt-A-Whirl', 'Scrambler', 'Bumper Cars', 'Gondola',
                                                 'Enterprise', 'Pirate Ship', 'Top Spin', 'Frisbee',
                                                 'Gyro Tower', 'Flying Carpet', 'Balloon Ride', 'Observation Tower',
                                                 'Simulator', 'Monorail', 'Sky Ride', 'Train Ride'
                                             ].map(t => <option key={t} value={t}>{t}</option>)}
-                                        </select>
-                                    </div>
-                                )}
-
-                                {/* Water Ride Type */}
-                                {itemForm.category_id === 'water-rides' && (
-                                    <div>
-                                        <label className={labelClass}>Water Ride Type</label>
-                                        <select
-                                            className={inputClass}
-                                            value={(() => { try { return JSON.parse(specsText)?.type ?? '' } catch { return '' } })()}
-                                            onChange={e => {
-                                                try {
-                                                    const parsed = JSON.parse(specsText)
-                                                    setSpecsText(JSON.stringify({ ...parsed, type: e.target.value }, null, 2))
-                                                } catch {
-                                                    setSpecsText(JSON.stringify({ type: e.target.value }, null, 2))
-                                                }
-                                            }}
-                                        >
-                                            <option value="">Select type</option>
-                                            {[
+                                            {itemForm.category_id === 'water-rides' && [
                                                 'Log Flume', 'Rapids', 'Shoot the Chute', 'Water Coaster',
                                                 'River Ride', 'Splash Battle', 'Water Slide', 'Lazy River',
                                                 'Wave Pool', 'Water Play Area'
                                             ].map(t => <option key={t} value={t}>{t}</option>)}
-                                        </select>
-                                    </div>
-                                )}
-
-                                {/* Dark Ride Type */}
-                                {itemForm.category_id === 'dark-rides' && (
-                                    <div>
-                                        <label className={labelClass}>Dark Ride Type</label>
-                                        <select
-                                            className={inputClass}
-                                            value={(() => { try { return JSON.parse(specsText)?.type ?? '' } catch { return '' } })()}
-                                            onChange={e => {
-                                                try {
-                                                    const parsed = JSON.parse(specsText)
-                                                    setSpecsText(JSON.stringify({ ...parsed, type: e.target.value }, null, 2))
-                                                } catch {
-                                                    setSpecsText(JSON.stringify({ type: e.target.value }, null, 2))
-                                                }
-                                            }}
-                                        >
-                                            <option value="">Select type</option>
-                                            {[
+                                            {itemForm.category_id === 'dark-rides' && [
                                                 'Dark Ride', 'Interactive Dark Ride', '4D Cinema', 'Flying Theatre',
                                                 'Haunted House', 'Tunnel of Love', 'Ghost Train', 'Motion Simulator',
                                                 'Omnimover', 'Trackless Ride', 'Boat Dark Ride'
                                             ].map(t => <option key={t} value={t}>{t}</option>)}
-                                        </select>
-                                    </div>
-                                )}
-
-                                {/* Restaurant Type */}
-                                {itemForm.category_id === 'restaurants' && (
-                                    <div>
-                                        <label className={labelClass}>Restaurant Type</label>
-                                        <select
-                                            className={inputClass}
-                                            value={(() => { try { return JSON.parse(specsText)?.type ?? '' } catch { return '' } })()}
-                                            onChange={e => {
-                                                try {
-                                                    const parsed = JSON.parse(specsText)
-                                                    setSpecsText(JSON.stringify({ ...parsed, type: e.target.value }, null, 2))
-                                                } catch {
-                                                    setSpecsText(JSON.stringify({ type: e.target.value }, null, 2))
-                                                }
-                                            }}
-                                        >
-                                            <option value="">Select type</option>
-                                            {[
+                                            {itemForm.category_id === 'restaurants' && [
                                                 'Sit Down', 'Fast Food', 'Buffet', 'Food Stand',
                                                 'Bar', 'Café', 'Food Truck', 'Fine Dining',
                                                 'Themed Restaurant', 'Ice Cream Shop', 'Bakery'
                                             ].map(t => <option key={t} value={t}>{t}</option>)}
-                                        </select>
-                                    </div>
-                                )}
-
-                                {/* Transport Type */}
-                                {itemForm.category_id === 'transport' && (
-                                    <div>
-                                        <label className={labelClass}>Transport Type</label>
-                                        <select
-                                            className={inputClass}
-                                            value={(() => { try { return JSON.parse(specsText)?.type ?? '' } catch { return '' } })()}
-                                            onChange={e => {
-                                                try {
-                                                    const parsed = JSON.parse(specsText)
-                                                    setSpecsText(JSON.stringify({ ...parsed, type: e.target.value }, null, 2))
-                                                } catch {
-                                                    setSpecsText(JSON.stringify({ type: e.target.value }, null, 2))
-                                                }
-                                            }}
-                                        >
-                                            <option value="">Select type</option>
-                                            {[
+                                            {itemForm.category_id === 'transport' && [
                                                 'Monorail', 'Train', 'Ski Lift', 'Boat',
                                                 'Bus', 'Cable Car', 'Horse Drawn Carriage',
                                                 'Electric Vehicle', 'Tram'
@@ -526,16 +479,40 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                     </div>
                                 )}
 
+                                {/* Fixed spec fields per category */}
+                                {getSpecFields(itemForm.category_id).map(field => (
+                                    <div key={field.key}>
+                                        <label className={labelClass}>{field.label}</label>
+                                        <input
+                                            type={field.type === 'number' ? 'number' : 'text'}
+                                            className={inputClass}
+                                            value={(() => { try { return JSON.parse(specsText)?.[field.key] ?? '' } catch { return '' } })()}
+                                            onChange={e => {
+                                                try {
+                                                    const parsed = JSON.parse(specsText)
+                                                    const val = field.type === 'number' ? (e.target.value === '' ? undefined : Number(e.target.value)) : e.target.value
+                                                    if (val === undefined) {
+                                                        delete parsed[field.key]
+                                                        setSpecsText(JSON.stringify(parsed, null, 2))
+                                                    } else {
+                                                        setSpecsText(JSON.stringify({ ...parsed, [field.key]: val }, null, 2))
+                                                    }
+                                                } catch {
+                                                    setSpecsText(JSON.stringify({ [field.key]: e.target.value }, null, 2))
+                                                }
+                                            }}
+                                        />
+                                    </div>
+                                ))}
 
-                                {/* Specs JSON */}
+                                {/* Raw JSON fallback */}
                                 <div>
-                                    <label className={labelClass}>Specs (JSON)</label>
+                                    <label className={labelClass}>Specs (JSON — auto updated above)</label>
                                     <textarea
                                         className={`${inputClass} font-mono text-xs`}
-                                        rows={6}
+                                        rows={4}
                                         value={specsText}
                                         onChange={e => setSpecsText(e.target.value)}
-                                        placeholder='{"height":"40m","speed":"100 km/h","manufacturer":"Mack Rides","type":"Wooden Coaster"}'
                                     />
                                 </div>
                                 <div className="flex gap-3 pt-2">

@@ -232,3 +232,52 @@ export async function searchAll(query: string) {
     items: items ?? [],
   }
 }
+
+// ─── Reviews ─────────────────────────────────────────────
+
+export async function getItemReviews(itemId: string) {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('reviews')
+    .select('*, review_ratings(*), profiles(username)')
+    .eq('item_id', itemId)
+    .order('created_at', { ascending: false })
+  if (error) return []
+  return data ?? []
+}
+
+export async function getItemCommunityScore(itemId: string) {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('review_ratings')
+    .select('score, reviews!inner(item_id)')
+    .eq('reviews.item_id', itemId)
+  if (error || !data || data.length === 0) return null
+
+  const avg = Math.round(data.reduce((sum, r) => sum + r.score, 0) / data.length)
+
+  const reviews = await supabase
+    .from('reviews')
+    .select('id, review_ratings(score)')
+    .eq('item_id', itemId)
+
+  if (!reviews.data) return { score: avg, positive: 0, mixed: 0, negative: 0 }
+
+  let positive = 0, mixed = 0, negative = 0
+  reviews.data.forEach(review => {
+    const scores = review.review_ratings as { score: number }[]
+    if (!scores?.length) return
+    const reviewAvg = scores.reduce((s, r) => s + r.score, 0) / scores.length
+    if (reviewAvg >= 75) positive++
+    else if (reviewAvg >= 50) mixed++
+    else negative++
+  })
+
+  const total = positive + mixed + negative
+  return {
+    score: avg,
+    positive: total ? Math.round((positive / total) * 100) : 0,
+    mixed: total ? Math.round((mixed / total) * 100) : 0,
+    negative: total ? Math.round((negative / total) * 100) : 0,
+  }
+}

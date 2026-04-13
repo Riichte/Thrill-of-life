@@ -80,8 +80,7 @@ const ratingDimensions: Record<string, { id: string; label: string }[]> = {
   ],
 }
 
-const COMMUNITY_OVERALL = 82
-const COMMUNITY_BREAKDOWN = { positive: 68, mixed: 22, negative: 10 }
+
 
 type Reaction = 'yes' | 'no' | 'funny' | 'award'
 type ReviewReactions = { yes: number; no: number; funny: number; award: number }
@@ -90,11 +89,6 @@ type UserReactions = { yes: boolean; no: boolean; funny: boolean; award: boolean
 const initialReactions: ReviewReactions = { yes: 0, no: 0, funny: 0, award: 0 }
 const initialUserReactions: UserReactions = { yes: false, no: false, funny: false, award: false }
 
-const mockReviews = [
-  { id: 'sarah', author: 'Sarah M.', score: 92, title: 'Absolutely thrilling!', text: "One of the best rides I've ever experienced. The speed and intensity are incredible!" },
-  { id: 'john', author: 'John D.', score: 68, title: 'Great but queue was long', text: 'The ride itself is fantastic, but I waited 90 minutes. Worth it, but plan accordingly.' },
-  { id: 'emma', author: 'Emma K.', score: 88, title: 'Perfect for thrill seekers', text: "Exceeded all my expectations. The engineering is impressive and it's smooth despite the intensity." }
-]
 
 function ReviewCard({
   reviewId, author, score, title, text, isOwn,
@@ -173,7 +167,7 @@ function ReviewCard({
 
 
 
-export default function ItemPageContent({ park, item, category, images, videos, similarRides, credits = [] }: {
+export default function ItemPageContent({ park, item, category, images, videos, similarRides, credits = [], reviews = [], communityScore }: {
   park: any
   item: any
   category: any
@@ -181,6 +175,8 @@ export default function ItemPageContent({ park, item, category, images, videos, 
   videos: string[]
   similarRides: any[]
   credits: PhotoCredit[]
+  reviews: any[]
+  communityScore: { score: number; positive: number; mixed: number; negative: number } | null
 }) {
   const supabase = createClient()
   const [reviewFilter, setReviewFilter] = useState('all')
@@ -194,12 +190,9 @@ export default function ItemPageContent({ park, item, category, images, videos, 
   const [submitError, setSubmitError] = useState('')
   const [user, setUser] = useState<any>(null)
   const [userPoints, setUserPoints] = useState(0)
-  const [reactions, setReactions] = useState<Record<string, ReviewReactions>>(
-    Object.fromEntries(mockReviews.map(r => [r.id, { ...initialReactions }]))
-  )
-  const [myReactions, setMyReactions] = useState<Record<string, UserReactions>>(
-    Object.fromEntries(mockReviews.map(r => [r.id, { ...initialUserReactions }]))
-  )
+
+  const [reactions, setReactions] = useState<Record<string, ReviewReactions>>({})
+const [myReactions, setMyReactions] = useState<Record<string, UserReactions>>({})
   const dimensions = ratingDimensions[item.category_id] || ratingDimensions.rides
   const [userRatings, setUserRatings] = useState<Record<string, number>>(
     dimensions.reduce((acc, dim) => ({ ...acc, [dim.id]: 50 }), {})
@@ -349,9 +342,14 @@ export default function ItemPageContent({ park, item, category, images, videos, 
     }
   }
 
+  const baseScore = communityScore?.score ?? 75
   const overallScore = hasRated && myScore !== null
-    ? Math.round(COMMUNITY_OVERALL * 0.6 + myScore * 0.4)
-    : COMMUNITY_OVERALL
+    ? Math.round(baseScore * 0.6 + myScore * 0.4)
+    : baseScore
+
+  const ratingBreakdown = communityScore
+    ? { positive: communityScore.positive, mixed: communityScore.mixed, negative: communityScore.negative }
+    : { positive: 0, mixed: 0, negative: 0 }
 
   const mediaSlides = images.map((src, i) => ({
     src,
@@ -401,7 +399,7 @@ export default function ItemPageContent({ park, item, category, images, videos, 
                 }
                 setIsRatingOpen(true)
               }}
-              ratingBreakdown={COMMUNITY_BREAKDOWN}
+              ratingBreakdown={ratingBreakdown}
               tags={[specs.type, specs.manufacturer, category.name].filter(Boolean) as string[]}
               showFavorite={true}
               isFavorited={isFavorited}
@@ -517,24 +515,34 @@ export default function ItemPageContent({ park, item, category, images, videos, 
                 reactions={initialReactions}
                 userReactions={initialUserReactions}
                 userPoints={userPoints}
-                onReact={() => {}}
+                onReact={() => { }}
               />
             )}
-            {mockReviews.map(review => (
-              <ReviewCard
-                key={review.id}
-                reviewId={review.id}
-                author={review.author}
-                score={review.score}
-                title={review.title}
-                text={review.text}
-                isOwn={false}
-                reactions={reactions[review.id]}
-                userReactions={myReactions[review.id]}
-                userPoints={userPoints}
-                onReact={handleReact}
-              />
-            ))}
+            {reviews
+  .filter(r => r.user_id !== user?.id)
+  .map(review => {
+    const avg = review.review_ratings?.length > 0
+      ? Math.round(review.review_ratings.reduce((s: number, r: any) => s + r.score, 0) / review.review_ratings.length)
+      : 0
+    const reviewReactions = reactions[review.id] ?? initialReactions
+    const reviewUserReactions = myReactions[review.id] ?? initialUserReactions
+    return (
+      <ReviewCard
+        key={review.id}
+        reviewId={review.id}
+        author={review.profiles?.username ?? 'Anonymous'}
+        score={avg}
+        title={review.title}
+        text={review.body}
+        isOwn={false}
+        reactions={reviewReactions}
+        userReactions={reviewUserReactions}
+        userPoints={userPoints}
+        onReact={handleReact}
+      />
+    )
+  })
+}
           </div>
         </div>
 

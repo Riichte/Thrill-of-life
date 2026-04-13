@@ -53,7 +53,7 @@ export default function CategoryPageClient({
 
                 {/* Filters */}
                 <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6 mb-8">
-                    <div c<div className="grid grid-cols-1 md:grid-cols-3 gap-4">lassName="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">lassName="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-xs font-medium uppercase tracking-wider text-[#8f98a0] mb-1">Search</label>
                             <input

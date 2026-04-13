@@ -92,7 +92,7 @@ const initialUserReactions: UserReactions = { yes: false, no: false, funny: fals
 
 function ReviewCard({
   reviewId, author, score, title, text, isOwn,
-  reactions, userReactions, userPoints, onReact, onEdit,
+  reactions, userReactions, userPoints, onReact, onEdit, authorId,
 }: {
   reviewId: string
   author: string
@@ -105,6 +105,7 @@ function ReviewCard({
   userPoints: number
   onReact: (reviewId: string, reaction: Reaction) => void
   onEdit?: () => void
+  authorId?: string
 }) {
   const getScoreColor = (s: number) =>
     s >= 80 ? '#10b981' : s >= 60 ? '#f5f100' : s >= 40 ? '#f97316' : '#e80505fe'
@@ -132,7 +133,13 @@ function ReviewCard({
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between gap-2 mb-3">
           <div className="flex items-center gap-2">
-            <span className={`font-bold text-lg ${isOwn ? 'text-[#66c0f4]' : 'text-[#7aa9fa]'}`}>{author}</span>
+            {authorId && !isOwn ? (
+              <Link href={`/users/${authorId}`} className={`font-bold text-lg text-[#f59e0b] hover:underline`}>
+                {author}
+              </Link>
+            ) : (
+              <span className={`font-bold text-lg ${isOwn ? 'text-[#66c0f4]' : 'text-[#7aa9fa]'}`}>{author}</span>
+            )}
             {isOwn && <span className="text-xs text-[#8f98a0] bg-[#2a475e] px-2 py-0.5 rounded-sm">Your review</span>}
           </div>
           {isOwn && onEdit && (
@@ -548,6 +555,7 @@ export default function ItemPageContent({ park, item, category, images, videos, 
                     key={review.id}
                     reviewId={review.id}
                     author={review.profiles?.username ?? 'Anonymous'}
+                    authorId={review.user_id}
                     score={avg}
                     title={review.title}
                     text={review.body}

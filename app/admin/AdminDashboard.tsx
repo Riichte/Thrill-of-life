@@ -6,10 +6,10 @@ import { useRouter } from 'next/navigation'
 
 type Park = { id: string; name: string; description: string; logo_url: string; cover_image_url: string; country: string; company: string; park_type: string; location: string }
 type Category = { id: string; name: string }
-type Item = { id: string; park_id: string; category_id: string; name: string; description: string; location_in_park: string; specs: any }
+type Item = { id: string; park_id: string; category_id: string; name: string; description: string; location_in_park: string; specs: any; status: string; former_name: string }
 
 const emptyPark: Omit<Park, 'id'> = { name: '', description: '', logo_url: '', cover_image_url: '', country: '', company: '', park_type: 'Theme Park', location: '' }
-const emptyItem: Omit<Item, 'id'> = { park_id: '', category_id: '', name: '', description: '', location_in_park: '', specs: {} }
+const emptyItem: Omit<Item, 'id'> = { park_id: '', category_id: '', name: '', description: '', location_in_park: '', specs: {}, status: 'operating', former_name: '' }
 
 export default function AdminDashboard({ parks, categories, items }: { parks: Park[]; categories: Category[]; items: Item[] }) {
     const supabase = createClient()
@@ -98,7 +98,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
     const handleEditItem = (item: Item) => {
         setEditingItemId(item.id)
         setItemIdInput(item.id)
-        setItemForm({ park_id: item.park_id, category_id: item.category_id, name: item.name, description: item.description, location_in_park: item.location_in_park, specs: item.specs })
+        setItemForm({ park_id: item.park_id, category_id: item.category_id, name: item.name, description: item.description, location_in_park: item.location_in_park, specs: item.specs, status: item.status ?? 'operating', former_name: item.former_name ?? '' })
         setSpecsText(JSON.stringify(item.specs ?? {}, null, 2))
     }
 
@@ -345,79 +345,94 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                         )}
                                     </div>
                                 ))}
+                                <div>
+                                    <label className={labelClass}>Former Name (if renamed)</label>
+                                    <input className={inputClass} value={itemForm.former_name} onChange={e => setItemForm(p => ({ ...p, former_name: e.target.value }))} placeholder="e.g. Thunder Coaster" />
+                                </div>
+                                <div>
+                                    <label className={labelClass}>Status</label>
+                                    <select className={inputClass} value={itemForm.status} onChange={e => setItemForm(p => ({ ...p, status: e.target.value }))}>
+                                        <option value="operating">Operating</option>
+                                        <option value="sbno">SBNO (Standing But Not Operating)</option>
+                                        <option value="defunct">Defunct</option>
+                                        <option value="seasonal">Seasonal</option>
+                                        <option value="under_construction">Under Construction</option>
+                                        <option value="coming_soon">Coming Soon</option>
+                                    </select>
+                                </div>
                                 {/* Roller Coaster Type */}
-{itemForm.category_id === 'roller-coasters' && (
-  <div>
-    <label className={labelClass}>Roller Coaster Type</label>
-    <select
-      className={inputClass}
-      value={(() => { try { return JSON.parse(specsText)?.type ?? '' } catch { return '' } })()}
-      onChange={e => {
-        try {
-          const parsed = JSON.parse(specsText)
-          setSpecsText(JSON.stringify({ ...parsed, type: e.target.value }, null, 2))
-        } catch {
-          setSpecsText(JSON.stringify({ type: e.target.value }, null, 2))
-        }
-      }}
-    >
-      <option value="">Select type</option>
-      {[
-        'Steel Coaster', 'Wooden Coaster', 'Hybrid Coaster',
-        'Kiddie Coaster', 'Family Coaster', 'Sit Down Coaster',
-        'Inverted Coaster', 'Suspended Coaster', 'Wing Coaster',
-        'Flying Coaster', 'Stand Up Coaster', 'Bobsled Coaster',
-        'Pipeline Coaster', 'Floorless Coaster', 'Indoor Coaster',
-        'Launched Coaster', 'Side Friction Coaster', 'Single Rail Coaster',
-        'Spinning Coaster', 'Water Coaster', 'Mega Coaster',
-        'Hyper Coaster', 'Giga Coaster', 'Strata Coaster',
-        'Wild Mouse Coaster', 'Diving Coaster', 'Shuttle Coaster',
-        'Powered Coaster', 'Fourth Dimension Coaster', 'Mine Train Coaster',
-        'Motorbike Coaster'
-      ].map(t => <option key={t} value={t}>{t}</option>)}
-    </select>
-  </div>
-)}
+                                {itemForm.category_id === 'roller-coasters' && (
+                                    <div>
+                                        <label className={labelClass}>Roller Coaster Type</label>
+                                        <select
+                                            className={inputClass}
+                                            value={(() => { try { return JSON.parse(specsText)?.type ?? '' } catch { return '' } })()}
+                                            onChange={e => {
+                                                try {
+                                                    const parsed = JSON.parse(specsText)
+                                                    setSpecsText(JSON.stringify({ ...parsed, type: e.target.value }, null, 2))
+                                                } catch {
+                                                    setSpecsText(JSON.stringify({ type: e.target.value }, null, 2))
+                                                }
+                                            }}
+                                        >
+                                            <option value="">Select type</option>
+                                            {[
+                                                'Steel Coaster', 'Wooden Coaster', 'Hybrid Coaster',
+                                                'Kiddie Coaster', 'Family Coaster', 'Sit Down Coaster',
+                                                'Inverted Coaster', 'Suspended Coaster', 'Wing Coaster',
+                                                'Flying Coaster', 'Stand Up Coaster', 'Bobsled Coaster',
+                                                'Pipeline Coaster', 'Floorless Coaster', 'Indoor Coaster',
+                                                'Launched Coaster', 'Side Friction Coaster', 'Single Rail Coaster',
+                                                'Spinning Coaster', 'Water Coaster', 'Mega Coaster',
+                                                'Hyper Coaster', 'Giga Coaster', 'Strata Coaster',
+                                                'Wild Mouse Coaster', 'Diving Coaster', 'Shuttle Coaster',
+                                                'Powered Coaster', 'Fourth Dimension Coaster', 'Mine Train Coaster',
+                                                'Motorbike Coaster'
+                                            ].map(t => <option key={t} value={t}>{t}</option>)}
+                                        </select>
+                                    </div>
+                                )}
 
-{/* Flat Ride Type */}
-{itemForm.category_id === 'flat-rides' && (
-  <div>
-    <label className={labelClass}>Flat Ride Type</label>
-    <select
-      className={inputClass}
-      value={(() => { try { return JSON.parse(specsText)?.type ?? '' } catch { return '' } })()}
-      onChange={e => {
-        try {
-          const parsed = JSON.parse(specsText)
-          setSpecsText(JSON.stringify({ ...parsed, type: e.target.value }, null, 2))
-        } catch {
-          setSpecsText(JSON.stringify({ type: e.target.value }, null, 2))
-        }
-      }}
-    >
-      <option value="">Select type</option>
-      {[
-        'Drop Tower', 'Ferris Wheel', 'Carousel', 'Swing Ride',
-        'Tilt-A-Whirl', 'Scrambler', 'Bumper Cars', 'Gondola',
-        'Enterprise', 'Pirate Ship', 'Top Spin', 'Frisbee',
-        'Gyro Tower', 'Flying Carpet', 'Balloon Ride', 'Observation Tower',
-        'Simulator', 'Monorail', 'Sky Ride', 'Train Ride'
-      ].map(t => <option key={t} value={t}>{t}</option>)}
-    </select>
-  </div>
-)}
+                                {/* Flat Ride Type */}
+                                {itemForm.category_id === 'flat-rides' && (
+                                    <div>
+                                        <label className={labelClass}>Flat Ride Type</label>
+                                        <select
+                                            className={inputClass}
+                                            value={(() => { try { return JSON.parse(specsText)?.type ?? '' } catch { return '' } })()}
+                                            onChange={e => {
+                                                try {
+                                                    const parsed = JSON.parse(specsText)
+                                                    setSpecsText(JSON.stringify({ ...parsed, type: e.target.value }, null, 2))
+                                                } catch {
+                                                    setSpecsText(JSON.stringify({ type: e.target.value }, null, 2))
+                                                }
+                                            }}
+                                        >
+                                            <option value="">Select type</option>
+                                            {[
+                                                'Drop Tower', 'Ferris Wheel', 'Carousel', 'Swing Ride',
+                                                'Tilt-A-Whirl', 'Scrambler', 'Bumper Cars', 'Gondola',
+                                                'Enterprise', 'Pirate Ship', 'Top Spin', 'Frisbee',
+                                                'Gyro Tower', 'Flying Carpet', 'Balloon Ride', 'Observation Tower',
+                                                'Simulator', 'Monorail', 'Sky Ride', 'Train Ride'
+                                            ].map(t => <option key={t} value={t}>{t}</option>)}
+                                        </select>
+                                    </div>
+                                )}
 
-{/* Specs JSON */}
-<div>
-  <label className={labelClass}>Specs (JSON)</label>
-  <textarea
-    className={`${inputClass} font-mono text-xs`}
-    rows={6}
-    value={specsText}
-    onChange={e => setSpecsText(e.target.value)}
-    placeholder='{"height":"40m","speed":"100 km/h","manufacturer":"Mack Rides","type":"Wooden Coaster"}'
-  />
-</div>
+                                {/* Specs JSON */}
+                                <div>
+                                    <label className={labelClass}>Specs (JSON)</label>
+                                    <textarea
+                                        className={`${inputClass} font-mono text-xs`}
+                                        rows={6}
+                                        value={specsText}
+                                        onChange={e => setSpecsText(e.target.value)}
+                                        placeholder='{"height":"40m","speed":"100 km/h","manufacturer":"Mack Rides","type":"Wooden Coaster"}'
+                                    />
+                                </div>
                                 <div className="flex gap-3 pt-2">
                                     <button onClick={handleSaveItem} disabled={loading} className={btnPrimary}>
                                         {loading ? 'Saving...' : editingItemId ? 'Update Item' : 'Add Item'}
@@ -534,7 +549,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                 <div>
                                     <label className={labelClass}>Select Park</label>
                                     <select className={inputClass} value={parkImageParkId} onChange={e => loadParkImages(e.target.value)}>
-                                        <option value="">Select a park</option>                                                                       
+                                        <option value="">Select a park</option>
                                         {parks.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                                     </select>
                                 </div>

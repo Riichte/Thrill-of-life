@@ -397,6 +397,17 @@ export default function ItemPageContent({ park, item, category, images, videos, 
 
         <div className="mb-8">
           <h1 className="text-5xl font-bold mb-2">{item.name}</h1>
+          {item.status && item.status !== 'operating' && (
+            <span className={`inline-block text-xs font-semibold px-3 py-1 rounded-sm uppercase tracking-wider ${item.status === 'defunct' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
+                item.status === 'sbno' ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30' :
+                  item.status === 'seasonal' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
+                    item.status === 'under_construction' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' :
+                      item.status === 'coming_soon' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' :
+                        'bg-gray-500/20 text-gray-400 border border-gray-500/30'
+              }`}>
+              {item.status === 'sbno' ? 'SBNO' : item.status.replace(/_/g, ' ')}
+            </span>
+          )}
         </div>
 
         <div className="mb-12 grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8">
@@ -441,6 +452,7 @@ export default function ItemPageContent({ park, item, category, images, videos, 
                     {specs.inversions !== undefined && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>Inversions</span><span className="text-[#c6d4df]">{specs.inversions}</span></div>}
                     {specs.gForce && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>G-Forces</span><span className="text-[#c6d4df]">{specs.gForce}</span></div>}
                     {specs.duration && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>Duration</span><span className="text-[#c6d4df]">{specs.duration}</span></div>}
+                    {item.former_name && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>Former Name</span><span className="text-[#c6d4df]">{item.former_name}</span></div>}
                   </div>
                 </div>
               )}

@@ -471,10 +471,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                 <div>
                                     <label className={labelClass}>Select Park</label>
                                     <select className={inputClass} value={parkImageParkId} onChange={e => loadParkImages(e.target.value)}>
-                                        <option value="">Select a park</option>
-                                        <option value="test">Test Option ({parks.length} parks)</option>
-                                        <option value="test">Test Option ({parks.length} parks)</option>
-                                        <option value="test">Test Option ({parks.length} parks)</option>
+                                        <option value="">Select a park</option>                                                                       
                                         {parks.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                                     </select>
                                 </div>

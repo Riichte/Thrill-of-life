@@ -78,6 +78,12 @@ export default function Navbar() {
                   type="text"
                   placeholder="Search parks, rides, restaurants..."
                   className="w-full bg-gray-800 text-white placeholder-gray-500 rounded-lg pl-4 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') {
+                      const val = (e.target as HTMLInputElement).value.trim()
+                      if (val) router.push(`/search?q=${encodeURIComponent(val)}`)
+                    }
+                  }}
                 />
                 <Search className="absolute right-3 top-2.5 w-4 h-4 text-gray-500" />
               </div>
@@ -172,6 +178,12 @@ export default function Navbar() {
                 type="text"
                 placeholder="Search parks, rides..."
                 className="w-full bg-gray-800 text-white placeholder-gray-500 rounded-lg pl-4 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                onKeyDown={e => {
+                  if (e.key === 'Enter') {
+                    const val = (e.target as HTMLInputElement).value.trim()
+                    if (val) router.push(`/search?q=${encodeURIComponent(val)}`)
+                  }
+                }}
               />
               <Search className="absolute right-3 top-2.5 w-4 h-4 text-gray-500" />
             </div>

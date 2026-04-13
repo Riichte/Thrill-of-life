@@ -207,3 +207,28 @@ export async function getParkImages(parkId: string): Promise<{ url: string; attr
   if (error) return []
   return data ?? []
 }
+
+// ─── Search ──────────────────────────────────────────────
+
+export async function searchAll(query: string) {
+  const supabase = await createClient()
+  const q = `%${query}%`
+
+  const [{ data: parks }, { data: items }] = await Promise.all([
+    supabase
+      .from('parks')
+      .select('id, name, description, country, cover_image_url, logo_url')
+      .or(`name.ilike.${q},description.ilike.${q},country.ilike.${q}`)
+      .limit(5),
+    supabase
+      .from('items')
+      .select('id, name, description, category_id, park_id, item_images(url)')
+      .or(`name.ilike.${q},description.ilike.${q}`)
+      .limit(20),
+  ])
+
+  return {
+    parks: parks ?? [],
+    items: items ?? [],
+  }
+}

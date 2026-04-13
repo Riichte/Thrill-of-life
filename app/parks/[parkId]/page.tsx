@@ -37,9 +37,6 @@ const categoriesWithImages = allCategories
     return ai - bi
   })
   .map(category => {
-
-
-  const categoriesWithImages = allCategories.map(category => {
     const categoryItems = items.filter(item => item.category_id === category.id)
     const firstItem = categoryItems[0]
     return {
@@ -47,7 +44,8 @@ const categoriesWithImages = allCategories
       itemCount: categoryItems.length,
       firstItemId: firstItem?.id ?? null,
     }
-  }).filter(c => c.itemCount > 0)
+  })
+  .filter(c => c.itemCount > 0)
 
   const categoryImages: Record<string, string> = {}
   await Promise.all(

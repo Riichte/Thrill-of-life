@@ -422,6 +422,111 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                     </div>
                                 )}
 
+                                {/* Water Ride Type */}
+                                {itemForm.category_id === 'water-rides' && (
+                                    <div>
+                                        <label className={labelClass}>Water Ride Type</label>
+                                        <select
+                                            className={inputClass}
+                                            value={(() => { try { return JSON.parse(specsText)?.type ?? '' } catch { return '' } })()}
+                                            onChange={e => {
+                                                try {
+                                                    const parsed = JSON.parse(specsText)
+                                                    setSpecsText(JSON.stringify({ ...parsed, type: e.target.value }, null, 2))
+                                                } catch {
+                                                    setSpecsText(JSON.stringify({ type: e.target.value }, null, 2))
+                                                }
+                                            }}
+                                        >
+                                            <option value="">Select type</option>
+                                            {[
+                                                'Log Flume', 'Rapids', 'Shoot the Chute', 'Water Coaster',
+                                                'River Ride', 'Splash Battle', 'Water Slide', 'Lazy River',
+                                                'Wave Pool', 'Water Play Area'
+                                            ].map(t => <option key={t} value={t}>{t}</option>)}
+                                        </select>
+                                    </div>
+                                )}
+
+                                {/* Dark Ride Type */}
+                                {itemForm.category_id === 'dark-rides' && (
+                                    <div>
+                                        <label className={labelClass}>Dark Ride Type</label>
+                                        <select
+                                            className={inputClass}
+                                            value={(() => { try { return JSON.parse(specsText)?.type ?? '' } catch { return '' } })()}
+                                            onChange={e => {
+                                                try {
+                                                    const parsed = JSON.parse(specsText)
+                                                    setSpecsText(JSON.stringify({ ...parsed, type: e.target.value }, null, 2))
+                                                } catch {
+                                                    setSpecsText(JSON.stringify({ type: e.target.value }, null, 2))
+                                                }
+                                            }}
+                                        >
+                                            <option value="">Select type</option>
+                                            {[
+                                                'Dark Ride', 'Interactive Dark Ride', '4D Cinema', 'Flying Theatre',
+                                                'Haunted House', 'Tunnel of Love', 'Ghost Train', 'Motion Simulator',
+                                                'Omnimover', 'Trackless Ride', 'Boat Dark Ride'
+                                            ].map(t => <option key={t} value={t}>{t}</option>)}
+                                        </select>
+                                    </div>
+                                )}
+
+                                {/* Restaurant Type */}
+                                {itemForm.category_id === 'restaurants' && (
+                                    <div>
+                                        <label className={labelClass}>Restaurant Type</label>
+                                        <select
+                                            className={inputClass}
+                                            value={(() => { try { return JSON.parse(specsText)?.type ?? '' } catch { return '' } })()}
+                                            onChange={e => {
+                                                try {
+                                                    const parsed = JSON.parse(specsText)
+                                                    setSpecsText(JSON.stringify({ ...parsed, type: e.target.value }, null, 2))
+                                                } catch {
+                                                    setSpecsText(JSON.stringify({ type: e.target.value }, null, 2))
+                                                }
+                                            }}
+                                        >
+                                            <option value="">Select type</option>
+                                            {[
+                                                'Sit Down', 'Fast Food', 'Buffet', 'Food Stand',
+                                                'Bar', 'Café', 'Food Truck', 'Fine Dining',
+                                                'Themed Restaurant', 'Ice Cream Shop', 'Bakery'
+                                            ].map(t => <option key={t} value={t}>{t}</option>)}
+                                        </select>
+                                    </div>
+                                )}
+
+                                {/* Transport Type */}
+                                {itemForm.category_id === 'transport' && (
+                                    <div>
+                                        <label className={labelClass}>Transport Type</label>
+                                        <select
+                                            className={inputClass}
+                                            value={(() => { try { return JSON.parse(specsText)?.type ?? '' } catch { return '' } })()}
+                                            onChange={e => {
+                                                try {
+                                                    const parsed = JSON.parse(specsText)
+                                                    setSpecsText(JSON.stringify({ ...parsed, type: e.target.value }, null, 2))
+                                                } catch {
+                                                    setSpecsText(JSON.stringify({ type: e.target.value }, null, 2))
+                                                }
+                                            }}
+                                        >
+                                            <option value="">Select type</option>
+                                            {[
+                                                'Monorail', 'Train', 'Ski Lift', 'Boat',
+                                                'Bus', 'Cable Car', 'Horse Drawn Carriage',
+                                                'Electric Vehicle', 'Tram'
+                                            ].map(t => <option key={t} value={t}>{t}</option>)}
+                                        </select>
+                                    </div>
+                                )}
+
+
                                 {/* Specs JSON */}
                                 <div>
                                     <label className={labelClass}>Specs (JSON)</label>

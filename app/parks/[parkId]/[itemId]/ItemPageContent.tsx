@@ -170,13 +170,16 @@ function ReviewCard({
   )
 }
 
-export default function ItemPageContent({ park, item, category, images, videos, similarRides }: {
+import PhotoCredits, { PhotoCredit } from '@/components/PhotoCredits'
+
+export default function ItemPageContent({ park, item, category, images, videos, similarRides, credits = [] }: {
   park: any
   item: any
   category: any
   images: string[]
   videos: string[]
   similarRides: any[]
+  credits: PhotoCredit[]
 }) {
   const supabase = createClient()
   const [reviewFilter, setReviewFilter] = useState('all')
@@ -548,6 +551,8 @@ export default function ItemPageContent({ park, item, category, images, videos, 
             Back to {park.name}
           </Link>
         </div>
+
+        <PhotoCredits credits={credits} />
       </div>
     </div>
   )

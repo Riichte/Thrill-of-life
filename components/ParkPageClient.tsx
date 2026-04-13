@@ -25,6 +25,8 @@ interface Category {
   firstItemId: string | null
 }
 
+import PhotoCredits, { PhotoCredit } from '@/components/PhotoCredits'
+
 interface ParkPageClientProps {
   park: Park
   slides: string[]
@@ -32,7 +34,14 @@ interface ParkPageClientProps {
   categoryImages: Record<string, string>
   userId: string | null
   isFavorited: boolean
+  credits: PhotoCredit[]
 }
+
+export default function ParkPageClient({
+  park, slides, categoriesWithImages, categoryImages,
+  userId, isFavorited: initialFavorited, credits = [],
+}: ParkPageClientProps) {
+
 
 const COMMUNITY_OVERALL = 85
 const COMMUNITY_BREAKDOWN = { positive: 72, mixed: 18, negative: 10 }
@@ -178,6 +187,16 @@ export default function ParkPageClient({
             Back to All Parks
           </Link>
         </div>
+
+        <div className="flex justify-center mb-8">
+          <Link href="/parks" className="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-lg font-semibold transition-colors">
+            Back to All Parks
+          </Link>
+        </div>
+
+        <PhotoCredits credits={credits} />
+
+        
       </div>
     </div>
   )

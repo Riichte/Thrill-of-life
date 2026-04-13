@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getParkById, getItemsByPark, getAllCategories, getItemImages, getIsFollowing, getParkImages } from '@/lib/queries'
@@ -32,15 +31,24 @@ export default async function ParkPage({ params }: { params: Promise<{ parkId: s
     categoriesWithImages.map(async (cat) => {
       if (cat.firstItemId) {
         const imgs = await getItemImages(cat.firstItemId)
-        if (imgs[0]) categoryImages[cat.id] = imgs[0]
+        if (imgs[0]) categoryImages[cat.id] = imgs[0].url
       }
     })
   )
 
-  const carouselImages = await getParkImages(parkId)
-  const slides = carouselImages.length > 0
-    ? carouselImages
+  const parkImageData = await getParkImages(parkId)
+  const slides = parkImageData.length > 0
+    ? parkImageData.map(img => img.url)
     : park.cover_image_url ? [park.cover_image_url] : []
+
+  const credits = parkImageData
+    .filter(img => img.attribution_author)
+    .map(img => ({
+      url: img.url,
+      author: img.attribution_author!,
+      sourceUrl: img.attribution_url ?? '',
+      license: img.license ?? 'CC BY 4.0',
+    }))
 
   const isFavorited = user ? await getIsFollowing(user.id, parkId) : false
 
@@ -51,7 +59,8 @@ export default async function ParkPage({ params }: { params: Promise<{ parkId: s
       categoriesWithImages={categoriesWithImages}
       categoryImages={categoryImages}
       userId={user?.id ?? null}
-      isFavorited={false}
+      isFavorited={isFavorited}
+      credits={credits}
     />
   )
 }

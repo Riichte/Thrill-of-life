@@ -6,8 +6,12 @@ import { ChevronLeft, ChevronRight, Play } from 'lucide-react'
 export type SteamSlide = {
   src: string
   alt?: string
-  /** Show play icon on thumbnail (e.g. linked trailer / video) */
   isVideo?: boolean
+  attribution?: {
+    author: string
+    url: string
+    license: string
+  } | null
 }
 
 type SteamMediaCarouselProps = {

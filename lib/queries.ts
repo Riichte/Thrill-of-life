@@ -85,15 +85,15 @@ export async function getItemsByCategory(parkId: string, categoryId: string) {
 
 // ─── Media ───────────────────────────────────────────────
 
-export async function getItemImages(itemId: string): Promise<string[]> {
+export async function getItemImages(itemId: string): Promise<{ url: string; attribution_author?: string; attribution_url?: string; license?: string }[]> {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('item_images')
-    .select('url')
+    .select('url, attribution_author, attribution_url, license')
     .eq('item_id', itemId)
     .order('sort_order')
   if (error) return []
-  return data.map(row => row.url)
+  return data ?? []
 }
 
 export async function getItemVideos(itemId: string): Promise<string[]> {

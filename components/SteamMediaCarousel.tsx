@@ -137,12 +137,8 @@ export function SteamMediaCarousel({ slides, autoAdvanceMs, className = '' }: St
 
           <div
             ref={stripRef}
-            className="mx-9 flex gap-2 overflow-x-auto pb-1"
-            style={{
-              scrollbarWidth: 'thin',
-              scrollbarColor: '#2a475e #0e1621',
-              msOverflowStyle: 'none'
-            }}
+            className="mx-9 flex gap-2 overflow-x-auto pb-1 scrollbar-hide"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
             {slides.map((slide, i) => (
               <button

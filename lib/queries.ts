@@ -310,3 +310,61 @@ export async function getItemsByGlobalCategory(categoryId: string) {
   if (error) return []
   return data ?? []
 }
+
+// ─── Park Reviews ─────────────────────────────────────────
+
+export async function getParkReviews(parkId: string) {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('reviews')
+    .select('*, review_ratings(*)')
+    .eq('item_id', parkId)
+    .order('created_at', { ascending: false })
+  if (error) return []
+
+  const userIds = [...new Set((data ?? []).map(r => r.user_id))]
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('id, username')
+    .in('id', userIds)
+
+  const profileMap = Object.fromEntries((profiles ?? []).map(p => [p.id, p.username]))
+
+  return (data ?? []).map(r => ({
+    ...r,
+    profiles: { username: profileMap[r.user_id] ?? 'Anonymous' }
+  }))
+}
+
+export async function getParkCommunityScore(parkId: string) {
+  const supabase = await createClient()
+  const { data: reviews } = await supabase
+    .from('reviews')
+    .select('id, review_ratings(score)')
+    .eq('item_id', parkId)
+
+  if (!reviews || reviews.length === 0) return null
+
+  let positive = 0, mixed = 0, negative = 0
+  let totalScore = 0
+  let totalRatings = 0
+
+  reviews.forEach(review => {
+    const scores = review.review_ratings as { score: number }[]
+    if (!scores?.length) return
+    const avg = scores.reduce((s, r) => s + r.score, 0) / scores.length
+    totalScore += avg
+    totalRatings++
+    if (avg >= 75) positive++
+    else if (avg >= 50) mixed++
+    else negative++
+  })
+
+  const total = positive + mixed + negative
+  return {
+    score: Math.round(totalScore / totalRatings),
+    positive: total ? Math.round((positive / total) * 100) : 0,
+    mixed: total ? Math.round((mixed / total) * 100) : 0,
+    negative: total ? Math.round((negative / total) * 100) : 0,
+  }
+}

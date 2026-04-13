@@ -1,7 +1,8 @@
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { getParkById, getItemsByPark, getAllCategories, getItemImages, getIsFollowing, getParkImages } from '@/lib/queries'
+import { getParkById, getItemsByPark, getAllCategories, getItemImages, getIsFollowing, getParkImages, getParkReviews, getParkCommunityScore } from '@/lib/queries'
 import ParkPageClient from '@/components/ParkPageClient'
+import { PhotoCredit } from '@/components/PhotoCredits'
 
 export default async function ParkPage({ params }: { params: Promise<{ parkId: string }> }) {
   const { parkId } = await params
@@ -14,7 +15,6 @@ export default async function ParkPage({ params }: { params: Promise<{ parkId: s
   const items = await getItemsByPark(parkId)
   const allCategories = await getAllCategories()
 
-  // Build category list with first available item image
   const categoriesWithImages = allCategories.map(category => {
     const categoryItems = items.filter(item => item.category_id === category.id)
     const firstItem = categoryItems[0]
@@ -25,7 +25,6 @@ export default async function ParkPage({ params }: { params: Promise<{ parkId: s
     }
   }).filter(c => c.itemCount > 0)
 
-  // Get images for first item of each category
   const categoryImages: Record<string, string> = {}
   await Promise.all(
     categoriesWithImages.map(async (cat) => {
@@ -41,7 +40,7 @@ export default async function ParkPage({ params }: { params: Promise<{ parkId: s
     ? parkImageData.map(img => img.url)
     : park.cover_image_url ? [park.cover_image_url] : []
 
-  const credits = parkImageData
+  const credits: PhotoCredit[] = parkImageData
     .filter(img => img.attribution_author)
     .map(img => ({
       url: img.url,
@@ -51,6 +50,8 @@ export default async function ParkPage({ params }: { params: Promise<{ parkId: s
     }))
 
   const isFavorited = user ? await getIsFollowing(user.id, parkId) : false
+  const reviews = await getParkReviews(parkId)
+  const communityScore = await getParkCommunityScore(parkId)
 
   return (
     <ParkPageClient
@@ -61,6 +62,8 @@ export default async function ParkPage({ params }: { params: Promise<{ parkId: s
       userId={user?.id ?? null}
       isFavorited={isFavorited}
       credits={credits}
+      reviews={reviews}
+      communityScore={communityScore}
     />
   )
 }

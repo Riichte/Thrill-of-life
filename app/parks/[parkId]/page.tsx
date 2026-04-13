@@ -15,6 +15,30 @@ export default async function ParkPage({ params }: { params: Promise<{ parkId: s
   const items = await getItemsByPark(parkId)
   const allCategories = await getAllCategories()
 
+  const categoryOrder = [
+  'roller-coasters',
+  'water-rides',
+  'flat-rides',
+  'dark-rides',
+  'transport',
+  'shows',
+  'shops',
+  'hotels',
+  'restaurants',
+]
+
+const categoriesWithImages = allCategories
+  .sort((a, b) => {
+    const ai = categoryOrder.indexOf(a.id)
+    const bi = categoryOrder.indexOf(b.id)
+    if (ai === -1 && bi === -1) return a.name.localeCompare(b.name)
+    if (ai === -1) return 1
+    if (bi === -1) return -1
+    return ai - bi
+  })
+  .map(category => {
+
+
   const categoriesWithImages = allCategories.map(category => {
     const categoryItems = items.filter(item => item.category_id === category.id)
     const firstItem = categoryItems[0]

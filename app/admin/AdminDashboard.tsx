@@ -180,6 +180,43 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
         setLoading(false)
     }
 
+    const loadParkImages = async (parkId: string) => {
+        setParkImageParkId(parkId)
+        const { data } = await supabase.from('park_images').select('*').eq('park_id', parkId).order('sort_order')
+        setParkImages(data ?? [])
+    }
+
+    const handleAddParkImage = async () => {
+        if (!parkImageUrl.trim() || !parkImageParkId) return
+        setLoading(true)
+        const { error } = await supabase.from('park_images').insert({
+            park_id: parkImageParkId,
+            url: parkImageUrl.trim(),
+            sort_order: parkImageOrder,
+            attribution_author: parkImageAuthor.trim() || null,
+            attribution_url: parkImageSourceUrl.trim() || null,
+            license: parkImageLicense.trim() || null,
+        })
+        if (error) notify(error.message, true)
+        else {
+            notify('Park image added')
+            setParkImageUrl('')
+            setParkImageAuthor('')
+            setParkImageSourceUrl('')
+            setParkImageLicense('CC BY 4.0')
+            loadParkImages(parkImageParkId)
+        }
+        setLoading(false)
+    }
+
+    const handleDeleteParkImage = async (id: string) => {
+        setLoading(true)
+        const { error } = await supabase.from('park_images').delete().eq('id', id)
+        if (error) notify(error.message, true)
+        else loadParkImages(parkImageParkId)
+        setLoading(false)
+    }
+
     const inputClass = 'w-full bg-[#2a475e] border border-[#3d6a8a] rounded-sm px-3 py-2 text-sm text-[#c6d4df] placeholder-[#6a8a9a] focus:outline-none focus:border-[#66c0f4]'
     const labelClass = 'block text-xs font-medium uppercase tracking-wider text-[#8f98a0] mb-1'
     const btnPrimary = 'px-4 py-2 bg-[#4c6b22] hover:bg-[#5a7a28] disabled:opacity-50 text-white text-sm font-medium rounded-sm transition-colors'
@@ -424,6 +461,83 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                         )}
                     </div>
                 )}
+
+                {/* ─── Park Images Tab ─── */}
+                {tab === 'park-images' && (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6">
+                            <h2 className="text-lg font-semibold text-[#c6d4df] mb-6">Manage Park Images</h2>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className={labelClass}>Select Park</label>
+                                    <select className={inputClass} value={parkImageParkId} onChange={e => loadParkImages(e.target.value)}>
+                                        <option value="">Select a park</option>
+                                        <option value="test">Test Option ({parks.length} parks)</option>
+                                        <option value="test">Test Option ({parks.length} parks)</option>
+                                        <option value="test">Test Option ({parks.length} parks)</option>
+                                        {parks.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                                    </select>
+                                </div>
+                                {parkImageParkId && (
+                                    <>
+                                        <div>
+                                            <label className={labelClass}>Image URL</label>
+                                            <input className={inputClass} value={parkImageUrl} onChange={e => setParkImageUrl(e.target.value)} placeholder="/parks/europa-park/01.jpg" />
+                                        </div>
+                                        <div>
+                                            <label className={labelClass}>Sort Order</label>
+                                            <input type="number" className={inputClass} value={parkImageOrder} onChange={e => setParkImageOrder(parseInt(e.target.value))} />
+                                        </div>
+                                        <div>
+                                            <label className={labelClass}>Attribution — Author / Channel</label>
+                                            <input className={inputClass} value={parkImageAuthor} onChange={e => setParkImageAuthor(e.target.value)} placeholder="e.g. Coaster Studios" />
+                                        </div>
+                                        <div>
+                                            <label className={labelClass}>Attribution — Source URL</label>
+                                            <input className={inputClass} value={parkImageSourceUrl} onChange={e => setParkImageSourceUrl(e.target.value)} placeholder="https://youtube.com/watch?v=..." />
+                                        </div>
+                                        <div>
+                                            <label className={labelClass}>License</label>
+                                            <select className={inputClass} value={parkImageLicense} onChange={e => setParkImageLicense(e.target.value)}>
+                                                <option value="CC BY 4.0">CC BY 4.0</option>
+                                                <option value="CC BY-SA 4.0">CC BY-SA 4.0</option>
+                                                <option value="CC0">CC0 (Public Domain)</option>
+                                                <option value="Own">Own photo</option>
+                                            </select>
+                                        </div>
+                                        <button onClick={handleAddParkImage} disabled={loading} className={btnPrimary}>
+                                            {loading ? 'Adding...' : 'Add Image'}
+                                        </button>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+
+                        {parkImageParkId && (
+                            <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6">
+                                <h2 className="text-lg font-semibold text-[#c6d4df] mb-4">
+                                    Images for {parks.find(p => p.id === parkImageParkId)?.name} ({parkImages.length})
+                                </h2>
+                                <div className="space-y-2 max-h-[600px] overflow-y-auto">
+                                    {parkImages.length === 0 && <p className="text-sm text-[#8f98a0]">No images yet.</p>}
+                                    {parkImages.map(img => (
+                                        <div key={img.id} className="flex items-center justify-between gap-3 p-3 bg-[#2a475e]/30 rounded-sm">
+                                            <div className="min-w-0">
+                                                <p className="text-xs text-[#8f98a0]">#{img.sort_order}</p>
+                                                <p className="text-xs text-[#c6d4df] truncate">{img.url}</p>
+                                                {img.attribution_author && (
+                                                    <p className="text-xs text-[#8f98a0] truncate">📷 {img.attribution_author} · {img.license}</p>
+                                                )}
+                                            </div>
+                                            <button onClick={() => handleDeleteParkImage(img.id)} className={btnDanger}>Delete</button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
+
             </div>
         </div>
     )

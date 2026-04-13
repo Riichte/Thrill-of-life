@@ -133,30 +133,39 @@ export function SteamInfoPanel({
             <p className="text-xs text-[#8f98a0]">
               {hasRated ? 'Your rating has been submitted' : 'You have not rated this yet'}
             </p>
-            <button
-              onClick={onRateClick}
-              className="w-fit bg-[#4c6b22] hover:bg-[#5a7a28] text-white text-xs font-medium px-3 py-1.5 rounded-sm transition-colors"
-            >
-              {hasRated ? 'Edit your rating' : 'Rate this ride'}
-            </button>
+            {!hasRated && (
+              <button
+                onClick={onRateClick}
+                className="w-fit bg-[#4c6b22] hover:bg-[#5a7a28] text-white text-xs font-medium px-3 py-1.5 rounded-sm transition-colors"
+              >
+                Rate this ride
+              </button>
+            )}
           </div>
         </div>
 
         {/* Favorite Button */}
         {showFavorite && (
-          <button
-            onClick={handleFavorite}
-            className={`flex items-center justify-center gap-2 w-full py-2 rounded-sm border text-sm font-medium transition-all duration-200
-              ${favorited
-                ? 'border-red-500 bg-red-500/10 text-red-400 hover:bg-red-500/20'
-                : 'border-[#2a475e] bg-transparent text-[#8f98a0] hover:border-[#66c0f4] hover:text-[#66c0f4]'
-              } ${favAnimating ? 'scale-95' : 'scale-100'}`}
-          >
-            <span className={`text-lg transition-transform ${favAnimating ? 'scale-125' : ''}`}>
-              {favorited ? '❤️' : '🤍'}
-            </span>
-            {favorited ? 'Remove from Favorites' : 'Add to Favorites'}
-          </button>
+          <div className="flex justify-end">
+            <button
+              onClick={handleFavorite}
+              title={favorited ? 'Remove from favorites' : 'Add to favorites'}
+              className={`transition-all duration-200 ${favAnimating ? 'scale-90' : 'scale-100'}`}
+            >
+              <svg
+                viewBox="0 0 24 24"
+                className={`w-6 h-6 transition-colors duration-200 ${favorited
+                    ? 'fill-red-500 stroke-red-500'
+                    : 'fill-transparent stroke-[#8f98a0] hover:stroke-red-400'
+                  }`}
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+              </svg>
+            </button>
+          </div>
         )}
 
         {/* Rating breakdown bars */}

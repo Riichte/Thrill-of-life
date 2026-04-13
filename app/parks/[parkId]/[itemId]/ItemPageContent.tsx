@@ -92,7 +92,7 @@ const initialUserReactions: UserReactions = { yes: false, no: false, funny: fals
 
 function ReviewCard({
   reviewId, author, score, title, text, isOwn,
-  reactions, userReactions, userPoints, onReact,
+  reactions, userReactions, userPoints, onReact, onEdit,
 }: {
   reviewId: string
   author: string
@@ -104,6 +104,7 @@ function ReviewCard({
   userReactions: UserReactions
   userPoints: number
   onReact: (reviewId: string, reaction: Reaction) => void
+  onEdit?: () => void
 }) {
   const getScoreColor = (s: number) => s >= 75 ? '#10b981' : s >= 50 ? '#f59e0b' : '#ef4444'
 
@@ -128,9 +129,19 @@ function ReviewCard({
         </svg>
       </div>
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-3">
-          <span className={`font-semibold text-lg ${isOwn ? 'text-[#66c0f4]' : 'text-[#c6d4df]'}`}>{author}</span>
-          {isOwn && <span className="text-xs text-[#8f98a0] bg-[#2a475e] px-2 py-0.5 rounded-sm">Your review</span>}
+        <div className="flex items-center justify-between gap-2 mb-3">
+          <div className="flex items-center gap-2">
+            <span className={`font-semibold text-lg ${isOwn ? 'text-[#66c0f4]' : 'text-[#c6d4df]'}`}>{author}</span>
+            {isOwn && <span className="text-xs text-[#8f98a0] bg-[#2a475e] px-2 py-0.5 rounded-sm">Your review</span>}
+          </div>
+          {isOwn && onEdit && (
+            <button
+              onClick={onEdit}
+              className="text-xs text-[#8f98a0] hover:text-[#66c0f4] border border-[#2a475e] hover:border-[#66c0f4] px-2 py-1 rounded-sm transition-colors"
+            >
+              Edit
+            </button>
+          )}
         </div>
         {title && <p className="text-base font-medium text-[#c6d4df] mb-2">{title}</p>}
         {text && <p className="text-sm text-[#acb2b8] leading-relaxed mb-4">{text}</p>}
@@ -492,7 +503,7 @@ export default function ItemPageContent({ park, item, category, images, videos, 
         {/* Reviews Section */}
         <div className="mb-12">
           <h2 className="text-2xl font-semibold mb-6">All Reviews</h2>
-          
+
           <div className="flex gap-2 mb-8 overflow-x-auto pb-2 border-b border-gray-700">
             {['all', 'positive', 'mixed', 'negative', 'funny'].map((f) => (
               <button
@@ -517,6 +528,7 @@ export default function ItemPageContent({ park, item, category, images, videos, 
                 userReactions={initialUserReactions}
                 userPoints={userPoints}
                 onReact={() => { }}
+                onEdit={() => setIsRatingOpen(true)}
               />
             )}
             {reviews

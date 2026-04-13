@@ -297,3 +297,16 @@ export async function getItemCommunityScore(itemId: string) {
     negative: total ? Math.round((negative / total) * 100) : 0,
   }
 }
+
+// ─── Items by category across all parks ──────────────────
+
+export async function getItemsByGlobalCategory(categoryId: string) {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('items')
+    .select('*, parks(name), item_images(url)')
+    .eq('category_id', categoryId)
+    .order('name')
+  if (error) return []
+  return data ?? []
+}

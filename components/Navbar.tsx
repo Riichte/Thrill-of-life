@@ -45,15 +45,15 @@ export default function Navbar() {
   const username = user?.user_metadata?.username ?? user?.email?.split('@')[0] ?? 'Account'
 
   const categories = [
-    { name: 'Parks', href: '/parks' },
-    { name: 'Roller Coasters', href: '/parks?filter=rides' },
-    { name: 'Flat Rides', href: '/parks?filter=rides' },
-    { name: 'Dark Rides', href: '/parks?filter=rides' },
-    { name: 'Restaurants', href: '/parks?filter=restaurants' },
-    { name: 'Shows', href: '/parks?filter=shows' },
-    { name: 'Hotels', href: '/parks?filter=hotels' },
-    { name: 'Shops', href: '/parks?filter=shops' }
-  ]
+  { name: 'Parks', href: '/parks' },
+  { name: 'Roller Coasters', href: '/category/roller-coasters' },
+  { name: 'Flat Rides', href: '/category/flat-rides' },
+  { name: 'Dark Rides', href: '/category/dark-rides' },
+  { name: 'Restaurants', href: '/category/restaurants' },
+  { name: 'Shows', href: '/category/shows' },
+  { name: 'Hotels', href: '/category/hotels' },
+  { name: 'Shops', href: '/category/shops' },
+]
 
   return (
     <nav className="sticky top-0 z-50 bg-gray-900 border-b border-gray-800">

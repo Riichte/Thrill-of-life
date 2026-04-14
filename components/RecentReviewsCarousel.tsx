@@ -51,7 +51,7 @@ export function RecentReviewsCarousel({ reviews }: { reviews: RecentReview[] }) 
 
   return (
     <section className="mb-14">
-      <div className="mb-4 flex items-end justify-between">
+  <div className="mb-4 flex items-end gap-4">
         <div>
           <h2 className="text-xl font-bold text-white">Recently Reviewed</h2>
           <p className="text-sm text-gray-400">Latest community reviews</p>

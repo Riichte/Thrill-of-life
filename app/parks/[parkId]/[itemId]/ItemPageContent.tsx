@@ -219,6 +219,7 @@ export default function ItemPageContent({ park, item, category, images, videos, 
     dimensions.reduce((acc, dim) => ({ ...acc, [dim.id]: 50 }), {})
   )
   const [isFavorited, setIsFavorited] = useState(false)
+  const [userReviewId, setUserReviewId] = useState<string | null>(null)
 
   useEffect(() => {
     const load = async () => {
@@ -260,6 +261,7 @@ export default function ItemPageContent({ park, item, category, images, videos, 
         .single()
 
       if (existingReview) {
+        setUserReviewId(existingReview.id)
         setHasRated(true)
         setUserReview({
           title: existingReview.title || '',
@@ -593,13 +595,13 @@ export default function ItemPageContent({ park, item, category, images, videos, 
           <div className="space-y-6">
             {userReview && myScore !== null && (
               <ReviewCard
-                reviewId="user"
+                reviewId={userReviewId ?? 'user'}
                 author="You"
                 score={myScore}
                 title={userReview.title}
                 text={userReview.text}
                 isOwn={true}
-                reactions={initialReactions}
+                reactions={reactions[userReviewId ?? 'user'] ?? initialReactions}
                 userReactions={initialUserReactions}
                 userPoints={userPoints}
                 onReact={() => { }}

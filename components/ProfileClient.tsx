@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 
@@ -76,6 +76,7 @@ export default function ProfileClient({
 }: ProfileClientProps) {
   const supabase = createClient()
   const [activeTab, setActiveTab] = useState<'reviews' | 'favorites'>('reviews')
+  const [reviewReactions, setReviewReactions] = useState<Record<string, { yes: number; no: number; funny: number; award: number }>>({})
   const [isFollowing, setIsFollowing] = useState(initialIsFollowing)
   const [followerCountState, setFollowerCountState] = useState(followerCount)
   const [isEditingBio, setIsEditingBio] = useState(false)
@@ -86,6 +87,29 @@ export default function ProfileClient({
   const [isEditingUsername, setIsEditingUsername] = useState(false)
   const [saving, setSaving] = useState(false)
 
+
+useEffect(() => {
+  const loadReactions = async () => {
+    if (reviews.length === 0) return
+    const reviewIds = reviews.map(r => r.id)
+    const { data } = await supabase
+      .from('reactions')
+      .select('review_id, type')
+      .in('review_id', reviewIds)
+
+    if (data) {
+      const counts: Record<string, { yes: number; no: number; funny: number; award: number }> = {}
+      data.forEach(r => {
+        if (!counts[r.review_id]) counts[r.review_id] = { yes: 0, no: 0, funny: 0, award: 0 }
+        counts[r.review_id][r.type as 'yes' | 'no' | 'funny' | 'award']++
+      })
+      setReviewReactions(counts)
+    }
+  }
+  loadReactions()
+}, [reviews])
+
+  
   const joinedYear = profile?.created_at
     ? new Date(profile.created_at).getFullYear()
     : null

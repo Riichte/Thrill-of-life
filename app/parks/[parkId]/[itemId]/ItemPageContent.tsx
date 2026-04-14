@@ -161,7 +161,7 @@ function ReviewCard({
             <div className="flex flex-wrap gap-2">
               {reactionButtons.map(({ key, label, activeClass }) => {
                 const isActive = userReactions[key]
-                const cantAfford = key === 'award' && !isActive && userPoints < 100
+                const cantAfford = key === 'award' && !isActive && (userPoints < 100 || userReactions.no)
                 return (
                   <button
                     key={key}
@@ -309,6 +309,33 @@ export default function ItemPageContent({ park, item, category, images, videos, 
     }
     const current = myReactions[reviewId]?.[reaction] ?? false
     if (reaction === 'award' && !current && userPoints < 100) return
+
+    // Enforce mutual exclusivity rules
+    const opposite = reaction === 'yes' ? 'no' : reaction === 'no' ? 'yes' : null
+    const hasNo = myReactions[reviewId]?.no ?? false
+
+    // Block award if user has 'no' reaction active
+    if (reaction === 'award' && !current && hasNo) return
+
+    // If selecting yes/no, remove the opposite if active
+    if (opposite && !current) {
+      const oppositeActive = myReactions[reviewId]?.[opposite] ?? false
+      if (oppositeActive) {
+        setReactions(prev => ({
+          ...prev,
+          [reviewId]: { ...prev[reviewId], [opposite]: Math.max(0, (prev[reviewId]?.[opposite] ?? 1) - 1) }
+        }))
+        setMyReactions(prev => ({
+          ...prev,
+          [reviewId]: { ...prev[reviewId], [opposite]: false }
+        }))
+        await supabase.from('reactions')
+          .delete()
+          .eq('review_id', reviewId)
+          .eq('user_id', user.id)
+          .eq('type', opposite)
+      }
+    }
 
     // Update UI immediately
     setReactions(prev => ({

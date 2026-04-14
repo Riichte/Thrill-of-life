@@ -77,6 +77,7 @@ export default function ProfileClient({
   const supabase = createClient()
   const [activeTab, setActiveTab] = useState<'reviews' | 'favorites'>('reviews')
   const [reviewReactions, setReviewReactions] = useState<Record<string, { yes: number; no: number; funny: number; award: number }>>({})
+  const [totalReactions, setTotalReactions] = useState({ yes: 0, no: 0, funny: 0, award: 0 })
   const [isFollowing, setIsFollowing] = useState(initialIsFollowing)
   const [followerCountState, setFollowerCountState] = useState(followerCount)
   const [isEditingBio, setIsEditingBio] = useState(false)
@@ -109,6 +110,17 @@ export default function ProfileClient({
     loadReactions()
   }, [reviews])
 
+  useEffect(() => {
+    if (reviews.length === 0) return
+    const totals = { yes: 0, no: 0, funny: 0, award: 0 }
+    Object.values(reviewReactions).forEach(r => {
+      totals.yes += r.yes
+      totals.no += r.no
+      totals.funny += r.funny
+      totals.award += r.award
+    })
+    setTotalReactions(totals)
+  }, [reviewReactions])
 
   const joinedYear = profile?.created_at
     ? new Date(profile.created_at).getFullYear()
@@ -215,8 +227,8 @@ export default function ProfileClient({
               <button
                 onClick={handleFollow}
                 className={`px-5 py-2 rounded-sm text-sm font-medium transition-colors ${isFollowing
-                    ? 'bg-[#2a475e] hover:bg-red-900/40 text-[#c6d4df] hover:text-red-400 border border-[#3d6a8a]'
-                    : 'bg-[#4c6b22] hover:bg-[#5a7a28] text-white'
+                  ? 'bg-[#2a475e] hover:bg-red-900/40 text-[#c6d4df] hover:text-red-400 border border-[#3d6a8a]'
+                  : 'bg-[#4c6b22] hover:bg-[#5a7a28] text-white'
                   }`}
               >
                 {isFollowing ? 'Unfollow' : '+ Follow'}
@@ -308,8 +320,8 @@ export default function ProfileClient({
                   key={tab}
                   onClick={() => setActiveTab(tab)}
                   className={`px-6 py-3 text-sm font-medium capitalize transition-colors ${activeTab === tab
-                      ? 'text-[#66c0f4] border-b-2 border-[#66c0f4]'
-                      : 'text-[#8f98a0] hover:text-[#c6d4df]'
+                    ? 'text-[#66c0f4] border-b-2 border-[#66c0f4]'
+                    : 'text-[#8f98a0] hover:text-[#c6d4df]'
                     }`}
                 >
                   {tab} ({tab === 'reviews' ? reviews.length : favorites.length})

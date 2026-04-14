@@ -202,7 +202,7 @@ export default function Navbar() {
       {/* Category Nav */}
       <div className="bg-gray-800 border-t border-gray-700">
         <div className="container mx-auto">
-          <div className="hidden md:flex px-4 py-0">
+          <div className="hidden md:flex items-center px-4 py-0">
             {categories.map((cat) => (
               <Link
                 key={cat.name}
@@ -212,6 +212,16 @@ export default function Navbar() {
                 {cat.name}
               </Link>
             ))}
+
+            {/* Divider */}
+            <div className="mx-2 h-4 w-px bg-gray-600" />
+
+            <Link
+              href="/leaderboard"
+              className="text-yellow-400 hover:text-yellow-300 px-4 py-3 text-sm font-medium border-b-2 border-transparent hover:border-yellow-400 transition-colors whitespace-nowrap"
+            >
+              🏆 Leaderboard
+            </Link>
           </div>
 
           {isOpen && (
@@ -226,6 +236,18 @@ export default function Navbar() {
                   {cat.name}
                 </Link>
               ))}
+
+              {/* Divider + Leaderboard */}
+              <div className="border-t border-gray-700 pt-2">
+                <Link
+                  href="/leaderboard"
+                  className="block text-yellow-400 hover:text-yellow-300 py-2 px-2 rounded hover:bg-gray-800 transition-colors text-sm font-medium"
+                  onClick={() => setIsOpen(false)}
+                >
+                  🏆 Leaderboard
+                </Link>
+              </div>
+
               {user ? (
                 <>
                   <Link href="/profile" className="block py-2 px-2 text-sm text-[#c6d4df]" onClick={() => setIsOpen(false)}>

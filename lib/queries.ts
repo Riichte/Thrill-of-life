@@ -416,3 +416,80 @@ export async function getRecentReviews(limit = 10) {
     }
   })
 }
+
+
+// ─── Leaderboard ─────────────────────────────────────────
+
+export async function getLeaderboardMostHelpful(limit = 25) {
+  const supabase = await createClient()
+
+  // Get all 'yes' reactions with the review's author
+  const { data, error } = await supabase
+    .from('reactions')
+    .select('review_id, reviews!inner(user_id)')
+    .eq('type', 'yes')
+
+  if (error || !data?.length) return []
+
+  // Count yes reactions per user
+  const counts: Record<string, number> = {}
+  for (const row of data) {
+    const userId = (row.reviews as { user_id: string }).user_id
+    counts[userId] = (counts[userId] ?? 0) + 1
+  }
+
+  const topUserIds = Object.entries(counts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, limit)
+    .map(([id]) => id)
+
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('id, username')
+    .in('id', topUserIds)
+
+  const profileMap = Object.fromEntries((profiles ?? []).map(p => [p.id, p.username]))
+
+  return topUserIds.map((id, i) => ({
+    rank: i + 1,
+    userId: id,
+    username: profileMap[id] ?? 'Anonymous',
+    score: counts[id],
+  }))
+}
+
+export async function getLeaderboardMostAwarded(limit = 25) {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from('reactions')
+    .select('review_id, reviews!inner(user_id)')
+    .eq('type', 'award')
+
+  if (error || !data?.length) return []
+
+  const counts: Record<string, number> = {}
+  for (const row of data) {
+    const userId = (row.reviews as { user_id: string }).user_id
+    counts[userId] = (counts[userId] ?? 0) + 1
+  }
+
+  const topUserIds = Object.entries(counts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, limit)
+    .map(([id]) => id)
+
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('id, username')
+    .in('id', topUserIds)
+
+  const profileMap = Object.fromEntries((profiles ?? []).map(p => [p.id, p.username]))
+
+  return topUserIds.map((id, i) => ({
+    rank: i + 1,
+    userId: id,
+    username: profileMap[id] ?? 'Anonymous',
+    score: counts[id],
+  }))
+}

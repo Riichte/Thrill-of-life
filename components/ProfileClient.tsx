@@ -105,23 +105,20 @@ export default function ProfileClient({
           counts[r.review_id][r.type as 'yes' | 'no' | 'funny' | 'award']++
         })
         setReviewReactions(counts)
+        const totals = { yes: 0, no: 0, funny: 0, award: 0 }
+        Object.values(counts).forEach(r => {
+          totals.yes += r.yes
+          totals.no += r.no
+          totals.funny += r.funny
+          totals.award += r.award
+        })
+        setTotalReactions(totals)
       }
     }
     loadReactions()
   }, [reviews])
 
-  useEffect(() => {
-    if (reviews.length === 0) return
-    const totals = { yes: 0, no: 0, funny: 0, award: 0 }
-    Object.values(reviewReactions).forEach(r => {
-      totals.yes += r.yes
-      totals.no += r.no
-      totals.funny += r.funny
-      totals.award += r.award
-    })
-    setTotalReactions(totals)
-  }, [reviewReactions])
-
+  
   const joinedYear = profile?.created_at
     ? new Date(profile.created_at).getFullYear()
     : null
@@ -269,6 +266,29 @@ export default function ProfileClient({
                   <span className="text-[#8f98a0]">Following</span>
                   <span className="text-[#c6d4df] font-semibold">{followingCount}</span>
                 </div>
+                {(totalReactions.yes + totalReactions.no + totalReactions.funny + totalReactions.award) > 0 && (
+                  <>
+                    <div className="border-t border-[#2a475e] pt-3 mt-1">
+                      <p className="text-xs font-semibold uppercase tracking-wider text-[#8f98a0] mb-2">Reactions Received</p>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-[#8f98a0]">👍 Helpful</span>
+                        <span className="text-[#c6d4df] font-semibold">{totalReactions.yes}</span>
+                      </div>
+                      <div className="flex justify-between text-sm mt-1">
+                        <span className="text-[#8f98a0]">👎 Unhelpful</span>
+                        <span className="text-[#c6d4df] font-semibold">{totalReactions.no}</span>
+                      </div>
+                      <div className="flex justify-between text-sm mt-1">
+                        <span className="text-[#8f98a0]">😄 Funny</span>
+                        <span className="text-[#c6d4df] font-semibold">{totalReactions.funny}</span>
+                      </div>
+                      <div className="flex justify-between text-sm mt-1">
+                        <span className="text-[#8f98a0]">🏆 Awards</span>
+                        <span className="text-amber-400 font-semibold">{totalReactions.award}</span>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
 

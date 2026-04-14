@@ -88,41 +88,41 @@ export default function ProfileClient({
   const [saving, setSaving] = useState(false)
 
 
-useEffect(() => {
-  const loadReactions = async () => {
-    if (reviews.length === 0) return
-    const reviewIds = reviews.map(r => r.id)
-    const { data } = await supabase
-      .from('reactions')
-      .select('review_id, type')
-      .in('review_id', reviewIds)
+  useEffect(() => {
+    const loadReactions = async () => {
+      if (reviews.length === 0) return
+      const reviewIds = reviews.map(r => r.id)
+      const { data } = await supabase
+        .from('reactions')
+        .select('review_id, type')
+        .in('review_id', reviewIds)
 
-    if (data) {
-      const counts: Record<string, { yes: number; no: number; funny: number; award: number }> = {}
-      data.forEach(r => {
-        if (!counts[r.review_id]) counts[r.review_id] = { yes: 0, no: 0, funny: 0, award: 0 }
-        counts[r.review_id][r.type as 'yes' | 'no' | 'funny' | 'award']++
-      })
-      setReviewReactions(counts)
+      if (data) {
+        const counts: Record<string, { yes: number; no: number; funny: number; award: number }> = {}
+        data.forEach(r => {
+          if (!counts[r.review_id]) counts[r.review_id] = { yes: 0, no: 0, funny: 0, award: 0 }
+          counts[r.review_id][r.type as 'yes' | 'no' | 'funny' | 'award']++
+        })
+        setReviewReactions(counts)
+      }
     }
-  }
-  loadReactions()
-}, [reviews])
+    loadReactions()
+  }, [reviews])
 
-  
+
   const joinedYear = profile?.created_at
     ? new Date(profile.created_at).getFullYear()
     : null
 
   const avgScore = reviews.length > 0
     ? Math.round(
-        reviews.reduce((sum, r) => {
-          const avg = r.review_ratings.length > 0
-            ? r.review_ratings.reduce((s, rr) => s + rr.score, 0) / r.review_ratings.length
-            : 0
-          return sum + avg
-        }, 0) / reviews.length
-      )
+      reviews.reduce((sum, r) => {
+        const avg = r.review_ratings.length > 0
+          ? r.review_ratings.reduce((s, rr) => s + rr.score, 0) / r.review_ratings.length
+          : 0
+        return sum + avg
+      }, 0) / reviews.length
+    )
     : null
 
   const handleFollow = async () => {
@@ -214,11 +214,10 @@ useEffect(() => {
             {!isOwnProfile && viewerId && (
               <button
                 onClick={handleFollow}
-                className={`px-5 py-2 rounded-sm text-sm font-medium transition-colors ${
-                  isFollowing
+                className={`px-5 py-2 rounded-sm text-sm font-medium transition-colors ${isFollowing
                     ? 'bg-[#2a475e] hover:bg-red-900/40 text-[#c6d4df] hover:text-red-400 border border-[#3d6a8a]'
                     : 'bg-[#4c6b22] hover:bg-[#5a7a28] text-white'
-                }`}
+                  }`}
               >
                 {isFollowing ? 'Unfollow' : '+ Follow'}
               </button>
@@ -308,11 +307,10 @@ useEffect(() => {
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`px-6 py-3 text-sm font-medium capitalize transition-colors ${
-                    activeTab === tab
+                  className={`px-6 py-3 text-sm font-medium capitalize transition-colors ${activeTab === tab
                       ? 'text-[#66c0f4] border-b-2 border-[#66c0f4]'
                       : 'text-[#8f98a0] hover:text-[#c6d4df]'
-                  }`}
+                    }`}
                 >
                   {tab} ({tab === 'reviews' ? reviews.length : favorites.length})
                 </button>
@@ -353,6 +351,22 @@ useEffect(() => {
                         </div>
                         {review.body && (
                           <p className="text-sm text-[#acb2b8] leading-relaxed line-clamp-3">{review.body}</p>
+                        )}
+                        {reviewReactions[review.id] && (
+                          <div className="flex gap-3 mt-2">
+                            {reviewReactions[review.id].yes > 0 && (
+                              <span className="text-xs text-[#8f98a0]">👍 {reviewReactions[review.id].yes}</span>
+                            )}
+                            {reviewReactions[review.id].no > 0 && (
+                              <span className="text-xs text-[#8f98a0]">👎 {reviewReactions[review.id].no}</span>
+                            )}
+                            {reviewReactions[review.id].funny > 0 && (
+                              <span className="text-xs text-[#8f98a0]">😄 {reviewReactions[review.id].funny}</span>
+                            )}
+                            {reviewReactions[review.id].award > 0 && (
+                              <span className="text-xs text-amber-400">🏆 {reviewReactions[review.id].award}</span>
+                            )}
+                          </div>
                         )}
                       </div>
                     </div>

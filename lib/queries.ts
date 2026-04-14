@@ -368,3 +368,51 @@ export async function getParkCommunityScore(parkId: string) {
     negative: total ? Math.round((negative / total) * 100) : 0,
   }
 }
+
+// ─── Recent Reviews ───────────────────────────────────────
+
+export async function getRecentReviews(limit = 10) {
+  const supabase = await createClient()
+
+  const { data: reviews, error } = await supabase
+    .from('reviews')
+    .select('id, user_id, item_id, created_at, review_ratings(score)')
+    .order('created_at', { ascending: false })
+    .limit(limit)
+
+  if (error || !reviews?.length) return []
+
+  // Collect unique user_ids and item_ids
+  const userIds = [...new Set(reviews.map(r => r.user_id))]
+  const itemIds = [...new Set(reviews.map(r => r.item_id))]
+
+  const [{ data: profiles }, { data: items }] = await Promise.all([
+    supabase.from('profiles').select('id, username').in('id', userIds),
+    supabase
+      .from('items')
+      .select('id, name, park_id, parks(name)')
+      .in('id', itemIds),
+  ])
+
+  const profileMap = Object.fromEntries((profiles ?? []).map(p => [p.id, p.username]))
+  const itemMap = Object.fromEntries((items ?? []).map(i => [i.id, i]))
+
+  return reviews.map(r => {
+    const scores = (r.review_ratings as { score: number }[]) ?? []
+    const avg = scores.length
+      ? Math.round(scores.reduce((s, x) => s + x.score, 0) / scores.length)
+      : null
+    const item = itemMap[r.item_id]
+    return {
+      id: r.id,
+      username: profileMap[r.user_id] ?? 'Anonymous',
+      userId: r.user_id,
+      itemId: r.item_id,
+      itemName: item?.name ?? 'Unknown',
+      parkId: item?.park_id ?? '',
+      parkName: (item?.parks as { name: string } | null)?.name ?? '',
+      score: avg,
+      createdAt: r.created_at,
+    }
+  })
+}

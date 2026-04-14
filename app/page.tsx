@@ -1,3 +1,5 @@
+import { getRecentReviews } from '@/lib/queries'
+import { RecentReviewsCarousel } from '@/components/RecentReviewsCarousel'
 import Link from 'next/link'
 import { HomeMarqueeRow } from '@/components/HomeMarqueeRow'
 import {
@@ -11,7 +13,7 @@ import { createClient } from '@/lib/supabase/server'
 export default async function Home() {
   const supabase = await createClient()
   const { data: parks } = await supabase.from('parks').select('*').order('name')
-
+  const recentReviews = await getRecentReviews(10)
   const homeParkCards: HomeMarqueeCard[] = (parks ?? []).map(park => ({
     id: park.id,
     href: `/parks/${park.id}`,
@@ -69,6 +71,11 @@ export default async function Home() {
           viewAllHref="/parks/europa-park"
           viewAllLabel="Europa Park"
         />
+
+
+        <RecentReviewsCarousel reviews={recentReviews} />
+
+        <div className="mt-6 grid grid-cols-1 gap-6 border-t border-white/10 pt-12 md:grid-cols-3"></div>
 
         <div className="mt-6 grid grid-cols-1 gap-6 border-t border-white/10 pt-12 md:grid-cols-3">
           <div className="rounded-xl border border-white/10 bg-gray-800/80 p-6">

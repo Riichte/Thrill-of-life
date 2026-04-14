@@ -434,7 +434,7 @@ export async function getLeaderboardMostHelpful(limit = 25) {
   // Count yes reactions per user
   const counts: Record<string, number> = {}
   for (const row of data) {
-    const userId = (row.reviews as { user_id: string }).user_id
+    const userId = (row.reviews as unknown as { user_id: string }).user_id
     counts[userId] = (counts[userId] ?? 0) + 1
   }
 
@@ -470,7 +470,7 @@ export async function getLeaderboardMostAwarded(limit = 25) {
 
   const counts: Record<string, number> = {}
   for (const row of data) {
-    const userId = (row.reviews as { user_id: string }).user_id
+    const userId = (row.reviews as unknown as { user_id: string }).user_id
     counts[userId] = (counts[userId] ?? 0) + 1
   }
 

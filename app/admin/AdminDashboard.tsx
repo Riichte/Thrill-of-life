@@ -779,7 +779,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                     </div>
                 )}
 
-                {/* ─── Videos Tab ─── */}
+               {/* ─── Videos Tab ─── */}
                 {tab === 'videos' && (
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6">
@@ -809,7 +809,6 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                 )}
                             </div>
 
-
                             {videoItemId && (
                                 <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6">
                                     <h2 className="text-lg font-semibold text-[#c6d4df] mb-4">
@@ -830,11 +829,10 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                 </div>
                             )}
                         </div>
-                
-
                     </div>
+                )}
 
-                                        {editingImage && (
+                {editingImage && (
                     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
                         <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6 max-w-md w-full">
                             <h2 className="text-lg font-semibold text-[#c6d4df] mb-4">Edit Image Info</h2>
@@ -883,9 +881,6 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                     </div>
                 )}
             </div>
-
         </div>
-
-
     )
 }

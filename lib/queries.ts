@@ -97,8 +97,12 @@ export async function getItemImages(itemId: string): Promise<{ url: string; attr
 }
 
 export async function getItemVideos(itemId: string): Promise<string[]> {
-  const { mockItemVideos } = await import('@/lib/items-data')
-  return mockItemVideos[itemId as keyof typeof mockItemVideos] ?? []
+  const supabase = await createServerClient()
+  const { data } = await supabase
+    .from('item_videos')
+    .select('video_id')
+    .eq('item_id', itemId)
+  return data?.map(v => v.video_id) ?? []
 }
 
 // ─── Similar rides ───────────────────────────────────────

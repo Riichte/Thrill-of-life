@@ -549,58 +549,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                     </div>
                                 ))}
 
-                                {/* ─── Videos Tab ─── */}
-                                {tab === 'videos' && (
-                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                        <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6">
-                                            <h2 className="text-lg font-semibold text-[#c6d4df] mb-6">Manage Videos</h2>
-                                            <div className="space-y-4">
-                                                <div>
-                                                    <label className={labelClass}>Select Item</label>
-                                                    <select className={inputClass} value={videoItemId} onChange={e => loadVideos(e.target.value)}>
-                                                        <option value="">Select an item</option>
-                                                        {items.map(i => <option key={i.id} value={i.id}>{i.name} ({i.park_id})</option>)}
-                                                    </select>
-                                                </div>
-                                                {videoItemId && (
-                                                    <>
-                                                        <div>
-                                                            <label className={labelClass}>YouTube URL</label>
-                                                            <input className={inputClass} value={videoUrl} onChange={e => setVideoUrl(e.target.value)} placeholder="https://www.youtube.com/watch?v=U5wvbx8p6SE" />
-                                                        </div>
-                                                        <div>
-                                                            <label className={labelClass}>Video Title</label>
-                                                            <input className={inputClass} value={videoTitle} onChange={e => setVideoTitle(e.target.value)} placeholder="e.g. Wodan Coaster Experience" />
-                                                        </div>
-                                                        <button onClick={handleAddVideo} disabled={loading} className={btnPrimary}>
-                                                            {loading ? 'Adding...' : 'Add Video'}
-                                                        </button>
-                                                    </>
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        {videoItemId && (
-                                            <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6">
-                                                <h2 className="text-lg font-semibold text-[#c6d4df] mb-4">
-                                                    Videos for {items.find(i => i.id === videoItemId)?.name} ({itemVideos.length})
-                                                </h2>
-                                                <div className="space-y-2 max-h-[600px] overflow-y-auto">
-                                                    {itemVideos.length === 0 && <p className="text-sm text-[#8f98a0]">No videos yet.</p>}
-                                                    {itemVideos.map(vid => (
-                                                        <div key={vid.id} className="flex items-center justify-between gap-3 p-3 bg-[#2a475e]/30 rounded-sm">
-                                                            <div className="min-w-0">
-                                                                <p className="text-sm text-[#c6d4df] truncate">{vid.title}</p>
-                                                                <p className="text-xs text-[#8f98a0] truncate">youtube.com/watch?v={vid.video_id}</p>
-                                                            </div>
-                                                            <button onClick={() => handleDeleteVideo(vid.id)} className={btnDanger}>Delete</button>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
+                                
 
                                 {/* Raw JSON fallback */}
                                 <div>
@@ -791,6 +740,59 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                         )}
                     </div>
                 )}
+
+                {/* ─── Videos Tab ─── */}
+                                {tab === 'videos' && (
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                        <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6">
+                                            <h2 className="text-lg font-semibold text-[#c6d4df] mb-6">Manage Videos</h2>
+                                            <div className="space-y-4">
+                                                <div>
+                                                    <label className={labelClass}>Select Item</label>
+                                                    <select className={inputClass} value={videoItemId} onChange={e => loadVideos(e.target.value)}>
+                                                        <option value="">Select an item</option>
+                                                        {items.map(i => <option key={i.id} value={i.id}>{i.name} ({i.park_id})</option>)}
+                                                    </select>
+                                                </div>
+                                                {videoItemId && (
+                                                    <>
+                                                        <div>
+                                                            <label className={labelClass}>YouTube URL</label>
+                                                            <input className={inputClass} value={videoUrl} onChange={e => setVideoUrl(e.target.value)} placeholder="https://www.youtube.com/watch?v=U5wvbx8p6SE" />
+                                                        </div>
+                                                        <div>
+                                                            <label className={labelClass}>Video Title</label>
+                                                            <input className={inputClass} value={videoTitle} onChange={e => setVideoTitle(e.target.value)} placeholder="e.g. Wodan Coaster Experience" />
+                                                        </div>
+                                                        <button onClick={handleAddVideo} disabled={loading} className={btnPrimary}>
+                                                            {loading ? 'Adding...' : 'Add Video'}
+                                                        </button>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {videoItemId && (
+                                            <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6">
+                                                <h2 className="text-lg font-semibold text-[#c6d4df] mb-4">
+                                                    Videos for {items.find(i => i.id === videoItemId)?.name} ({itemVideos.length})
+                                                </h2>
+                                                <div className="space-y-2 max-h-[600px] overflow-y-auto">
+                                                    {itemVideos.length === 0 && <p className="text-sm text-[#8f98a0]">No videos yet.</p>}
+                                                    {itemVideos.map(vid => (
+                                                        <div key={vid.id} className="flex items-center justify-between gap-3 p-3 bg-[#2a475e]/30 rounded-sm">
+                                                            <div className="min-w-0">
+                                                                <p className="text-sm text-[#c6d4df] truncate">{vid.title}</p>
+                                                                <p className="text-xs text-[#8f98a0] truncate">youtube.com/watch?v={vid.video_id}</p>
+                                                            </div>
+                                                            <button onClick={() => handleDeleteVideo(vid.id)} className={btnDanger}>Delete</button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
 
             </div>
         </div>

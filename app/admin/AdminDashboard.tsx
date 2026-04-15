@@ -14,7 +14,7 @@ const emptyItem: Omit<Item, 'id'> = { park_id: '', category_id: '', name: '', de
 export default function AdminDashboard({ parks, categories, items }: { parks: Park[]; categories: Category[]; items: Item[] }) {
     const supabase = createClient()
     const router = useRouter()
-    const [tab, setTab] = useState<'parks' | 'items' | 'images' | 'park-images'>('parks')
+    const [tab, setTab] = useState<'parks' | 'items' | 'images' | 'park-images' | 'videos'>('parks')
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
     const [success, setSuccess] = useState('')

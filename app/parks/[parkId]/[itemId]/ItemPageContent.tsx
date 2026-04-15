@@ -497,6 +497,25 @@ export default function ItemPageContent({ park, item, category, images, videos, 
               slides={mediaSlides}
               autoAdvanceMs={images.length > 1 ? 5000 : undefined}
             />
+
+            {/* YouTube Video */}
+            <div className="mt-6 bg-[#1b2838] border border-[#2a475e] rounded-sm overflow-hidden">
+              <div className="aspect-video">
+                <iframe
+                  width="100%"
+                  height="100%"
+                  src="https://www.youtube.com/embed/U5wvbx8p6SE"
+                  title="Wodan Video"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+              <div className="p-4 text-sm text-[#acb2b8]">
+                <p className="font-medium text-[#c6d4df] mb-1">Wodan Coaster Experience</p>
+                <p>Official ride footage from Europa-Park</p>
+              </div>
+            </div>
           </div>
           <div className="lg:col-span-1">
             <SteamInfoPanel

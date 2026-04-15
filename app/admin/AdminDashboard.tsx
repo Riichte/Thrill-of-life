@@ -809,79 +809,83 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                 )}
                             </div>
 
-                            {editingImage && (
-                                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                                    <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6 max-w-md w-full">
-                                        <h2 className="text-lg font-semibold text-[#c6d4df] mb-4">Edit Image Info</h2>
-                                        <div className="space-y-4">
-                                            <div>
-                                                <label className={labelClass}>Author / Channel</label>
-                                                <input
-                                                    className={inputClass}
-                                                    value={editFormData.author}
-                                                    onChange={e => setEditFormData({ ...editFormData, author: e.target.value })}
-                                                    placeholder="e.g. Coaster Studios"
-                                                />
+
+                            {videoItemId && (
+                                <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6">
+                                    <h2 className="text-lg font-semibold text-[#c6d4df] mb-4">
+                                        Videos for {items.find(i => i.id === videoItemId)?.name} ({itemVideos.length})
+                                    </h2>
+                                    <div className="space-y-2 max-h-[600px] overflow-y-auto">
+                                        {itemVideos.length === 0 && <p className="text-sm text-[#8f98a0]">No videos yet.</p>}
+                                        {itemVideos.map(vid => (
+                                            <div key={vid.id} className="flex items-center justify-between gap-3 p-3 bg-[#2a475e]/30 rounded-sm">
+                                                <div className="min-w-0">
+                                                    <p className="text-sm text-[#c6d4df] truncate">{vid.title}</p>
+                                                    <p className="text-xs text-[#8f98a0] truncate">youtube.com/watch?v={vid.video_id}</p>
+                                                </div>
+                                                <button onClick={() => handleDeleteVideo(vid.id)} className={btnDanger}>Delete</button>
                                             </div>
-                                            <div>
-                                                <label className={labelClass}>Source URL</label>
-                                                <input
-                                                    className={inputClass}
-                                                    value={editFormData.sourceUrl}
-                                                    onChange={e => setEditFormData({ ...editFormData, sourceUrl: e.target.value })}
-                                                    placeholder="https://youtube.com/..."
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className={labelClass}>License</label>
-                                                <select
-                                                    className={inputClass}
-                                                    value={editFormData.license}
-                                                    onChange={e => setEditFormData({ ...editFormData, license: e.target.value })}
-                                                >
-                                                    <option value="CC BY 4.0">CC BY 4.0</option>
-                                                    <option value="CC BY-SA 4.0">CC BY-SA 4.0</option>
-                                                    <option value="CC0">CC0 (Public Domain)</option>
-                                                    <option value="Own">Own photo</option>
-                                                </select>
-                                            </div>
-                                            <div className="flex gap-3 pt-2">
-                                                <button onClick={handleSaveEditImage} disabled={loading} className={btnPrimary}>
-                                                    {loading ? 'Saving...' : 'Save'}
-                                                </button>
-                                                <button onClick={() => setEditingImage(null)} className={btnSecondary}>
-                                                    Cancel
-                                                </button>
-                                            </div>
-                                        </div>
+                                        ))}
                                     </div>
                                 </div>
                             )}
                         </div>
-
-                        {videoItemId && (
-                            <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6">
-                                <h2 className="text-lg font-semibold text-[#c6d4df] mb-4">
-                                    Videos for {items.find(i => i.id === videoItemId)?.name} ({itemVideos.length})
-                                </h2>
-                                <div className="space-y-2 max-h-[600px] overflow-y-auto">
-                                    {itemVideos.length === 0 && <p className="text-sm text-[#8f98a0]">No videos yet.</p>}
-                                    {itemVideos.map(vid => (
-                                        <div key={vid.id} className="flex items-center justify-between gap-3 p-3 bg-[#2a475e]/30 rounded-sm">
-                                            <div className="min-w-0">
-                                                <p className="text-sm text-[#c6d4df] truncate">{vid.title}</p>
-                                                <p className="text-xs text-[#8f98a0] truncate">youtube.com/watch?v={vid.video_id}</p>
-                                            </div>
-                                            <button onClick={() => handleDeleteVideo(vid.id)} className={btnDanger}>Delete</button>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-                    </div>
                 )}
 
+                    </div>
+
+                                        {editingImage && (
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                        <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6 max-w-md w-full">
+                            <h2 className="text-lg font-semibold text-[#c6d4df] mb-4">Edit Image Info</h2>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className={labelClass}>Author / Channel</label>
+                                    <input
+                                        className={inputClass}
+                                        value={editFormData.author}
+                                        onChange={e => setEditFormData({ ...editFormData, author: e.target.value })}
+                                        placeholder="e.g. Coaster Studios"
+                                    />
+                                </div>
+                                <div>
+                                    <label className={labelClass}>Source URL</label>
+                                    <input
+                                        className={inputClass}
+                                        value={editFormData.sourceUrl}
+                                        onChange={e => setEditFormData({ ...editFormData, sourceUrl: e.target.value })}
+                                        placeholder="https://youtube.com/..."
+                                    />
+                                </div>
+                                <div>
+                                    <label className={labelClass}>License</label>
+                                    <select
+                                        className={inputClass}
+                                        value={editFormData.license}
+                                        onChange={e => setEditFormData({ ...editFormData, license: e.target.value })}
+                                    >
+                                        <option value="CC BY 4.0">CC BY 4.0</option>
+                                        <option value="CC BY-SA 4.0">CC BY-SA 4.0</option>
+                                        <option value="CC0">CC0 (Public Domain)</option>
+                                        <option value="Own">Own photo</option>
+                                    </select>
+                                </div>
+                                <div className="flex gap-3 pt-2">
+                                    <button onClick={handleSaveEditImage} disabled={loading} className={btnPrimary}>
+                                        {loading ? 'Saving...' : 'Save'}
+                                    </button>
+                                    <button onClick={() => setEditingImage(null)} className={btnSecondary}>
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
+
         </div>
+
+
     )
 }

@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 type Park = {
   id: string
@@ -59,7 +60,16 @@ export default function ParksClient({ parks }: { parks: Park[] }) {
           {filteredParks.map(park => (
             <Link key={park.id} href={`/parks/${park.id}`} className="block">
               <div className="bg-gray-800 rounded-lg overflow-hidden hover:bg-gray-700 transition-colors">
-                <img src={park.cover_image_url} alt={park.name} className="w-full h-48 object-cover" />
+                <div className="relative w-full h-48 overflow-hidden">
+                  <Image
+                    src={park.cover_image_url}
+                    alt={park.name}
+                    fill
+                    className="object-cover hover:scale-105 transition-transform duration-300"
+                    quality={75}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  />
+                </div>
                 <div className="p-4">
                   <div className="flex items-center mb-2">
                     <h3 className="text-xl font-semibold">{park.name}</h3>

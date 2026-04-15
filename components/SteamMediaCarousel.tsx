@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
+import Image from 'next/image'
 import { ChevronLeft, ChevronRight, Play } from 'lucide-react'
 
 export type SteamSlide = {
@@ -16,7 +17,6 @@ export type SteamSlide = {
 
 type SteamMediaCarouselProps = {
   slides: SteamSlide[]
-  /** Auto-advance interval in ms; omit to disable */
   autoAdvanceMs?: number
   className?: string
 }
@@ -56,8 +56,6 @@ export function SteamMediaCarousel({ slides, autoAdvanceMs, className = '' }: St
     stripRef.current?.scrollBy({ left: dir * 220, behavior: 'smooth' })
   }
 
-
-
   if (!n || !current) {
     return (
       <div
@@ -71,10 +69,14 @@ export function SteamMediaCarousel({ slides, autoAdvanceMs, className = '' }: St
   return (
     <div className={`overflow-hidden rounded-sm bg-[#0e1621] ${className}`}>
       <div className="relative aspect-video w-full bg-black">
-        <img
+        <Image
           src={current.src}
           alt={current.alt ?? 'Media'}
-          className="h-full w-full object-cover"
+          fill
+          className="object-cover"
+          priority={safeIndex === 0}
+          quality={75}
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 85vw"
         />
 
         {n > 1 && (
@@ -150,7 +152,15 @@ export function SteamMediaCarousel({ slides, autoAdvanceMs, className = '' }: St
                   : 'opacity-80 hover:opacity-100'
                   }`}
               >
-                <img src={slide.src} alt={slide.alt ?? ''} className="h-full w-full object-cover" />
+                <Image 
+                  src={slide.src} 
+                  alt={slide.alt ?? ''} 
+                  fill
+                  className="object-cover"
+                  quality={60}
+                  sizes="116px"
+                  loading="lazy"
+                />
                 {slide.isVideo && (
                   <span className="absolute inset-0 flex items-center justify-center bg-black/35">
                     <Play className="h-8 w-8 text-white drop-shadow-md" fill="currentColor" />

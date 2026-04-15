@@ -37,7 +37,10 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
     const [imageSourceUrl, setImageSourceUrl] = useState('')
     const [imageLicense, setImageLicense] = useState('CC BY 4.0')
     const [itemImages, setItemImages] = useState<{ id: string; url: string; sort_order: number; attribution_author?: string; attribution_url?: string; license?: string }[]>([])
-
+    const [videoItemId, setVideoItemId] = useState('')
+    const [videoUrl, setVideoUrl] = useState('')
+    const [videoTitle, setVideoTitle] = useState('')
+    const [itemVideos, setItemVideos] = useState<{ id: string; url: string; video_id: string; title: string }[]>([])
     const [parkImageParkId, setParkImageParkId] = useState('')
     const [parkImageUrl, setParkImageUrl] = useState('')
     const [parkImageOrder, setParkImageOrder] = useState(0)
@@ -45,7 +48,10 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
     const [parkImageSourceUrl, setParkImageSourceUrl] = useState('')
     const [parkImageLicense, setParkImageLicense] = useState('CC BY 4.0')
     const [parkImages, setParkImages] = useState<{ id: string; url: string; sort_order: number; attribution_author?: string; attribution_url?: string; license?: string }[]>([])
-
+    const extractYouTubeId = (url: string): string | null => {
+        const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
+        return match ? match[1] : null
+    }
     const notify = (msg: string, isError = false) => {
         if (isError) setError(msg)
         else setSuccess(msg)
@@ -186,6 +192,44 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
         setParkImages(data ?? [])
     }
 
+    const loadVideos = async (itemId: string) => {
+        setVideoItemId(itemId)
+        const { data } = await supabase.from('item_videos').select('*').eq('item_id', itemId)
+        setItemVideos(data ?? [])
+    }
+
+    const handleAddVideo = async () => {
+        if (!videoUrl.trim() || !videoItemId) return
+        const videoId = extractYouTubeId(videoUrl.trim())
+        if (!videoId) {
+            notify('Invalid YouTube URL', true)
+            return
+        }
+        setLoading(true)
+        const { error } = await supabase.from('item_videos').insert({
+            item_id: videoItemId,
+            url: videoUrl.trim(),
+            video_id: videoId,
+            title: videoTitle.trim() || 'Ride Video',
+        })
+        if (error) notify(error.message, true)
+        else {
+            notify('Video added')
+            setVideoUrl('')
+            setVideoTitle('')
+            loadVideos(videoItemId)
+        }
+        setLoading(false)
+    }
+
+    const handleDeleteVideo = async (id: string) => {
+        setLoading(true)
+        const { error } = await supabase.from('item_videos').delete().eq('id', id)
+        if (error) notify(error.message, true)
+        else loadVideos(videoItemId)
+        setLoading(false)
+    }
+
     const handleAddParkImage = async () => {
         if (!parkImageUrl.trim() || !parkImageParkId) return
         setLoading(true)
@@ -295,10 +339,10 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
 
                 {/* Tabs */}
                 <div className="flex gap-1 mb-8 border-b border-[#2a475e]">
-                    {(['parks', 'items', 'images', 'park-images'] as const).map(t => (
+                    {(['parks', 'items', 'images', 'park-images', 'videos'] as const).map(t => (
                         <button key={t} onClick={() => setTab(t)}
                             className={`px-6 py-3 text-sm font-medium capitalize transition-colors border-b-2 -mb-px ${tab === t ? 'text-[#66c0f4] border-[#66c0f4]' : 'text-[#8f98a0] border-transparent hover:text-white'}`}>
-                            {t === 'items' ? 'Rides & Items' : t === 'images' ? 'Ride Images' : t === 'park-images' ? 'Park Images' : t.charAt(0).toUpperCase() + t.slice(1)}
+                            {t === 'items' ? 'Rides & Items' : t === 'images' ? 'Ride Images' : t === 'park-images' ? 'Park Images' : t === 'videos' ? 'Ride Videos' : t.charAt(0).toUpperCase() + t.slice(1)}
                         </button>
                     ))}
                 </div>
@@ -504,6 +548,59 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                         />
                                     </div>
                                 ))}
+
+                                {/* ─── Videos Tab ─── */}
+                                {tab === 'videos' && (
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                        <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6">
+                                            <h2 className="text-lg font-semibold text-[#c6d4df] mb-6">Manage Videos</h2>
+                                            <div className="space-y-4">
+                                                <div>
+                                                    <label className={labelClass}>Select Item</label>
+                                                    <select className={inputClass} value={videoItemId} onChange={e => loadVideos(e.target.value)}>
+                                                        <option value="">Select an item</option>
+                                                        {items.map(i => <option key={i.id} value={i.id}>{i.name} ({i.park_id})</option>)}
+                                                    </select>
+                                                </div>
+                                                {videoItemId && (
+                                                    <>
+                                                        <div>
+                                                            <label className={labelClass}>YouTube URL</label>
+                                                            <input className={inputClass} value={videoUrl} onChange={e => setVideoUrl(e.target.value)} placeholder="https://www.youtube.com/watch?v=U5wvbx8p6SE" />
+                                                        </div>
+                                                        <div>
+                                                            <label className={labelClass}>Video Title</label>
+                                                            <input className={inputClass} value={videoTitle} onChange={e => setVideoTitle(e.target.value)} placeholder="e.g. Wodan Coaster Experience" />
+                                                        </div>
+                                                        <button onClick={handleAddVideo} disabled={loading} className={btnPrimary}>
+                                                            {loading ? 'Adding...' : 'Add Video'}
+                                                        </button>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {videoItemId && (
+                                            <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6">
+                                                <h2 className="text-lg font-semibold text-[#c6d4df] mb-4">
+                                                    Videos for {items.find(i => i.id === videoItemId)?.name} ({itemVideos.length})
+                                                </h2>
+                                                <div className="space-y-2 max-h-[600px] overflow-y-auto">
+                                                    {itemVideos.length === 0 && <p className="text-sm text-[#8f98a0]">No videos yet.</p>}
+                                                    {itemVideos.map(vid => (
+                                                        <div key={vid.id} className="flex items-center justify-between gap-3 p-3 bg-[#2a475e]/30 rounded-sm">
+                                                            <div className="min-w-0">
+                                                                <p className="text-sm text-[#c6d4df] truncate">{vid.title}</p>
+                                                                <p className="text-xs text-[#8f98a0] truncate">youtube.com/watch?v={vid.video_id}</p>
+                                                            </div>
+                                                            <button onClick={() => handleDeleteVideo(vid.id)} className={btnDanger}>Delete</button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
 
                                 {/* Raw JSON fallback */}
                                 <div>

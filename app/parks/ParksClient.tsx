@@ -3,6 +3,8 @@
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useState, useMemo, useEffect } from 'react'
+import LoadingSpinner from '@/components/LoadingSpinner'
 
 type Park = {
   id: string
@@ -30,6 +32,15 @@ export default function ParksClient({ parks }: { parks: Park[] }) {
   ), [filters, parks])
 
   const selectClass = 'bg-gray-700 text-white p-2 rounded w-full'
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setIsLoading(false);
+  }, []);
+
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">

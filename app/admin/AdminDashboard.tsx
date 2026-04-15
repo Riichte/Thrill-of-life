@@ -48,6 +48,8 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
     const [parkImageSourceUrl, setParkImageSourceUrl] = useState('')
     const [parkImageLicense, setParkImageLicense] = useState('CC BY 4.0')
     const [parkImages, setParkImages] = useState<{ id: string; url: string; sort_order: number; attribution_author?: string; attribution_url?: string; license?: string }[]>([])
+    const [editingImage, setEditingImage] = useState<{ id: string; type: 'item' | 'park' } | null>(null)
+    const [editFormData, setEditFormData] = useState({ author: '', sourceUrl: '', license: 'CC BY 4.0' })
     const extractYouTubeId = (url: string): string | null => {
         const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
         return match ? match[1] : null
@@ -183,6 +185,36 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
         const { error } = await supabase.from('item_images').delete().eq('id', id)
         if (error) notify(error.message, true)
         else loadImages(imageItemId)
+        setLoading(false)
+    }
+
+    const handleEditImage = (image: any, type: 'item' | 'park') => {
+        setEditingImage({ id: image.id, type })
+        setEditFormData({
+            author: image.attribution_author || '',
+            sourceUrl: image.attribution_url || '',
+            license: image.license || 'CC BY 4.0'
+        })
+    }
+
+    const handleSaveEditImage = async () => {
+        if (!editingImage) return
+        setLoading(true)
+
+        const table = editingImage.type === 'item' ? 'item_images' : 'park_images'
+        const { error } = await supabase.from(table).update({
+            attribution_author: editFormData.author.trim() || null,
+            attribution_url: editFormData.sourceUrl.trim() || null,
+            license: editFormData.license
+        }).eq('id', editingImage.id)
+
+        if (error) notify(error.message, true)
+        else {
+            notify('Image updated')
+            setEditingImage(null)
+            if (editingImage.type === 'item') loadImages(imageItemId)
+            else loadParkImages(parkImageParkId)
+        }
         setLoading(false)
     }
 
@@ -549,7 +581,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                     </div>
                                 ))}
 
-                                
+
 
                                 {/* Raw JSON fallback */}
                                 <div>
@@ -659,7 +691,10 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                                     <p className="text-xs text-[#8f98a0] truncate">📷 {img.attribution_author} · {img.license}</p>
                                                 )}
                                             </div>
-                                            <button onClick={() => handleDeleteImage(img.id)} className={btnDanger}>Delete</button>
+                                            <div className="flex gap-2 flex-shrink-0">
+                                                <button onClick={() => handleEditImage(img, 'item')} className={btnEdit}>Edit</button>
+                                                <button onClick={() => handleDeleteImage(img.id)} className={btnDanger}>Delete</button>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
@@ -732,7 +767,10 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                                     <p className="text-xs text-[#8f98a0] truncate">📷 {img.attribution_author} · {img.license}</p>
                                                 )}
                                             </div>
-                                            <button onClick={() => handleDeleteParkImage(img.id)} className={btnDanger}>Delete</button>
+                                            <div className="flex gap-2 flex-shrink-0">
+                                                <button onClick={() => handleEditImage(img, 'park')} className={btnEdit}>Edit</button>
+                                                <button onClick={() => handleDeleteParkImage(img.id)} className={btnDanger}>Delete</button>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
@@ -742,57 +780,106 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                 )}
 
                 {/* ─── Videos Tab ─── */}
-                                {tab === 'videos' && (
-                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                        <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6">
-                                            <h2 className="text-lg font-semibold text-[#c6d4df] mb-6">Manage Videos</h2>
-                                            <div className="space-y-4">
-                                                <div>
-                                                    <label className={labelClass}>Select Item</label>
-                                                    <select className={inputClass} value={videoItemId} onChange={e => loadVideos(e.target.value)}>
-                                                        <option value="">Select an item</option>
-                                                        {items.map(i => <option key={i.id} value={i.id}>{i.name} ({i.park_id})</option>)}
-                                                    </select>
-                                                </div>
-                                                {videoItemId && (
-                                                    <>
-                                                        <div>
-                                                            <label className={labelClass}>YouTube URL</label>
-                                                            <input className={inputClass} value={videoUrl} onChange={e => setVideoUrl(e.target.value)} placeholder="https://www.youtube.com/watch?v=U5wvbx8p6SE" />
-                                                        </div>
-                                                        <div>
-                                                            <label className={labelClass}>Video Title</label>
-                                                            <input className={inputClass} value={videoTitle} onChange={e => setVideoTitle(e.target.value)} placeholder="e.g. Wodan Coaster Experience" />
-                                                        </div>
-                                                        <button onClick={handleAddVideo} disabled={loading} className={btnPrimary}>
-                                                            {loading ? 'Adding...' : 'Add Video'}
-                                                        </button>
-                                                    </>
-                                                )}
+                {tab === 'videos' && (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6">
+                            <h2 className="text-lg font-semibold text-[#c6d4df] mb-6">Manage Videos</h2>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className={labelClass}>Select Item</label>
+                                    <select className={inputClass} value={videoItemId} onChange={e => loadVideos(e.target.value)}>
+                                        <option value="">Select an item</option>
+                                        {items.map(i => <option key={i.id} value={i.id}>{i.name} ({i.park_id})</option>)}
+                                    </select>
+                                </div>
+                                {videoItemId && (
+                                    <>
+                                        <div>
+                                            <label className={labelClass}>YouTube URL</label>
+                                            <input className={inputClass} value={videoUrl} onChange={e => setVideoUrl(e.target.value)} placeholder="https://www.youtube.com/watch?v=U5wvbx8p6SE" />
+                                        </div>
+                                        <div>
+                                            <label className={labelClass}>Video Title</label>
+                                            <input className={inputClass} value={videoTitle} onChange={e => setVideoTitle(e.target.value)} placeholder="e.g. Wodan Coaster Experience" />
+                                        </div>
+                                        <button onClick={handleAddVideo} disabled={loading} className={btnPrimary}>
+                                            {loading ? 'Adding...' : 'Add Video'}
+                                        </button>
+                                    </>
+                                )}
+                            </div>
+
+                            {editingImage && (
+                                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                                    <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6 max-w-md w-full">
+                                        <h2 className="text-lg font-semibold text-[#c6d4df] mb-4">Edit Image Info</h2>
+                                        <div className="space-y-4">
+                                            <div>
+                                                <label className={labelClass}>Author / Channel</label>
+                                                <input
+                                                    className={inputClass}
+                                                    value={editFormData.author}
+                                                    onChange={e => setEditFormData({ ...editFormData, author: e.target.value })}
+                                                    placeholder="e.g. Coaster Studios"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className={labelClass}>Source URL</label>
+                                                <input
+                                                    className={inputClass}
+                                                    value={editFormData.sourceUrl}
+                                                    onChange={e => setEditFormData({ ...editFormData, sourceUrl: e.target.value })}
+                                                    placeholder="https://youtube.com/..."
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className={labelClass}>License</label>
+                                                <select
+                                                    className={inputClass}
+                                                    value={editFormData.license}
+                                                    onChange={e => setEditFormData({ ...editFormData, license: e.target.value })}
+                                                >
+                                                    <option value="CC BY 4.0">CC BY 4.0</option>
+                                                    <option value="CC BY-SA 4.0">CC BY-SA 4.0</option>
+                                                    <option value="CC0">CC0 (Public Domain)</option>
+                                                    <option value="Own">Own photo</option>
+                                                </select>
+                                            </div>
+                                            <div className="flex gap-3 pt-2">
+                                                <button onClick={handleSaveEditImage} disabled={loading} className={btnPrimary}>
+                                                    {loading ? 'Saving...' : 'Save'}
+                                                </button>
+                                                <button onClick={() => setEditingImage(null)} className={btnSecondary}>
+                                                    Cancel
+                                                </button>
                                             </div>
                                         </div>
-
-                                        {videoItemId && (
-                                            <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6">
-                                                <h2 className="text-lg font-semibold text-[#c6d4df] mb-4">
-                                                    Videos for {items.find(i => i.id === videoItemId)?.name} ({itemVideos.length})
-                                                </h2>
-                                                <div className="space-y-2 max-h-[600px] overflow-y-auto">
-                                                    {itemVideos.length === 0 && <p className="text-sm text-[#8f98a0]">No videos yet.</p>}
-                                                    {itemVideos.map(vid => (
-                                                        <div key={vid.id} className="flex items-center justify-between gap-3 p-3 bg-[#2a475e]/30 rounded-sm">
-                                                            <div className="min-w-0">
-                                                                <p className="text-sm text-[#c6d4df] truncate">{vid.title}</p>
-                                                                <p className="text-xs text-[#8f98a0] truncate">youtube.com/watch?v={vid.video_id}</p>
-                                                            </div>
-                                                            <button onClick={() => handleDeleteVideo(vid.id)} className={btnDanger}>Delete</button>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        )}
                                     </div>
-                                )}
+                                </div>
+                            )}
+                        </div>
+
+                        {videoItemId && (
+                            <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6">
+                                <h2 className="text-lg font-semibold text-[#c6d4df] mb-4">
+                                    Videos for {items.find(i => i.id === videoItemId)?.name} ({itemVideos.length})
+                                </h2>
+                                <div className="space-y-2 max-h-[600px] overflow-y-auto">
+                                    {itemVideos.length === 0 && <p className="text-sm text-[#8f98a0]">No videos yet.</p>}
+                                    {itemVideos.map(vid => (
+                                        <div key={vid.id} className="flex items-center justify-between gap-3 p-3 bg-[#2a475e]/30 rounded-sm">
+                                            <div className="min-w-0">
+                                                <p className="text-sm text-[#c6d4df] truncate">{vid.title}</p>
+                                                <p className="text-xs text-[#8f98a0] truncate">youtube.com/watch?v={vid.video_id}</p>
+                                            </div>
+                                            <button onClick={() => handleDeleteVideo(vid.id)} className={btnDanger}>Delete</button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
 
             </div>
         </div>

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { searchImages } from '@/lib/imageSearch';
-import { saveImage } from '@/lib/imageDatabase';
+import { saveImageAction } from '@/lib/actions/imageActions';
 
 interface ImageResult {
   url: string;
@@ -26,7 +26,7 @@ export default function ImageManager({ parkId, itemId }: { parkId?: string; item
   };
 
   const handleSaveImage = async (image: ImageResult) => {
-    await saveImage(image, parkId, itemId);
+    await saveImageAction(image, parkId, itemId);
     alert('Image saved!');
   };
 

@@ -405,7 +405,7 @@ export default function ProfileClient({
                 {socials.twitter && (
                   <a href={`https://x.com/${socials.twitter}`} target="_blank" rel="noopener noreferrer"
                     title={`@${socials.twitter}`} className="text-sky-400 hover:text-sky-300 transition-colors">
-                    <FaTwitter size={22} />
+                    <FaXTwitter size={22} />
                   </a>
                 )}
                 {socials.facebook && (

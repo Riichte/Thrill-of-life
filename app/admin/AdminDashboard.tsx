@@ -779,7 +779,13 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                     </div>
                 )}
 
-               {/* ─── Videos Tab ─── */}
+                {/* ─── Image Manager Tab ─── */}
+                <section className="mb-8">
+                    <h2 className="text-2xl font-bold mb-4">Image Manager</h2>
+                    <ImageManager />
+                </section>
+
+                {/* ─── Videos Tab ─── */}
                 {tab === 'videos' && (
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6">

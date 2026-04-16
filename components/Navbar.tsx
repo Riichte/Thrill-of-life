@@ -16,6 +16,10 @@ export default function Navbar() {
   const router = useRouter()
   const pathname = usePathname()
   const supabase = createClient()
+  const [searchQuery, setSearchQuery] = useState('')
+  const [suggestions, setSuggestions] = useState<{ parks: any[], items: any[] }>({ parks: [], items: [] })
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const searchRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setUser(data.user))
@@ -34,6 +38,19 @@ export default function Navbar() {
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
+
+  useEffect(() => {
+    if (searchQuery.length < 2) { setSuggestions({ parks: [], items: [] }); return }
+    const timeout = setTimeout(async () => {
+      const [{ data: parks }, { data: items }] = await Promise.all([
+        supabase.from('parks').select('id, name, country').ilike('name', `%${searchQuery}%`).limit(3),
+        supabase.from('items').select('id, name, category_id, park_id').ilike('name', `%${searchQuery}%`).limit(5),
+      ])
+      setSuggestions({ parks: parks ?? [], items: items ?? [] })
+      setShowSuggestions(true)
+    }, 250)
+    return () => clearTimeout(timeout)
+  }, [searchQuery])
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -56,6 +73,33 @@ export default function Navbar() {
     { name: 'Hotels', href: '/category/hotels' },
   ]
 
+  const handleSearchSubmit = (val: string) => {
+    if (val.trim()) { setShowSuggestions(false); router.push(`/search?q=${encodeURIComponent(val.trim())}`) }
+  }
+
+  const SuggestionsDropdown = () => (
+    (suggestions.parks.length > 0 || suggestions.items.length > 0) ? (
+      <div className="absolute top-full left-0 right-0 mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-50 overflow-hidden">
+        {suggestions.parks.map(p => (
+          <Link key={p.id} href={`/parks/${p.id}`} onClick={() => setShowSuggestions(false)}
+            className="flex items-center gap-2 px-4 py-2.5 hover:bg-gray-700 transition-colors">
+            <span className="text-xs text-blue-400 w-10 flex-shrink-0">Park</span>
+            <span className="text-sm text-white">{p.name}</span>
+            <span className="text-xs text-gray-500 ml-auto">{p.country}</span>
+          </Link>
+        ))}
+        {suggestions.items.map(i => (
+          <Link key={i.id} href={`/parks/${i.park_id}/${i.category_id}/${i.id}`} onClick={() => setShowSuggestions(false)}
+            className="flex items-center gap-2 px-4 py-2.5 hover:bg-gray-700 transition-colors">
+            <span className="text-xs text-gray-400 w-10 flex-shrink-0 capitalize truncate">{i.category_id.replace('_', ' ')}</span>
+            <span className="text-sm text-white">{i.name}</span>
+          </Link>
+        ))}
+      </div>
+    ) : null
+  )
+
+
   return (
     <nav className="sticky top-0 z-50 bg-gray-900 border-b border-gray-800">
       {/* Top Row */}
@@ -73,20 +117,19 @@ export default function Navbar() {
             </Link>
 
             {/* Search Bar */}
-            <div className="hidden md:flex flex-1 max-w-md">
+            <div className="hidden md:flex flex-1 max-w-md" ref={searchRef}>
               <div className="relative w-full">
                 <input
                   type="text"
+                  value={searchQuery}
                   placeholder="Search parks, rides, restaurants..."
                   className="w-full bg-gray-800 text-white placeholder-gray-500 rounded-lg pl-4 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                  onKeyDown={e => {
-                    if (e.key === 'Enter') {
-                      const val = (e.target as HTMLInputElement).value.trim()
-                      if (val) router.push(`/search?q=${encodeURIComponent(val)}`)
-                    }
-                  }}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  onFocus={() => suggestions.parks.length + suggestions.items.length > 0 && setShowSuggestions(true)}
+                  onKeyDown={e => { if (e.key === 'Enter') handleSearchSubmit(searchQuery) }}
                 />
                 <Search className="absolute right-3 top-2.5 w-4 h-4 text-gray-500" />
+                {showSuggestions && <SuggestionsDropdown />}
               </div>
             </div>
 
@@ -180,20 +223,19 @@ export default function Navbar() {
           </div>
 
           {/* Mobile Search */}
-          <div className="md:hidden mt-3">
+          <div className="md:hidden mt-3" ref={searchRef}>
             <div className="relative w-full">
               <input
                 type="text"
+                value={searchQuery}
                 placeholder="Search parks, rides..."
                 className="w-full bg-gray-800 text-white placeholder-gray-500 rounded-lg pl-4 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                onKeyDown={e => {
-                  if (e.key === 'Enter') {
-                    const val = (e.target as HTMLInputElement).value.trim()
-                    if (val) router.push(`/search?q=${encodeURIComponent(val)}`)
-                  }
-                }}
+                onChange={e => setSearchQuery(e.target.value)}
+                onFocus={() => suggestions.parks.length + suggestions.items.length > 0 && setShowSuggestions(true)}
+                onKeyDown={e => { if (e.key === 'Enter') handleSearchSubmit(searchQuery) }}
               />
               <Search className="absolute right-3 top-2.5 w-4 h-4 text-gray-500" />
+              {showSuggestions && <SuggestionsDropdown />}
             </div>
           </div>
         </div>

@@ -1,5 +1,7 @@
+'use client';
+
 // lib/imageDatabase.ts
-import { supabase } from './supabase/client';
+import { createClient } from './supabase/client';
 
 export interface StoredImage {
   id: string;

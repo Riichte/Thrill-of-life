@@ -2,19 +2,17 @@
 
 import { createClient } from '@/lib/supabase/server'
 
-export async function saveImageAction(image: any, category: string) {
+export async function saveImageToItemAction(image: any, itemId: string) {
   const supabase = await createClient()
   
   const { data, error } = await supabase
-    .from('images')
+    .from('item_images')
     .insert({
-      category: category,
+      item_id: itemId,
       url: image.url,
-      title: image.title,
-      source: image.source,
-      attribution: image.attribution,
+      attribution_author: image.attribution,
       license: image.license,
-      created_at: new Date()
+      sort_order: 0,
     })
     .select()
     .single()
@@ -27,7 +25,7 @@ export async function deleteImageAction(imageId: string) {
   const supabase = await createClient()
   
   const { error } = await supabase
-    .from('images')
+    .from('item_images')
     .delete()
     .eq('id', imageId)
 
@@ -38,7 +36,7 @@ export async function fetchSavedImages() {
   const supabase = await createClient()
   
   const { data, error } = await supabase
-    .from('images')
+    .from('item_images')
     .select('*')
     .order('created_at', { ascending: false })
 

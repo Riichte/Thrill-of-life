@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { searchImages } from '@/lib/imageSearch';
-import { saveImageAction, deleteImageAction, fetchSavedImages } from '@/lib/actions/imageActions';
+import { saveImageToItemAction, deleteImageAction, fetchSavedImages } from '@/lib/actions/imageActions';
+import { createClient } from '@/lib/supabase/client';
 
 interface ImageResult {
   url: string;
@@ -15,48 +16,66 @@ interface ImageResult {
 interface SavedImage {
   id: string;
   url: string;
-  title: string;
-  category: string;
-  attribution: string;
-  source: string;
-  created_at: string;
+  item_id: string;
+  attribution_author?: string;
+  license?: string;
 }
 
-const CATEGORIES = ['roller coaster', 'park', 'show', 'restaurant', 'transport', 'flat ride', 'dark ride'];
+interface Item {
+  id: string;
+  name: string;
+  category_id: string;
+}
 
-export default function ImageManager() {
+export default function ImageManager({ items: initialItems, categories }: { items: Item[]; categories: any[] }) {
+  const supabase = createClient();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<ImageResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedItem, setSelectedItem] = useState('');
   const [savedImages, setSavedImages] = useState<SavedImage[]>([]);
   const [showSaved, setShowSaved] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
+
+  const filteredItems = initialItems.filter(item => item.category_id === selectedCategory);
 
   useEffect(() => {
     loadSavedImages();
   }, []);
 
   const loadSavedImages = async () => {
-    const images = await fetchSavedImages();
-    setSavedImages(images);
+    try {
+      const { data } = await supabase.from('item_images').select('*').order('created_at', { ascending: false });
+      setSavedImages(data || []);
+    } catch (error) {
+      console.error('Error loading images:', error);
+    }
   };
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedCategory) {
-      alert('Please select a category first');
+    if (!selectedCategory || !selectedItem) {
+      alert('Please select both category and item');
       return;
     }
     setLoading(true);
-    const images = await searchImages(query, 10);
-    setResults(images);
+    try {
+      const images = await searchImages(query, 10);
+      setResults(images);
+    } catch (error) {
+      alert('Search failed');
+    }
     setLoading(false);
   };
 
   const handleSaveImage = async (image: ImageResult) => {
+    if (!selectedItem) {
+      alert('Please select an item');
+      return;
+    }
     try {
-      await saveImageAction(image, selectedCategory);
+      await saveImageToItemAction(image, selectedItem);
       alert('Image saved!');
       setResults([]);
       setQuery('');
@@ -80,62 +99,96 @@ export default function ImageManager() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 bg-[#1b2838] border border-[#2a475e] rounded-sm p-6">
       {/* Search Section */}
-      <div className="border rounded p-4 bg-gray-100">
-        <h3 className="text-lg font-bold mb-4">Search & Add Images</h3>
-        
-        <div className="space-y-3">
+      <div>
+        <h3 className="text-lg font-bold mb-4 text-[#c6d4df]">Search & Add Images</h3>
+
+        <div className="space-y-4">
+          {/* Category Dropdown */}
           <div>
-            <label className="block text-sm font-medium mb-2">Category *</label>
+            <label className="block text-xs font-medium uppercase tracking-wider text-[#8f98a0] mb-2">
+              Category *
+            </label>
             <select
               value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full px-3 py-2 border rounded bg-white"
+              onChange={(e) => {
+                setSelectedCategory(e.target.value);
+                setSelectedItem('');
+                setResults([]);
+              }}
+              className="w-full bg-[#2a475e] border border-[#3d6a8a] rounded-sm px-3 py-2 text-sm text-[#c6d4df] focus:outline-none focus:border-[#66c0f4]"
             >
               <option value="">-- Select Category --</option>
-              {CATEGORIES.map(cat => (
-                <option key={cat} value={cat}>{cat}</option>
+              {categories.map(cat => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
               ))}
             </select>
           </div>
 
-          <form onSubmit={handleSearch} className="flex gap-2">
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search images..."
-              className="flex-1 px-3 py-2 border rounded"
-            />
-            <button 
-              type="submit" 
-              disabled={!selectedCategory || loading}
-              className="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
-            >
-              {loading ? 'Searching...' : 'Search'}
-            </button>
-          </form>
+          {/* Item Dropdown */}
+          {selectedCategory && (
+            <div>
+              <label className="block text-xs font-medium uppercase tracking-wider text-[#8f98a0] mb-2">
+                Item *
+              </label>
+              <select
+                value={selectedItem}
+                onChange={(e) => {
+                  setSelectedItem(e.target.value);
+                  setResults([]);
+                }}
+                className="w-full bg-[#2a475e] border border-[#3d6a8a] rounded-sm px-3 py-2 text-sm text-[#c6d4df] focus:outline-none focus:border-[#66c0f4]"
+              >
+                <option value="">-- Select Item --</option>
+                {filteredItems.map(item => (
+                  <option key={item.id} value={item.id}>{item.name}</option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* Search Input */}
+          {selectedItem && (
+            <form onSubmit={handleSearch} className="flex gap-2">
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search images..."
+                className="flex-1 bg-[#2a475e] border border-[#3d6a8a] rounded-sm px-3 py-2 text-sm text-[#c6d4df] placeholder-[#6a8a9a] focus:outline-none focus:border-[#66c0f4]"
+              />
+              <button
+                type="submit"
+                disabled={!selectedItem || loading}
+                className="px-4 py-2 bg-[#4c6b22] hover:bg-[#5a7a28] disabled:opacity-50 text-white text-sm font-medium rounded-sm transition-colors"
+              >
+                {loading ? 'Searching...' : 'Search'}
+              </button>
+            </form>
+          )}
         </div>
 
+        {/* Search Results */}
         {results.length > 0 && (
           <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-4">
             {results.map((image, idx) => (
-              <div key={idx} className="border rounded overflow-hidden bg-white">
+              <div key={idx} className="border border-[#2a475e] rounded-sm overflow-hidden bg-[#0e1419]">
                 <img
                   src={image.url}
                   alt={image.title}
-                  className="w-full h-48 object-cover"
+                  className="w-full h-40 object-cover"
                   onError={(e) => {
                     e.currentTarget.src = '/placeholder.png';
                   }}
                 />
-                <div className="p-3 text-sm">
-                  <p className="font-semibold truncate text-xs">{image.title}</p>
-                  <p className="text-xs text-gray-600 truncate">{image.attribution}</p>
+                <div className="p-2 space-y-1">
+                  <p className="font-semibold text-xs text-[#c6d4df] line-clamp-2">{image.title}</p>
+                  <p className="text-xs text-[#8f98a0] line-clamp-1">{image.attribution}</p>
+                  <p className="text-xs text-[#6a8a9a]">{image.source}</p>
                   <button
                     onClick={() => handleSaveImage(image)}
-                    className="mt-2 w-full px-2 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600"
+                    className="mt-2 w-full px-2 py-1 bg-[#4c6b22] hover:bg-[#5a7a28] text-white text-xs rounded-sm transition-colors"
                   >
                     Save
                   </button>
@@ -147,39 +200,50 @@ export default function ImageManager() {
       </div>
 
       {/* Saved Images Section */}
-      <div className="border rounded p-4 bg-gray-100">
+      <div className="border-t border-[#2a475e] pt-6">
         <button
           onClick={() => setShowSaved(!showSaved)}
-          className="text-lg font-bold mb-4 text-blue-600 hover:underline"
+          className="text-[#66c0f4] hover:text-[#c6d4df] font-bold text-sm"
         >
           {showSaved ? '▼' : '▶'} Saved Images ({savedImages.length})
         </button>
 
         {showSaved && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {savedImages.map(image => (
-              <div key={image.id} className="border rounded overflow-hidden bg-white relative group">
-                <img
-                  src={image.url}
-                  alt={image.title}
-                  className="w-full h-40 object-cover"
-                  onError={(e) => {
-                    e.currentTarget.src = '/placeholder.png';
-                  }}
-                />
-                <div className="p-2 text-xs">
-                  <p className="font-semibold truncate">{image.category}</p>
-                  <p className="text-gray-600 truncate">{image.title}</p>
-                </div>
-                <button
-                  onClick={() => handleDeleteImage(image.id)}
-                  disabled={deleting === image.id}
-                  className="absolute top-1 right-1 px-2 py-1 bg-red-500 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-50"
+          <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+            {savedImages.length === 0 ? (
+              <p className="text-sm text-[#8f98a0] col-span-full">No images saved yet.</p>
+            ) : (
+              savedImages.map(image => (
+                <div
+                  key={image.id}
+                  className="border border-[#2a475e] rounded-sm overflow-hidden bg-[#0e1419] relative group"
                 >
-                  {deleting === image.id ? '...' : 'Delete'}
-                </button>
-              </div>
-            ))}
+                  <img
+                    src={image.url}
+                    alt="saved"
+                    className="w-full h-32 object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src = '/placeholder.png';
+                    }}
+                  />
+                  <div className="p-2 text-xs">
+                    <p className="text-[#8f98a0] truncate">
+                      {initialItems.find(i => i.id === image.item_id)?.name || 'Unknown'}
+                    </p>
+                    {image.attribution_author && (
+                      <p className="text-[#6a8a9a] text-xs truncate">📷 {image.attribution_author}</p>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => handleDeleteImage(image.id)}
+                    disabled={deleting === image.id}
+                    className="absolute top-1 right-1 px-2 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-sm opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-50"
+                  >
+                    {deleting === image.id ? '...' : 'Delete'}
+                  </button>
+                </div>
+              ))
+            )}
           </div>
         )}
       </div>

@@ -372,10 +372,10 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
 
                 {/* Tabs */}
                 <div className="flex gap-1 mb-8 border-b border-[#2a475e]">
-                    {(['parks', 'items', 'images', 'park-images', 'videos'] as const).map(t => (
+                    {(['parks', 'items', 'images', 'park-images', 'images-manager', 'videos'] as const).map(t => (
                         <button key={t} onClick={() => setTab(t)}
                             className={`px-6 py-3 text-sm font-medium capitalize transition-colors border-b-2 -mb-px ${tab === t ? 'text-[#66c0f4] border-[#66c0f4]' : 'text-[#8f98a0] border-transparent hover:text-white'}`}>
-                            {t === 'items' ? 'Rides & Items' : t === 'images' ? 'Ride Images' : t === 'park-images' ? 'Park Images' : t === 'videos' ? 'Ride Videos' : t.charAt(0).toUpperCase() + t.slice(1)}
+                            {t === 'items' ? 'Rides & Items' : t === 'images' ? 'Ride Images' : t === 'park-images' ? 'Park Images' : t === 'images-manager' ? 'Image Search' : t === 'videos' ? 'Ride Videos' : t.charAt(0).toUpperCase() + t.slice(1)}
                         </button>
                     ))}
                 </div>
@@ -781,10 +781,11 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                 )}
 
                 {/* ─── Image Manager Tab ─── */}
-                <section className="mb-8">
-                    <h2 className="text-2xl font-bold mb-4">Image Manager</h2>
-                    <ImageManager />
-                </section>
+                {tab === 'images' && (
+                    <section>
+                        <ImageManager items={items} categories={categories} />
+                    </section>
+                )}
 
                 {/* ─── Videos Tab ─── */}
                 {tab === 'videos' && (

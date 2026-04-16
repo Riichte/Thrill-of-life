@@ -70,21 +70,21 @@ export default function ImageManager({ items: initialItems, categories }: { item
   };
 
   const handleSaveImage = async (image: ImageResult, idx: number) => {
-    if (!selectedItem) {
-      alert('Please select an item');
-      return;
-    }
-    const sortOrder = document.getElementById(`sort-${idx}`) as HTMLSelectElement;
-    try {
-      await saveImageToItemAction(image, selectedItem, parseInt(sortOrder.value));
-      alert('Image saved!');
-      setResults([]);
-      setQuery('');
-      loadSavedImages();
-    } catch (error) {
-      alert('Failed to save image');
-    }
-  };
+  if (!selectedItem) {
+    alert('Please select an item');
+    return;
+  }
+  const typeSelect = document.getElementById(`sort-${idx}`) as HTMLSelectElement;
+  try {
+    await saveImageToItemAction(image, selectedItem, typeSelect.value);
+    alert('Image saved!');
+    setResults([]);
+    setQuery('');
+    loadSavedImages();
+  } catch (error) {
+    alert('Failed to save image');
+  }
+};
 
   const handleDeleteImage = async (imageId: string) => {
     if (!window.confirm('Delete this image?')) return;
@@ -201,12 +201,13 @@ export default function ImageManager({ items: initialItems, categories }: { item
                     defaultValue="1"
                     className="w-full bg-[#2a475e] border border-[#3d6a8a] rounded-sm px-2 py-1 text-xs text-[#c6d4df]"
                   >
-                    <option value="0">Main/Logo</option>
-                    <option value="1">Image 1</option>
-                    <option value="2">Image 2</option>
-                    <option value="3">Image 3</option>
-                    <option value="4">Image 4</option>
-                    <option value="5">Image 5</option>
+                    <option value="0">Main</option>
+                    <option value="1">Logo</option>     
+                    <option value="2">Image 1</option>
+                    <option value="3">Image 2</option>
+                    <option value="4">Image 3</option>
+                    <option value="5">Image 4</option>
+                    <option value="6">Image 5</option>
                   </select>
                 </div>
               </div>

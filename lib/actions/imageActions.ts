@@ -2,9 +2,9 @@
 
 import { createClient } from '@/lib/supabase/server'
 
-export async function saveImageToItemAction(image: any, itemId: string, sortOrder: number = 1) {
+export async function saveImageToItemAction(image: any, itemId: string, imageType: string = 'main') {
   const supabase = await createClient()
-
+  
   const { data, error } = await supabase
     .from('item_images')
     .insert({
@@ -12,7 +12,7 @@ export async function saveImageToItemAction(image: any, itemId: string, sortOrde
       url: image.url,
       attribution_author: image.attribution,
       license: image.license,
-      sort_order: sortOrder,
+      sort_order: imageType === 'logo' ? -1 : 0,
     })
     .select()
     .single()

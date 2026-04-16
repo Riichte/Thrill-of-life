@@ -47,6 +47,7 @@ export async function saveImage(
 
 export async function getImages(parkId?: string, itemId?: string): Promise<StoredImage[]> {
     try {
+        const client = createClient();
         let query = client.from('images').select('*');
 
         if (parkId) query = query.eq('park_id', parkId);
@@ -64,6 +65,7 @@ export async function getImages(parkId?: string, itemId?: string): Promise<Store
 
 export async function deleteImage(id: string): Promise<boolean> {
     try {
+        const client = createClient();
         const { error } = await client.from('images').delete().eq('id', id);
         if (error) throw error;
         return true;

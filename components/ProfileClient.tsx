@@ -15,6 +15,7 @@ interface Profile {
   tiktok: string | null
   twitter: string | null
   facebook: string | null
+  home_park_id: string | null
   created_at: string
 }
 
@@ -102,6 +103,10 @@ export default function ProfileClient({
   })
   const [socialsInput, setSocialsInput] = useState({ ...socials })
   const [isEditingSocials, setIsEditingSocials] = useState(false)
+  const [homeParkId, setHomeParkId] = useState(profile?.home_park_id ?? '')
+  const [homeParkInput, setHomeParkInput] = useState(profile?.home_park_id ?? '')
+  const [isEditingHomePark, setIsEditingHomePark] = useState(false)
+  const [parks, setParks] = useState<{ id: string; name: string }[]>([])
 
   useEffect(() => {
     const loadReactions = async () => {
@@ -132,6 +137,13 @@ export default function ProfileClient({
     loadReactions()
   }, [reviews])
 
+  useEffect(() => {
+    const loadParks = async () => {
+      const { data } = await supabase.from('parks').select('id, name').order('name')
+      if (data) setParks(data)
+    }
+    loadParks()
+  }, [])
 
   const joinedYear = profile?.created_at
     ? new Date(profile.created_at).getFullYear()
@@ -176,6 +188,15 @@ export default function ProfileClient({
     await supabase.from('profiles').update(socialsInput).eq('id', profile.id)
     setSocials(socialsInput)
     setIsEditingSocials(false)
+    setSaving(false)
+  }
+
+  const handleSaveHomePark = async () => {
+    if (!profile) return
+    setSaving(true)
+    await supabase.from('profiles').update({ home_park_id: homeParkInput || null }).eq('id', profile.id)
+    setHomeParkId(homeParkInput)
+    setIsEditingHomePark(false)
     setSaving(false)
   }
 
@@ -385,23 +406,23 @@ export default function ProfileClient({
             ) : (
               <div className="flex flex-wrap gap-3">
                 {socials.instagram && (
-                    <a href={`https://instagram.com/${socials.instagram}`} target="_blank" rel="noopener noreferrer"
-                      title={`@${socials.instagram}`} className="text-pink-400 hover:text-pink-300 transition-colors">
-                      <FaInstagram size={22} />
-                    </a>
-                  )}
+                  <a href={`https://instagram.com/${socials.instagram}`} target="_blank" rel="noopener noreferrer"
+                    title={`@${socials.instagram}`} className="text-pink-400 hover:text-pink-300 transition-colors">
+                    <FaInstagram size={22} />
+                  </a>
+                )}
                 {socials.youtube && (
-                    <a href={`https://youtube.com/@${socials.youtube}`} target="_blank" rel="noopener noreferrer"
-                      title={`@${socials.youtube}`} className="text-red-500 hover:text-red-400 transition-colors">
-                      <FaYoutube size={22} />
-                    </a>
-                  )}
+                  <a href={`https://youtube.com/@${socials.youtube}`} target="_blank" rel="noopener noreferrer"
+                    title={`@${socials.youtube}`} className="text-red-500 hover:text-red-400 transition-colors">
+                    <FaYoutube size={22} />
+                  </a>
+                )}
                 {socials.tiktok && (
-                    <a href={`https://tiktok.com/@${socials.tiktok}`} target="_blank" rel="noopener noreferrer"
-                      title={`@${socials.tiktok}`} className="text-white hover:text-gray-300 transition-colors">
-                      <FaTiktok size={22} />
-                    </a>
-                  )}
+                  <a href={`https://tiktok.com/@${socials.tiktok}`} target="_blank" rel="noopener noreferrer"
+                    title={`@${socials.tiktok}`} className="text-white hover:text-gray-300 transition-colors">
+                    <FaTiktok size={22} />
+                  </a>
+                )}
                 {socials.twitter && (
                   <a href={`https://x.com/${socials.twitter}`} target="_blank" rel="noopener noreferrer"
                     title={`@${socials.twitter}`} className="text-sky-400 hover:text-sky-300 transition-colors">
@@ -421,6 +442,50 @@ export default function ProfileClient({
             )}
           </div>
 
+          {/* Home Park */}
+          <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-[#8f98a0]">Home Park</h3>
+              {isOwnProfile && !isEditingHomePark && (
+                <button onClick={() => setIsEditingHomePark(true)}
+                  className="text-xs text-[#8f98a0] hover:text-[#66c0f4] transition-colors">✏️ Edit</button>
+              )}
+            </div>
+
+            {isEditingHomePark ? (
+              <div className="space-y-2">
+                <select
+                  value={homeParkInput}
+                  onChange={e => setHomeParkInput(e.target.value)}
+                  className="w-full bg-[#2a475e] border border-[#3d6a8a] rounded-sm px-3 py-1.5 text-sm text-[#c6d4df] focus:outline-none focus:border-[#66c0f4]"
+                >
+                  <option value="">— None —</option>
+                  {parks.map(p => (
+                    <option key={p.id} value={p.id}>{p.name}</option>
+                  ))}
+                </select>
+                <div className="flex gap-2 pt-1">
+                  <button onClick={handleSaveHomePark} disabled={saving}
+                    className="px-3 py-1 bg-[#4c6b22] hover:bg-[#5a7a28] text-white text-xs rounded-sm disabled:opacity-50">
+                    {saving ? 'Saving...' : 'Save'}
+                  </button>
+                  <button onClick={() => { setIsEditingHomePark(false); setHomeParkInput(homeParkId) }}
+                    className="px-3 py-1 text-[#8f98a0] hover:text-white text-xs">Cancel</button>
+                </div>
+              </div>
+            ) : (
+              homeParkId ? (
+                <Link href={`/parks/${homeParkId}`}
+                  className="text-sm text-[#66c0f4] hover:underline">
+                  🏠 {parks.find(p => p.id === homeParkId)?.name ?? homeParkId}
+                </Link>
+              ) : (
+                <p className="text-sm text-[#4a6a82] italic">
+                  {isOwnProfile ? 'Set your home park...' : 'No home park set.'}
+                </p>
+              )
+            )}
+          </div>
 
           {/* Main Content */}
           <div className="lg:col-span-2">

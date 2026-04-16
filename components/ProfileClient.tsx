@@ -384,37 +384,39 @@ export default function ProfileClient({
               </div>
             ) : (
               <div className="flex flex-wrap gap-3">
-                // Replace the 5 <a> tags with these:
-                  {socials.instagram && (
+                {socials.instagram && (
                     <a href={`https://instagram.com/${socials.instagram}`} target="_blank" rel="noopener noreferrer"
                       title={`@${socials.instagram}`} className="text-pink-400 hover:text-pink-300 transition-colors">
                       <FaInstagram size={22} />
                     </a>
                   )}
-                  {socials.youtube && (
+                {socials.youtube && (
                     <a href={`https://youtube.com/@${socials.youtube}`} target="_blank" rel="noopener noreferrer"
                       title={`@${socials.youtube}`} className="text-red-500 hover:text-red-400 transition-colors">
                       <FaYoutube size={22} />
                     </a>
                   )}
-                  {socials.tiktok && (
+                {socials.tiktok && (
                     <a href={`https://tiktok.com/@${socials.tiktok}`} target="_blank" rel="noopener noreferrer"
                       title={`@${socials.tiktok}`} className="text-white hover:text-gray-300 transition-colors">
                       <FaTiktok size={22} />
                     </a>
                   )}
-                  {socials.twitter && (
-                    <a href={`https://x.com/${socials.twitter}`} target="_blank" rel="noopener noreferrer"
-                      title={`@${socials.twitter}`} className="text-sky-400 hover:text-sky-300 transition-colors">
-                      <FaXTwitter size={22} />
-                    </a>
-                  )}
-                  {socials.facebook && (
-                    <a href={`https://facebook.com/${socials.facebook}`} target="_blank" rel="noopener noreferrer"
-                      title={`/${socials.facebook}`} className="text-blue-500 hover:text-blue-400 transition-colors">
-                      <FaFacebook size={22} />
-                    </a>
-                  )}
+                {socials.twitter && (
+                  <a href={`https://x.com/${socials.twitter}`} target="_blank" rel="noopener noreferrer"
+                    title={`@${socials.twitter}`} className="text-sky-400 hover:text-sky-300 transition-colors">
+                    <FaTwitter size={22} />
+                  </a>
+                )}
+                {socials.facebook && (
+                  <a href={`https://facebook.com/${socials.facebook}`} target="_blank" rel="noopener noreferrer"
+                    title={`/${socials.facebook}`} className="text-blue-400 hover:text-blue-300 transition-colors">
+                    <FaFacebook size={22} />
+                  </a>
+                )}
+                {!Object.values(socials).some(Boolean) && (
+                  <p className="text-sm text-[#4a6a82] italic">{isOwnProfile ? 'Add your socials...' : 'No socials yet.'}</p>
+                )}
               </div>
             )}
           </div>

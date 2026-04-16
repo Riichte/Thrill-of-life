@@ -19,15 +19,13 @@ type Park = {
 }
 
 export default function ParksClient({ parks }: { parks: Park[] }) {
-  const [filters, setFilters] = useState({ country: '', company: '', park_type: '' })
+  const [filters, setFilters] = useState({ country: '', park_type: '' })
 
   const countries = [...new Set(parks.map(p => p.country))].sort()
-  const companies = [...new Set(parks.map(p => p.company))].sort()
   const parkTypes = [...new Set(parks.map(p => p.park_type))].sort()
 
   const filteredParks = useMemo(() => parks.filter(park =>
     (!filters.country || park.country === filters.country) &&
-    (!filters.company || park.company === filters.company) &&
     (!filters.park_type || park.park_type === filters.park_type)
   ), [filters, parks])
 
@@ -50,14 +48,10 @@ export default function ParksClient({ parks }: { parks: Park[] }) {
         {/* Filters */}
         <div className="bg-gray-800 p-6 rounded-lg mb-8">
           <h2 className="text-xl font-semibold mb-4">Filters</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <select value={filters.country} onChange={e => setFilters(f => ({ ...f, country: e.target.value }))} className={selectClass}>
               <option value="">All Countries</option>
               {countries.map(c => <option key={c} value={c}>{c}</option>)}
-            </select>
-            <select value={filters.company} onChange={e => setFilters(f => ({ ...f, company: e.target.value }))} className={selectClass}>
-              <option value="">All Companies</option>
-              {companies.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
             <select value={filters.park_type} onChange={e => setFilters(f => ({ ...f, park_type: e.target.value }))} className={selectClass}>
               <option value="">All Park Types</option>
@@ -88,7 +82,6 @@ export default function ParksClient({ parks }: { parks: Park[] }) {
                   <p className="text-gray-300 text-sm mb-2">{park.description}</p>
                   <div className="flex flex-wrap gap-2 text-xs">
                     <span className="bg-blue-600 px-2 py-1 rounded">{park.country}</span>
-                    <span className="bg-green-600 px-2 py-1 rounded">{park.company}</span>
                     <span className="bg-purple-600 px-2 py-1 rounded">{park.park_type}</span>
                   </div>
                 </div>

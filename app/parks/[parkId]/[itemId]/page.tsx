@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import { getParkById, getCategoryById, getItemById, getItemImages, getItemVideos, getSimilarRides, getItemReviews, getItemCommunityScore } from '@/lib/queries'
 import ItemPageContent from './ItemPageContent'
 import { PhotoCredit } from '@/components/PhotoCredits'
+import { getImages } from '@/lib/imageDatabase';
 
 interface ItemPageProps {
   params: Promise<{
@@ -22,10 +23,15 @@ export default async function ItemPage({ params }: ItemPageProps) {
     : []
   const reviews = await getItemReviews(itemId)
   const communityScore = await getItemCommunityScore(itemId)
+  const savedImages = await getImages(undefined, itemId)
 
   if (!park || !item || !category) notFound()
 
-  const images = imageData.map(img => img.url)
+  const allImages = [
+    ...imageData.map(img => img.url),
+    ...savedImages.map(img => img.url)
+  ]
+  const images = allImages
   const credits: PhotoCredit[] = imageData
     .filter(img => img.attribution_author)
     .map(img => ({
@@ -49,3 +55,4 @@ export default async function ItemPage({ params }: ItemPageProps) {
     />
   )
 }
+

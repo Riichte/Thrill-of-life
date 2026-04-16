@@ -69,13 +69,14 @@ export default function ImageManager({ items: initialItems, categories }: { item
     setLoading(false);
   };
 
-  const handleSaveImage = async (image: ImageResult) => {
+  const handleSaveImage = async (image: ImageResult, idx: number) => {
     if (!selectedItem) {
       alert('Please select an item');
       return;
     }
+    const sortOrder = document.getElementById(`sort-${idx}`) as HTMLSelectElement;
     try {
-      await saveImageToItemAction(image, selectedItem);
+      await saveImageToItemAction(image, selectedItem, parseInt(sortOrder.value));
       alert('Image saved!');
       setResults([]);
       setQuery('');
@@ -187,11 +188,26 @@ export default function ImageManager({ items: initialItems, categories }: { item
                   <p className="text-xs text-[#8f98a0] line-clamp-1">{image.attribution}</p>
                   <p className="text-xs text-[#6a8a9a]">{image.source}</p>
                   <button
-                    onClick={() => handleSaveImage(image)}
+                    onClick={() => handleSaveImage(image, idx)}
                     className="mt-2 w-full px-2 py-1 bg-[#4c6b22] hover:bg-[#5a7a28] text-white text-xs rounded-sm transition-colors"
                   >
                     Save
                   </button>
+                </div>
+                <div className="text-xs text-[#6a8a9a] mb-2">
+                  <label className="block text-xs font-medium text-[#8f98a0] mb-1">Use as:</label>
+                  <select
+                    id={`sort-${idx}`}
+                    defaultValue="1"
+                    className="w-full bg-[#2a475e] border border-[#3d6a8a] rounded-sm px-2 py-1 text-xs text-[#c6d4df]"
+                  >
+                    <option value="0">Main/Logo</option>
+                    <option value="1">Image 1</option>
+                    <option value="2">Image 2</option>
+                    <option value="3">Image 3</option>
+                    <option value="4">Image 4</option>
+                    <option value="5">Image 5</option>
+                  </select>
                 </div>
               </div>
             ))}

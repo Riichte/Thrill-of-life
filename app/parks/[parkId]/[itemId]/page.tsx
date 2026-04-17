@@ -32,6 +32,9 @@ export default async function ItemPage({ params }: ItemPageProps) {
     ...savedImages
   ]
   const images = allImages
+  console.log('imageData:', imageData)
+  console.log('savedImages:', savedImages)
+  console.log('allImages:', allImages)
   const credits: PhotoCredit[] = imageData
     .filter(img => img.attribution_author)
     .map(img => ({

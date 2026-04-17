@@ -497,7 +497,7 @@ export default function ItemPageContent({ park, item, category, images, videos, 
             <SteamMediaCarousel
               key={item.id}
               slides={mediaSlides}
-              autoAdvanceMs={images.length > 1 ? 5000 : undefined}
+              autoAdvanceMs={mediaSlides.length > 1 ? 5000 : undefined}
             />
 
             {/* YouTube Videos */}
@@ -526,7 +526,7 @@ export default function ItemPageContent({ park, item, category, images, videos, 
           </div>
           <div className="lg:col-span-1">
             <SteamInfoPanel
-              headerImage={`/parks/${park.id}/roller-coasters/${item.id}/logo.png`}
+              headerImage={images?.find(img => img.sort_order === -1)?.url || `/parks/${park.id}/roller-coasters/${item.id}/logo.png`}
               headerImageAlt={item.name}
               score={overallScore}
               scoreLabel="Overall score"

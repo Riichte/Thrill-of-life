@@ -452,11 +452,13 @@ export default function ItemPageContent({ park, item, category, images, videos, 
     ? { positive: communityScore.positive, mixed: communityScore.mixed, negative: communityScore.negative }
     : { positive: 0, mixed: 0, negative: 0 }
 
-  const mediaSlides = images.map((src, i) => ({
-    src,
-    alt: item.name,
-    isVideo: Boolean(videos[i])
-  }))
+  const mediaSlides = images
+    ?.filter(img => img.sort_order === 0)
+    .map((src, i) => ({
+      src,
+      alt: item.name,
+      isVideo: Boolean(videos[i])
+    })) || []
 
   const specs = item.specs || {}
   const hasSpecs = Object.keys(specs).length > 0

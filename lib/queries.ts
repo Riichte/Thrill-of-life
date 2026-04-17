@@ -92,6 +92,7 @@ export async function getItemImages(itemId: string): Promise<{ url: string; attr
     .from('item_images')
     .select('url, attribution_author, attribution_url, license')
     .eq('item_id', itemId)
+    .eq('sort_order', 0)
     .order('sort_order')
   if (error) return []
   return data ?? []
@@ -207,10 +208,35 @@ export async function getParkImages(parkId: string): Promise<{ url: string; attr
   const { data, error } = await supabase
     .from('park_images')
     .select('url, attribution_author, attribution_url, license')
-    .eq('park_id', parkId)
+    .eq('parkId', parkId)
+    .eq('sort_order', 0)
     .order('sort_order')
   if (error) return []
   return data ?? []
+}
+
+export async function getItemLogo(itemId: string): Promise<string | null> {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('item_images')
+    .select('url')
+    .eq('item_id', itemId)
+    .eq('sort_order', -1)
+    .single()
+  if (error) return null
+  return data?.url ?? null
+}
+
+export async function getParkLogo(parkId: string): Promise<string | null> {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('park_images')
+    .select('url')
+    .eq('park_id', parkId)
+    .eq('sort_order', -1)
+    .single()
+  if (error) return null
+  return data?.url ?? null
 }
 
 // ─── Search ──────────────────────────────────────────────

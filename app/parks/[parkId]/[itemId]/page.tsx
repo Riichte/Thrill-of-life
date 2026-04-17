@@ -28,8 +28,8 @@ export default async function ItemPage({ params }: ItemPageProps) {
   if (!park || !item || !category) notFound()
 
   const allImages = [
-    ...imageData.map(img => img.url),
-    ...savedImages.map(img => img.url)
+    ...imageData,
+    ...savedImages
   ]
   const images = allImages
   const credits: PhotoCredit[] = imageData

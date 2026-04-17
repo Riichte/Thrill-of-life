@@ -192,7 +192,7 @@ export default function ItemPageContent({ park, item, category, images, videos, 
   park: any
   item: any
   category: any
-  images: string[]
+  images: any[]
   videos: string[]
   similarRides: any[]
   credits: PhotoCredit[]

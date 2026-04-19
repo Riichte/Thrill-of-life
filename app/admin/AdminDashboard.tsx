@@ -783,7 +783,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                 {/* ─── Image Manager Tab ─── */}
                 {tab === 'images-manager' && (
                     <section>
-                        <ImageManager items={items} categories={categories} />
+                        <ImageManager items={items} categories={categories} parks={parks} />
                     </section>
                 )}
 

@@ -27,7 +27,7 @@ interface Item {
   category_id: string;
 }
 
-export default function ImageManager({ items: initialItems, categories }: { items: Item[]; categories: any[] }) {
+export default function ImageManager({ items: initialItems, categories, parks }: { items: Item[]; categories: any[]; parks: any[] }) {
   const supabase = createClient();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<ImageResult[]>([]);
@@ -76,10 +76,12 @@ export default function ImageManager({ items: initialItems, categories }: { item
   }
   const typeSelect = document.getElementById(`sort-${idx}`) as HTMLSelectElement;
   try {
-    await saveImageToItemAction(image, selectedItem, typeSelect.value);
+    if (selectedCategory.startsWith('park-')) {
+      await saveParkImageAction(image, selectedCategory.replace('park-', ''), typeSelect.value);
+    } else {
+      await saveImageToItemAction(image, selectedItem, typeSelect.value);
+    }
     alert('Image saved!');
-    setResults([]);
-    setQuery('');
     loadSavedImages();
   } catch (error) {
     alert('Failed to save image');
@@ -121,9 +123,16 @@ export default function ImageManager({ items: initialItems, categories }: { item
               className="w-full bg-[#2a475e] border border-[#3d6a8a] rounded-sm px-3 py-2 text-sm text-[#c6d4df] focus:outline-none focus:border-[#66c0f4]"
             >
               <option value="">-- Select Category --</option>
-              {categories.map(cat => (
-                <option key={cat.id} value={cat.id}>{cat.name}</option>
-              ))}
+              <optgroup label="Categories">
+                {categories.map(cat => (
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                ))}
+              </optgroup>
+              <optgroup label="Parks">
+                {parks.map(park => (
+                  <option key={`park-${park.id}`} value={`park-${park.id}`}>{park.name}</option>
+                ))}
+              </optgroup>
             </select>
           </div>
 

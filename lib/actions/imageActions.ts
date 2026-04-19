@@ -43,3 +43,20 @@ export async function fetchSavedImages() {
   if (error) throw error
   return data || []
 }
+
+export async function saveParkImageAction(image: any, parkId: string, sortOrder: string = '0') {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('park_images')
+    .insert({
+      park_id: parkId,
+      url: image.url.startsWith('http') ? image.url : `https://${image.url.replace(/^\/+/, '')}`,
+      attribution_author: image.attribution,
+      license: image.license,
+      sort_order: sortOrder === 'logo' ? -1 : 0,
+    })
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}

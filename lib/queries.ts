@@ -92,7 +92,6 @@ export async function getItemImages(itemId: string): Promise<{ url: string; attr
     .from('item_images')
     .select('url, attribution_author, attribution_url, license')
     .eq('item_id', itemId)
-    .eq('sort_order', 0)
     .order('sort_order')
   if (error) return []
   return data ?? []

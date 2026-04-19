@@ -453,7 +453,7 @@ export default function ItemPageContent({ park, item, category, images, videos, 
     : { positive: 0, mixed: 0, negative: 0 }
 
  const mediaSlides = images
-  ?.filter(img => img.sort_order === 0)
+  ?.filter(img => img.sort_order !== -1)
   .map((img, i) => ({
     src: img.url,
     alt: item.name,

@@ -51,7 +51,7 @@ export function RecentReviewsCarousel({ reviews }: { reviews: RecentReview[] }) 
 
   return (
     <section className="mb-14">
-  <div className="mb-4 flex items-end gap-4">
+      <div className="mb-4 flex items-end gap-4">
         <div>
           <h2 className="text-xl font-bold text-white">Recently Reviewed</h2>
           <p className="text-sm text-gray-400">Latest community reviews</p>
@@ -83,9 +83,8 @@ export function RecentReviewsCarousel({ reviews }: { reviews: RecentReview[] }) 
           <Link
             key={r.id}
             href={`/parks/${r.parkId}/${r.itemId}`}
-            className={`flex-shrink-0 w-56 rounded-lg border bg-[#16202d] p-4 hover:bg-[#1b2838] transition group ${
-              r.score !== null ? scoreBorder(r.score) : 'border-white/10'
-            }`}
+            className={`flex-shrink-0 w-56 rounded-lg border bg-[#16202d] p-4 hover:bg-[#1b2838] transition group ${r.score !== null ? scoreBorder(r.score) : 'border-white/10'
+              }`}
           >
             {/* Score */}
             <div className="mb-3 flex items-center justify-between">
@@ -110,13 +109,12 @@ export function RecentReviewsCarousel({ reviews }: { reviews: RecentReview[] }) 
 
             {/* Reviewer */}
             <div className="mt-3 border-t border-white/10 pt-2" suppressHydrationWarning>
-              <Link
-                href={`/users/${r.userId}`}
-                onClick={e => e.stopPropagation()}
-                className="text-xs text-[#66c0f4] hover:underline"
+              <span
+                onClick={e => { e.preventDefault(); e.stopPropagation(); window.location.href = `/users/${r.userId}` }}
+                className="text-xs text-[#66c0f4] hover:underline cursor-pointer"
               >
                 {r.username}
-              </Link>
+              </span>
             </div>
           </Link>
         ))}

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { searchImages } from '@/lib/imageSearch';
-import { saveImageToItemAction, deleteImageAction, fetchSavedImages } from '@/lib/actions/imageActions';
+import { saveImageToItemAction, deleteImageAction, fetchSavedImages, saveParkImageAction } from '@/lib/actions/imageActions';
 import { createClient } from '@/lib/supabase/client';
 
 interface ImageResult {

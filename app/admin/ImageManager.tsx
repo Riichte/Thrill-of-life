@@ -76,8 +76,8 @@ export default function ImageManager({ items: initialItems, categories, parks }:
   }
   const typeSelect = document.getElementById(`sort-${idx}`) as HTMLSelectElement;
   try {
-    if (selectedCategory.startsWith('park-')) {
-      await saveParkImageAction(image, selectedCategory.replace('park-', ''), typeSelect.value);
+    if (selectedItem.startsWith('park-')) {
+      await saveParkImageAction(image, selectedItem.replace('park-', ''), typeSelect.value);
     } else {
       await saveImageToItemAction(image, selectedItem, typeSelect.value);
     }
@@ -123,36 +123,44 @@ export default function ImageManager({ items: initialItems, categories, parks }:
               className="w-full bg-[#2a475e] border border-[#3d6a8a] rounded-sm px-3 py-2 text-sm text-[#c6d4df] focus:outline-none focus:border-[#66c0f4]"
             >
               <option value="">-- Select Category --</option>
-              <optgroup label="Categories">
-                {categories.map(cat => (
-                  <option key={cat.id} value={cat.id}>{cat.name}</option>
-                ))}
-              </optgroup>
-              <optgroup label="Parks">
-                {parks.map(park => (
-                  <option key={`park-${park.id}`} value={`park-${park.id}`}>{park.name}</option>
-                ))}
-              </optgroup>
+              {categories.map(cat => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
+              ))}
+              <option value="parks"> Park Images</option>
             </select>
           </div>
 
           {/* Item Dropdown */}
-          {selectedCategory && (
+          {selectedCategory && selectedCategory !== 'parks' && (
             <div>
               <label className="block text-xs font-medium uppercase tracking-wider text-[#8f98a0] mb-2">
                 Item *
               </label>
               <select
                 value={selectedItem}
-                onChange={(e) => {
-                  setSelectedItem(e.target.value);
-                  setResults([]);
-                }}
+                onChange={(e) => { setSelectedItem(e.target.value); setResults([]) }}
                 className="w-full bg-[#2a475e] border border-[#3d6a8a] rounded-sm px-3 py-2 text-sm text-[#c6d4df] focus:outline-none focus:border-[#66c0f4]"
               >
                 <option value="">-- Select Item --</option>
                 {filteredItems.map(item => (
                   <option key={item.id} value={item.id}>{item.name}</option>
+                ))}
+              </select>
+            </div>
+          )}
+          {selectedCategory === 'parks' && (
+            <div>
+              <label className="block text-xs font-medium uppercase tracking-wider text-[#8f98a0] mb-2">
+                Park *
+              </label>
+              <select
+                value={selectedItem}
+                onChange={(e) => { setSelectedItem(e.target.value); setResults([]) }}
+                className="w-full bg-[#2a475e] border border-[#3d6a8a] rounded-sm px-3 py-2 text-sm text-[#c6d4df] focus:outline-none focus:border-[#66c0f4]"
+              >
+                <option value="">-- Select Park --</option>
+                {parks.map(park => (
+                  <option key={park.id} value={`park-${park.id}`}>{park.name}</option>
                 ))}
               </select>
             </div>

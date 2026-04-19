@@ -109,7 +109,7 @@ export function RecentReviewsCarousel({ reviews }: { reviews: RecentReview[] }) 
             <p className="mt-1 text-xs text-gray-400 line-clamp-1">{r.parkName}</p>
 
             {/* Reviewer */}
-            <div className="mt-3 border-t border-white/10 pt-2">
+            <div className="mt-3 border-t border-white/10 pt-2" suppressHydrationWarning>
               <Link
                 href={`/users/${r.userId}`}
                 onClick={e => e.stopPropagation()}

@@ -9,7 +9,7 @@ export async function saveImageToItemAction(image: any, itemId: string, imageTyp
     .from('item_images')
     .insert({
       item_id: itemId,
-      url: image.url,
+      url: image.url.startsWith('http') ? image.url : `https://${image.url.replace(/^\/+/, '')}`,
       attribution_author: image.attribution,
       license: image.license,
       sort_order: imageType === 'logo' ? -1 : 0,

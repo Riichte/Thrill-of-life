@@ -12,7 +12,7 @@ export async function saveImageToItemAction(image: any, itemId: string, imageTyp
       url: image.url.startsWith('http') ? image.url : `https://${image.url.replace(/^\/+/, '')}`,
       attribution_author: image.attribution,
       license: image.license,
-      sort_order: imageType === 'logo' ? -1 : 0,
+      sort_order: imageType === 'logo' ? -1 : parseInt(imageType),
     })
     .select()
     .single()
@@ -60,7 +60,7 @@ export async function saveParkImageAction(image: any, parkId: string, sortOrder:
       url: image.url.startsWith('http') ? image.url : `https://${image.url.replace(/^\/+/, '')}`,
       attribution_author: image.attribution,
       license: image.license,
-      sort_order: sortOrder === 'logo' ? -1 : 0,
+      sort_order: sortOrder === 'logo' ? -1 : parseInt(sortOrder),
     })
     .select()
     .single()

@@ -208,7 +208,6 @@ export async function getParkImages(parkId: string): Promise<{ url: string; attr
     .from('park_images')
     .select('url, attribution_author, attribution_url, license')
     .eq('park_id', parkId)
-    .eq('sort_order', 0)
     .order('sort_order')
   if (error) return []
   return data ?? []

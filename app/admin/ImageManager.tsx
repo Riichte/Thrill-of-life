@@ -61,7 +61,7 @@ export default function ImageManager({ items: initialItems, categories, parks }:
     }
     setLoading(true);
     try {
-      const images = await searchImages(query, 10);
+      const images = await searchImages(query, 30);
       setResults(images);
     } catch (error) {
       alert('Search failed');

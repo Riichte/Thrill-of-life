@@ -50,7 +50,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
     const [parkImageLicense, setParkImageLicense] = useState('CC BY 4.0')
     const [parkImages, setParkImages] = useState<{ id: string; url: string; sort_order: number; attribution_author?: string; attribution_url?: string; license?: string }[]>([])
     const [editingImage, setEditingImage] = useState<{ id: string; type: 'item' | 'park' } | null>(null)
-    const [editFormData, setEditFormData] = useState({ author: '', sourceUrl: '', license: 'CC BY 4.0' })
+    const [editFormData, setEditFormData] = useState({ author: '', sourceUrl: '', license: 'CC BY 4.0', sortOrder: 0 })
     const extractYouTubeId = (url: string): string | null => {
         const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
         return match ? match[1] : null
@@ -194,7 +194,8 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
         setEditFormData({
             author: image.attribution_author || '',
             sourceUrl: image.attribution_url || '',
-            license: image.license || 'CC BY 4.0'
+            license: image.license || 'CC BY 4.0',
+            sortOrder: image.sort_order ?? 0
         })
     }
 
@@ -206,7 +207,8 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
         const { error } = await supabase.from(table).update({
             attribution_author: editFormData.author.trim() || null,
             attribution_url: editFormData.sourceUrl.trim() || null,
-            license: editFormData.license
+            license: editFormData.license,
+            sort_order: editFormData.sortOrder
         }).eq('id', editingImage.id)
 
         if (error) notify(error.message, true)
@@ -857,6 +859,19 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                         <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6 max-w-md w-full">
                             <h2 className="text-lg font-semibold text-[#c6d4df] mb-4">Edit Image Info</h2>
                             <div className="space-y-4">
+                                <div>
+                                    <label className={labelClass}>Use As</label>
+                                    <select className={inputClass} value={editFormData.sortOrder} onChange={e => setEditFormData({ ...editFormData, sortOrder: parseInt(e.target.value) })}>
+                                        <option value="-1">Logo</option>
+                                        <option value="0">Main</option>
+                                        <option value="1">Image 01</option>
+                                        <option value="2">Image 02</option>
+                                        <option value="3">Image 03</option>
+                                        <option value="4">Image 04</option>
+                                        <option value="5">Image 05</option>
+                                        <option value="6">Image 06</option>
+                                    </select>
+                                </div>
                                 <div>
                                     <label className={labelClass}>Author / Channel</label>
                                     <input

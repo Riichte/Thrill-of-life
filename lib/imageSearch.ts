@@ -69,7 +69,7 @@ export async function searchUnsplash(query: string, limit: number = 5): Promise<
 }
 
 export async function searchImages(query: string, limit: number = 5): Promise<ImageResult[]> {
-  const wikimediaResults = await searchWikimedia(query, Math.ceil(limit / 2));
+  const wikimediaResults = await searchWikimedia(query, Math.ceil(limit / 1));
   const unsplashResults = await searchUnsplash(query, Math.floor(limit / 2));
   return [...wikimediaResults, ...unsplashResults];
 }

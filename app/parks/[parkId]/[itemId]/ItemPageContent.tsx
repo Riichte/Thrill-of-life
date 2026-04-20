@@ -528,7 +528,7 @@ console.log('Images data:', images)
           </div>
           <div className="lg:col-span-1">
             <SteamInfoPanel
-              headerImage={images?.find(img => img.sort_order === -1)?.url || `/parks/${park.id}/roller-coasters/${item.id}/logo.png`}
+              headerImage={images?.find(img => img.sort_order === -1)?.url || null}
               headerImageAlt={item.name}
               score={overallScore}
               scoreLabel="Overall score"

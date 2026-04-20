@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 
 export async function saveImageToItemAction(image: any, itemId: string, imageType: string = 'main') {
   const supabase = await createClient()
-  
+
   const { data, error } = await supabase
     .from('item_images')
     .insert({
@@ -46,6 +46,13 @@ export async function fetchSavedImages() {
 
 export async function saveParkImageAction(image: any, parkId: string, sortOrder: string = '0') {
   const supabase = await createClient()
+  const url = image.url.startsWith('http') ? image.url : `https://${image.url.replace(/^\/+/, '')}`
+
+  // If main image (sort_order 0), also update cover_image_url on the park
+  if (sortOrder === '0') {
+    await supabase.from('parks').update({ cover_image_url: url }).eq('id', parkId)
+  }
+
   const { data, error } = await supabase
     .from('park_images')
     .insert({

@@ -696,12 +696,15 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                     {itemImages.length === 0 && <p className="text-sm text-[#8f98a0]">No images yet.</p>}
                                     {itemImages.map(img => (
                                         <div key={img.id} className="flex items-center justify-between gap-3 p-3 bg-[#2a475e]/30 rounded-sm">
-                                            <div className="min-w-0">
-                                                <p className="text-xs text-[#8f98a0]">#{img.sort_order}</p>
-                                                <p className="text-xs text-[#c6d4df] truncate">{img.url}</p>
-                                                {img.attribution_author && (
-                                                    <p className="text-xs text-[#8f98a0] truncate">📷 {img.attribution_author} · {img.license}</p>
-                                                )}
+                                            <div className="flex items-center gap-3 min-w-0">
+                                                <img src={img.url} alt="" className="w-16 h-10 object-cover rounded-sm flex-shrink-0 bg-[#0e1419]" onError={e => { e.currentTarget.style.display = 'none' }} />
+                                                <div className="min-w-0">
+                                                    <p className="text-xs text-[#8f98a0]">#{img.sort_order}</p>
+                                                    <p className="text-xs text-[#c6d4df] truncate">{img.url}</p>
+                                                    {img.attribution_author && (
+                                                        <p className="text-xs text-[#8f98a0] truncate">📷 {img.attribution_author} · {img.license}</p>
+                                                    )}
+                                                </div>
                                             </div>
                                             <div className="flex gap-2 flex-shrink-0">
                                                 <button onClick={() => handleEditImage(img, 'item')} className={btnEdit}>Edit</button>

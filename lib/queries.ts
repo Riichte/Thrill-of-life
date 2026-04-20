@@ -90,7 +90,7 @@ export async function getItemImages(itemId: string): Promise<{ url: string; attr
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('item_images')
-    .select('url, attribution_author, attribution_url, license')
+    .select('url, attribution_author, attribution_url, license, sort_order')
     .eq('item_id', itemId)
     .order('sort_order')
   if (error) return []
@@ -206,7 +206,7 @@ export async function getParkImages(parkId: string): Promise<{ url: string; attr
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('park_images')
-    .select('url, attribution_author, attribution_url, license')
+    .select('url, attribution_author, attribution_url, license, sort_order')
     .eq('park_id', parkId)
     .order('sort_order')
   if (error) return []

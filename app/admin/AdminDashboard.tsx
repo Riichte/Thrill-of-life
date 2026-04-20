@@ -648,8 +648,17 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                             <input className={inputClass} value={imageUrl} onChange={e => setImageUrl(e.target.value)} placeholder="/parks/europa-park/roller-coasters/wodan/01.jpg" />
                                         </div>
                                         <div>
-                                            <label className={labelClass}>Sort Order</label>
-                                            <input type="number" className={inputClass} value={imageOrder} onChange={e => setImageOrder(parseInt(e.target.value))} />
+                                            <label className={labelClass}>Use As</label>
+                                            <select className={inputClass} value={parkImageOrder} onChange={e => setParkImageOrder(parseInt(e.target.value))}>
+                                                <option value="-1">Logo</option>
+                                                <option value="0">Main</option>
+                                                <option value="1">Image 01</option>
+                                                <option value="2">Image 02</option>
+                                                <option value="3">Image 03</option>
+                                                <option value="4">Image 04</option>
+                                                <option value="5">Image 05</option>
+                                                <option value="6">Image 06</option>
+                                            </select>
                                         </div>
                                         <div>
                                             <label className={labelClass}>Attribution — Author / Channel</label>

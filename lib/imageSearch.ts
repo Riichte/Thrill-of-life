@@ -10,7 +10,7 @@ export interface ImageResult {
 export async function searchWikimedia(query: string, limit: number = 5): Promise<ImageResult[]> {
   try {
     const response = await fetch(
-      `https://commons.wikimedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&srnamespace=6&srlimit=${limit}&format=json&origin=*`
+      `https://commons.wikimedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}+filetype:bitmap&srnamespace=6&srlimit=${limit}&format=json&origin=*`
     );
     const data = await response.json();
 

@@ -84,7 +84,7 @@ export function SteamMediaCarousel({ slides, autoAdvanceMs, className = '' }: St
           src={current.src}
           alt={current.alt ?? 'Media'}
           fill
-          className="object-cover"
+          className="object-cover animate-fade-slide"
           priority={safeIndex === 0}
           quality={75}
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 85vw"
@@ -167,7 +167,7 @@ export function SteamMediaCarousel({ slides, autoAdvanceMs, className = '' }: St
                   src={slide.src}
                   alt={slide.alt ?? ''}
                   fill
-                  className="object-cover"
+                  className="object-cover animate-fade-slide"
                   quality={60}
                   sizes="116px"
                   loading="lazy"

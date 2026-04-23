@@ -49,7 +49,6 @@ export default async function Home() {
       href: `/parks/${i.park_id}/${i.id}`,
       image: i.item_images[0].url,
       title: i.name,
-      subtitle: 'Europa Park',
       attribution: i.item_images[0].attribution_author ?? null,
       license: i.item_images[0].license ?? null,
     }))
@@ -61,7 +60,6 @@ export default async function Home() {
       href: `/parks/${i.park_id}/${i.id}`,
       image: i.item_images[0].url,
       title: i.name,
-      subtitle: 'Europa Park',
       attribution: i.item_images[0].attribution_author ?? null,
       license: i.item_images[0].license ?? null,
     }))
@@ -101,29 +99,29 @@ export default async function Home() {
 
         <HomeMarqueeRow
           title="Roller coasters"
-          subtitle="Europa Park"
+          subtitle="From all parks"
           items={homeRollerCoasterCards}
           durationSec={150}
-          viewAllHref="/parks/europa-park/category/roller-coasters"
-          viewAllLabel="Roller coasters"
+          viewAllHref="/category/roller-coasters"
+          viewAllLabel="All roller coasters"
         />
 
         <HomeMarqueeRow
           title="Water rides"
-          subtitle="Europa Park"
+          subtitle="From all parks"
           items={homeWaterRideCards}
           durationSec={85}
-          viewAllHref="/parks/europa-park/category/water-rides"
-          viewAllLabel="Water rides"
+          viewAllHref="/category/water-rides"
+          viewAllLabel="All water rides"
         />
 
         <HomeMarqueeRow
           title="More highlights"
-          subtitle="Dark rides, flat rides, stay & transport"
+          subtitle="Dark rides, flat rides, stays & transport"
           items={homeMoreHighlightCards}
           durationSec={95}
-          viewAllHref="/parks/europa-park"
-          viewAllLabel="Europa Park"
+          viewAllHref="/parks"
+          viewAllLabel="All parks"
         />
 
 

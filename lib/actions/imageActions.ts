@@ -1,6 +1,6 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient as createClient } from '@/lib/supabase/admin'
 
 export async function saveImageToItemAction(image: any, itemId: string, imageType: string = 'main') {
   const supabase = await createClient()

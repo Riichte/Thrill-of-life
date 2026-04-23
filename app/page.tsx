@@ -90,7 +90,6 @@ export default async function Home() {
       <div className="container mx-auto px-4 py-10 md:py-14">
         <HomeMarqueeRow
           title="Theme parks"
-          subtitle="Featured destinations"
           items={homeParkCards}
           durationSec={130}
           viewAllHref="/parks"
@@ -99,7 +98,6 @@ export default async function Home() {
 
         <HomeMarqueeRow
           title="Roller coasters"
-          subtitle="From all parks"
           items={homeRollerCoasterCards}
           durationSec={150}
           viewAllHref="/category/roller-coasters"
@@ -108,7 +106,6 @@ export default async function Home() {
 
         <HomeMarqueeRow
           title="Water rides"
-          subtitle="From all parks"
           items={homeWaterRideCards}
           durationSec={85}
           viewAllHref="/category/water-rides"
@@ -117,7 +114,6 @@ export default async function Home() {
 
         <HomeMarqueeRow
           title="More highlights"
-          subtitle="Dark rides, flat rides, stays & transport"
           items={homeMoreHighlightCards}
           durationSec={95}
           viewAllHref="/parks"

@@ -12,7 +12,7 @@ interface CategoryPageProps {
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { parkId, categoryId } = await params
-  
+
   const park = await getParkById(parkId)
   const category = await getCategoryById(categoryId)
   const items = await getItemsByCategory(parkId, categoryId)
@@ -54,14 +54,21 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                   {/* Image */}
                   <div className="relative w-full aspect-[16/9] bg-black overflow-hidden">
                     {item.item_images?.[0]?.url ? (
-                      <Image
-                        src={item.item_images[0].url}
-                        alt={item.name}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
-                        quality={75}
-                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      />
+                      <>
+                        <Image
+                          src={item.item_images[0].url}
+                          alt={item.name}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                          quality={75}
+                          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        />
+                        {item.item_images[0].attribution_author && (
+                          <div className="absolute bottom-0 left-0 right-0 bg-black/60 px-2 py-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <p className="text-[10px] text-white/70 truncate">📷 {item.item_images[0].attribution_author}</p>
+                          </div>
+                        )}
+                      </>
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#2a475e] to-[#1a2332]">
                         <span className="text-[#8f98a0]">No image</span>
@@ -74,7 +81,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                     <h3 className="text-lg font-semibold text-white group-hover:text-[#66c0f4] transition-colors mb-2">
                       {item.name}
                     </h3>
-                    
+
                     {item.description && (
                       <p className="text-sm text-zinc-400 line-clamp-2 mb-3">
                         {item.description}

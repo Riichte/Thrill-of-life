@@ -7,7 +7,7 @@ import { createClient } from '@/lib/supabase/server'
 
 export default async function Home() {
   const supabase = await createClient()
-  const { data: parks } = await supabase.from('parks').select('*').order('name')
+  const { data: parks } = await supabase.from('parks').select('*').limit(20)
   const recentReviews = await getRecentReviews(10)
 
   const { data: coasterItems } = await supabase

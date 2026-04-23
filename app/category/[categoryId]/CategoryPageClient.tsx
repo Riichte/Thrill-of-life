@@ -11,7 +11,7 @@ interface Item {
     category_id: string
     specs: any
     parks: { name: string } | null
-    item_images: { url: string }[]
+    item_images: { url: string; attribution_author?: string; license?: string }[]
 }
 
 interface Category {
@@ -102,13 +102,20 @@ export default function CategoryPageClient({
                                 href={`/parks/${item.park_id}/${item.category_id}/${item.id}`}
                                 className="group bg-[#1b2838] border border-[#2a475e] rounded-sm overflow-hidden hover:border-[#66c0f4] transition-colors"
                             >
-                                <div className="aspect-square overflow-hidden bg-[#0e1621]">
+                                <div className="relative aspect-square overflow-hidden bg-[#0e1621]">
                                     {image ? (
-                                        <img
-                                            src={image}
-                                            alt={item.name}
-                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                        />
+                                        <>
+                                            <img
+                                                src={image}
+                                                alt={item.name}
+                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                            />
+                                            {item.item_images?.[0]?.attribution_author && (
+                                                <div className="absolute bottom-0 left-0 right-0 bg-black/60 px-2 py-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <p className="text-[10px] text-white/70 truncate">📷 {item.item_images[0].attribution_author}</p>
+                                                </div>
+                                            )}
+                                        </>
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center text-[#4a6a82] text-xs">No image</div>
                                     )}

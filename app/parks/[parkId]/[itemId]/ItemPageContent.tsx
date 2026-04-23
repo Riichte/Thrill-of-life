@@ -499,7 +499,7 @@ console.log('Images data:', images)
             <SteamMediaCarousel
               key={item.id}
               slides={mediaSlides}
-              autoAdvanceMs={mediaSlides.length > 1 ? 5000 : undefined}
+              autoAdvanceMs={mediaSlides.length > 1 ? 8000 : undefined}
             />
 
             {/* YouTube Videos */}

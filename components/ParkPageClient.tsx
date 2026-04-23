@@ -291,7 +291,7 @@ export default function ParkPageClient({
 
         <div className="mb-12 grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8">
           <div className="lg:col-span-2">
-            <SteamMediaCarousel slides={mediaSlides} autoAdvanceMs={slides.length > 1 ? 5000 : undefined} />
+            <SteamMediaCarousel slides={mediaSlides} autoAdvanceMs={slides.length > 1 ? 8000 : undefined} />
           </div>
           <div className="lg:col-span-1">
             <SteamInfoPanel

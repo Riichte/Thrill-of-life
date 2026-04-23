@@ -79,16 +79,18 @@ export function SteamMediaCarousel({ slides, autoAdvanceMs, className = '' }: St
 
   return (
     <div className={`overflow-hidden rounded-sm bg-[#0e1621] ${className}`}>
-      <div className="relative aspect-video w-full bg-black">
-        <Image
-          src={current.src}
-          alt={current.alt ?? 'Media'}
-          fill
-          className="object-cover animate-fade-slide"
-          priority={safeIndex === 0}
-          quality={75}
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 85vw"
-        />
+      <div className="relative aspect-video w-full bg-black overflow-hidden">
+        <div key={current.src} className="absolute inset-0 animate-fade-slide">
+          <Image
+            src={current.src}
+            alt={current.alt ?? 'Media'}
+            fill
+            className="object-cover"
+            priority={safeIndex === 0}
+            quality={75}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 85vw"
+          />
+        </div>
 
         {n > 1 && (
           <>

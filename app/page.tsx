@@ -24,6 +24,27 @@ export default async function Home() {
     .eq('category_id', 'water-rides')
     .order('name')
 
+
+  const highlightCategories = ['dark-rides', 'flat-rides', 'hotels', 'transport']
+  const { data: highlightItems } = await supabase
+    .from('items')
+    .select('id, name, park_id, category_id, item_images(url, attribution_author, license)')
+    .eq('park_id', 'europa-park')
+    .in('category_id', highlightCategories)
+    .order('name')
+
+  const homeMoreHighlightCards: HomeMarqueeCard[] = (highlightItems ?? [])
+    .filter(i => i.item_images?.[0]?.url)
+    .map(i => ({
+      id: i.id,
+      href: `/parks/${i.park_id}/${i.id}`,
+      image: i.item_images[0].url,
+      title: i.name,
+      subtitle: `${i.category_id.replace('-', ' ')} · Europa Park`,
+      attribution: i.item_images[0].attribution_author ?? null,
+      license: i.item_images[0].license ?? null,
+    }))
+
   const homeRollerCoasterCards: HomeMarqueeCard[] = (coasterItems ?? [])
     .filter(i => i.item_images?.[0]?.url)
     .map(i => ({
@@ -54,6 +75,9 @@ export default async function Home() {
     title: park.name,
     subtitle: park.country
   }))
+
+
+
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">

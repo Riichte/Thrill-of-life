@@ -23,6 +23,7 @@ type SteamMediaCarouselProps = {
 
 export function SteamMediaCarousel({ slides, autoAdvanceMs, className = '' }: SteamMediaCarouselProps) {
   const [index, setIndex] = useState(0)
+  const [visible, setVisible] = useState(true)
   const stripRef = useRef<HTMLDivElement>(null)
 
   const n = slides.length
@@ -49,7 +50,11 @@ export function SteamMediaCarousel({ slides, autoAdvanceMs, className = '' }: St
   useEffect(() => {
     if (!autoAdvanceMs || n <= 1) return
     const t = setInterval(() => {
-      setIndex((prev) => (prev + 1) % n)
+      setVisible(false)
+      setTimeout(() => {
+        setIndex((prev) => (prev + 1) % n)
+        setVisible(true)
+      }, 300)
     }, autoAdvanceMs)
     return () => clearInterval(t)
   }, [autoAdvanceMs, n, resetTimer])
@@ -57,7 +62,11 @@ export function SteamMediaCarousel({ slides, autoAdvanceMs, className = '' }: St
   const go = useCallback(
     (delta: number) => {
       if (!n) return
-      setIndex((prev) => (prev + delta + n) % n)
+      setVisible(false)
+      setTimeout(() => {
+        setIndex((prev) => (prev + delta + n) % n)
+        setVisible(true)
+      }, 300)
       setResetTimer(prev => prev + 1)
     },
     [n]
@@ -80,7 +89,7 @@ export function SteamMediaCarousel({ slides, autoAdvanceMs, className = '' }: St
   return (
     <div className={`overflow-hidden rounded-sm bg-[#0e1621] ${className}`}>
       <div className="relative aspect-video w-full bg-black overflow-hidden">
-        <div key={current.src} className="absolute inset-0 animate-fade-slide">
+        <div className="absolute inset-0" style={{ opacity: visible ? 1 : 0, transform: visible ? 'translateX(0)' : 'translateX(30px)', transition: 'opacity 0.3s ease, transform 0.3s ease' }}>
           <Image
             src={current.src}
             alt={current.alt ?? 'Media'}

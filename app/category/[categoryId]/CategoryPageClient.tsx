@@ -102,23 +102,17 @@ export default function CategoryPageClient({
                                 href={`/parks/${item.park_id}/${item.category_id}/${item.id}`}
                                 className="group bg-[#1b2838] border border-[#2a475e] rounded-sm overflow-hidden hover:border-[#66c0f4] transition-colors"
                             >
-                                <div className="relative aspect-square overflow-hidden bg-[#0e1621]">
+                                <div className="aspect-square overflow-hidden bg-[#0e1621]">
                                     {image ? (
-                                        <>
-                                            <img
-                                                src={image}
-                                                alt={item.name}
-                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                            />
-                                            {item.item_images?.[0]?.attribution_author && (
-                                                <div className="absolute bottom-0 left-0 right-0 bg-black/60 px-2 py-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                    <p className="text-[10px] text-white/70 truncate">📷 {item.item_images[0].attribution_author}</p>
-                                                </div>
-                                            )}
-                                        </>
+                                        <img
+                                            src={image}
+                                            alt={item.name}
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                        />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center text-[#4a6a82] text-xs">No image</div>
                                     )}
+
                                 </div>
                                 <div className="p-3">
                                     <p className="text-sm font-semibold text-[#c6d4df] group-hover:text-[#66c0f4] transition-colors truncate">{item.name}</p>

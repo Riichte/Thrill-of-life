@@ -54,21 +54,14 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                   {/* Image */}
                   <div className="relative w-full aspect-[16/9] bg-black overflow-hidden">
                     {item.item_images?.[0]?.url ? (
-                      <>
-                        <Image
-                          src={item.item_images[0].url}
-                          alt={item.name}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-300"
-                          quality={75}
-                          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        />
-                        {item.item_images[0].attribution_author && (
-                          <div className="absolute bottom-0 left-0 right-0 bg-black/60 px-2 py-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <p className="text-[10px] text-white/70 truncate">📷 {item.item_images[0].attribution_author}</p>
-                          </div>
-                        )}
-                      </>
+                      <Image
+                        src={item.item_images[0].url}
+                        alt={item.name}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        quality={75}
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#2a475e] to-[#1a2332]">
                         <span className="text-[#8f98a0]">No image</span>

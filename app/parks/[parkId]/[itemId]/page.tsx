@@ -10,6 +10,15 @@ interface ItemPageProps {
   }>
 }
 
+export async function generateMetadata({ params }: { params: Promise<{ parkId: string; itemId: string }> }) {
+  const { parkId, itemId } = await params
+  const item = await getItemById(parkId, itemId)
+  return {
+    title: item ? `${item.name} — Thrill of Life` : 'Ride — Thrill of Life',
+    description: item?.description ?? 'Ride reviews and ratings.',
+  }
+}
+
 export default async function ItemPage({ params }: ItemPageProps) {
   const { parkId, itemId } = await params
   const park = await getParkById(parkId)
@@ -22,7 +31,7 @@ export default async function ItemPage({ params }: ItemPageProps) {
     : []
   const reviews = await getItemReviews(itemId)
   const communityScore = await getItemCommunityScore(itemId)
-  
+
   if (!park || !item || !category) notFound()
 
   const images = imageData

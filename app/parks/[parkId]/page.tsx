@@ -4,6 +4,15 @@ import { getParkById, getItemsByPark, getAllCategories, getItemImages, getIsFoll
 import ParkPageClient from '@/components/ParkPageClient'
 import { PhotoCredit } from '@/components/PhotoCredits'
 
+export async function generateMetadata({ params }: { params: Promise<{ parkId: string }> }) {
+  const { parkId } = await params
+  const park = await getParkById(parkId)
+  return {
+    title: park ? `${park.name} — Thrill of Life` : 'Park — Thrill of Life',
+    description: park?.description ?? 'Theme park reviews and ratings.',
+  }
+}
+
 export default async function ParkPage({ params }: { params: Promise<{ parkId: string }> }) {
   const { parkId } = await params
   const supabase = await createClient()

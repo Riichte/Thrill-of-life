@@ -20,9 +20,13 @@ const logoFont = Great_Vibes({
 });
 
 export const metadata: Metadata = {
-  title: "Thrill of Life",
-  description: "Thrill of Life - theme park ride reviews and ratings",
-};
+  title: 'Thrill of Life',
+  description: 'Browse and rate theme parks, roller coasters, and rides.',
+  openGraph: {
+    siteName: 'Thrill of Life',
+    type: 'website',
+  },
+}
 
 export default function RootLayout({
   children,
@@ -31,9 +35,9 @@ export default function RootLayout({
 }>) {
   return (
     <html
-        lang="en"
-        className={`${geistSans.variable} ${geistMono.variable} ${logoFont.variable} h-full antialiased`}
-      >
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable} ${logoFont.variable} h-full antialiased`}
+    >
       <body className="min-h-full flex flex-col">
         <Navbar />
         {children}

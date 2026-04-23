@@ -23,7 +23,6 @@ type SteamMediaCarouselProps = {
 
 export function SteamMediaCarousel({ slides, autoAdvanceMs, className = '' }: SteamMediaCarouselProps) {
   const [index, setIndex] = useState(0)
-  const [visible, setVisible] = useState(true)
   const stripRef = useRef<HTMLDivElement>(null)
 
   const n = slides.length
@@ -50,10 +49,8 @@ export function SteamMediaCarousel({ slides, autoAdvanceMs, className = '' }: St
   useEffect(() => {
     if (!autoAdvanceMs || n <= 1) return
     const t = setInterval(() => {
-      setVisible(false)
       setTimeout(() => {
         setIndex((prev) => (prev + 1) % n)
-        setVisible(true)
       }, 300)
     }, autoAdvanceMs)
     return () => clearInterval(t)
@@ -62,11 +59,7 @@ export function SteamMediaCarousel({ slides, autoAdvanceMs, className = '' }: St
   const go = useCallback(
     (delta: number) => {
       if (!n) return
-      setVisible(false)
-      setTimeout(() => {
-        setIndex((prev) => (prev + delta + n) % n)
-        setVisible(true)
-      }, 300)
+      setIndex((prev) => (prev + delta + n) % n)
       setResetTimer(prev => prev + 1)
     },
     [n]
@@ -89,17 +82,28 @@ export function SteamMediaCarousel({ slides, autoAdvanceMs, className = '' }: St
   return (
     <div className={`overflow-hidden rounded-sm bg-[#0e1621] ${className}`}>
       <div className="relative aspect-video w-full bg-black overflow-hidden">
-        <div className="absolute inset-0" style={{ opacity: visible ? 1 : 0, transform: visible ? 'translateX(0)' : 'translateX(30px)', transition: 'opacity 0.3s ease, transform 0.3s ease' }}>
-          <Image
-            src={current.src}
-            alt={current.alt ?? 'Media'}
-            fill
-            className="object-cover"
-            priority={safeIndex === 0}
-            quality={75}
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 85vw"
-          />
-        </div>
+
+        {slides.map((slide, i) => (
+          <div
+            key={slide.src}
+            className="absolute inset-0"
+            style={{
+              opacity: i === safeIndex ? 1 : 0,
+              transition: 'opacity 0.6s ease',
+              zIndex: i === safeIndex ? 1 : 0,
+            }}
+          >
+            <Image
+              src={slide.src}
+              alt={slide.alt ?? 'Media'}
+              fill
+              className="object-cover"
+              priority={i === 0}
+              quality={75}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 85vw"
+            />
+          </div>
+        ))}
 
         {n > 1 && (
           <>

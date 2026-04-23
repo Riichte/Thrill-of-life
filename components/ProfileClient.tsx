@@ -31,6 +31,7 @@ interface Review {
 interface Favorite {
   id: string
   item_id: string
+  created_at: string
   items: {
     id: string
     name: string
@@ -53,21 +54,48 @@ interface ProfileClientProps {
   isFollowing?: boolean
 }
 
-const getScoreColor = (s: number) =>
-  s >= 80 ? '#10b981' : s >= 60 ? '#f59e0b' : s >= 40 ? '#f97316' : '#ef4444'
+type ActivityItem =
+  | { type: 'review'; date: string; review: Review }
+  | { type: 'favorite'; date: string; favorite: Favorite }
+
+function getScoreColor(s: number) {
+  return s >= 80 ? '#10b981' : s >= 60 ? '#f59e0b' : s >= 40 ? '#f97316' : '#ef4444'
+}
 
 function ScoreCircle({ score }: { score: number }) {
   return (
-    <svg className="w-12 h-12 flex-shrink-0" viewBox="0 0 100 100">
-      <circle cx="50" cy="50" r="45" fill="none" stroke="#2a475e" strokeWidth="2" />
-      <circle cx="50" cy="50" r="45" fill="none" stroke={getScoreColor(score)} strokeWidth="2"
+    <svg className="w-10 h-10 flex-shrink-0" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="45" fill="none" stroke="#2a475e" strokeWidth="4" />
+      <circle cx="50" cy="50" r="45" fill="none" stroke={getScoreColor(score)} strokeWidth="4"
         strokeDasharray={`${(score / 100) * 282.7}`} strokeDashoffset="0" strokeLinecap="round"
         style={{ transform: 'rotate(-90deg)', transformOrigin: '50% 50%' }} />
-      <text x="50" y="50" textAnchor="middle" dy="0.3em" fill="#c6d4df" fontWeight="bold" fontSize="28">
+      <text x="50" y="50" textAnchor="middle" dy="0.3em" fill="#c6d4df" fontWeight="bold" fontSize="30">
         {score}
       </text>
     </svg>
   )
+}
+
+function groupByDate(items: ActivityItem[]) {
+  const groups: Record<string, ActivityItem[]> = {}
+  const now = new Date()
+
+  items.forEach(item => {
+    const date = new Date(item.date)
+    const diffDays = Math.floor((now.getTime() - date.getTime()) / 86400000)
+    let label: string
+    if (diffDays === 0) label = 'Today'
+    else if (diffDays === 1) label = 'Yesterday'
+    else if (diffDays < 7) label = 'This week'
+    else if (diffDays < 30) label = 'This month'
+    else {
+      label = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+    }
+    if (!groups[label]) groups[label] = []
+    groups[label].push(item)
+  })
+
+  return groups
 }
 
 export default function ProfileClient({
@@ -82,9 +110,7 @@ export default function ProfileClient({
   isFollowing: initialIsFollowing = false,
 }: ProfileClientProps) {
   const supabase = createClient()
-  const [activeTab, setActiveTab] = useState<'reviews' | 'favorites'>('reviews')
-  const [reviewReactions, setReviewReactions] = useState<Record<string, { yes: number; no: number; funny: number; award: number }>>({})
-  const [totalReactions, setTotalReactions] = useState({ yes: 0, no: 0, funny: 0, award: 0 })
+  const [activeTab, setActiveTab] = useState<'activity' | 'reviews' | 'favorites'>('activity')
   const [isFollowing, setIsFollowing] = useState(initialIsFollowing)
   const [followerCountState, setFollowerCountState] = useState(followerCount)
   const [isEditingBio, setIsEditingBio] = useState(false)
@@ -109,35 +135,6 @@ export default function ProfileClient({
   const [parks, setParks] = useState<{ id: string; name: string }[]>([])
 
   useEffect(() => {
-    const loadReactions = async () => {
-      if (reviews.length === 0) return
-      const reviewIds = reviews.map(r => r.id)
-      const { data } = await supabase
-        .from('reactions')
-        .select('review_id, type')
-        .in('review_id', reviewIds)
-
-      if (data) {
-        const counts: Record<string, { yes: number; no: number; funny: number; award: number }> = {}
-        data.forEach(r => {
-          if (!counts[r.review_id]) counts[r.review_id] = { yes: 0, no: 0, funny: 0, award: 0 }
-          counts[r.review_id][r.type as 'yes' | 'no' | 'funny' | 'award']++
-        })
-        setReviewReactions(counts)
-        const totals = { yes: 0, no: 0, funny: 0, award: 0 }
-        Object.values(counts).forEach(r => {
-          totals.yes += r.yes
-          totals.no += r.no
-          totals.funny += r.funny
-          totals.award += r.award
-        })
-        setTotalReactions(totals)
-      }
-    }
-    loadReactions()
-  }, [reviews])
-
-  useEffect(() => {
     const loadParks = async () => {
       const { data } = await supabase.from('parks').select('id, name').order('name')
       if (data) setParks(data)
@@ -159,6 +156,14 @@ export default function ProfileClient({
       }, 0) / reviews.length
     )
     : null
+
+  // Build activity feed
+  const activityItems: ActivityItem[] = [
+    ...reviews.map(r => ({ type: 'review' as const, date: r.created_at, review: r })),
+    ...favorites.map(f => ({ type: 'favorite' as const, date: (f as any).created_at ?? '', favorite: f })),
+  ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+
+  const groupedActivity = groupByDate(activityItems)
 
   const handleFollow = async () => {
     if (!viewerId || !profile) return
@@ -182,6 +187,7 @@ export default function ProfileClient({
     setIsEditingBio(false)
     setSaving(false)
   }
+
   const handleSaveSocials = async () => {
     if (!profile) return
     setSaving(true)
@@ -211,139 +217,79 @@ export default function ProfileClient({
     setSaving(false)
   }
 
+  const hasSocials = Object.values(socials).some(Boolean)
+
   return (
     <div className="min-h-screen bg-gray-900 text-white">
-      {/* Header Banner */}
-      <div className="h-32 bg-gradient-to-r from-[#1b2838] via-[#2a475e] to-[#1b2838]" />
 
-      <div className="container mx-auto px-4 max-w-5xl">
-        {/* Profile Header */}
-        <div className="relative -mt-12 mb-8 flex flex-col sm:flex-row items-start sm:items-end gap-4">
+      {/* Banner */}
+      <div className="h-36 bg-gradient-to-r from-[#0e1621] via-[#2a475e] to-[#0e1621]" />
+
+      <div className="container mx-auto px-4 max-w-6xl">
+
+        {/* Profile header */}
+        <div className="relative -mt-14 mb-8 flex flex-col sm:flex-row items-start sm:items-end gap-4">
           {/* Avatar */}
-          <div className="w-24 h-24 rounded-full bg-[#2a475e] border-4 border-gray-900 flex items-center justify-center text-4xl font-bold text-[#66c0f4] flex-shrink-0">
+          <div className="w-28 h-28 rounded-full bg-gradient-to-br from-[#2a475e] to-[#1b2838] border-4 border-gray-900 flex items-center justify-center text-5xl font-bold text-[#66c0f4] flex-shrink-0 shadow-xl">
             {username?.[0]?.toUpperCase() ?? '?'}
           </div>
 
           <div className="flex-1 pb-2">
             {/* Username */}
-            <div className="flex items-center gap-2 mb-1">
-              {isEditingUsername ? (
-                <div className="flex items-center gap-2">
-                  <input
-                    value={usernameInput}
-                    onChange={e => setUsernameInput(e.target.value)}
-                    className="bg-[#2a475e] border border-[#3d6a8a] rounded-sm px-3 py-1 text-lg font-bold text-[#c6d4df] focus:outline-none focus:border-[#66c0f4]"
-                  />
-                  <button onClick={handleSaveUsername} disabled={saving}
-                    className="px-3 py-1 bg-[#4c6b22] hover:bg-[#5a7a28] text-white text-sm rounded-sm disabled:opacity-50">
-                    {saving ? 'Saving...' : 'Save'}
-                  </button>
-                  <button onClick={() => setIsEditingUsername(false)}
-                    className="px-3 py-1 text-[#8f98a0] hover:text-white text-sm">
-                    Cancel
-                  </button>
-                </div>
-              ) : (
-                <>
-                  <h1 className="text-2xl font-bold text-white">{username || 'Unknown'}</h1>
-                  {isOwnProfile && (
-                    <button onClick={() => setIsEditingUsername(true)}
-                      className="text-xs text-[#8f98a0] hover:text-[#66c0f4] transition-colors">
-                      ✏️ Edit
-                    </button>
-                  )}
-                </>
-              )}
-            </div>
-
-            <p className="text-sm text-[#8f98a0]">
-              Member since {joinedYear} · {reviews.length} reviews · {favorites.length} favorites
-            </p>
+            {isEditingUsername ? (
+              <div className="flex items-center gap-2 mb-1">
+                <input
+                  value={usernameInput}
+                  onChange={e => setUsernameInput(e.target.value)}
+                  className="bg-[#2a475e] border border-[#3d6a8a] rounded-sm px-3 py-1 text-xl font-bold text-[#c6d4df] focus:outline-none focus:border-[#66c0f4]"
+                />
+                <button onClick={handleSaveUsername} disabled={saving}
+                  className="px-3 py-1 bg-[#4c6b22] hover:bg-[#5a7a28] text-white text-sm rounded-sm disabled:opacity-50">
+                  {saving ? 'Saving...' : 'Save'}
+                </button>
+                <button onClick={() => setIsEditingUsername(false)}
+                  className="px-3 py-1 text-[#8f98a0] hover:text-white text-sm">Cancel</button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 mb-1">
+                <h1 className="text-3xl font-bold text-white">{username || 'Unknown'}</h1>
+                {isOwnProfile && (
+                  <button onClick={() => setIsEditingUsername(true)}
+                    className="text-xs text-[#8f98a0] hover:text-[#66c0f4] transition-colors">✏️</button>
+                )}
+              </div>
+            )}
+            <p className="text-sm text-[#8f98a0]">Member since {joinedYear}</p>
           </div>
 
-          {/* Follow / Edit buttons */}
-          <div className="flex gap-2 pb-2">
-            {!isOwnProfile && viewerId && (
+          {/* Follow button */}
+          {!isOwnProfile && viewerId && (
+            <div className="pb-2">
               <button
                 onClick={handleFollow}
-                className={`px-5 py-2 rounded-sm text-sm font-medium transition-colors ${isFollowing
+                className={`px-6 py-2 rounded-sm text-sm font-medium transition-colors ${isFollowing
                   ? 'bg-[#2a475e] hover:bg-red-900/40 text-[#c6d4df] hover:text-red-400 border border-[#3d6a8a]'
-                  : 'bg-[#4c6b22] hover:bg-[#5a7a28] text-white'
-                  }`}
+                  : 'bg-[#4c6b22] hover:bg-[#5a7a28] text-white'}`}
               >
                 {isFollowing ? 'Unfollow' : '+ Follow'}
               </button>
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+        {/* Main layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-12">
+
           {/* Sidebar */}
           <div className="lg:col-span-1 space-y-4">
 
-            {/* Stats */}
-            <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-4">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-[#8f98a0] mb-3">Stats</h3>
-              <div className="space-y-3">
-                <div className="flex justify-between text-sm">
-                  <span className="text-[#8f98a0]">Points</span>
-                  <span className="text-[#f59e0b] font-bold">🏅 {points}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-[#8f98a0]">Reviews</span>
-                  <span className="text-[#c6d4df] font-semibold">{reviews.length}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-[#8f98a0]">Avg Score Given</span>
-                  <span className="text-[#c6d4df] font-semibold">{avgScore ?? '—'}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-[#8f98a0]">Favorites</span>
-                  <span className="text-[#c6d4df] font-semibold">{favorites.length}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-[#8f98a0]">Followers</span>
-                  <span className="text-[#c6d4df] font-semibold">{followerCountState}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-[#8f98a0]">Following</span>
-                  <span className="text-[#c6d4df] font-semibold">{followingCount}</span>
-                </div>
-                {(totalReactions.yes + totalReactions.no + totalReactions.funny + totalReactions.award) > 0 && (
-                  <>
-                    <div className="border-t border-[#2a475e] pt-3 mt-1">
-                      <p className="text-xs font-semibold uppercase tracking-wider text-[#8f98a0] mb-2">Reactions Received</p>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-[#8f98a0]">👍 Helpful</span>
-                        <span className="text-[#c6d4df] font-semibold">{totalReactions.yes}</span>
-                      </div>
-                      <div className="flex justify-between text-sm mt-1">
-                        <span className="text-[#8f98a0]">👎 Unhelpful</span>
-                        <span className="text-[#c6d4df] font-semibold">{totalReactions.no}</span>
-                      </div>
-                      <div className="flex justify-between text-sm mt-1">
-                        <span className="text-[#8f98a0]">😄 Funny</span>
-                        <span className="text-[#c6d4df] font-semibold">{totalReactions.funny}</span>
-                      </div>
-                      <div className="flex justify-between text-sm mt-1">
-                        <span className="text-[#8f98a0]">🏆 Awards</span>
-                        <span className="text-amber-400 font-semibold">{totalReactions.award}</span>
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-
             {/* Bio */}
             <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-4">
-              <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center justify-between mb-2">
                 <h3 className="text-xs font-semibold uppercase tracking-wider text-[#8f98a0]">Bio</h3>
                 {isOwnProfile && !isEditingBio && (
                   <button onClick={() => setIsEditingBio(true)}
-                    className="text-xs text-[#8f98a0] hover:text-[#66c0f4] transition-colors">
-                    ✏️ Edit
-                  </button>
+                    className="text-xs text-[#8f98a0] hover:text-[#66c0f4] transition-colors">✏️ Edit</button>
                 )}
               </div>
               {isEditingBio ? (
@@ -361,9 +307,7 @@ export default function ProfileClient({
                       {saving ? 'Saving...' : 'Save'}
                     </button>
                     <button onClick={() => { setIsEditingBio(false); setBioInput(bio) }}
-                      className="px-3 py-1 text-[#8f98a0] hover:text-white text-xs">
-                      Cancel
-                    </button>
+                      className="px-3 py-1 text-[#8f98a0] hover:text-white text-xs">Cancel</button>
                   </div>
                 </div>
               ) : (
@@ -372,190 +316,256 @@ export default function ProfileClient({
                 </p>
               )}
             </div>
-          </div>
 
-          {/* Socials */}
-          <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-4">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-[#8f98a0]">Socials</h3>
-              {isOwnProfile && !isEditingSocials && (
-                <button onClick={() => setIsEditingSocials(true)}
-                  className="text-xs text-[#8f98a0] hover:text-[#66c0f4] transition-colors">✏️ Edit</button>
-              )}
-            </div>
+            {/* Stats */}
+            <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-4">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-[#8f98a0] mb-3">Stats</h3>
+              <div className="space-y-2.5">
+                <div className="flex justify-between text-sm">
+                  <span className="text-[#8f98a0]">Points</span>
+                  <span className="text-[#f59e0b] font-bold">🏅 {points}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-[#8f98a0]">Avg Score Given</span>
+                  <span className="text-[#c6d4df] font-semibold">{avgScore ?? '—'}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-[#8f98a0]">Followers</span>
+                  <span className="text-[#c6d4df] font-semibold">{followerCountState}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-[#8f98a0]">Following</span>
+                  <span className="text-[#c6d4df] font-semibold">{followingCount}</span>
+                </div>
 
-            {isEditingSocials ? (
-              <div className="space-y-2">
-                {(['instagram', 'youtube', 'tiktok', 'twitter', 'facebook'] as const).map(key => (
-                  <input key={key} type="text"
-                    placeholder={key.charAt(0).toUpperCase() + key.slice(1) + ' username'}
-                    value={socialsInput[key]}
-                    onChange={e => setSocialsInput({ ...socialsInput, [key]: e.target.value })}
-                    className="w-full bg-[#2a475e] border border-[#3d6a8a] rounded-sm px-3 py-1.5 text-sm text-[#c6d4df] placeholder-[#6a8a9a] focus:outline-none focus:border-[#66c0f4]"
-                  />
-                ))}
-                <div className="flex gap-2 pt-1">
-                  <button onClick={handleSaveSocials} disabled={saving}
-                    className="px-3 py-1 bg-[#4c6b22] hover:bg-[#5a7a28] text-white text-xs rounded-sm disabled:opacity-50">
-                    {saving ? 'Saving...' : 'Save'}
-                  </button>
-                  <button onClick={() => { setIsEditingSocials(false); setSocialsInput({ ...socials }) }}
-                    className="px-3 py-1 text-[#8f98a0] hover:text-white text-xs">Cancel</button>
+                {/* Home Park */}
+                <div className="border-t border-[#2a475e] pt-2.5 mt-1">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs text-[#8f98a0]">Home Park</span>
+                    {isOwnProfile && !isEditingHomePark && (
+                      <button onClick={() => setIsEditingHomePark(true)}
+                        className="text-xs text-[#8f98a0] hover:text-[#66c0f4] transition-colors">✏️</button>
+                    )}
+                  </div>
+                  {isEditingHomePark ? (
+                    <div className="space-y-2">
+                      <select
+                        value={homeParkInput}
+                        onChange={e => setHomeParkInput(e.target.value)}
+                        className="w-full bg-[#2a475e] border border-[#3d6a8a] rounded-sm px-2 py-1 text-xs text-[#c6d4df] focus:outline-none focus:border-[#66c0f4]"
+                      >
+                        <option value="">— None —</option>
+                        {parks.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                      </select>
+                      <div className="flex gap-2">
+                        <button onClick={handleSaveHomePark} disabled={saving}
+                          className="px-2 py-1 bg-[#4c6b22] hover:bg-[#5a7a28] text-white text-xs rounded-sm disabled:opacity-50">
+                          {saving ? '...' : 'Save'}
+                        </button>
+                        <button onClick={() => { setIsEditingHomePark(false); setHomeParkInput(homeParkId) }}
+                          className="px-2 py-1 text-[#8f98a0] hover:text-white text-xs">Cancel</button>
+                      </div>
+                    </div>
+                  ) : (
+                    homeParkId ? (
+                      <Link href={`/parks/${homeParkId}`} className="text-sm text-[#66c0f4] hover:underline">
+                        🏠 {parks.find(p => p.id === homeParkId)?.name ?? homeParkId}
+                      </Link>
+                    ) : (
+                      <p className="text-xs text-[#4a6a82] italic">
+                        {isOwnProfile ? 'Set your home park...' : 'No home park set.'}
+                      </p>
+                    )
+                  )}
                 </div>
               </div>
-            ) : (
-              <div className="flex flex-wrap gap-3">
-                {socials.instagram && (
-                  <a href={`https://instagram.com/${socials.instagram}`} target="_blank" rel="noopener noreferrer"
-                    title={`@${socials.instagram}`} className="text-pink-400 hover:text-pink-300 transition-colors">
-                    <FaInstagram size={22} />
-                  </a>
-                )}
-                {socials.youtube && (
-                  <a href={`https://youtube.com/@${socials.youtube}`} target="_blank" rel="noopener noreferrer"
-                    title={`@${socials.youtube}`} className="text-red-500 hover:text-red-400 transition-colors">
-                    <FaYoutube size={22} />
-                  </a>
-                )}
-                {socials.tiktok && (
-                  <a href={`https://tiktok.com/@${socials.tiktok}`} target="_blank" rel="noopener noreferrer"
-                    title={`@${socials.tiktok}`} className="text-white hover:text-gray-300 transition-colors">
-                    <FaTiktok size={22} />
-                  </a>
-                )}
-                {socials.twitter && (
-                  <a href={`https://x.com/${socials.twitter}`} target="_blank" rel="noopener noreferrer"
-                    title={`@${socials.twitter}`} className="text-sky-400 hover:text-sky-300 transition-colors">
-                    <FaXTwitter size={22} />
-                  </a>
-                )}
-                {socials.facebook && (
-                  <a href={`https://facebook.com/${socials.facebook}`} target="_blank" rel="noopener noreferrer"
-                    title={`/${socials.facebook}`} className="text-blue-400 hover:text-blue-300 transition-colors">
-                    <FaFacebook size={22} />
-                  </a>
-                )}
-                {!Object.values(socials).some(Boolean) && (
-                  <p className="text-sm text-[#4a6a82] italic">{isOwnProfile ? 'Add your socials...' : 'No socials yet.'}</p>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Home Park */}
-          <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-4">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-[#8f98a0]">Home Park</h3>
-              {isOwnProfile && !isEditingHomePark && (
-                <button onClick={() => setIsEditingHomePark(true)}
-                  className="text-xs text-[#8f98a0] hover:text-[#66c0f4] transition-colors">✏️ Edit</button>
-              )}
             </div>
 
-            {isEditingHomePark ? (
-              <div className="space-y-2">
-                <select
-                  value={homeParkInput}
-                  onChange={e => setHomeParkInput(e.target.value)}
-                  className="w-full bg-[#2a475e] border border-[#3d6a8a] rounded-sm px-3 py-1.5 text-sm text-[#c6d4df] focus:outline-none focus:border-[#66c0f4]"
-                >
-                  <option value="">— None —</option>
-                  {parks.map(p => (
-                    <option key={p.id} value={p.id}>{p.name}</option>
+            {/* Socials */}
+            <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-4">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-[#8f98a0]">Socials</h3>
+                {isOwnProfile && !isEditingSocials && (
+                  <button onClick={() => setIsEditingSocials(true)}
+                    className="text-xs text-[#8f98a0] hover:text-[#66c0f4] transition-colors">✏️ Edit</button>
+                )}
+              </div>
+              {isEditingSocials ? (
+                <div className="space-y-2">
+                  {(['instagram', 'youtube', 'tiktok', 'twitter', 'facebook'] as const).map(key => (
+                    <input key={key} type="text"
+                      placeholder={key.charAt(0).toUpperCase() + key.slice(1) + ' username'}
+                      value={socialsInput[key]}
+                      onChange={e => setSocialsInput({ ...socialsInput, [key]: e.target.value })}
+                      className="w-full bg-[#2a475e] border border-[#3d6a8a] rounded-sm px-3 py-1.5 text-sm text-[#c6d4df] placeholder-[#6a8a9a] focus:outline-none focus:border-[#66c0f4]"
+                    />
                   ))}
-                </select>
-                <div className="flex gap-2 pt-1">
-                  <button onClick={handleSaveHomePark} disabled={saving}
-                    className="px-3 py-1 bg-[#4c6b22] hover:bg-[#5a7a28] text-white text-xs rounded-sm disabled:opacity-50">
-                    {saving ? 'Saving...' : 'Save'}
-                  </button>
-                  <button onClick={() => { setIsEditingHomePark(false); setHomeParkInput(homeParkId) }}
-                    className="px-3 py-1 text-[#8f98a0] hover:text-white text-xs">Cancel</button>
+                  <div className="flex gap-2 pt-1">
+                    <button onClick={handleSaveSocials} disabled={saving}
+                      className="px-3 py-1 bg-[#4c6b22] hover:bg-[#5a7a28] text-white text-xs rounded-sm disabled:opacity-50">
+                      {saving ? 'Saving...' : 'Save'}
+                    </button>
+                    <button onClick={() => { setIsEditingSocials(false); setSocialsInput({ ...socials }) }}
+                      className="px-3 py-1 text-[#8f98a0] hover:text-white text-xs">Cancel</button>
+                  </div>
                 </div>
-              </div>
-            ) : (
-              homeParkId ? (
-                <Link href={`/parks/${homeParkId}`}
-                  className="text-sm text-[#66c0f4] hover:underline">
-                  🏠 {parks.find(p => p.id === homeParkId)?.name ?? homeParkId}
-                </Link>
               ) : (
-                <p className="text-sm text-[#4a6a82] italic">
-                  {isOwnProfile ? 'Set your home park...' : 'No home park set.'}
-                </p>
-              )
-            )}
+                <div className="flex flex-wrap gap-3">
+                  {socials.instagram && (
+                    <a href={`https://instagram.com/${socials.instagram}`} target="_blank" rel="noopener noreferrer"
+                      className="text-pink-400 hover:text-pink-300 transition-colors"><FaInstagram size={20} /></a>
+                  )}
+                  {socials.youtube && (
+                    <a href={`https://youtube.com/@${socials.youtube}`} target="_blank" rel="noopener noreferrer"
+                      className="text-red-500 hover:text-red-400 transition-colors"><FaYoutube size={20} /></a>
+                  )}
+                  {socials.tiktok && (
+                    <a href={`https://tiktok.com/@${socials.tiktok}`} target="_blank" rel="noopener noreferrer"
+                      className="text-white hover:text-gray-300 transition-colors"><FaTiktok size={20} /></a>
+                  )}
+                  {socials.twitter && (
+                    <a href={`https://x.com/${socials.twitter}`} target="_blank" rel="noopener noreferrer"
+                      className="text-sky-400 hover:text-sky-300 transition-colors"><FaXTwitter size={20} /></a>
+                  )}
+                  {socials.facebook && (
+                    <a href={`https://facebook.com/${socials.facebook}`} target="_blank" rel="noopener noreferrer"
+                      className="text-blue-400 hover:text-blue-300 transition-colors"><FaFacebook size={20} /></a>
+                  )}
+                  {!hasSocials && (
+                    <p className="text-xs text-[#4a6a82] italic">
+                      {isOwnProfile ? 'Add your socials...' : 'No socials yet.'}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+
           </div>
 
-          {/* Main Content */}
-          <div className="lg:col-span-2">
+          {/* Main content */}
+          <div className="lg:col-span-3">
+
+            {/* Stats banner */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+              {[
+                { label: 'Reviews', value: reviews.length, color: 'text-[#66c0f4]' },
+                { label: 'Favorites', value: favorites.length, color: 'text-pink-400' },
+                { label: 'Followers', value: followerCountState, color: 'text-emerald-400' },
+                { label: 'Points', value: points, color: 'text-[#f59e0b]' },
+              ].map(stat => (
+                <div key={stat.label} className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-4 text-center">
+                  <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
+                  <p className="text-xs text-[#8f98a0] mt-0.5 uppercase tracking-wider">{stat.label}</p>
+                </div>
+              ))}
+            </div>
+
             {/* Tabs */}
             <div className="flex gap-0 mb-6 border-b border-[#2a475e]">
-              {(['reviews', 'favorites'] as const).map(tab => (
+              {(['activity', 'reviews', 'favorites'] as const).map(tab => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`px-6 py-3 text-sm font-medium capitalize transition-colors ${activeTab === tab
-                    ? 'text-[#66c0f4] border-b-2 border-[#66c0f4]'
-                    : 'text-[#8f98a0] hover:text-[#c6d4df]'
-                    }`}
+                  className={`px-6 py-3 text-sm font-medium capitalize transition-colors border-b-2 -mb-px ${activeTab === tab
+                    ? 'text-[#66c0f4] border-[#66c0f4]'
+                    : 'text-[#8f98a0] border-transparent hover:text-[#c6d4df]'}`}
                 >
-                  {tab} ({tab === 'reviews' ? reviews.length : favorites.length})
+                  {tab === 'activity' ? 'Activity' : tab === 'reviews' ? `Reviews (${reviews.length})` : `Favorites (${favorites.length})`}
                 </button>
               ))}
             </div>
 
+            {/* Activity Tab */}
+            {activeTab === 'activity' && (
+              <div className="space-y-8">
+                {activityItems.length === 0 && (
+                  <p className="text-[#8f98a0] text-sm">No activity yet.</p>
+                )}
+                {Object.entries(groupedActivity).map(([dateLabel, items]) => (
+                  <div key={dateLabel}>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-[#8f98a0] mb-3 flex items-center gap-2">
+                      <span className="h-px flex-1 bg-[#2a475e]" />
+                      {dateLabel}
+                      <span className="h-px flex-1 bg-[#2a475e]" />
+                    </p>
+                    <div className="space-y-3">
+                      {items.map((item, i) => {
+                        if (item.type === 'review') {
+                          const avg = item.review.review_ratings.length > 0
+                            ? Math.round(item.review.review_ratings.reduce((s, r) => s + r.score, 0) / item.review.review_ratings.length)
+                            : 0
+                          return (
+                            <div key={i} className="flex gap-4 items-start bg-[#1b2838] border border-[#2a475e] rounded-sm p-4 hover:border-[#3d6a8a] transition-colors">
+                              <div className="text-2xl">⭐</div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-xs text-[#8f98a0] mb-1">Rated a ride</p>
+                                {item.review.items && (
+                                  <Link href={`/parks/${item.review.items.park_id}/${item.review.items.category_id}/${item.review.items.id}`}
+                                    className="text-sm font-semibold text-[#66c0f4] hover:underline">
+                                    {item.review.items.name}
+                                  </Link>
+                                )}
+                                {item.review.title && (
+                                  <p className="text-sm text-[#c6d4df] mt-0.5">"{item.review.title}"</p>
+                                )}
+                                {item.review.body && (
+                                  <p className="text-xs text-[#acb2b8] mt-1 line-clamp-2">{item.review.body}</p>
+                                )}
+                              </div>
+                              <ScoreCircle score={avg} />
+                            </div>
+                          )
+                        }
+                        if (item.type === 'favorite') {
+                          const favItem = item.favorite.items
+                          if (!favItem) return null
+                          const image = favItem.item_images?.[0]?.url
+                          return (
+                            <div key={i} className="flex gap-4 items-center bg-[#1b2838] border border-[#2a475e] rounded-sm p-4 hover:border-[#3d6a8a] transition-colors">
+                              <div className="text-2xl">❤️</div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-xs text-[#8f98a0] mb-1">Added to favorites</p>
+                                <Link href={`/parks/${favItem.park_id}/${favItem.category_id}/${favItem.id}`}
+                                  className="text-sm font-semibold text-[#66c0f4] hover:underline">
+                                  {favItem.name}
+                                </Link>
+                              </div>
+                              {image && (
+                                <img src={image} alt={favItem.name}
+                                  className="w-16 h-10 object-cover rounded-sm flex-shrink-0" />
+                              )}
+                            </div>
+                          )
+                        }
+                        return null
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
             {/* Reviews Tab */}
             {activeTab === 'reviews' && (
               <div className="space-y-4">
-                {reviews.length === 0 && (
-                  <p className="text-[#8f98a0] text-sm">No reviews yet.</p>
-                )}
+                {reviews.length === 0 && <p className="text-[#8f98a0] text-sm">No reviews yet.</p>}
                 {reviews.map(review => {
                   const avg = review.review_ratings.length > 0
                     ? Math.round(review.review_ratings.reduce((s, r) => s + r.score, 0) / review.review_ratings.length)
                     : 0
                   return (
-                    <div key={review.id} className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-4 flex gap-4 items-start">
+                    <div key={review.id} className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-4 flex gap-4 items-start hover:border-[#3d6a8a] transition-colors">
                       <ScoreCircle score={avg} />
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-2 mb-1">
-                          <div>
-                            {review.items && (
-                              <Link
-                                href={`/parks/${review.items.park_id}/${review.items.category_id}/${review.items.id}`}
-                                className="text-[#66c0f4] hover:underline font-semibold text-sm"
-                              >
-                                {review.items.name}
-                              </Link>
-                            )}
-                            {review.title && (
-                              <p className="text-[#c6d4df] text-sm font-medium mt-0.5">{review.title}</p>
-                            )}
-                          </div>
-                          <span className="text-xs text-[#8f98a0] whitespace-nowrap">
-                            {new Date(review.created_at).toLocaleDateString()}
-                          </span>
-                        </div>
-                        {review.body && (
-                          <p className="text-sm text-[#acb2b8] leading-relaxed line-clamp-3">{review.body}</p>
+                        {review.items && (
+                          <Link href={`/parks/${review.items.park_id}/${review.items.category_id}/${review.items.id}`}
+                            className="text-[#66c0f4] hover:underline font-semibold text-sm">
+                            {review.items.name}
+                          </Link>
                         )}
-                        {reviewReactions[review.id] && (
-                          <div className="flex gap-3 mt-2">
-                            {reviewReactions[review.id].yes > 0 && (
-                              <span className="text-xs text-[#8f98a0]">👍 {reviewReactions[review.id].yes}</span>
-                            )}
-                            {reviewReactions[review.id].no > 0 && (
-                              <span className="text-xs text-[#8f98a0]">👎 {reviewReactions[review.id].no}</span>
-                            )}
-                            {reviewReactions[review.id].funny > 0 && (
-                              <span className="text-xs text-[#8f98a0]">😄 {reviewReactions[review.id].funny}</span>
-                            )}
-                            {reviewReactions[review.id].award > 0 && (
-                              <span className="text-xs text-amber-400">🏆 {reviewReactions[review.id].award}</span>
-                            )}
-                          </div>
-                        )}
+                        {review.title && <p className="text-[#c6d4df] text-sm font-medium mt-0.5">{review.title}</p>}
+                        {review.body && <p className="text-sm text-[#acb2b8] leading-relaxed mt-1 line-clamp-3">{review.body}</p>}
+                        <p className="text-xs text-[#4a6a82] mt-2">{new Date(review.created_at).toLocaleDateString()}</p>
                       </div>
                     </div>
                   )
@@ -566,19 +576,14 @@ export default function ProfileClient({
             {/* Favorites Tab */}
             {activeTab === 'favorites' && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {favorites.length === 0 && (
-                  <p className="text-[#8f98a0] text-sm col-span-2">No favorites yet.</p>
-                )}
+                {favorites.length === 0 && <p className="text-[#8f98a0] text-sm col-span-2">No favorites yet.</p>}
                 {favorites.map(fav => {
                   const item = fav.items
                   if (!item) return null
                   const image = item.item_images?.[0]?.url
                   return (
-                    <Link
-                      key={fav.id}
-                      href={`/parks/${item.park_id}/${item.category_id}/${item.id}`}
-                      className="bg-[#1b2838] border border-[#2a475e] rounded-sm overflow-hidden hover:border-[#66c0f4] transition-colors group"
-                    >
+                    <Link key={fav.id} href={`/parks/${item.park_id}/${item.category_id}/${item.id}`}
+                      className="bg-[#1b2838] border border-[#2a475e] rounded-sm overflow-hidden hover:border-[#66c0f4] transition-colors group">
                       {image && (
                         <div className="h-32 overflow-hidden">
                           <img src={image} alt={item.name}
@@ -587,13 +592,14 @@ export default function ProfileClient({
                       )}
                       <div className="p-3">
                         <p className="text-sm font-semibold text-[#c6d4df] group-hover:text-[#66c0f4] transition-colors">{item.name}</p>
-                        <p className="text-xs text-[#8f98a0] mt-0.5 capitalize">{item.category_id?.replace('_', ' ')}</p>
+                        <p className="text-xs text-[#8f98a0] mt-0.5 capitalize">{item.category_id?.replace(/-/g, ' ')}</p>
                       </div>
                     </Link>
                   )
                 })}
               </div>
             )}
+
           </div>
         </div>
       </div>

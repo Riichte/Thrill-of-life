@@ -13,25 +13,22 @@ export default async function Home() {
   const { data: coasterItems } = await supabase
     .from('items')
     .select('id, name, park_id, item_images(url, attribution_author, license)')
-    .eq('park_id', 'europa-park')
     .eq('category_id', 'roller-coasters')
-    .order('name')
+    .limit(20)
 
   const { data: waterItems } = await supabase
     .from('items')
     .select('id, name, park_id, item_images(url, attribution_author, license)')
-    .eq('park_id', 'europa-park')
     .eq('category_id', 'water-rides')
-    .order('name')
+    .limit(20)
 
 
-  const highlightCategories = ['dark-rides', 'flat-rides', 'hotels', 'transport']
+  const highlightCategories = ['dark-rides', 'flat-rides', 'hotels', 'transport', 'shows', 'shops']
   const { data: highlightItems } = await supabase
     .from('items')
     .select('id, name, park_id, category_id, item_images(url, attribution_author, license)')
-    .eq('park_id', 'europa-park')
     .in('category_id', highlightCategories)
-    .order('name')
+    .limit(20)
 
   const homeMoreHighlightCards: HomeMarqueeCard[] = (highlightItems ?? [])
     .filter(i => i.item_images?.[0]?.url)
@@ -40,7 +37,7 @@ export default async function Home() {
       href: `/parks/${i.park_id}/${i.id}`,
       image: i.item_images[0].url,
       title: i.name,
-      subtitle: `${i.category_id.replace('-', ' ')} · Europa Park`,
+      subtitle: `${i.category_id.replace(/-/g, ' ')} · Europa Park`,
       attribution: i.item_images[0].attribution_author ?? null,
       license: i.item_images[0].license ?? null,
     }))

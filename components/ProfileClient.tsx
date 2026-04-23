@@ -52,11 +52,15 @@ interface ProfileClientProps {
   isOwnProfile: boolean
   viewerId?: string
   isFollowing?: boolean
+  reactions?: any[]
+  follows?: any[]
 }
 
 type ActivityItem =
   | { type: 'review'; date: string; review: Review }
   | { type: 'favorite'; date: string; favorite: Favorite }
+  | { type: 'reaction'; date: string; reaction: any }
+  | { type: 'follow'; date: string; follow: any }
 
 function getScoreColor(s: number) {
   return s >= 80 ? '#10b981' : s >= 60 ? '#f59e0b' : s >= 40 ? '#f97316' : '#ef4444'
@@ -108,7 +112,10 @@ export default function ProfileClient({
   isOwnProfile,
   viewerId,
   isFollowing: initialIsFollowing = false,
+  reactions: profileReactions = [],
+  follows = [],
 }: ProfileClientProps) {
+
   const supabase = createClient()
   const [activeTab, setActiveTab] = useState<'activity' | 'reviews' | 'favorites'>('activity')
   const [isFollowing, setIsFollowing] = useState(initialIsFollowing)
@@ -161,6 +168,8 @@ export default function ProfileClient({
   const activityItems: ActivityItem[] = [
     ...reviews.map(r => ({ type: 'review' as const, date: r.created_at, review: r })),
     ...favorites.map(f => ({ type: 'favorite' as const, date: (f as any).created_at ?? '', favorite: f })),
+    ...profileReactions.map((r: any) => ({ type: 'reaction' as const, date: r.created_at ?? '', reaction: r })),
+    ...follows.map((f: any) => ({ type: 'follow' as const, date: f.created_at ?? '', follow: f })),
   ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
   const groupedActivity = groupByDate(activityItems)
@@ -534,6 +543,43 @@ export default function ProfileClient({
                                 <img src={image} alt={favItem.name}
                                   className="w-16 h-10 object-cover rounded-sm flex-shrink-0" />
                               )}
+                            </div>
+                          )
+                        }
+
+                        if (item.type === 'reaction') {
+                          const reactionEmoji = item.reaction.type === 'yes' ? '👍' : item.reaction.type === 'no' ? '👎' : item.reaction.type === 'funny' ? '😄' : '🏆'
+                          const reactionLabel = item.reaction.type === 'yes' ? 'Marked a review helpful' : item.reaction.type === 'no' ? 'Marked a review unhelpful' : item.reaction.type === 'funny' ? 'Found a review funny' : 'Awarded a review'
+                          const itemData = item.reaction.reviews?.items
+                          return (
+                            <div key={i} className="flex gap-4 items-center bg-[#1b2838] border border-[#2a475e] rounded-sm p-4 hover:border-[#3d6a8a] transition-colors">
+                              <div className="text-2xl">{reactionEmoji}</div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-xs text-[#8f98a0] mb-1">{reactionLabel}</p>
+                                {itemData && (
+                                  <Link href={`/parks/${itemData.park_id}/${itemData.category_id}/${itemData.id}`}
+                                    className="text-sm font-semibold text-[#66c0f4] hover:underline">
+                                    {itemData.name}
+                                  </Link>
+                                )}
+                              </div>
+                            </div>
+                          )
+                        }
+                        if (item.type === 'follow') {
+                          const followed = item.follow.profiles
+                          return (
+                            <div key={i} className="flex gap-4 items-center bg-[#1b2838] border border-[#2a475e] rounded-sm p-4 hover:border-[#3d6a8a] transition-colors">
+                              <div className="text-2xl">🤝</div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-xs text-[#8f98a0] mb-1">Started following</p>
+                                {followed && (
+                                  <Link href={`/users/${followed.id}`}
+                                    className="text-sm font-semibold text-[#66c0f4] hover:underline">
+                                    {followed.username}
+                                  </Link>
+                                )}
+                              </div>
                             </div>
                           )
                         }

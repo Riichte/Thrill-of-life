@@ -7,7 +7,10 @@ import {
   getProfilePoints,
   getFollowerCount,
   getFollowingCount,
+  getProfileReactions,
+  getProfileFollows,
 } from '@/lib/queries'
+
 import ProfileClient from '@/components/ProfileClient'
 
 export default async function ProfilePage() {
@@ -16,13 +19,15 @@ export default async function ProfilePage() {
 
   if (!user) redirect('/auth/login?redirect=/profile')
 
-  const [profile, reviews, favorites, points, followerCount, followingCount] = await Promise.all([
+  const [profile, reviews, favorites, points, followerCount, followingCount, profileReactions, follows] = await Promise.all([
     getProfileById(user.id),
     getProfileReviews(user.id),
     getProfileFavorites(user.id),
     getProfilePoints(user.id),
     getFollowerCount(user.id),
     getFollowingCount(user.id),
+    getProfileReactions(user.id),
+    getProfileFollows(user.id),
   ])
 
   return (
@@ -34,6 +39,8 @@ export default async function ProfilePage() {
       followerCount={followerCount}
       followingCount={followingCount}
       isOwnProfile={true}
+      reactions={profileReactions}
+      follows={follows}
     />
   )
 }

@@ -522,3 +522,26 @@ export async function getLeaderboardMostAwarded(limit = 25) {
     score: counts[id],
   }))
 }
+
+export async function getProfileReactions(userId: string) {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('reactions')
+    .select('type, created_at, reviews(item_id, items(id, name, park_id, category_id))')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+  if (error) return []
+  return data ?? []
+}
+
+export async function getProfileFollows(userId: string) {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('followers')
+    .select('created_at, profiles!followers_following_id_fkey(id, username)')
+    .eq('follower_id', userId)
+    .order('created_at', { ascending: false })
+  if (error) return []
+  return data ?? []
+}
+

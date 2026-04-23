@@ -29,6 +29,17 @@ export function SteamMediaCarousel({ slides, autoAdvanceMs, className = '' }: St
   const safeIndex = n ? index % n : 0
   const current = slides[safeIndex]
 
+  // Preload next image
+  useEffect(() => {
+    if (n <= 1) return
+    const nextIndex = (safeIndex + 1) % n
+    const next = slides[nextIndex]
+    if (next?.src) {
+      const img = new window.Image()
+      img.src = next.src
+    }
+  }, [safeIndex, slides, n])
+
   useEffect(() => {
     setIndex((i) => (n ? i % n : 0))
   }, [n])
@@ -152,9 +163,9 @@ export function SteamMediaCarousel({ slides, autoAdvanceMs, className = '' }: St
                   : 'opacity-80 hover:opacity-100'
                   }`}
               >
-                <Image 
-                  src={slide.src} 
-                  alt={slide.alt ?? ''} 
+                <Image
+                  src={slide.src}
+                  alt={slide.alt ?? ''}
                   fill
                   className="object-cover"
                   quality={60}

@@ -22,6 +22,23 @@ export default async function Home() {
     .eq('category_id', 'water-rides')
     .limit(20)
 
+  const { data: darkRideItems } = await supabase
+    .from('items')
+    .select('id, name, park_id, item_images(url, attribution_author, license)')
+    .eq('category_id', 'dark-rides')
+    .limit(20)
+
+  const { data: flatRideItems } = await supabase
+    .from('items')
+    .select('id, name, park_id, item_images(url, attribution_author, license)')
+    .eq('category_id', 'flat-rides')
+    .limit(20)
+
+  const { data: mixItems } = await supabase
+    .from('items')
+    .select('id, name, park_id, category_id, item_images(url, attribution_author, license)')
+    .in('category_id', ['restaurants', 'shows', 'shops', 'hotels'])
+    .limit(20)
 
   const highlightCategories = ['dark-rides', 'flat-rides', 'hotels', 'transport', 'shows', 'shops']
   const { data: highlightItems } = await supabase
@@ -30,17 +47,6 @@ export default async function Home() {
     .in('category_id', highlightCategories)
     .limit(20)
 
-  const homeMoreHighlightCards: HomeMarqueeCard[] = (highlightItems ?? [])
-    .filter(i => i.item_images?.[0]?.url)
-    .map(i => ({
-      id: i.id,
-      href: `/parks/${i.park_id}/${i.id}`,
-      image: i.item_images[0].url,
-      title: i.name,
-      subtitle: `${i.category_id.replace(/-/g, ' ')} · Europa Park`,
-      attribution: i.item_images[0].attribution_author ?? null,
-      license: i.item_images[0].license ?? null,
-    }))
 
   const homeRollerCoasterCards: HomeMarqueeCard[] = (coasterItems ?? [])
     .filter(i => i.item_images?.[0]?.url)
@@ -63,6 +69,44 @@ export default async function Home() {
       attribution: i.item_images[0].attribution_author ?? null,
       license: i.item_images[0].license ?? null,
     }))
+
+  const homeDarkRideCards: HomeMarqueeCard[] = (darkRideItems ?? [])
+    .filter(i => i.item_images?.[0]?.url)
+    .map(i => ({
+      id: i.id,
+      href: `/parks/${i.park_id}/${i.id}`,
+      image: i.item_images[0].url,
+      title: i.name,
+      subtitle: 'Dark ride',
+      attribution: i.item_images[0].attribution_author ?? null,
+      license: i.item_images[0].license ?? null,
+    }))
+
+  const homeFlatRideCards: HomeMarqueeCard[] = (flatRideItems ?? [])
+    .filter(i => i.item_images?.[0]?.url)
+    .map(i => ({
+      id: i.id,
+      href: `/parks/${i.park_id}/${i.id}`,
+      image: i.item_images[0].url,
+      title: i.name,
+      subtitle: 'Flat ride',
+      attribution: i.item_images[0].attribution_author ?? null,
+      license: i.item_images[0].license ?? null,
+    }))
+
+  const homeMixCards: HomeMarqueeCard[] = (mixItems ?? [])
+    .filter(i => i.item_images?.[0]?.url)
+    .map(i => ({
+      id: i.id,
+      href: `/parks/${i.park_id}/${i.id}`,
+      image: i.item_images[0].url,
+      title: i.name,
+      subtitle: i.category_id.replace(/-/g, ' '),
+      attribution: i.item_images[0].attribution_author ?? null,
+      license: i.item_images[0].license ?? null,
+    }))
+
+
   const homeParkCards: HomeMarqueeCard[] = (parks ?? []).map(park => ({
     id: park.id,
     href: `/parks/${park.id}`,
@@ -113,8 +157,27 @@ export default async function Home() {
         />
 
         <HomeMarqueeRow
-          title="More highlights"
-          items={homeMoreHighlightCards}
+          title="Dark rides"
+          subtitle="From all parks"
+          items={homeDarkRideCards}
+          durationSec={100}
+          viewAllHref="/category/dark-rides"
+          viewAllLabel="All dark rides"
+        />
+
+        <HomeMarqueeRow
+          title="Flat rides"
+          subtitle="From all parks"
+          items={homeFlatRideCards}
+          durationSec={110}
+          viewAllHref="/category/flat-rides"
+          viewAllLabel="All flat rides"
+        />
+
+        <HomeMarqueeRow
+          title="Also on the site"
+          subtitle="Restaurants, shows, shops & hotels"
+          items={homeMixCards}
           durationSec={95}
           viewAllHref="/parks"
           viewAllLabel="All parks"
@@ -130,7 +193,7 @@ export default async function Home() {
             <h2 className="mb-3 text-lg font-semibold text-[#66c0f4]">Explore</h2>
             <ul className="space-y-2 text-sm">
               <li><Link href="/parks" className="text-gray-300 hover:text-white">All parks</Link></li>
-              <li><Link href="/parks/europa-park" className="text-gray-300 hover:text-white">Europa Park</Link></li>
+              <li><Link href="/category/roller-coasters" className="text-gray-300 hover:text-white">Roller Coasters</Link></li>
             </ul>
           </div>
           <div className="rounded-xl border border-white/10 bg-gray-800/80 p-6">

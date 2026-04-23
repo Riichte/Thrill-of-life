@@ -2,18 +2,51 @@ import { getRecentReviews } from '@/lib/queries'
 import { RecentReviewsCarousel } from '@/components/RecentReviewsCarousel'
 import Link from 'next/link'
 import { HomeMarqueeRow } from '@/components/HomeMarqueeRow'
-import {
-  homeMoreHighlightCards,
-  homeRollerCoasterCards,
-  homeWaterRideCards,
-  HomeMarqueeCard
-} from '@/lib/homeCarouselData'
+import { HomeMarqueeCard } from '@/lib/homeCarouselData'
 import { createClient } from '@/lib/supabase/server'
 
 export default async function Home() {
   const supabase = await createClient()
   const { data: parks } = await supabase.from('parks').select('*').order('name')
   const recentReviews = await getRecentReviews(10)
+
+  const { data: coasterItems } = await supabase
+    .from('items')
+    .select('id, name, park_id, item_images(url, attribution_author, license)')
+    .eq('park_id', 'europa-park')
+    .eq('category_id', 'roller-coasters')
+    .order('name')
+
+  const { data: waterItems } = await supabase
+    .from('items')
+    .select('id, name, park_id, item_images(url, attribution_author, license)')
+    .eq('park_id', 'europa-park')
+    .eq('category_id', 'water-rides')
+    .order('name')
+
+  const homeRollerCoasterCards: HomeMarqueeCard[] = (coasterItems ?? [])
+    .filter(i => i.item_images?.[0]?.url)
+    .map(i => ({
+      id: i.id,
+      href: `/parks/${i.park_id}/${i.id}`,
+      image: i.item_images[0].url,
+      title: i.name,
+      subtitle: 'Europa Park',
+      attribution: i.item_images[0].attribution_author ?? null,
+      license: i.item_images[0].license ?? null,
+    }))
+
+  const homeWaterRideCards: HomeMarqueeCard[] = (waterItems ?? [])
+    .filter(i => i.item_images?.[0]?.url)
+    .map(i => ({
+      id: i.id,
+      href: `/parks/${i.park_id}/${i.id}`,
+      image: i.item_images[0].url,
+      title: i.name,
+      subtitle: 'Europa Park',
+      attribution: i.item_images[0].attribution_author ?? null,
+      license: i.item_images[0].license ?? null,
+    }))
   const homeParkCards: HomeMarqueeCard[] = (parks ?? []).map(park => ({
     id: park.id,
     href: `/parks/${park.id}`,

@@ -6,10 +6,13 @@ import { useRouter, usePathname } from 'next/navigation'
 import { Search, Menu, X } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import type { User } from '@supabase/supabase-js'
+import { useUnit } from '@/lib/unitContext'
+
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [language, setLanguage] = useState<'EN' | 'FR'>('EN')
+  const [unit, setUnit] = useState<'metric' | 'imperial'>('metric')
   const [user, setUser] = useState<User | null>(null)
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -148,6 +151,22 @@ export default function Navbar() {
                   className={`px-3 py-1 rounded text-sm font-medium transition-colors ${language === 'FR' ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'}`}
                 >
                   FR
+                </button>
+              </div>
+
+              {/* Units */}
+              <div className="flex items-center bg-gray-800 rounded-lg p-1">
+                <button
+                  onClick={() => setUnit('metric')}
+                  className={`px-3 py-1 rounded text-sm font-medium transition-colors ${unit === 'metric' ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'}`}
+                >
+                  m
+                </button>
+                <button
+                  onClick={() => setUnit('imperial')}
+                  className={`px-3 py-1 rounded text-sm font-medium transition-colors ${unit === 'imperial' ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'}`}
+                >
+                  ft
                 </button>
               </div>
 

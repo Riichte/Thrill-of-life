@@ -315,6 +315,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                 { key: 'inversions', label: 'Inversions', type: 'number' },
                 { key: 'duration', label: 'Duration (e.g. 2min 30s)' },
                 { key: 'year_opened', label: 'Year Opened', type: 'number' },
+                { key: 'min_height', label: 'Min Height (e.g. 120cm)' },
             ]
             case 'water-rides': return [
                 { key: 'manufacturer', label: 'Manufacturer' },
@@ -322,12 +323,15 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                 { key: 'drop', label: 'Drop (e.g. 18m)' },
                 { key: 'duration', label: 'Duration (e.g. 3min)' },
                 { key: 'year_opened', label: 'Year Opened', type: 'number' },
+                { key: 'min_height', label: 'Min Height (e.g. 120cm)' },
             ]
             case 'flat-rides': return [
                 { key: 'manufacturer', label: 'Manufacturer' },
                 { key: 'height', label: 'Height (e.g. 30m)' },
                 { key: 'duration', label: 'Duration (e.g. 2min)' },
                 { key: 'year_opened', label: 'Year Opened', type: 'number' },
+                { key: 'min_height', label: 'Min Height (e.g. 120cm)' },
+
             ]
             case 'dark-rides': return [
                 { key: 'manufacturer', label: 'Manufacturer' },

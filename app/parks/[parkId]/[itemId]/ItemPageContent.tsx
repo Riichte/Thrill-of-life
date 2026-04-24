@@ -560,6 +560,7 @@ console.log('Images data:', images)
                     {specs.inversions !== undefined && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>Inversions</span><span className="text-[#c6d4df]">{specs.inversions}</span></div>}
                     {specs.gForce && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>G-Forces</span><span className="text-[#c6d4df]">{specs.gForce}</span></div>}
                     {specs.duration && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>Duration</span><span className="text-[#c6d4df]">{specs.duration}</span></div>}
+                    {specs.min_height && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>Min Height</span><span className="text-[#c6d4df]">📏 {specs.min_height}</span></div>}
                     {item.former_name && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>Former Name</span><span className="text-[#c6d4df]">{item.former_name}</span></div>}
                   </div>
                 </div>

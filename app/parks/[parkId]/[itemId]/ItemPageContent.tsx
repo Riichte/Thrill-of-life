@@ -118,7 +118,7 @@ function ReviewCard({
     { key: 'award', label: '🏆 Award', activeClass: 'text-amber-400 border-amber-500 bg-amber-500/10' },
   ]
 
-  
+
 
   return (
     <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6 flex gap-6 items-start">
@@ -472,7 +472,7 @@ export default function ItemPageContent({ park, item, category, images, videos, 
 
 
   console.log('current unit:', unit)
-  
+
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       <div className="container mx-auto px-4 py-8">
@@ -560,14 +560,14 @@ export default function ItemPageContent({ park, item, category, images, videos, 
                     {specs.type && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>Roller Coaster Type</span><span className="text-[#c6d4df]">{specs.type}</span></div>}
                     {specs.status && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>Status</span><span className="text-[#c6d4df]">{specs.status}</span></div>}
                     {specs.manufacturer && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>Manufacturer</span><span className="text-[#c6d4df]">{specs.manufacturer}</span></div>}
-                    {specs.height && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>Height</span><span className="text-[#c6d4df]">{convert(specs.height)}</span></div>}
-                    {specs.drop && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>Drop</span><span className="text-[#c6d4df]">{convert(specs.drop)}</span></div>}
-                    {specs.speed && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>Speed</span><span className="text-[#c6d4df]">{convert(specs.speed)}</span></div>}
-                    {specs.length && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>Length</span><span className="text-[#c6d4df]">{convert(specs.length)}</span></div>}
+                    {specs.height && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>Height</span><span className="text-[#c6d4df]">{convertHeight(String(specs.height))}</span></div>}
+                    {specs.drop && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>Drop</span><span className="text-[#c6d4df]">{convertHeight(String(specs.drop))}</span></div>}
+                    {specs.speed && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>Speed</span><span className="text-[#c6d4df]">{convertSpeed(String(specs.speed))}</span></div>}
+                    {specs.length && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>Length</span><span className="text-[#c6d4df]">{convertHeight(String(specs.length))}</span></div>}
                     {specs.inversions !== undefined && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>Inversions</span><span className="text-[#c6d4df]">{specs.inversions}</span></div>}
                     {specs.gForce && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>G-Forces</span><span className="text-[#c6d4df]">{specs.gForce}</span></div>}
                     {specs.duration && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>Duration</span><span className="text-[#c6d4df]">{specs.duration}</span></div>}
-                    {specs.min_height && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>Min Height</span><span className="text-[#c6d4df]">📏 {convert(specs.min_height)}</span></div>}
+                    {specs.min_height && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>Min Height</span><span className="text-[#c6d4df]">📏 {convertMinHeight(String(specs.min_height))}</span></div>}
                     {item.former_name && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>Former Name</span><span className="text-[#c6d4df]">{item.former_name}</span></div>}
                   </div>
                 </div>

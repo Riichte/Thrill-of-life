@@ -133,14 +133,12 @@ export function SteamInfoPanel({
             <p className="text-xs text-[#8f98a0]">
               {hasRated ? 'Your rating has been submitted' : 'You have not rated this yet'}
             </p>
-            {!hasRated && (
-              <button
-                onClick={onRateClick}
-                className="w-fit bg-[#4c6b22] hover:bg-[#5a7a28] text-white text-xs font-medium px-3 py-1.5 rounded-sm transition-colors"
-              >
-                {hasRated ? 'Edit rating' : 'Rate'}
-              </button>
-            )}
+            <button
+              onClick={onRateClick}
+              className="w-fit bg-[#4c6b22] hover:bg-[#5a7a28] text-white text-xs font-medium px-3 py-1.5 rounded-sm transition-colors"
+            >
+              {hasRated ? 'Edit rating' : 'Rate'}
+            </button>
           </div>
         </div>
 

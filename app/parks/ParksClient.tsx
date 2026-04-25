@@ -66,13 +66,10 @@ export default function ParksClient({ parks }: { parks: Park[] }) {
             <Link key={park.id} href={`/parks/${park.id}`} className="block">
               <div className="bg-gray-800 rounded-lg overflow-hidden hover:bg-gray-700 transition-colors">
                 <div className="relative w-full h-48 overflow-hidden">
-                  <Image
+                  <img
                     src={park.cover_image_url}
                     alt={park.name}
-                    fill
-                    className="object-cover hover:scale-105 transition-transform duration-300"
-                    quality={75}
-                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                   />
                 </div>
                 <div className="p-4">

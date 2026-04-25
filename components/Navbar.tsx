@@ -209,6 +209,13 @@ export default function Navbar() {
                       >
                         Submit an Image
                       </Link>
+                      <Link
+                        href="/feedback"
+                        onClick={() => setDropdownOpen(false)}
+                        className="block px-4 py-3 text-sm text-[#c6d4df] hover:bg-[#2a475e] hover:text-white transition-colors"
+                      >
+                        Leave Feedback
+                      </Link>
                       <div className="border-t border-[#2a475e]" />
                       <button
                         onClick={handleLogout}

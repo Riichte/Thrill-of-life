@@ -118,6 +118,8 @@ function ReviewCard({
     { key: 'award', label: '🏆 Award', activeClass: 'text-amber-400 border-amber-500 bg-amber-500/10' },
   ]
 
+  console.log('current unit:', unit)
+
   return (
     <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6 flex gap-6 items-start">
       <div className="flex-shrink-0">
@@ -201,7 +203,7 @@ export default function ItemPageContent({ park, item, category, images, videos, 
   communityScore: { score: number; positive: number; mixed: number; negative: number } | null
 }) {
   const supabase = createClient()
-  const { convert } = useUnit()
+  const { unit, convert } = useUnit()
   const [reviewFilter, setReviewFilter] = useState('all')
   const [isRatingOpen, setIsRatingOpen] = useState(false)
   const [hasRated, setHasRated] = useState(false)

@@ -54,7 +54,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
     const [parkImages, setParkImages] = useState<{ id: string; url: string; sort_order: number; attribution_author?: string; attribution_url?: string; license?: string }[]>([])
     const [editingImage, setEditingImage] = useState<{ id: string; type: 'item' | 'park' } | null>(null)
     const [editFormData, setEditFormData] = useState({ author: '', sourceUrl: '', license: 'CC BY 4.0', sortOrder: 0 })
-    
+
     useEffect(() => {
         loadManufacturers()
     }, [])
@@ -574,7 +574,6 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                 )}
 
                                 {/* Fixed spec fields per category */}
-                                // In the getSpecFields map, when field.key === 'manufacturer', render a select instead:
                                 {getSpecFields(itemForm.category_id).map(field => (
                                     <div key={field.key}>
                                         <label className={labelClass}>{field.label}</label>

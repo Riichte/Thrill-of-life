@@ -20,9 +20,6 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
     const [manufacturers, setManufacturers] = useState<{ id: string; name: string }[]>([])
     const [mfrName, setMfrName] = useState('')
     const [editingMfrId, setEditingMfrId] = useState<string | null>(null)
-    const [manufacturers, setManufacturers] = useState<{ id: string; name: string }[]>([])
-    const [mfrName, setMfrName] = useState('')
-    const [editingMfrId, setEditingMfrId] = useState<string | null>(null)
     const [error, setError] = useState('')
     const [success, setSuccess] = useState('')
 

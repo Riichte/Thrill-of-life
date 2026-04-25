@@ -118,7 +118,7 @@ function ReviewCard({
     { key: 'award', label: '🏆 Award', activeClass: 'text-amber-400 border-amber-500 bg-amber-500/10' },
   ]
 
-  console.log('current unit:', unit)
+  
 
   return (
     <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6 flex gap-6 items-start">
@@ -470,6 +470,9 @@ export default function ItemPageContent({ park, item, category, images, videos, 
   const hasSpecs = Object.keys(specs).length > 0
   const currentType = item.specs?.type
 
+
+  console.log('current unit:', unit)
+  
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       <div className="container mx-auto px-4 py-8">

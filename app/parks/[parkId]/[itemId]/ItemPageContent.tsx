@@ -283,6 +283,8 @@ export default function ItemPageContent({ park, item, category, images, videos, 
           existingReview.review_ratings.length
         )
         setMyScore(avg)
+        setReviewTitle(existingReview.title || '')
+        setReviewText(existingReview.body || '')
       }
 
       // Check for existing favorite

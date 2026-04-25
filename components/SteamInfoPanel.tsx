@@ -138,7 +138,7 @@ export function SteamInfoPanel({
                 onClick={onRateClick}
                 className="w-fit bg-[#4c6b22] hover:bg-[#5a7a28] text-white text-xs font-medium px-3 py-1.5 rounded-sm transition-colors"
               >
-                Rate
+                {hasRated ? 'Edit rating' : 'Rate'}
               </button>
             )}
           </div>

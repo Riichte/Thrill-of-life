@@ -12,7 +12,7 @@ import { useUnit } from '@/lib/unitContext'
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [language, setLanguage] = useState<'EN' | 'FR'>('EN')
-  const [unit, setUnit] = useState<'metric' | 'imperial'>('metric')
+  const { unit, setUnit } = useUnit()
   const [user, setUser] = useState<User | null>(null)
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)

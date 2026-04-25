@@ -307,30 +307,30 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
         switch (categoryId) {
             case 'roller-coasters': return [
                 { key: 'manufacturer', label: 'Manufacturer' },
-                { key: 'height', label: 'Height (e.g. 40m)' },
-                { key: 'drop', label: 'Drop (e.g. 35m)' },
-                { key: 'speed', label: 'Speed (e.g. 100 km/h)' },
-                { key: 'length', label: 'Length (e.g. 1050m)' },
+                { key: 'height', label: 'Height (m)', type: 'number' },
+                { key: 'drop', label: 'Drop (m)', type: 'number' },
+                { key: 'speed', label: 'Speed (km/h)', type: 'number' },
+                { key: 'length', label: 'Length (m)', type: 'number' },
                 { key: 'gForce', label: 'G-Force (e.g. 4.5g)' },
                 { key: 'inversions', label: 'Inversions', type: 'number' },
                 { key: 'duration', label: 'Duration (e.g. 2min 30s)' },
                 { key: 'year_opened', label: 'Year Opened', type: 'number' },
-                { key: 'min_height', label: 'Min Height (e.g. 120cm)' },
+                { key: 'min_height', label: 'Min Height (cm)', type: 'number' },
             ]
             case 'water-rides': return [
                 { key: 'manufacturer', label: 'Manufacturer' },
-                { key: 'height', label: 'Height (e.g. 20m)' },
-                { key: 'drop', label: 'Drop (e.g. 18m)' },
+                { key: 'height', label: 'Height (m)', type: 'number' },
+                { key: 'drop', label: 'Drop (m)', type: 'number' },
                 { key: 'duration', label: 'Duration (e.g. 3min)' },
                 { key: 'year_opened', label: 'Year Opened', type: 'number' },
-                { key: 'min_height', label: 'Min Height (e.g. 120cm)' },
+                { key: 'min_height', label: 'Min Height (cm)', type: 'number' },
             ]
             case 'flat-rides': return [
                 { key: 'manufacturer', label: 'Manufacturer' },
-                { key: 'height', label: 'Height (e.g. 30m)' },
+                { key: 'height', label: 'Height (m)', type: 'number' },
                 { key: 'duration', label: 'Duration (e.g. 2min)' },
                 { key: 'year_opened', label: 'Year Opened', type: 'number' },
-                { key: 'min_height', label: 'Min Height (e.g. 120cm)' },
+                { key: 'min_height', label: 'Min Height (cm)', type: 'number' },
 
             ]
             case 'dark-rides': return [

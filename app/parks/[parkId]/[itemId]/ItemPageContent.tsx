@@ -203,7 +203,7 @@ export default function ItemPageContent({ park, item, category, images, videos, 
   communityScore: { score: number; positive: number; mixed: number; negative: number } | null
 }) {
   const supabase = createClient()
-  const { unit, convert } = useUnit()
+  const { unit, convert, convertHeight, convertSpeed, convertMinHeight } = useUnit()
   const [reviewFilter, setReviewFilter] = useState('all')
   const [isRatingOpen, setIsRatingOpen] = useState(false)
   const [hasRated, setHasRated] = useState(false)

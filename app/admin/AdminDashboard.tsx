@@ -15,8 +15,14 @@ const emptyItem: Omit<Item, 'id'> = { park_id: '', category_id: '', name: '', de
 export default function AdminDashboard({ parks, categories, items }: { parks: Park[]; categories: Category[]; items: Item[] }) {
     const supabase = createClient()
     const router = useRouter()
-    const [tab, setTab] = useState<'parks' | 'items' | 'images' | 'park-images' | 'images-manager' | 'videos'>('parks')
+    const [tab, setTab] = useState<'parks' | 'items' | 'images' | 'park-images' | 'images-manager' | 'videos' | 'manufacturers'>('parks')
     const [loading, setLoading] = useState(false)
+    const [manufacturers, setManufacturers] = useState<{ id: string; name: string }[]>([])
+    const [mfrName, setMfrName] = useState('')
+    const [editingMfrId, setEditingMfrId] = useState<string | null>(null)
+    const [manufacturers, setManufacturers] = useState<{ id: string; name: string }[]>([])
+    const [mfrName, setMfrName] = useState('')
+    const [editingMfrId, setEditingMfrId] = useState<string | null>(null)
     const [error, setError] = useState('')
     const [success, setSuccess] = useState('')
 
@@ -51,6 +57,14 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
     const [parkImages, setParkImages] = useState<{ id: string; url: string; sort_order: number; attribution_author?: string; attribution_url?: string; license?: string }[]>([])
     const [editingImage, setEditingImage] = useState<{ id: string; type: 'item' | 'park' } | null>(null)
     const [editFormData, setEditFormData] = useState({ author: '', sourceUrl: '', license: 'CC BY 4.0', sortOrder: 0 })
+    useEffect(() => {
+        loadManufacturers()
+    }, [])
+
+    const loadManufacturers = async () => {
+        const { data } = await supabase.from('manufacturers').select('*').order('name')
+        if (data) setManufacturers(data)
+    }
     const extractYouTubeId = (url: string): string | null => {
         const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
         return match ? match[1] : null
@@ -302,7 +316,6 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
     const btnSecondary = 'px-4 py-2 bg-[#2a475e] hover:bg-[#3d6a8a] text-[#c6d4df] text-sm font-medium rounded-sm transition-colors'
     const btnDanger = 'px-3 py-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-400 text-xs rounded-sm transition-colors'
     const btnEdit = 'px-3 py-1.5 bg-[#2a475e] hover:bg-[#3d6a8a] text-[#66c0f4] text-xs rounded-sm transition-colors'
-
     const getSpecFields = (categoryId: string): { key: string; label: string; type?: 'number' | 'text' }[] => {
         switch (categoryId) {
             case 'roller-coasters': return [
@@ -378,10 +391,10 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
 
                 {/* Tabs */}
                 <div className="flex gap-1 mb-8 border-b border-[#2a475e]">
-                    {(['parks', 'items', 'images', 'park-images', 'images-manager', 'videos'] as const).map(t => (
+                    {(['parks', 'items', 'images', 'park-images', 'images-manager', 'videos', 'manufacturers'] as const).map(t => (
                         <button key={t} onClick={() => setTab(t)}
                             className={`px-6 py-3 text-sm font-medium capitalize transition-colors border-b-2 -mb-px ${tab === t ? 'text-[#66c0f4] border-[#66c0f4]' : 'text-[#8f98a0] border-transparent hover:text-white'}`}>
-                            {t === 'items' ? 'Rides & Items' : t === 'images' ? 'Ride Images' : t === 'park-images' ? 'Park Images' : t === 'images-manager' ? 'Image Search' : t === 'videos' ? 'Ride Videos' : t.charAt(0).toUpperCase() + t.slice(1)}
+                            {t === 'items' ? 'Rides & Items' : t === 'images' ? 'Ride Images' : t === 'park-images' ? 'Park Images' : t === 'images-manager' ? 'Image Search' : t === 'videos' ? 'Ride Videos' : t === 'manufacturers' ? 'Manufacturers' : t.charAt(0).toUpperCase() + t.slice(1)}
                         </button>
                     ))}
                 </div>
@@ -563,28 +576,48 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                 )}
 
                                 {/* Fixed spec fields per category */}
+                                // In the getSpecFields map, when field.key === 'manufacturer', render a select instead:
                                 {getSpecFields(itemForm.category_id).map(field => (
                                     <div key={field.key}>
                                         <label className={labelClass}>{field.label}</label>
-                                        <input
-                                            type={field.type === 'number' ? 'number' : 'text'}
-                                            className={inputClass}
-                                            value={(() => { try { return JSON.parse(specsText)?.[field.key] ?? '' } catch { return '' } })()}
-                                            onChange={e => {
-                                                try {
-                                                    const parsed = JSON.parse(specsText)
-                                                    const val = field.type === 'number' ? (e.target.value === '' ? undefined : Number(e.target.value)) : e.target.value
-                                                    if (val === undefined) {
-                                                        delete parsed[field.key]
-                                                        setSpecsText(JSON.stringify(parsed, null, 2))
-                                                    } else {
-                                                        setSpecsText(JSON.stringify({ ...parsed, [field.key]: val }, null, 2))
+                                        {field.key === 'manufacturer' ? (
+                                            <select
+                                                className={inputClass}
+                                                value={(() => { try { return JSON.parse(specsText)?.manufacturer ?? '' } catch { return '' } })()}
+                                                onChange={e => {
+                                                    try {
+                                                        const parsed = JSON.parse(specsText)
+                                                        setSpecsText(JSON.stringify({ ...parsed, manufacturer: e.target.value }, null, 2))
+                                                    } catch {
+                                                        setSpecsText(JSON.stringify({ manufacturer: e.target.value }, null, 2))
                                                     }
-                                                } catch {
-                                                    setSpecsText(JSON.stringify({ [field.key]: e.target.value }, null, 2))
-                                                }
-                                            }}
-                                        />
+                                                }}
+                                            >
+                                                <option value="">Select manufacturer</option>
+                                                {manufacturers.map(m => <option key={m.id} value={m.name}>{m.name}</option>)}
+                                            </select>
+                                        ) : (
+                                            // existing input code unchanged
+                                            <input
+                                                type={field.type === 'number' ? 'number' : 'text'}
+                                                className={inputClass}
+                                                value={(() => { try { return JSON.parse(specsText)?.[field.key] ?? '' } catch { return '' } })()}
+                                                onChange={e => {
+                                                    try {
+                                                        const parsed = JSON.parse(specsText)
+                                                        const val = field.type === 'number' ? (e.target.value === '' ? undefined : Number(e.target.value)) : e.target.value
+                                                        if (val === undefined) {
+                                                            delete parsed[field.key]
+                                                            setSpecsText(JSON.stringify(parsed, null, 2))
+                                                        } else {
+                                                            setSpecsText(JSON.stringify({ ...parsed, [field.key]: val }, null, 2))
+                                                        }
+                                                    } catch {
+                                                        setSpecsText(JSON.stringify({ [field.key]: e.target.value }, null, 2))
+                                                    }
+                                                }}
+                                            />
+                                        )}
                                     </div>
                                 ))}
 
@@ -918,6 +951,64 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                         Cancel
                                     </button>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+                {tab === 'manufacturers' && (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6">
+                            <h2 className="text-lg font-semibold text-[#c6d4df] mb-6">
+                                {editingMfrId ? 'Edit Manufacturer' : 'Add Manufacturer'}
+                            </h2>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className={labelClass}>Name</label>
+                                    <input className={inputClass} value={mfrName} onChange={e => setMfrName(e.target.value)} placeholder="e.g. Intamin" />
+                                </div>
+                                <div className="flex gap-3">
+                                    <button onClick={async () => {
+                                        if (!mfrName.trim()) return
+                                        const slug = mfrName.trim().toLowerCase().replace(/\s+/g, '-')
+                                        if (editingMfrId) {
+                                            await supabase.from('manufacturers').update({ name: mfrName.trim() }).eq('id', editingMfrId)
+                                        } else {
+                                            await supabase.from('manufacturers').insert({ id: slug, name: mfrName.trim() })
+                                        }
+                                        setMfrName('')
+                                        setEditingMfrId(null)
+                                        loadManufacturers()
+                                        notify(editingMfrId ? 'Manufacturer updated' : 'Manufacturer added')
+                                    }} disabled={loading} className={btnPrimary}>
+                                        {editingMfrId ? 'Update' : 'Add Manufacturer'}
+                                    </button>
+                                    {editingMfrId && (
+                                        <button onClick={() => { setEditingMfrId(null); setMfrName('') }} className={btnSecondary}>Cancel</button>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6">
+                            <h2 className="text-lg font-semibold text-[#c6d4df] mb-4">Manufacturers ({manufacturers.length})</h2>
+                            <div className="space-y-2 max-h-[600px] overflow-y-auto">
+                                {manufacturers.map(m => (
+                                    <div key={m.id} className="flex items-center justify-between gap-3 p-3 bg-[#2a475e]/30 rounded-sm">
+                                        <div>
+                                            <p className="text-sm font-medium text-[#c6d4df]">{m.name}</p>
+                                            <p className="text-xs text-[#8f98a0]">{m.id}</p>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <button onClick={() => { setEditingMfrId(m.id); setMfrName(m.name) }} className={btnEdit}>Edit</button>
+                                            <button onClick={async () => {
+                                                if (!confirm(`Delete "${m.name}"?`)) return
+                                                await supabase.from('manufacturers').delete().eq('id', m.id)
+                                                loadManufacturers()
+                                                notify('Manufacturer deleted')
+                                            }} className={btnDanger}>Delete</button>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>

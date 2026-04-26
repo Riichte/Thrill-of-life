@@ -222,7 +222,7 @@ export default function ItemPageContent({ park, item, category, images, videos, 
   const [submitError, setSubmitError] = useState('')
   const [user, setUser] = useState<any>(null)
   const [userPoints, setUserPoints] = useState(0)
-
+  const [osts, setOsts] = useState<{ id: string; title: string }[]>([])
   const [reactions, setReactions] = useState<Record<string, ReviewReactions>>({})
   const [myReactions, setMyReactions] = useState<Record<string, UserReactions>>({})
   const dimensions = ratingDimensions[item.category_id] || ratingDimensions.rides
@@ -236,6 +236,14 @@ export default function ItemPageContent({ park, item, category, images, videos, 
     const load = async () => {
       const { data: { user } } = await supabase.auth.getUser()
       setUser(user)
+
+      useEffect(() => {
+        const loadOsts = async () => {
+          const { data } = await supabase.from('osts').select('id, title').eq('item_id', item.id)
+          setOsts(data ?? [])
+        }
+        loadOsts()
+      }, [item.id])
 
       // Load reactions for all reviews (works for logged out too)
       const reviewIds = reviews.map(r => r.id)
@@ -584,6 +592,15 @@ export default function ItemPageContent({ park, item, category, images, videos, 
             </SteamInfoPanel>
           </div>
         </div>
+
+        {/* Link to OST page - only show if OSTs exist */}
+        {osts && osts.length > 0 && (
+          <Link href={`/parks/${park.id}/${item.id}/osts`}
+            className="mt-8 inline-block px-6 py-3 rounded-sm text-white font-medium transition-colors"
+            style={{ background: 'var(--cta)' }}>
+            🎵 View Soundtrack ({osts.length})
+          </Link>
+        )}
 
         {/* Rating Modal */}
         {isRatingOpen && (

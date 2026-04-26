@@ -81,6 +81,7 @@ export default function Navbar() {
     { name: 'Shows', href: '/category/shows' },
     { name: 'Shops', href: '/category/shops' },
     { name: 'Hotels', href: '/category/hotels' },
+    { name: '🎵 Soundtracks', href: '/soundtracks' },
   ]
 
   const handleSearchSubmit = (val: string) => {

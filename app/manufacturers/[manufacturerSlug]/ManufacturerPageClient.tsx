@@ -98,7 +98,7 @@ export default function ManufacturerPageClient({ manufacturerName, manufacturerS
   const overallScore = communityScore ?? 0
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen style={{ background: 'var(--bg-tertiary)' }} style={{ color: 'var(--text-primary)' }}">
       <div className="container mx-auto px-4 py-8">
         <nav className="mb-6">
           <Link href="/manufacturers" className="text-blue-400 hover:text-blue-300 text-sm">Manufacturers</Link>
@@ -115,17 +115,17 @@ export default function ManufacturerPageClient({ manufacturerName, manufacturerS
           <div className="lg:col-span-2">
             {/* Top stats */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
-              <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-4 text-center">
-                <p className="text-2xl font-bold text-[#66c0f4]">{allRides.length}</p>
-                <p className="text-xs text-[#8f98a0] mt-0.5 uppercase tracking-wider">Total Rides</p>
+              <div className="style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-4 text-center">
+                <p className="text-2xl font-bold style={{ color: 'var(--accent)' }}">{allRides.length}</p>
+                <p className="text-xs style={{ color: 'var(--text-muted)' }} mt-0.5 uppercase tracking-wider">Total Rides</p>
               </div>
-              <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-4 text-center">
+              <div className="style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-4 text-center">
                 <p className="text-2xl font-bold text-emerald-400">{allRides.filter(r => r.avgScore !== null).length}</p>
-                <p className="text-xs text-[#8f98a0] mt-0.5 uppercase tracking-wider">Rated Rides</p>
+                <p className="text-xs style={{ color: 'var(--text-muted)' }} mt-0.5 uppercase tracking-wider">Rated Rides</p>
               </div>
-              <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-4 text-center">
+              <div className="style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-4 text-center">
                 <p className="text-2xl font-bold text-[#f59e0b]">{reviews.length}</p>
-                <p className="text-xs text-[#8f98a0] mt-0.5 uppercase tracking-wider">Reviews</p>
+                <p className="text-xs style={{ color: 'var(--text-muted)' }} mt-0.5 uppercase tracking-wider">Reviews</p>
               </div>
             </div>
 
@@ -137,7 +137,7 @@ export default function ManufacturerPageClient({ manufacturerName, manufacturerS
                   ? Math.round(review.review_ratings.reduce((s: number, r: any) => s + r.score, 0) / review.review_ratings.length)
                   : 0
                 return (
-                  <div key={review.id} className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-4 flex gap-4">
+                  <div key={review.id} className="style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-4 flex gap-4">
                     <svg className="w-16 h-16 flex-shrink-0" viewBox="0 0 100 100">
                       <circle cx="50" cy="50" r="45" fill="none" stroke="#2a475e" strokeWidth="4" />
                       <circle cx="50" cy="50" r="45" fill="none" stroke={getScoreColor(avg)} strokeWidth="4"
@@ -147,13 +147,13 @@ export default function ManufacturerPageClient({ manufacturerName, manufacturerS
                     </svg>
                     <div>
                       <p className="font-bold text-[#f59e0b]">{review.profiles?.username ?? 'Anonymous'}</p>
-                      {review.title && <p className="text-[#c6d4df] font-medium mt-1">{review.title}</p>}
-                      {review.body && <p className="text-sm text-[#acb2b8] mt-1">{review.body}</p>}
+                      {review.title && <p className="style={{ color: 'var(--text-primary)' }} font-medium mt-1">{review.title}</p>}
+                      {review.body && <p className="text-sm style={{ color: 'var(--text-secondary)' }} mt-1">{review.body}</p>}
                     </div>
                   </div>
                 )
               })}
-              {reviews.length === 0 && <p className="text-[#8f98a0] text-sm">No reviews yet. Be the first!</p>}
+              {reviews.length === 0 && <p className="style={{ color: 'var(--text-muted)' }} text-sm">No reviews yet. Be the first!</p>}
             </div>
           </div>
 
@@ -176,10 +176,10 @@ export default function ManufacturerPageClient({ manufacturerName, manufacturerS
         {isRatingOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-black/70" onClick={() => setIsRatingOpen(false)} />
-            <div className="relative z-10 w-full max-w-lg bg-[#1b2838] border border-[#2a475e] rounded-sm shadow-2xl">
-              <div className="flex items-center justify-between border-b border-[#2a475e] px-6 py-4">
-                <h2 className="text-lg font-semibold text-[#c6d4df]">Rate {manufacturerName}</h2>
-                <button onClick={() => setIsRatingOpen(false)} className="text-[#8f98a0] hover:text-white text-xl">✕</button>
+            <div className="relative z-10 w-full max-w-lg style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm shadow-2xl">
+              <div className="flex items-center justify-between border-b style={{ borderColor: 'var(--border)' }} px-6 py-4">
+                <h2 className="text-lg font-semibold style={{ color: 'var(--text-primary)' }}">Rate {manufacturerName}</h2>
+                <button onClick={() => setIsRatingOpen(false)} className="style={{ color: 'var(--text-muted)' }} hover:style={{ color: 'var(--text-primary)' }} text-xl">✕</button>
               </div>
               <div className="px-6 py-5 space-y-6 max-h-[40vh] overflow-y-auto">
                 {dimensions.map(d => {
@@ -187,8 +187,8 @@ export default function ManufacturerPageClient({ manufacturerName, manufacturerS
                   return (
                     <div key={d.id} className="space-y-2">
                       <div className="flex justify-between">
-                        <label className="text-sm font-medium text-[#c6d4df]">{d.label}</label>
-                        <span className="text-lg font-bold text-[#66c0f4]">{val}</span>
+                        <label className="text-sm font-medium style={{ color: 'var(--text-primary)' }}">{d.label}</label>
+                        <span className="text-lg font-bold style={{ color: 'var(--accent)' }}">{val}</span>
                       </div>
                       <input type="range" min="0" max="100" value={val}
                         onChange={e => setUserRatings(prev => ({ ...prev, [d.id]: parseInt(e.target.value) }))}
@@ -199,19 +199,19 @@ export default function ManufacturerPageClient({ manufacturerName, manufacturerS
                   )
                 })}
               </div>
-              <div className="px-6 pb-5 space-y-3 border-t border-[#2a475e] pt-5">
+              <div className="px-6 pb-5 space-y-3 border-t style={{ borderColor: 'var(--border)' }} pt-5">
                 <input type="text" placeholder="Review title" value={reviewTitle} onChange={e => setReviewTitle(e.target.value)}
-                  className="w-full bg-[#2a475e] border border-[#3d6a8a] rounded-sm px-3 py-2 text-sm text-[#c6d4df] placeholder-[#6a8a9a] focus:outline-none focus:border-[#66c0f4]" />
+                  className="w-full style={{ background: 'var(--bg-elevated)' }} border style={{ borderColor: 'var(--input-border)' }} rounded-sm px-3 py-2 text-sm style={{ color: 'var(--text-primary)' }} placeholder-[#6a8a9a] focus:outline-none style={{ outlineColor: 'var(--input-focus)' }}" />
                 <textarea placeholder="Share your thoughts..." value={reviewText} onChange={e => setReviewText(e.target.value)} rows={3}
-                  className="w-full bg-[#2a475e] border border-[#3d6a8a] rounded-sm px-3 py-2 text-sm text-[#c6d4df] placeholder-[#6a8a9a] focus:outline-none focus:border-[#66c0f4] resize-none" />
+                  className="w-full style={{ background: 'var(--bg-elevated)' }} border style={{ borderColor: 'var(--input-border)' }} rounded-sm px-3 py-2 text-sm style={{ color: 'var(--text-primary)' }} placeholder-[#6a8a9a] focus:outline-none style={{ outlineColor: 'var(--input-focus)' }} resize-none" />
                 {submitError && <p className="text-sm text-red-400">{submitError}</p>}
               </div>
-              <div className="flex items-center justify-between border-t border-[#2a475e] px-6 py-4">
-                <div className="text-sm text-[#8f98a0]">Your score: <span className="text-[#66c0f4] font-bold">{calculateMyScore()}</span></div>
+              <div className="flex items-center justify-between border-t style={{ borderColor: 'var(--border)' }} px-6 py-4">
+                <div className="text-sm style={{ color: 'var(--text-muted)' }}">Your score: <span className="style={{ color: 'var(--accent)' }} font-bold">{calculateMyScore()}</span></div>
                 <div className="flex gap-3">
-                  <button onClick={() => setIsRatingOpen(false)} className="px-4 py-2 text-sm text-[#8f98a0] hover:text-white">Cancel</button>
+                  <button onClick={() => setIsRatingOpen(false)} className="px-4 py-2 text-sm style={{ color: 'var(--text-muted)' }} hover:style={{ color: 'var(--text-primary)' }}">Cancel</button>
                   <button onClick={handleSubmit} disabled={submitting}
-                    className="px-5 py-2 bg-[#4c6b22] hover:bg-[#5a7a28] disabled:opacity-50 text-white text-sm font-medium rounded-sm">
+                    className="px-5 py-2 style={{ background: 'var(--cta)' }} hover:bg-[#5a7a28] disabled:opacity-50 style={{ color: 'var(--text-primary)' }} text-sm font-medium rounded-sm">
                     {submitting ? 'Saving...' : hasRated ? 'Update' : 'Submit'}
                   </button>
                 </div>
@@ -225,7 +225,7 @@ export default function ManufacturerPageClient({ manufacturerName, manufacturerS
           <div className="mb-8">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-2xl font-semibold">Top Rated Rides</h2>
-              <Link href={`/manufacturers/${manufacturerSlug}/rides`} className="text-sm text-[#66c0f4] hover:text-[#8fcefa]">
+              <Link href={`/manufacturers/${manufacturerSlug}/rides`} className="text-sm style={{ color: 'var(--accent)' }} hover:text-[#8fcefa]">
                 View all {allRides.length} rides →
               </Link>
             </div>

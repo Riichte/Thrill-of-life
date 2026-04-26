@@ -53,20 +53,20 @@ export function RecentReviewsCarousel({ reviews }: { reviews: RecentReview[] }) 
     <section className="mb-14">
       <div className="mb-4 flex items-end gap-4">
         <div>
-          <h2 className="text-xl font-bold text-white">Recently Reviewed</h2>
+          <h2 className="text-xl font-bold style={{ color: 'var(--text-primary)' }}">Recently Reviewed</h2>
           <p className="text-sm text-gray-400">Latest community reviews</p>
         </div>
         <div className="flex gap-2">
           <button
             onClick={() => scroll(-1)}
-            className="rounded-sm bg-[#16202d] p-1.5 text-[#66c0f4] hover:bg-[#1b2838] transition"
+            className="rounded-sm bg-[#16202d] p-1.5 style={{ color: 'var(--accent)' }} hover:style={{ background: 'var(--card-bg)' }} transition"
             aria-label="Scroll left"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
           <button
             onClick={() => scroll(1)}
-            className="rounded-sm bg-[#16202d] p-1.5 text-[#66c0f4] hover:bg-[#1b2838] transition"
+            className="rounded-sm bg-[#16202d] p-1.5 style={{ color: 'var(--accent)' }} hover:style={{ background: 'var(--card-bg)' }} transition"
             aria-label="Scroll right"
           >
             <ChevronRight className="h-5 w-5" />
@@ -83,7 +83,7 @@ export function RecentReviewsCarousel({ reviews }: { reviews: RecentReview[] }) 
           <Link
             key={r.id}
             href={`/parks/${r.parkId}/${r.itemId}`}
-            className={`flex-shrink-0 w-56 rounded-lg border bg-[#16202d] p-4 hover:bg-[#1b2838] transition group ${r.score !== null ? scoreBorder(r.score) : 'border-white/10'
+            className={`flex-shrink-0 w-56 rounded-lg border bg-[#16202d] p-4 hover:style={{ background: 'var(--card-bg)' }} transition group ${r.score !== null ? scoreBorder(r.score) : 'border-white/10'
               }`}
           >
             {/* Score */}
@@ -100,7 +100,7 @@ export function RecentReviewsCarousel({ reviews }: { reviews: RecentReview[] }) 
             </div>
 
             {/* Item name */}
-            <p className="text-sm font-semibold text-white leading-tight group-hover:text-[#66c0f4] transition line-clamp-2">
+            <p className="text-sm font-semibold style={{ color: 'var(--text-primary)' }} leading-tight group-hover:style={{ color: 'var(--accent)' }} transition line-clamp-2">
               {r.itemName}
             </p>
 
@@ -111,7 +111,7 @@ export function RecentReviewsCarousel({ reviews }: { reviews: RecentReview[] }) 
             <div className="mt-3 border-t border-white/10 pt-2" suppressHydrationWarning>
               <span
                 onClick={e => { e.preventDefault(); e.stopPropagation(); window.location.href = `/users/${r.userId}` }}
-                className="text-xs text-[#66c0f4] hover:underline cursor-pointer"
+                className="text-xs style={{ color: 'var(--accent)' }} hover:underline cursor-pointer"
               >
                 {r.username}
               </span>

@@ -102,15 +102,15 @@ export default function ImageManager({ items: initialItems, categories, parks }:
   };
 
   return (
-    <div className="space-y-6 bg-[#1b2838] border border-[#2a475e] rounded-sm p-6">
+    <div className="space-y-6 style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-6">
       {/* Search Section */}
       <div>
-        <h3 className="text-lg font-bold mb-4 text-[#c6d4df]">Search & Add Images</h3>
+        <h3 className="text-lg font-bold mb-4 style={{ color: 'var(--text-primary)' }}">Search & Add Images</h3>
 
         <div className="space-y-4">
           {/* Category Dropdown */}
           <div>
-            <label className="block text-xs font-medium uppercase tracking-wider text-[#8f98a0] mb-2">
+            <label className="block text-xs font-medium uppercase tracking-wider style={{ color: 'var(--text-muted)' }} mb-2">
               Category *
             </label>
             <select
@@ -120,7 +120,7 @@ export default function ImageManager({ items: initialItems, categories, parks }:
                 setSelectedItem('');
                 setResults([]);
               }}
-              className="w-full bg-[#2a475e] border border-[#3d6a8a] rounded-sm px-3 py-2 text-sm text-[#c6d4df] focus:outline-none focus:border-[#66c0f4]"
+              className="w-full style={{ background: 'var(--bg-elevated)' }} border style={{ borderColor: 'var(--input-border)' }} rounded-sm px-3 py-2 text-sm style={{ color: 'var(--text-primary)' }} focus:outline-none style={{ outlineColor: 'var(--input-focus)' }}"
             >
               <option value="">-- Select Category --</option>
               {categories.map(cat => (
@@ -133,13 +133,13 @@ export default function ImageManager({ items: initialItems, categories, parks }:
           {/* Item Dropdown */}
           {selectedCategory && selectedCategory !== 'parks' && (
             <div>
-              <label className="block text-xs font-medium uppercase tracking-wider text-[#8f98a0] mb-2">
+              <label className="block text-xs font-medium uppercase tracking-wider style={{ color: 'var(--text-muted)' }} mb-2">
                 Item *
               </label>
               <select
                 value={selectedItem}
                 onChange={(e) => { setSelectedItem(e.target.value); setResults([]) }}
-                className="w-full bg-[#2a475e] border border-[#3d6a8a] rounded-sm px-3 py-2 text-sm text-[#c6d4df] focus:outline-none focus:border-[#66c0f4]"
+                className="w-full style={{ background: 'var(--bg-elevated)' }} border style={{ borderColor: 'var(--input-border)' }} rounded-sm px-3 py-2 text-sm style={{ color: 'var(--text-primary)' }} focus:outline-none style={{ outlineColor: 'var(--input-focus)' }}"
               >
                 <option value="">-- Select Item --</option>
                 {filteredItems.map(item => (
@@ -150,13 +150,13 @@ export default function ImageManager({ items: initialItems, categories, parks }:
           )}
           {selectedCategory === 'parks' && (
             <div>
-              <label className="block text-xs font-medium uppercase tracking-wider text-[#8f98a0] mb-2">
+              <label className="block text-xs font-medium uppercase tracking-wider style={{ color: 'var(--text-muted)' }} mb-2">
                 Park *
               </label>
               <select
                 value={selectedItem}
                 onChange={(e) => { setSelectedItem(e.target.value); setResults([]) }}
-                className="w-full bg-[#2a475e] border border-[#3d6a8a] rounded-sm px-3 py-2 text-sm text-[#c6d4df] focus:outline-none focus:border-[#66c0f4]"
+                className="w-full style={{ background: 'var(--bg-elevated)' }} border style={{ borderColor: 'var(--input-border)' }} rounded-sm px-3 py-2 text-sm style={{ color: 'var(--text-primary)' }} focus:outline-none style={{ outlineColor: 'var(--input-focus)' }}"
               >
                 <option value="">-- Select Park --</option>
                 {parks.map(park => (
@@ -174,12 +174,12 @@ export default function ImageManager({ items: initialItems, categories, parks }:
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search images..."
-                className="flex-1 bg-[#2a475e] border border-[#3d6a8a] rounded-sm px-3 py-2 text-sm text-[#c6d4df] placeholder-[#6a8a9a] focus:outline-none focus:border-[#66c0f4]"
+                className="flex-1 style={{ background: 'var(--bg-elevated)' }} border style={{ borderColor: 'var(--input-border)' }} rounded-sm px-3 py-2 text-sm style={{ color: 'var(--text-primary)' }} placeholder-[#6a8a9a] focus:outline-none style={{ outlineColor: 'var(--input-focus)' }}"
               />
               <button
                 type="submit"
                 disabled={!selectedItem || loading}
-                className="px-4 py-2 bg-[#4c6b22] hover:bg-[#5a7a28] disabled:opacity-50 text-white text-sm font-medium rounded-sm transition-colors"
+                className="px-4 py-2 style={{ background: 'var(--cta)' }} hover:bg-[#5a7a28] disabled:opacity-50 style={{ color: 'var(--text-primary)' }} text-sm font-medium rounded-sm transition-colors"
               >
                 {loading ? 'Searching...' : 'Search'}
               </button>
@@ -191,7 +191,7 @@ export default function ImageManager({ items: initialItems, categories, parks }:
         {results.length > 0 && (
           <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-4">
             {results.map((image, idx) => (
-              <div key={idx} className="border border-[#2a475e] rounded-sm overflow-hidden bg-[#0e1419]">
+              <div key={idx} className="border style={{ borderColor: 'var(--border)' }} rounded-sm overflow-hidden bg-[#0e1419]">
                 <img
                   src={image.url}
                   alt={image.title}
@@ -201,22 +201,22 @@ export default function ImageManager({ items: initialItems, categories, parks }:
                   }}
                 />
                 <div className="p-2 space-y-1">
-                  <p className="font-semibold text-xs text-[#c6d4df] line-clamp-2">{image.title}</p>
-                  <p className="text-xs text-[#8f98a0] line-clamp-1">{image.attribution}</p>
+                  <p className="font-semibold text-xs style={{ color: 'var(--text-primary)' }} line-clamp-2">{image.title}</p>
+                  <p className="text-xs style={{ color: 'var(--text-muted)' }} line-clamp-1">{image.attribution}</p>
                   <p className="text-xs text-[#6a8a9a]">{image.source}</p>
                   <button
                     onClick={() => handleSaveImage(image, idx)}
-                    className="mt-2 w-full px-2 py-1 bg-[#4c6b22] hover:bg-[#5a7a28] text-white text-xs rounded-sm transition-colors"
+                    className="mt-2 w-full px-2 py-1 style={{ background: 'var(--cta)' }} hover:bg-[#5a7a28] style={{ color: 'var(--text-primary)' }} text-xs rounded-sm transition-colors"
                   >
                     Save
                   </button>
                 </div>
                 <div className="text-xs text-[#6a8a9a] mb-2">
-                  <label className="block text-xs font-medium text-[#8f98a0] mb-1">Use as:</label>
+                  <label className="block text-xs font-medium style={{ color: 'var(--text-muted)' }} mb-1">Use as:</label>
                   <select
                     id={`sort-${idx}`}
                     defaultValue="1"
-                    className="w-full bg-[#2a475e] border border-[#3d6a8a] rounded-sm px-2 py-1 text-xs text-[#c6d4df]"
+                    className="w-full style={{ background: 'var(--bg-elevated)' }} border style={{ borderColor: 'var(--input-border)' }} rounded-sm px-2 py-1 text-xs style={{ color: 'var(--text-primary)' }}"
                   >
                     <option value="0">Main</option>
                     <option value="1">Logo</option>     
@@ -234,10 +234,10 @@ export default function ImageManager({ items: initialItems, categories, parks }:
       </div>
 
       {/* Saved Images Section */}
-      <div className="border-t border-[#2a475e] pt-6">
+      <div className="border-t style={{ borderColor: 'var(--border)' }} pt-6">
         <button
           onClick={() => setShowSaved(!showSaved)}
-          className="text-[#66c0f4] hover:text-[#c6d4df] font-bold text-sm"
+          className="style={{ color: 'var(--accent)' }} hover:style={{ color: 'var(--text-primary)' }} font-bold text-sm"
         >
           {showSaved ? '▼' : '▶'} Saved Images ({savedImages.length})
         </button>
@@ -245,12 +245,12 @@ export default function ImageManager({ items: initialItems, categories, parks }:
         {showSaved && (
           <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
             {savedImages.length === 0 ? (
-              <p className="text-sm text-[#8f98a0] col-span-full">No images saved yet.</p>
+              <p className="text-sm style={{ color: 'var(--text-muted)' }} col-span-full">No images saved yet.</p>
             ) : (
               savedImages.map(image => (
                 <div
                   key={image.id}
-                  className="border border-[#2a475e] rounded-sm overflow-hidden bg-[#0e1419] relative group"
+                  className="border style={{ borderColor: 'var(--border)' }} rounded-sm overflow-hidden bg-[#0e1419] relative group"
                 >
                   <img
                     src={image.url}
@@ -261,7 +261,7 @@ export default function ImageManager({ items: initialItems, categories, parks }:
                     }}
                   />
                   <div className="p-2 text-xs">
-                    <p className="text-[#8f98a0] truncate">
+                    <p className="style={{ color: 'var(--text-muted)' }} truncate">
                       {initialItems.find(i => i.id === image.item_id)?.name || 'Unknown'}
                     </p>
                     {image.attribution_author && (
@@ -271,7 +271,7 @@ export default function ImageManager({ items: initialItems, categories, parks }:
                   <button
                     onClick={() => handleDeleteImage(image.id)}
                     disabled={deleting === image.id}
-                    className="absolute top-1 right-1 px-2 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-sm opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-50"
+                    className="absolute top-1 right-1 px-2 py-1 bg-red-500 hover:bg-red-600 style={{ color: 'var(--text-primary)' }} text-xs rounded-sm opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-50"
                   >
                     {deleting === image.id ? '...' : 'Delete'}
                   </button>

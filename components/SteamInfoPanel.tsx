@@ -80,7 +80,7 @@ export function SteamInfoPanel({
           <img src={headerImage} alt={headerImageAlt} className="h-full w-full object-contain p-4" />
           <div className="absolute inset-0 bg-gradient-to-t from-[var(--card-bg)] via-transparent to-transparent" />
           {ribbon && (
-            <span className="absolute left-3 top-3 rounded-sm px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white"
+            <span className="absolute left-3 top-3 rounded-sm px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide style={{ color: 'var(--text-primary)' }}"
               style={{ background: 'var(--cta)' }}>
               {ribbon}
             </span>
@@ -139,7 +139,7 @@ export function SteamInfoPanel({
             </p>
             {!hasRated && (
               <button onClick={onRateClick}
-                className="w-fit text-white text-xs font-medium px-3 py-1.5 rounded-sm transition-colors"
+                className="w-fit style={{ color: 'var(--text-primary)' }} text-xs font-medium px-3 py-1.5 rounded-sm transition-colors"
                 style={{ background: 'var(--cta)' }}
                 onMouseEnter={e => (e.currentTarget.style.background = 'var(--cta-hover)')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'var(--cta)')}>

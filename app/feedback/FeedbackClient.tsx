@@ -31,16 +31,16 @@ export default function FeedbackClient() {
     }
   }
 
-  const inputClass = 'w-full bg-[#2a475e] border border-[#3d6a8a] rounded-sm px-3 py-2 text-sm text-[#c6d4df] placeholder-[#6a8a9a] focus:outline-none focus:border-[#66c0f4]'
-  const labelClass = 'block text-xs font-medium uppercase tracking-wider text-[#8f98a0] mb-1'
+  const inputClass = 'w-full style={{ background: 'var(--bg-elevated)' }} border style={{ borderColor: 'var(--input-border)' }} rounded-sm px-3 py-2 text-sm style={{ color: 'var(--text-primary)' }} placeholder-[#6a8a9a] focus:outline-none style={{ outlineColor: 'var(--input-focus)' }}'
+  const labelClass = 'block text-xs font-medium uppercase tracking-wider style={{ color: 'var(--text-muted)' }} mb-1'
 
   if (submitted) return (
-    <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
+    <div className="min-h-screen style={{ background: 'var(--bg-tertiary)' }} style={{ color: 'var(--text-primary)' }} flex items-center justify-center">
       <div className="text-center max-w-md">
         <div className="text-6xl mb-6">💬</div>
-        <h1 className="text-3xl font-bold text-[#c6d4df] mb-4">Thanks for your feedback!</h1>
-        <p className="text-[#acb2b8] mb-6">We read every submission and use it to improve the site.</p>
-        <Link href="/" className="bg-[#4c6b22] hover:bg-[#5a7a28] text-white px-6 py-3 rounded-sm font-medium transition-colors">
+        <h1 className="text-3xl font-bold style={{ color: 'var(--text-primary)' }} mb-4">Thanks for your feedback!</h1>
+        <p className="style={{ color: 'var(--text-secondary)' }} mb-6">We read every submission and use it to improve the site.</p>
+        <Link href="/" className="style={{ background: 'var(--cta)' }} hover:bg-[#5a7a28] style={{ color: 'var(--text-primary)' }} px-6 py-3 rounded-sm font-medium transition-colors">
           Back to Home
         </Link>
       </div>
@@ -48,7 +48,7 @@ export default function FeedbackClient() {
   )
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen style={{ background: 'var(--bg-tertiary)' }} style={{ color: 'var(--text-primary)' }}">
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         <nav className="mb-6">
           <Link href="/" className="text-blue-400 hover:text-blue-300 text-sm">Home</Link>
@@ -58,10 +58,10 @@ export default function FeedbackClient() {
 
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">Leave Feedback</h1>
-          <p className="text-[#acb2b8]">Bug report, feature request, or general suggestion — we'd love to hear it.</p>
+          <p className="style={{ color: 'var(--text-secondary)' }}">Bug report, feature request, or general suggestion — we'd love to hear it.</p>
         </div>
 
-        <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6 space-y-4">
+        <div className="style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-6 space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className={labelClass}>Your Name (optional)</label>
@@ -91,7 +91,7 @@ export default function FeedbackClient() {
           {error && <p className="text-sm text-red-400">{error}</p>}
 
           <button onClick={handleSubmit} disabled={submitting}
-            className="w-full py-3 bg-[#4c6b22] hover:bg-[#5a7a28] disabled:opacity-50 text-white font-medium rounded-sm transition-colors">
+            className="w-full py-3 style={{ background: 'var(--cta)' }} hover:bg-[#5a7a28] disabled:opacity-50 style={{ color: 'var(--text-primary)' }} font-medium rounded-sm transition-colors">
             {submitting ? 'Sending...' : 'Send Feedback'}
           </button>
         </div>

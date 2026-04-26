@@ -119,10 +119,10 @@ export default async function Home() {
 
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen style={{ background: 'var(--bg-tertiary)' }} style={{ color: 'var(--text-primary)' }}">
       <div className="border-b border-white/10 bg-[#0a0f16]">
         <div className="container mx-auto px-4 py-10 text-center md:py-14">
-          <h1 className="font-logo text-4xl font-bold tracking-tight text-white md:text-5xl">
+          <h1 className="font-logo text-4xl font-bold tracking-tight style={{ color: 'var(--text-primary)' }} md:text-5xl">
             Theme Park Review
           </h1>
           <p className="mx-auto mt-3 max-w-2xl text-gray-400">
@@ -190,18 +190,18 @@ export default async function Home() {
 
         <div className="mt-6 grid grid-cols-1 gap-6 border-t border-white/10 pt-12 md:grid-cols-3">
           <div className="rounded-xl border border-white/10 bg-gray-800/80 p-6">
-            <h2 className="mb-3 text-lg font-semibold text-[#66c0f4]">Explore</h2>
+            <h2 className="mb-3 text-lg font-semibold style={{ color: 'var(--accent)' }}">Explore</h2>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/parks" className="text-gray-300 hover:text-white">All parks</Link></li>
-              <li><Link href="/category/roller-coasters" className="text-gray-300 hover:text-white">Roller Coasters</Link></li>
+              <li><Link href="/parks" className="text-gray-300 hover:style={{ color: 'var(--text-primary)' }}">All parks</Link></li>
+              <li><Link href="/category/roller-coasters" className="text-gray-300 hover:style={{ color: 'var(--text-primary)' }}">Roller Coasters</Link></li>
             </ul>
           </div>
           <div className="rounded-xl border border-white/10 bg-gray-800/80 p-6">
             <h2 className="mb-3 text-lg font-semibold text-emerald-400">Account</h2>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/auth/login" className="text-gray-300 hover:text-white">Login</Link></li>
-              <li><Link href="/auth/signup" className="text-gray-300 hover:text-white">Sign up</Link></li>
-              <li><Link href="/dashboard" className="text-gray-300 hover:text-white">Dashboard</Link></li>
+              <li><Link href="/auth/login" className="text-gray-300 hover:style={{ color: 'var(--text-primary)' }}">Login</Link></li>
+              <li><Link href="/auth/signup" className="text-gray-300 hover:style={{ color: 'var(--text-primary)' }}">Sign up</Link></li>
+              <li><Link href="/dashboard" className="text-gray-300 hover:style={{ color: 'var(--text-primary)' }}">Dashboard</Link></li>
             </ul>
           </div>
           <div className="rounded-xl border border-white/10 bg-gray-800/80 p-6">

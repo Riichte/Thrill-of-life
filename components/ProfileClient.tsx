@@ -229,7 +229,7 @@ export default function ProfileClient({
   const hasSocials = Object.values(socials).some(Boolean)
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen style={{ background: 'var(--bg-tertiary)' }} style={{ color: 'var(--text-primary)' }}">
 
       {/* Banner */}
       <div className="h-36 bg-gradient-to-r from-[#0e1621] via-[#2a475e] to-[#0e1621]" />
@@ -239,7 +239,7 @@ export default function ProfileClient({
         {/* Profile header */}
         <div className="relative -mt-14 mb-8 flex flex-col sm:flex-row items-start sm:items-end gap-4">
           {/* Avatar */}
-          <div className="w-28 h-28 rounded-full bg-gradient-to-br from-[#2a475e] to-[#1b2838] border-4 border-gray-900 flex items-center justify-center text-5xl font-bold text-[#66c0f4] flex-shrink-0 shadow-xl">
+          <div className="w-28 h-28 rounded-full bg-gradient-to-br from-[#2a475e] to-[#1b2838] border-4 border-gray-900 flex items-center justify-center text-5xl font-bold style={{ color: 'var(--accent)' }} flex-shrink-0 shadow-xl">
             {username?.[0]?.toUpperCase() ?? '?'}
           </div>
 
@@ -250,25 +250,25 @@ export default function ProfileClient({
                 <input
                   value={usernameInput}
                   onChange={e => setUsernameInput(e.target.value)}
-                  className="bg-[#2a475e] border border-[#3d6a8a] rounded-sm px-3 py-1 text-xl font-bold text-[#c6d4df] focus:outline-none focus:border-[#66c0f4]"
+                  className="style={{ background: 'var(--bg-elevated)' }} border style={{ borderColor: 'var(--input-border)' }} rounded-sm px-3 py-1 text-xl font-bold style={{ color: 'var(--text-primary)' }} focus:outline-none style={{ outlineColor: 'var(--input-focus)' }}"
                 />
                 <button onClick={handleSaveUsername} disabled={saving}
-                  className="px-3 py-1 bg-[#4c6b22] hover:bg-[#5a7a28] text-white text-sm rounded-sm disabled:opacity-50">
+                  className="px-3 py-1 style={{ background: 'var(--cta)' }} hover:bg-[#5a7a28] style={{ color: 'var(--text-primary)' }} text-sm rounded-sm disabled:opacity-50">
                   {saving ? 'Saving...' : 'Save'}
                 </button>
                 <button onClick={() => setIsEditingUsername(false)}
-                  className="px-3 py-1 text-[#8f98a0] hover:text-white text-sm">Cancel</button>
+                  className="px-3 py-1 style={{ color: 'var(--text-muted)' }} hover:style={{ color: 'var(--text-primary)' }} text-sm">Cancel</button>
               </div>
             ) : (
               <div className="flex items-center gap-2 mb-1">
-                <h1 className="text-3xl font-bold text-white">{username || 'Unknown'}</h1>
+                <h1 className="text-3xl font-bold style={{ color: 'var(--text-primary)' }}">{username || 'Unknown'}</h1>
                 {isOwnProfile && (
                   <button onClick={() => setIsEditingUsername(true)}
-                    className="text-xs text-[#8f98a0] hover:text-[#66c0f4] transition-colors">✏️</button>
+                    className="text-xs style={{ color: 'var(--text-muted)' }} hover:style={{ color: 'var(--accent)' }} transition-colors">✏️</button>
                 )}
               </div>
             )}
-            <p className="text-sm text-[#8f98a0]">Member since {joinedYear}</p>
+            <p className="text-sm style={{ color: 'var(--text-muted)' }}">Member since {joinedYear}</p>
           </div>
 
           {/* Follow button */}
@@ -277,8 +277,8 @@ export default function ProfileClient({
               <button
                 onClick={handleFollow}
                 className={`px-6 py-2 rounded-sm text-sm font-medium transition-colors ${isFollowing
-                  ? 'bg-[#2a475e] hover:bg-red-900/40 text-[#c6d4df] hover:text-red-400 border border-[#3d6a8a]'
-                  : 'bg-[#4c6b22] hover:bg-[#5a7a28] text-white'}`}
+                  ? 'style={{ background: 'var(--bg-elevated)' }} hover:bg-red-900/40 style={{ color: 'var(--text-primary)' }} hover:text-red-400 border style={{ borderColor: 'var(--input-border)' }}'
+                  : 'style={{ background: 'var(--cta)' }} hover:bg-[#5a7a28] style={{ color: 'var(--text-primary)' }}'}`}
               >
                 {isFollowing ? 'Unfollow' : '+ Follow'}
               </button>
@@ -293,12 +293,12 @@ export default function ProfileClient({
           <div className="lg:col-span-1 space-y-4">
 
             {/* Bio */}
-            <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-4">
+            <div className="style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-4">
               <div className="flex items-center justify-between mb-2">
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-[#8f98a0]">Bio</h3>
+                <h3 className="text-xs font-semibold uppercase tracking-wider style={{ color: 'var(--text-muted)' }}">Bio</h3>
                 {isOwnProfile && !isEditingBio && (
                   <button onClick={() => setIsEditingBio(true)}
-                    className="text-xs text-[#8f98a0] hover:text-[#66c0f4] transition-colors">✏️ Edit</button>
+                    className="text-xs style={{ color: 'var(--text-muted)' }} hover:style={{ color: 'var(--accent)' }} transition-colors">✏️ Edit</button>
                 )}
               </div>
               {isEditingBio ? (
@@ -308,52 +308,52 @@ export default function ProfileClient({
                     onChange={e => setBioInput(e.target.value)}
                     rows={4}
                     placeholder="Tell the community about yourself..."
-                    className="w-full bg-[#2a475e] border border-[#3d6a8a] rounded-sm px-3 py-2 text-sm text-[#c6d4df] placeholder-[#6a8a9a] focus:outline-none focus:border-[#66c0f4] resize-none"
+                    className="w-full style={{ background: 'var(--bg-elevated)' }} border style={{ borderColor: 'var(--input-border)' }} rounded-sm px-3 py-2 text-sm style={{ color: 'var(--text-primary)' }} placeholder-[#6a8a9a] focus:outline-none style={{ outlineColor: 'var(--input-focus)' }} resize-none"
                   />
                   <div className="flex gap-2">
                     <button onClick={handleSaveBio} disabled={saving}
-                      className="px-3 py-1 bg-[#4c6b22] hover:bg-[#5a7a28] text-white text-xs rounded-sm disabled:opacity-50">
+                      className="px-3 py-1 style={{ background: 'var(--cta)' }} hover:bg-[#5a7a28] style={{ color: 'var(--text-primary)' }} text-xs rounded-sm disabled:opacity-50">
                       {saving ? 'Saving...' : 'Save'}
                     </button>
                     <button onClick={() => { setIsEditingBio(false); setBioInput(bio) }}
-                      className="px-3 py-1 text-[#8f98a0] hover:text-white text-xs">Cancel</button>
+                      className="px-3 py-1 style={{ color: 'var(--text-muted)' }} hover:style={{ color: 'var(--text-primary)' }} text-xs">Cancel</button>
                   </div>
                 </div>
               ) : (
-                <p className="text-sm text-[#acb2b8] leading-relaxed">
+                <p className="text-sm style={{ color: 'var(--text-secondary)' }} leading-relaxed">
                   {bio || <span className="text-[#4a6a82] italic">{isOwnProfile ? 'Add a bio...' : 'No bio yet.'}</span>}
                 </p>
               )}
             </div>
 
             {/* Stats */}
-            <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-4">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-[#8f98a0] mb-3">Stats</h3>
+            <div className="style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-4">
+              <h3 className="text-xs font-semibold uppercase tracking-wider style={{ color: 'var(--text-muted)' }} mb-3">Stats</h3>
               <div className="space-y-2.5">
                 <div className="flex justify-between text-sm">
-                  <span className="text-[#8f98a0]">Points</span>
+                  <span className="style={{ color: 'var(--text-muted)' }}">Points</span>
                   <span className="text-[#f59e0b] font-bold">🏅 {points}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-[#8f98a0]">Avg Score Given</span>
-                  <span className="text-[#c6d4df] font-semibold">{avgScore ?? '—'}</span>
+                  <span className="style={{ color: 'var(--text-muted)' }}">Avg Score Given</span>
+                  <span className="style={{ color: 'var(--text-primary)' }} font-semibold">{avgScore ?? '—'}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-[#8f98a0]">Followers</span>
-                  <span className="text-[#c6d4df] font-semibold">{followerCountState}</span>
+                  <span className="style={{ color: 'var(--text-muted)' }}">Followers</span>
+                  <span className="style={{ color: 'var(--text-primary)' }} font-semibold">{followerCountState}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-[#8f98a0]">Following</span>
-                  <span className="text-[#c6d4df] font-semibold">{followingCount}</span>
+                  <span className="style={{ color: 'var(--text-muted)' }}">Following</span>
+                  <span className="style={{ color: 'var(--text-primary)' }} font-semibold">{followingCount}</span>
                 </div>
 
                 {/* Home Park */}
-                <div className="border-t border-[#2a475e] pt-2.5 mt-1">
+                <div className="border-t style={{ borderColor: 'var(--border)' }} pt-2.5 mt-1">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs text-[#8f98a0]">Home Park</span>
+                    <span className="text-xs style={{ color: 'var(--text-muted)' }}">Home Park</span>
                     {isOwnProfile && !isEditingHomePark && (
                       <button onClick={() => setIsEditingHomePark(true)}
-                        className="text-xs text-[#8f98a0] hover:text-[#66c0f4] transition-colors">✏️</button>
+                        className="text-xs style={{ color: 'var(--text-muted)' }} hover:style={{ color: 'var(--accent)' }} transition-colors">✏️</button>
                     )}
                   </div>
                   {isEditingHomePark ? (
@@ -361,23 +361,23 @@ export default function ProfileClient({
                       <select
                         value={homeParkInput}
                         onChange={e => setHomeParkInput(e.target.value)}
-                        className="w-full bg-[#2a475e] border border-[#3d6a8a] rounded-sm px-2 py-1 text-xs text-[#c6d4df] focus:outline-none focus:border-[#66c0f4]"
+                        className="w-full style={{ background: 'var(--bg-elevated)' }} border style={{ borderColor: 'var(--input-border)' }} rounded-sm px-2 py-1 text-xs style={{ color: 'var(--text-primary)' }} focus:outline-none style={{ outlineColor: 'var(--input-focus)' }}"
                       >
                         <option value="">— None —</option>
                         {parks.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                       </select>
                       <div className="flex gap-2">
                         <button onClick={handleSaveHomePark} disabled={saving}
-                          className="px-2 py-1 bg-[#4c6b22] hover:bg-[#5a7a28] text-white text-xs rounded-sm disabled:opacity-50">
+                          className="px-2 py-1 style={{ background: 'var(--cta)' }} hover:bg-[#5a7a28] style={{ color: 'var(--text-primary)' }} text-xs rounded-sm disabled:opacity-50">
                           {saving ? '...' : 'Save'}
                         </button>
                         <button onClick={() => { setIsEditingHomePark(false); setHomeParkInput(homeParkId) }}
-                          className="px-2 py-1 text-[#8f98a0] hover:text-white text-xs">Cancel</button>
+                          className="px-2 py-1 style={{ color: 'var(--text-muted)' }} hover:style={{ color: 'var(--text-primary)' }} text-xs">Cancel</button>
                       </div>
                     </div>
                   ) : (
                     homeParkId ? (
-                      <Link href={`/parks/${homeParkId}`} className="text-sm text-[#66c0f4] hover:underline">
+                      <Link href={`/parks/${homeParkId}`} className="text-sm style={{ color: 'var(--accent)' }} hover:underline">
                         🏠 {parks.find(p => p.id === homeParkId)?.name ?? homeParkId}
                       </Link>
                     ) : (
@@ -391,12 +391,12 @@ export default function ProfileClient({
             </div>
 
             {/* Socials */}
-            <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-4">
+            <div className="style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-4">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-[#8f98a0]">Socials</h3>
+                <h3 className="text-xs font-semibold uppercase tracking-wider style={{ color: 'var(--text-muted)' }}">Socials</h3>
                 {isOwnProfile && !isEditingSocials && (
                   <button onClick={() => setIsEditingSocials(true)}
-                    className="text-xs text-[#8f98a0] hover:text-[#66c0f4] transition-colors">✏️ Edit</button>
+                    className="text-xs style={{ color: 'var(--text-muted)' }} hover:style={{ color: 'var(--accent)' }} transition-colors">✏️ Edit</button>
                 )}
               </div>
               {isEditingSocials ? (
@@ -406,16 +406,16 @@ export default function ProfileClient({
                       placeholder={key.charAt(0).toUpperCase() + key.slice(1) + ' username'}
                       value={socialsInput[key]}
                       onChange={e => setSocialsInput({ ...socialsInput, [key]: e.target.value })}
-                      className="w-full bg-[#2a475e] border border-[#3d6a8a] rounded-sm px-3 py-1.5 text-sm text-[#c6d4df] placeholder-[#6a8a9a] focus:outline-none focus:border-[#66c0f4]"
+                      className="w-full style={{ background: 'var(--bg-elevated)' }} border style={{ borderColor: 'var(--input-border)' }} rounded-sm px-3 py-1.5 text-sm style={{ color: 'var(--text-primary)' }} placeholder-[#6a8a9a] focus:outline-none style={{ outlineColor: 'var(--input-focus)' }}"
                     />
                   ))}
                   <div className="flex gap-2 pt-1">
                     <button onClick={handleSaveSocials} disabled={saving}
-                      className="px-3 py-1 bg-[#4c6b22] hover:bg-[#5a7a28] text-white text-xs rounded-sm disabled:opacity-50">
+                      className="px-3 py-1 style={{ background: 'var(--cta)' }} hover:bg-[#5a7a28] style={{ color: 'var(--text-primary)' }} text-xs rounded-sm disabled:opacity-50">
                       {saving ? 'Saving...' : 'Save'}
                     </button>
                     <button onClick={() => { setIsEditingSocials(false); setSocialsInput({ ...socials }) }}
-                      className="px-3 py-1 text-[#8f98a0] hover:text-white text-xs">Cancel</button>
+                      className="px-3 py-1 style={{ color: 'var(--text-muted)' }} hover:style={{ color: 'var(--text-primary)' }} text-xs">Cancel</button>
                   </div>
                 </div>
               ) : (
@@ -430,7 +430,7 @@ export default function ProfileClient({
                   )}
                   {socials.tiktok && (
                     <a href={`https://tiktok.com/@${socials.tiktok}`} target="_blank" rel="noopener noreferrer"
-                      className="text-white hover:text-gray-300 transition-colors"><FaTiktok size={20} /></a>
+                      className="style={{ color: 'var(--text-primary)' }} hover:text-gray-300 transition-colors"><FaTiktok size={20} /></a>
                   )}
                   {socials.twitter && (
                     <a href={`https://x.com/${socials.twitter}`} target="_blank" rel="noopener noreferrer"
@@ -457,27 +457,27 @@ export default function ProfileClient({
             {/* Stats banner */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
               {[
-                { label: 'Reviews', value: reviews.length, color: 'text-[#66c0f4]' },
+                { label: 'Reviews', value: reviews.length, color: 'style={{ color: 'var(--accent)' }}' },
                 { label: 'Favorites', value: favorites.length, color: 'text-pink-400' },
                 { label: 'Followers', value: followerCountState, color: 'text-emerald-400' },
                 { label: 'Points', value: points, color: 'text-[#f59e0b]' },
               ].map(stat => (
-                <div key={stat.label} className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-4 text-center">
+                <div key={stat.label} className="style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-4 text-center">
                   <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
-                  <p className="text-xs text-[#8f98a0] mt-0.5 uppercase tracking-wider">{stat.label}</p>
+                  <p className="text-xs style={{ color: 'var(--text-muted)' }} mt-0.5 uppercase tracking-wider">{stat.label}</p>
                 </div>
               ))}
             </div>
 
             {/* Tabs */}
-            <div className="flex gap-0 mb-6 border-b border-[#2a475e]">
+            <div className="flex gap-0 mb-6 border-b style={{ borderColor: 'var(--border)' }}">
               {(['activity', 'reviews', 'favorites'] as const).map(tab => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
                   className={`px-6 py-3 text-sm font-medium capitalize transition-colors border-b-2 -mb-px ${activeTab === tab
-                    ? 'text-[#66c0f4] border-[#66c0f4]'
-                    : 'text-[#8f98a0] border-transparent hover:text-[#c6d4df]'}`}
+                    ? 'style={{ color: 'var(--accent)' }} border-[#66c0f4]'
+                    : 'style={{ color: 'var(--text-muted)' }} border-transparent hover:style={{ color: 'var(--text-primary)' }}'}`}
                 >
                   {tab === 'activity' ? 'Activity' : tab === 'reviews' ? `Reviews (${reviews.length})` : `Favorites (${favorites.length})`}
                 </button>
@@ -488,14 +488,14 @@ export default function ProfileClient({
             {activeTab === 'activity' && (
               <div className="space-y-8">
                 {activityItems.length === 0 && (
-                  <p className="text-[#8f98a0] text-sm">No activity yet.</p>
+                  <p className="style={{ color: 'var(--text-muted)' }} text-sm">No activity yet.</p>
                 )}
                 {Object.entries(groupedActivity).map(([dateLabel, items]) => (
                   <div key={dateLabel}>
-                    <p className="text-xs font-semibold uppercase tracking-wider text-[#8f98a0] mb-3 flex items-center gap-2">
-                      <span className="h-px flex-1 bg-[#2a475e]" />
+                    <p className="text-xs font-semibold uppercase tracking-wider style={{ color: 'var(--text-muted)' }} mb-3 flex items-center gap-2">
+                      <span className="h-px flex-1 style={{ background: 'var(--bg-elevated)' }}" />
                       {dateLabel}
-                      <span className="h-px flex-1 bg-[#2a475e]" />
+                      <span className="h-px flex-1 style={{ background: 'var(--bg-elevated)' }}" />
                     </p>
                     <div className="space-y-3">
                       {items.map((item, i) => {
@@ -504,21 +504,21 @@ export default function ProfileClient({
                             ? Math.round(item.review.review_ratings.reduce((s, r) => s + r.score, 0) / item.review.review_ratings.length)
                             : 0
                           return (
-                            <div key={i} className="flex gap-4 items-start bg-[#1b2838] border border-[#2a475e] rounded-sm p-4 hover:border-[#3d6a8a] transition-colors">
+                            <div key={i} className="flex gap-4 items-start style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-4 hover:style={{ borderColor: 'var(--input-border)' }} transition-colors">
                               <div className="text-2xl">⭐</div>
                               <div className="flex-1 min-w-0">
-                                <p className="text-xs text-[#8f98a0] mb-1">Rated a ride</p>
+                                <p className="text-xs style={{ color: 'var(--text-muted)' }} mb-1">Rated a ride</p>
                                 {item.review.items && (
                                   <Link href={`/parks/${item.review.items.park_id}/${item.review.items.category_id}/${item.review.items.id}`}
-                                    className="text-sm font-semibold text-[#66c0f4] hover:underline">
+                                    className="text-sm font-semibold style={{ color: 'var(--accent)' }} hover:underline">
                                     {item.review.items.name}
                                   </Link>
                                 )}
                                 {item.review.title && (
-                                  <p className="text-sm text-[#c6d4df] mt-0.5">"{item.review.title}"</p>
+                                  <p className="text-sm style={{ color: 'var(--text-primary)' }} mt-0.5">"{item.review.title}"</p>
                                 )}
                                 {item.review.body && (
-                                  <p className="text-xs text-[#acb2b8] mt-1 line-clamp-2">{item.review.body}</p>
+                                  <p className="text-xs style={{ color: 'var(--text-secondary)' }} mt-1 line-clamp-2">{item.review.body}</p>
                                 )}
                               </div>
                               <ScoreCircle score={avg} />
@@ -530,12 +530,12 @@ export default function ProfileClient({
                           if (!favItem) return null
                           const image = favItem.item_images?.[0]?.url
                           return (
-                            <div key={i} className="flex gap-4 items-center bg-[#1b2838] border border-[#2a475e] rounded-sm p-4 hover:border-[#3d6a8a] transition-colors">
+                            <div key={i} className="flex gap-4 items-center style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-4 hover:style={{ borderColor: 'var(--input-border)' }} transition-colors">
                               <div className="text-2xl">❤️</div>
                               <div className="flex-1 min-w-0">
-                                <p className="text-xs text-[#8f98a0] mb-1">Added to favorites</p>
+                                <p className="text-xs style={{ color: 'var(--text-muted)' }} mb-1">Added to favorites</p>
                                 <Link href={`/parks/${favItem.park_id}/${favItem.category_id}/${favItem.id}`}
-                                  className="text-sm font-semibold text-[#66c0f4] hover:underline">
+                                  className="text-sm font-semibold style={{ color: 'var(--accent)' }} hover:underline">
                                   {favItem.name}
                                 </Link>
                               </div>
@@ -552,13 +552,13 @@ export default function ProfileClient({
                           const reactionLabel = item.reaction.type === 'yes' ? 'Marked a review helpful' : item.reaction.type === 'no' ? 'Marked a review unhelpful' : item.reaction.type === 'funny' ? 'Found a review funny' : 'Awarded a review'
                           const itemData = item.reaction.reviews?.items
                           return (
-                            <div key={i} className="flex gap-4 items-center bg-[#1b2838] border border-[#2a475e] rounded-sm p-4 hover:border-[#3d6a8a] transition-colors">
+                            <div key={i} className="flex gap-4 items-center style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-4 hover:style={{ borderColor: 'var(--input-border)' }} transition-colors">
                               <div className="text-2xl">{reactionEmoji}</div>
                               <div className="flex-1 min-w-0">
-                                <p className="text-xs text-[#8f98a0] mb-1">{reactionLabel}</p>
+                                <p className="text-xs style={{ color: 'var(--text-muted)' }} mb-1">{reactionLabel}</p>
                                 {itemData && (
                                   <Link href={`/parks/${itemData.park_id}/${itemData.category_id}/${itemData.id}`}
-                                    className="text-sm font-semibold text-[#66c0f4] hover:underline">
+                                    className="text-sm font-semibold style={{ color: 'var(--accent)' }} hover:underline">
                                     {itemData.name}
                                   </Link>
                                 )}
@@ -569,13 +569,13 @@ export default function ProfileClient({
                         if (item.type === 'follow') {
                           const followed = item.follow.profiles
                           return (
-                            <div key={i} className="flex gap-4 items-center bg-[#1b2838] border border-[#2a475e] rounded-sm p-4 hover:border-[#3d6a8a] transition-colors">
+                            <div key={i} className="flex gap-4 items-center style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-4 hover:style={{ borderColor: 'var(--input-border)' }} transition-colors">
                               <div className="text-2xl">🤝</div>
                               <div className="flex-1 min-w-0">
-                                <p className="text-xs text-[#8f98a0] mb-1">Started following</p>
+                                <p className="text-xs style={{ color: 'var(--text-muted)' }} mb-1">Started following</p>
                                 {followed && (
                                   <Link href={`/users/${followed.id}`}
-                                    className="text-sm font-semibold text-[#66c0f4] hover:underline">
+                                    className="text-sm font-semibold style={{ color: 'var(--accent)' }} hover:underline">
                                     {followed.username}
                                   </Link>
                                 )}
@@ -594,23 +594,23 @@ export default function ProfileClient({
             {/* Reviews Tab */}
             {activeTab === 'reviews' && (
               <div className="space-y-4">
-                {reviews.length === 0 && <p className="text-[#8f98a0] text-sm">No reviews yet.</p>}
+                {reviews.length === 0 && <p className="style={{ color: 'var(--text-muted)' }} text-sm">No reviews yet.</p>}
                 {reviews.map(review => {
                   const avg = review.review_ratings.length > 0
                     ? Math.round(review.review_ratings.reduce((s, r) => s + r.score, 0) / review.review_ratings.length)
                     : 0
                   return (
-                    <div key={review.id} className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-4 flex gap-4 items-start hover:border-[#3d6a8a] transition-colors">
+                    <div key={review.id} className="style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-4 flex gap-4 items-start hover:style={{ borderColor: 'var(--input-border)' }} transition-colors">
                       <ScoreCircle score={avg} />
                       <div className="flex-1 min-w-0">
                         {review.items && (
                           <Link href={`/parks/${review.items.park_id}/${review.items.category_id}/${review.items.id}`}
-                            className="text-[#66c0f4] hover:underline font-semibold text-sm">
+                            className="style={{ color: 'var(--accent)' }} hover:underline font-semibold text-sm">
                             {review.items.name}
                           </Link>
                         )}
-                        {review.title && <p className="text-[#c6d4df] text-sm font-medium mt-0.5">{review.title}</p>}
-                        {review.body && <p className="text-sm text-[#acb2b8] leading-relaxed mt-1 line-clamp-3">{review.body}</p>}
+                        {review.title && <p className="style={{ color: 'var(--text-primary)' }} text-sm font-medium mt-0.5">{review.title}</p>}
+                        {review.body && <p className="text-sm style={{ color: 'var(--text-secondary)' }} leading-relaxed mt-1 line-clamp-3">{review.body}</p>}
                         <p className="text-xs text-[#4a6a82] mt-2">{new Date(review.created_at).toLocaleDateString()}</p>
                       </div>
                     </div>
@@ -622,14 +622,14 @@ export default function ProfileClient({
             {/* Favorites Tab */}
             {activeTab === 'favorites' && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {favorites.length === 0 && <p className="text-[#8f98a0] text-sm col-span-2">No favorites yet.</p>}
+                {favorites.length === 0 && <p className="style={{ color: 'var(--text-muted)' }} text-sm col-span-2">No favorites yet.</p>}
                 {favorites.map(fav => {
                   const item = fav.items
                   if (!item) return null
                   const image = item.item_images?.[0]?.url
                   return (
                     <Link key={fav.id} href={`/parks/${item.park_id}/${item.category_id}/${item.id}`}
-                      className="bg-[#1b2838] border border-[#2a475e] rounded-sm overflow-hidden hover:border-[#66c0f4] transition-colors group">
+                      className="style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm overflow-hidden hover:border-[#66c0f4] transition-colors group">
                       {image && (
                         <div className="h-32 overflow-hidden">
                           <img src={image} alt={item.name}
@@ -637,8 +637,8 @@ export default function ProfileClient({
                         </div>
                       )}
                       <div className="p-3">
-                        <p className="text-sm font-semibold text-[#c6d4df] group-hover:text-[#66c0f4] transition-colors">{item.name}</p>
-                        <p className="text-xs text-[#8f98a0] mt-0.5 capitalize">{item.category_id?.replace(/-/g, ' ')}</p>
+                        <p className="text-sm font-semibold style={{ color: 'var(--text-primary)' }} group-hover:style={{ color: 'var(--accent)' }} transition-colors">{item.name}</p>
+                        <p className="text-xs style={{ color: 'var(--text-muted)' }} mt-0.5 capitalize">{item.category_id?.replace(/-/g, ' ')}</p>
                       </div>
                     </Link>
                   )

@@ -29,7 +29,7 @@ export default function ParksClient({ parks }: { parks: Park[] }) {
     (!filters.park_type || park.park_type === filters.park_type)
   ), [filters, parks])
 
-  const selectClass = 'bg-gray-700 text-white p-2 rounded w-full'
+  const selectClass = 'bg-gray-700 style={{ color: 'var(--text-primary)' }} p-2 rounded w-full'
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -41,7 +41,7 @@ export default function ParksClient({ parks }: { parks: Park[] }) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen style={{ background: 'var(--bg-tertiary)' }} style={{ color: 'var(--text-primary)' }}">
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold mb-8 text-center">Theme Parks</h1>
 

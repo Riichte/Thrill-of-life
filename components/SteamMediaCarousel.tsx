@@ -72,7 +72,7 @@ export function SteamMediaCarousel({ slides, autoAdvanceMs, className = '' }: St
   if (!n || !current) {
     return (
       <div
-        className={`flex aspect-video items-center justify-center bg-[#0e1621] text-[#8f98a0] ${className}`}
+        className={`flex aspect-video items-center justify-center bg-[#0e1621] style={{ color: 'var(--text-muted)' }} ${className}`}
       >
         No media
       </div>
@@ -110,7 +110,7 @@ export function SteamMediaCarousel({ slides, autoAdvanceMs, className = '' }: St
             <button
               type="button"
               onClick={() => go(-1)}
-              className="absolute left-2 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/45 p-2.5 text-white transition hover:bg-black/70"
+              className="absolute left-2 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/45 p-2.5 style={{ color: 'var(--text-primary)' }} transition hover:bg-black/70"
               aria-label="Previous image"
             >
               <ChevronLeft className="h-8 w-8" strokeWidth={2} />
@@ -118,7 +118,7 @@ export function SteamMediaCarousel({ slides, autoAdvanceMs, className = '' }: St
             <button
               type="button"
               onClick={() => go(1)}
-              className="absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/45 p-2.5 text-white transition hover:bg-black/70"
+              className="absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/45 p-2.5 style={{ color: 'var(--text-primary)' }} transition hover:bg-black/70"
               aria-label="Next image"
             >
               <ChevronRight className="h-8 w-8" strokeWidth={2} />
@@ -149,7 +149,7 @@ export function SteamMediaCarousel({ slides, autoAdvanceMs, className = '' }: St
           <button
             type="button"
             onClick={() => scrollStrip(-1)}
-            className="absolute left-0 top-1/2 z-10 -translate-y-1/2 rounded-sm bg-[#16202d] p-1.5 text-[#66c0f4] shadow hover:bg-[#1b2838]"
+            className="absolute left-0 top-1/2 z-10 -translate-y-1/2 rounded-sm bg-[#16202d] p-1.5 style={{ color: 'var(--accent)' }} shadow hover:style={{ background: 'var(--card-bg)' }}"
             aria-label="Scroll thumbnails left"
           >
             <ChevronLeft className="h-5 w-5" />
@@ -157,7 +157,7 @@ export function SteamMediaCarousel({ slides, autoAdvanceMs, className = '' }: St
           <button
             type="button"
             onClick={() => scrollStrip(1)}
-            className="absolute right-0 top-1/2 z-10 -translate-y-1/2 rounded-sm bg-[#16202d] p-1.5 text-[#66c0f4] shadow hover:bg-[#1b2838]"
+            className="absolute right-0 top-1/2 z-10 -translate-y-1/2 rounded-sm bg-[#16202d] p-1.5 style={{ color: 'var(--accent)' }} shadow hover:style={{ background: 'var(--card-bg)' }}"
             aria-label="Scroll thumbnails right"
           >
             <ChevronRight className="h-5 w-5" />
@@ -189,7 +189,7 @@ export function SteamMediaCarousel({ slides, autoAdvanceMs, className = '' }: St
                 />
                 {slide.isVideo && (
                   <span className="absolute inset-0 flex items-center justify-center bg-black/35">
-                    <Play className="h-8 w-8 text-white drop-shadow-md" fill="currentColor" />
+                    <Play className="h-8 w-8 style={{ color: 'var(--text-primary)' }} drop-shadow-md" fill="currentColor" />
                   </span>
                 )}
               </button>

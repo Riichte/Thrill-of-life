@@ -308,12 +308,12 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
         setLoading(false)
     }
 
-    const inputClass = 'w-full bg-[#2a475e] border border-[#3d6a8a] rounded-sm px-3 py-2 text-sm text-[#c6d4df] placeholder-[#6a8a9a] focus:outline-none focus:border-[#66c0f4]'
-    const labelClass = 'block text-xs font-medium uppercase tracking-wider text-[#8f98a0] mb-1'
-    const btnPrimary = 'px-4 py-2 bg-[#4c6b22] hover:bg-[#5a7a28] disabled:opacity-50 text-white text-sm font-medium rounded-sm transition-colors'
-    const btnSecondary = 'px-4 py-2 bg-[#2a475e] hover:bg-[#3d6a8a] text-[#c6d4df] text-sm font-medium rounded-sm transition-colors'
+    const inputClass = 'w-full style={{ background: 'var(--bg-elevated)' }} border style={{ borderColor: 'var(--input-border)' }} rounded-sm px-3 py-2 text-sm style={{ color: 'var(--text-primary)' }} placeholder-[#6a8a9a] focus:outline-none style={{ outlineColor: 'var(--input-focus)' }}'
+    const labelClass = 'block text-xs font-medium uppercase tracking-wider style={{ color: 'var(--text-muted)' }} mb-1'
+    const btnPrimary = 'px-4 py-2 style={{ background: 'var(--cta)' }} hover:bg-[#5a7a28] disabled:opacity-50 style={{ color: 'var(--text-primary)' }} text-sm font-medium rounded-sm transition-colors'
+    const btnSecondary = 'px-4 py-2 style={{ background: 'var(--bg-elevated)' }} hover:bg-[#3d6a8a] style={{ color: 'var(--text-primary)' }} text-sm font-medium rounded-sm transition-colors'
     const btnDanger = 'px-3 py-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-400 text-xs rounded-sm transition-colors'
-    const btnEdit = 'px-3 py-1.5 bg-[#2a475e] hover:bg-[#3d6a8a] text-[#66c0f4] text-xs rounded-sm transition-colors'
+    const btnEdit = 'px-3 py-1.5 style={{ background: 'var(--bg-elevated)' }} hover:bg-[#3d6a8a] style={{ color: 'var(--accent)' }} text-xs rounded-sm transition-colors'
     const getSpecFields = (categoryId: string): { key: string; label: string; type?: 'number' | 'text' }[] => {
         switch (categoryId) {
             case 'roller-coasters': return [
@@ -377,21 +377,21 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
     }
 
     return (
-        <div className="min-h-screen bg-gray-900 text-white">
+        <div className="min-h-screen style={{ background: 'var(--bg-tertiary)' }} style={{ color: 'var(--text-primary)' }}">
             <div className="container mx-auto px-4 py-8 max-w-6xl">
                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-[#c6d4df]">Admin Dashboard</h1>
-                    <p className="text-[#8f98a0] mt-1">Manage parks, rides, and media</p>
+                    <h1 className="text-3xl font-bold style={{ color: 'var(--text-primary)' }}">Admin Dashboard</h1>
+                    <p className="style={{ color: 'var(--text-muted)' }} mt-1">Manage parks, rides, and media</p>
                 </div>
 
                 {error && <div className="mb-4 px-4 py-3 bg-red-500/10 border border-red-500/30 rounded-sm text-red-400 text-sm">{error}</div>}
                 {success && <div className="mb-4 px-4 py-3 bg-green-500/10 border border-green-500/30 rounded-sm text-green-400 text-sm">{success}</div>}
 
                 {/* Tabs */}
-                <div className="flex gap-1 mb-8 border-b border-[#2a475e]">
+                <div className="flex gap-1 mb-8 border-b style={{ borderColor: 'var(--border)' }}">
                     {(['parks', 'items', 'images', 'park-images', 'images-manager', 'videos', 'manufacturers'] as const).map(t => (
                         <button key={t} onClick={() => setTab(t)}
-                            className={`px-6 py-3 text-sm font-medium capitalize transition-colors border-b-2 -mb-px ${tab === t ? 'text-[#66c0f4] border-[#66c0f4]' : 'text-[#8f98a0] border-transparent hover:text-white'}`}>
+                            className={`px-6 py-3 text-sm font-medium capitalize transition-colors border-b-2 -mb-px ${tab === t ? 'style={{ color: 'var(--accent)' }} border-[#66c0f4]' : 'style={{ color: 'var(--text-muted)' }} border-transparent hover:style={{ color: 'var(--text-primary)' }}'}`}>
                             {t === 'items' ? 'Rides & Items' : t === 'images' ? 'Ride Images' : t === 'park-images' ? 'Park Images' : t === 'images-manager' ? 'Image Search' : t === 'videos' ? 'Ride Videos' : t === 'manufacturers' ? 'Manufacturers' : t.charAt(0).toUpperCase() + t.slice(1)}
                         </button>
                     ))}
@@ -401,8 +401,8 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                 {tab === 'parks' && (
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         {/* Form */}
-                        <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6">
-                            <h2 className="text-lg font-semibold text-[#c6d4df] mb-6">{editingParkId ? 'Edit Park' : 'Add Park'}</h2>
+                        <div className="style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-6">
+                            <h2 className="text-lg font-semibold style={{ color: 'var(--text-primary)' }} mb-6">{editingParkId ? 'Edit Park' : 'Add Park'}</h2>
                             <div className="space-y-4">
                                 {!editingParkId && (
                                     <div>
@@ -440,14 +440,14 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                         </div>
 
                         {/* Parks List */}
-                        <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6">
-                            <h2 className="text-lg font-semibold text-[#c6d4df] mb-4">Parks ({parks.length})</h2>
+                        <div className="style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-6">
+                            <h2 className="text-lg font-semibold style={{ color: 'var(--text-primary)' }} mb-4">Parks ({parks.length})</h2>
                             <div className="space-y-2 max-h-[600px] overflow-y-auto">
                                 {parks.map(park => (
-                                    <div key={park.id} className="flex items-center justify-between gap-3 p-3 bg-[#2a475e]/30 rounded-sm">
+                                    <div key={park.id} className="flex items-center justify-between gap-3 p-3 style={{ background: 'var(--bg-elevated)' }}/30 rounded-sm">
                                         <div className="min-w-0">
-                                            <p className="text-sm font-medium text-[#c6d4df] truncate">{park.name}</p>
-                                            <p className="text-xs text-[#8f98a0]">{park.id} · {park.country}</p>
+                                            <p className="text-sm font-medium style={{ color: 'var(--text-primary)' }} truncate">{park.name}</p>
+                                            <p className="text-xs style={{ color: 'var(--text-muted)' }}">{park.id} · {park.country}</p>
                                         </div>
                                         <div className="flex gap-2 flex-shrink-0">
                                             <button onClick={() => handleEditPark(park)} className={btnEdit}>Edit</button>
@@ -464,8 +464,8 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                 {tab === 'items' && (
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         {/* Form */}
-                        <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6">
-                            <h2 className="text-lg font-semibold text-[#c6d4df] mb-6">{editingItemId ? 'Edit Item' : 'Add Item'}</h2>
+                        <div className="style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-6">
+                            <h2 className="text-lg font-semibold style={{ color: 'var(--text-primary)' }} mb-6">{editingItemId ? 'Edit Item' : 'Add Item'}</h2>
                             <div className="space-y-4">
                                 {!editingItemId && (
                                     <div>
@@ -644,14 +644,14 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                         </div>
 
                         {/* Items List */}
-                        <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6">
-                            <h2 className="text-lg font-semibold text-[#c6d4df] mb-4">Items ({items.length})</h2>
+                        <div className="style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-6">
+                            <h2 className="text-lg font-semibold style={{ color: 'var(--text-primary)' }} mb-4">Items ({items.length})</h2>
                             <div className="space-y-2 max-h-[600px] overflow-y-auto">
                                 {items.map(item => (
-                                    <div key={item.id} className="flex items-center justify-between gap-3 p-3 bg-[#2a475e]/30 rounded-sm">
+                                    <div key={item.id} className="flex items-center justify-between gap-3 p-3 style={{ background: 'var(--bg-elevated)' }}/30 rounded-sm">
                                         <div className="min-w-0">
-                                            <p className="text-sm font-medium text-[#c6d4df] truncate">{item.name}</p>
-                                            <p className="text-xs text-[#8f98a0]">{item.id} · {item.category_id}</p>
+                                            <p className="text-sm font-medium style={{ color: 'var(--text-primary)' }} truncate">{item.name}</p>
+                                            <p className="text-xs style={{ color: 'var(--text-muted)' }}">{item.id} · {item.category_id}</p>
                                         </div>
                                         <div className="flex gap-2 flex-shrink-0">
                                             <button onClick={() => handleEditItem(item)} className={btnEdit}>Edit</button>
@@ -667,8 +667,8 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                 {/* ─── Images Tab ─── */}
                 {tab === 'images' && (
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6">
-                            <h2 className="text-lg font-semibold text-[#c6d4df] mb-6">Manage Images</h2>
+                        <div className="style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-6">
+                            <h2 className="text-lg font-semibold style={{ color: 'var(--text-primary)' }} mb-6">Manage Images</h2>
                             <div className="space-y-4">
                                 <div>
                                     <label className={labelClass}>Select Item</label>
@@ -722,21 +722,21 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                         </div>
 
                         {imageItemId && (
-                            <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6">
-                                <h2 className="text-lg font-semibold text-[#c6d4df] mb-4">
+                            <div className="style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-6">
+                                <h2 className="text-lg font-semibold style={{ color: 'var(--text-primary)' }} mb-4">
                                     Images for {items.find(i => i.id === imageItemId)?.name} ({itemImages.length})
                                 </h2>
                                 <div className="space-y-2 max-h-[600px] overflow-y-auto">
-                                    {itemImages.length === 0 && <p className="text-sm text-[#8f98a0]">No images yet.</p>}
+                                    {itemImages.length === 0 && <p className="text-sm style={{ color: 'var(--text-muted)' }}">No images yet.</p>}
                                     {itemImages.map(img => (
-                                        <div key={img.id} className="flex items-center justify-between gap-3 p-3 bg-[#2a475e]/30 rounded-sm">
+                                        <div key={img.id} className="flex items-center justify-between gap-3 p-3 style={{ background: 'var(--bg-elevated)' }}/30 rounded-sm">
                                             <div className="flex items-center gap-3 min-w-0">
                                                 <img src={img.url} alt="" className="w-16 h-10 object-cover rounded-sm flex-shrink-0 bg-[#0e1419]" onError={e => { e.currentTarget.style.display = 'none' }} />
                                                 <div className="min-w-0">
-                                                    <p className="text-xs text-[#8f98a0]">#{img.sort_order}</p>
-                                                    <p className="text-xs text-[#c6d4df] truncate">{img.url}</p>
+                                                    <p className="text-xs style={{ color: 'var(--text-muted)' }}">#{img.sort_order}</p>
+                                                    <p className="text-xs style={{ color: 'var(--text-primary)' }} truncate">{img.url}</p>
                                                     {img.attribution_author && (
-                                                        <p className="text-xs text-[#8f98a0] truncate">📷 {img.attribution_author} · {img.license}</p>
+                                                        <p className="text-xs style={{ color: 'var(--text-muted)' }} truncate">📷 {img.attribution_author} · {img.license}</p>
                                                     )}
                                                 </div>
                                             </div>
@@ -755,8 +755,8 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                 {/* ─── Park Images Tab ─── */}
                 {tab === 'park-images' && (
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6">
-                            <h2 className="text-lg font-semibold text-[#c6d4df] mb-6">Manage Park Images</h2>
+                        <div className="style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-6">
+                            <h2 className="text-lg font-semibold style={{ color: 'var(--text-primary)' }} mb-6">Manage Park Images</h2>
                             <div className="space-y-4">
                                 <div>
                                     <label className={labelClass}>Select Park</label>
@@ -801,21 +801,21 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                         </div>
 
                         {parkImageParkId && (
-                            <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6">
-                                <h2 className="text-lg font-semibold text-[#c6d4df] mb-4">
+                            <div className="style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-6">
+                                <h2 className="text-lg font-semibold style={{ color: 'var(--text-primary)' }} mb-4">
                                     Images for {parks.find(p => p.id === parkImageParkId)?.name} ({parkImages.length})
                                 </h2>
                                 <div className="space-y-2 max-h-[600px] overflow-y-auto">
-                                    {parkImages.length === 0 && <p className="text-sm text-[#8f98a0]">No images yet.</p>}
+                                    {parkImages.length === 0 && <p className="text-sm style={{ color: 'var(--text-muted)' }}">No images yet.</p>}
                                     {parkImages.map(img => (
-                                        <div key={img.id} className="flex items-center justify-between gap-3 p-3 bg-[#2a475e]/30 rounded-sm">
+                                        <div key={img.id} className="flex items-center justify-between gap-3 p-3 style={{ background: 'var(--bg-elevated)' }}/30 rounded-sm">
                                             <div className="flex items-center gap-3 min-w-0">
                                                 <img src={img.url} alt="" className="w-16 h-10 object-cover rounded-sm flex-shrink-0 bg-[#0e1419]" onError={e => { e.currentTarget.style.display = 'none' }} />
                                                 <div className="min-w-0">
-                                                    <p className="text-xs text-[#8f98a0]">#{img.sort_order}</p>
-                                                    <p className="text-xs text-[#c6d4df] truncate">{img.url}</p>
+                                                    <p className="text-xs style={{ color: 'var(--text-muted)' }}">#{img.sort_order}</p>
+                                                    <p className="text-xs style={{ color: 'var(--text-primary)' }} truncate">{img.url}</p>
                                                     {img.attribution_author && (
-                                                        <p className="text-xs text-[#8f98a0] truncate">📷 {img.attribution_author} · {img.license}</p>
+                                                        <p className="text-xs style={{ color: 'var(--text-muted)' }} truncate">📷 {img.attribution_author} · {img.license}</p>
                                                     )}
                                                 </div>
                                             </div>
@@ -841,8 +841,8 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                 {/* ─── Videos Tab ─── */}
                 {tab === 'videos' && (
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6">
-                            <h2 className="text-lg font-semibold text-[#c6d4df] mb-6">Manage Videos</h2>
+                        <div className="style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-6">
+                            <h2 className="text-lg font-semibold style={{ color: 'var(--text-primary)' }} mb-6">Manage Videos</h2>
                             <div className="space-y-4">
                                 <div>
                                     <label className={labelClass}>Select Item</label>
@@ -869,17 +869,17 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                             </div>
 
                             {videoItemId && (
-                                <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6">
-                                    <h2 className="text-lg font-semibold text-[#c6d4df] mb-4">
+                                <div className="style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-6">
+                                    <h2 className="text-lg font-semibold style={{ color: 'var(--text-primary)' }} mb-4">
                                         Videos for {items.find(i => i.id === videoItemId)?.name} ({itemVideos.length})
                                     </h2>
                                     <div className="space-y-2 max-h-[600px] overflow-y-auto">
-                                        {itemVideos.length === 0 && <p className="text-sm text-[#8f98a0]">No videos yet.</p>}
+                                        {itemVideos.length === 0 && <p className="text-sm style={{ color: 'var(--text-muted)' }}">No videos yet.</p>}
                                         {itemVideos.map(vid => (
-                                            <div key={vid.id} className="flex items-center justify-between gap-3 p-3 bg-[#2a475e]/30 rounded-sm">
+                                            <div key={vid.id} className="flex items-center justify-between gap-3 p-3 style={{ background: 'var(--bg-elevated)' }}/30 rounded-sm">
                                                 <div className="min-w-0">
-                                                    <p className="text-sm text-[#c6d4df] truncate">{vid.title}</p>
-                                                    <p className="text-xs text-[#8f98a0] truncate">youtube.com/watch?v={vid.video_id}</p>
+                                                    <p className="text-sm style={{ color: 'var(--text-primary)' }} truncate">{vid.title}</p>
+                                                    <p className="text-xs style={{ color: 'var(--text-muted)' }} truncate">youtube.com/watch?v={vid.video_id}</p>
                                                 </div>
                                                 <button onClick={() => handleDeleteVideo(vid.id)} className={btnDanger}>Delete</button>
                                             </div>
@@ -893,8 +893,8 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
 
                 {editingImage && (
                     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                        <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6 max-w-md w-full">
-                            <h2 className="text-lg font-semibold text-[#c6d4df] mb-4">Edit Image Info</h2>
+                        <div className="style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-6 max-w-md w-full">
+                            <h2 className="text-lg font-semibold style={{ color: 'var(--text-primary)' }} mb-4">Edit Image Info</h2>
                             <div className="space-y-4">
                                 <div>
                                     <label className={labelClass}>Use As</label>
@@ -954,8 +954,8 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                 )}
                 {tab === 'manufacturers' && (
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6">
-                            <h2 className="text-lg font-semibold text-[#c6d4df] mb-6">
+                        <div className="style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-6">
+                            <h2 className="text-lg font-semibold style={{ color: 'var(--text-primary)' }} mb-6">
                                 {editingMfrId ? 'Edit Manufacturer' : 'Add Manufacturer'}
                             </h2>
                             <div className="space-y-4">
@@ -986,14 +986,14 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                             </div>
                         </div>
 
-                        <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6">
-                            <h2 className="text-lg font-semibold text-[#c6d4df] mb-4">Manufacturers ({manufacturers.length})</h2>
+                        <div className="style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-6">
+                            <h2 className="text-lg font-semibold style={{ color: 'var(--text-primary)' }} mb-4">Manufacturers ({manufacturers.length})</h2>
                             <div className="space-y-2 max-h-[600px] overflow-y-auto">
                                 {manufacturers.map(m => (
-                                    <div key={m.id} className="flex items-center justify-between gap-3 p-3 bg-[#2a475e]/30 rounded-sm">
+                                    <div key={m.id} className="flex items-center justify-between gap-3 p-3 style={{ background: 'var(--bg-elevated)' }}/30 rounded-sm">
                                         <div>
-                                            <p className="text-sm font-medium text-[#c6d4df]">{m.name}</p>
-                                            <p className="text-xs text-[#8f98a0]">{m.id}</p>
+                                            <p className="text-sm font-medium style={{ color: 'var(--text-primary)' }}">{m.name}</p>
+                                            <p className="text-xs style={{ color: 'var(--text-muted)' }}">{m.id}</p>
                                         </div>
                                         <div className="flex gap-2">
                                             <button onClick={() => { setEditingMfrId(m.id); setMfrName(m.name) }} className={btnEdit}>Edit</button>

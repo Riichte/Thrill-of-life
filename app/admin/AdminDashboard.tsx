@@ -308,12 +308,12 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
         setLoading(false)
     }
 
-    const inputClass = 'w-full style={{ background: 'var(--bg-elevated)' }} border style={{ borderColor: 'var(--input-border)' }} rounded-sm px-3 py-2 text-sm style={{ color: 'var(--text-primary)' }} placeholder-[#6a8a9a] focus:outline-none style={{ outlineColor: 'var(--input-focus)' }}'
-    const labelClass = 'block text-xs font-medium uppercase tracking-wider style={{ color: 'var(--text-muted)' }} mb-1'
-    const btnPrimary = 'px-4 py-2 style={{ background: 'var(--cta)' }} hover:bg-[#5a7a28] disabled:opacity-50 style={{ color: 'var(--text-primary)' }} text-sm font-medium rounded-sm transition-colors'
-    const btnSecondary = 'px-4 py-2 style={{ background: 'var(--bg-elevated)' }} hover:bg-[#3d6a8a] style={{ color: 'var(--text-primary)' }} text-sm font-medium rounded-sm transition-colors'
-    const btnDanger = 'px-3 py-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-400 text-xs rounded-sm transition-colors'
-    const btnEdit = 'px-3 py-1.5 style={{ background: 'var(--bg-elevated)' }} hover:bg-[#3d6a8a] style={{ color: 'var(--accent)' }} text-xs rounded-sm transition-colors'
+    const inputClass = `w-full style={{ background: 'var(--bg-elevated)' }} border style={{ borderColor: 'var(--input-border)' }} rounded-sm px-3 py-2 text-sm style={{ color: 'var(--text-primary)' }} placeholder-[#6a8a9a] focus:outline-none style={{ outlineColor: 'var(--input-focus)' }}`
+    const labelClass = `block text-xs font-medium uppercase tracking-wider style={{ color: 'var(--text-muted)' }} mb-1`
+    const btnPrimary = `px-4 py-2 style={{ background: 'var(--cta)' }} hover:bg-[#5a7a28] disabled:opacity-50 style={{ color: 'var(--text-primary)' }} text-sm font-medium rounded-sm transition-colors`
+    const btnSecondary = `px-4 py-2 style={{ background: 'var(--bg-elevated)' }} hover:bg-[#3d6a8a] style={{ color: 'var(--text-primary)' }} text-sm font-medium rounded-sm transition-colors`
+    const btnDanger = `px-3 py-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-400 text-xs rounded-sm transition-colors`
+    const btnEdit = `px-3 py-1.5 style={{ background: 'var(--bg-elevated)' }} hover:bg-[#3d6a8a] style={{ color: 'var(--accent)' }} text-xs rounded-sm transition-colors`
     const getSpecFields = (categoryId: string): { key: string; label: string; type?: 'number' | 'text' }[] => {
         switch (categoryId) {
             case 'roller-coasters': return [

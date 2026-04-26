@@ -31,8 +31,8 @@ export default function FeedbackClient() {
     }
   }
 
-  const inputClass = 'w-full style={{ background: 'var(--bg-elevated)' }} border style={{ borderColor: 'var(--input-border)' }} rounded-sm px-3 py-2 text-sm style={{ color: 'var(--text-primary)' }} placeholder-[#6a8a9a] focus:outline-none style={{ outlineColor: 'var(--input-focus)' }}'
-  const labelClass = 'block text-xs font-medium uppercase tracking-wider style={{ color: 'var(--text-muted)' }} mb-1'
+  const inputClass = `w-full style={{ background: 'var(--bg-elevated)' }} border style={{ borderColor: 'var(--input-border)' }} rounded-sm px-3 py-2 text-sm style={{ color: 'var(--text-primary)' }} placeholder-[#6a8a9a] focus:outline-none style={{ outlineColor: 'var(--input-focus)' }}`
+  const labelClass = `block text-xs font-medium uppercase tracking-wider style={{ color: 'var(--text-muted)' }} mb-1`
 
   if (submitted) return (
     <div className="min-h-screen style={{ background: 'var(--bg-tertiary)' }} style={{ color: 'var(--text-primary)' }} flex items-center justify-center">

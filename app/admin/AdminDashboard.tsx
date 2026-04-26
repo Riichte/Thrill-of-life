@@ -15,7 +15,7 @@ const emptyItem: Omit<Item, 'id'> = { park_id: '', category_id: '', name: '', de
 export default function AdminDashboard({ parks, categories, items }: { parks: Park[]; categories: Category[]; items: Item[] }) {
     const supabase = createClient()
     const router = useRouter()
-    const [tab, setTab] = useState<'parks' | 'items' | 'images' | 'park-images' | 'images-manager' | 'videos' | 'manufacturers'>('parks')
+    const [tab, setTab] = useState<'parks' | 'items' | 'images' | 'park-images' | 'images-manager' | 'videos' | 'manufacturers' | 'osts'>('parks')
     const [loading, setLoading] = useState(false)
     const [manufacturers, setManufacturers] = useState<{ id: string; name: string }[]>([])
     const [mfrName, setMfrName] = useState('')
@@ -57,6 +57,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
 
     useEffect(() => {
         loadManufacturers()
+        loadOsts()
     }, [])
 
     const loadManufacturers = async () => {
@@ -71,6 +72,28 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
         if (isError) setError(msg)
         else setSuccess(msg)
         setTimeout(() => { setError(''); setSuccess('') }, 4000)
+    }
+
+    const loadOsts = async () => {
+        const { data } = await supabase.from('osts').select('*').order('created_at', { ascending: false })
+        const listEl = document.getElementById('osts-list')
+        if (listEl) {
+            listEl.innerHTML = (data ?? []).map(ost => `
+      <div className="flex items-center justify-between gap-3 p-3 rounded-sm" style="background: var(--bg-elevated); color: var(--text-primary)">
+        <div className="min-w-0">
+          <p className="text-sm font-medium">${ost.title}</p>
+          <p className="text-xs" style="color: var(--text-muted)">${ost.item_id}</p>
+        </div>
+        <button onclick="deleteOst('${ost.id}')" className="${btnDanger}">Delete</button>
+      </div>
+    `).join('')
+        }
+    }
+
+    const deleteOst = async (id: string) => {
+        if (!confirm('Delete this OST?')) return
+        await supabase.from('osts').delete().eq('id', id)
+        loadOsts()
     }
 
     // ─── Parks ───────────────────────────────────────────────
@@ -389,7 +412,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
 
                 {/* Tabs */}
                 <div className="flex gap-1 mb-8 border-b" style={{ borderColor: 'var(--border)' }}>
-                    {(['parks', 'items', 'images', 'park-images', 'images-manager', 'videos', 'manufacturers'] as const).map(t => (
+                    {(['parks', 'items', 'images', 'park-images', 'images-manager', 'videos', 'manufacturers', 'osts'] as const).map(t => (
                         <button
                             key={t}
                             onClick={() => setTab(t)}
@@ -1011,6 +1034,52 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                         </div>
                                     </div>
                                 ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* ─── OSTs Tab ─── */}
+                {tab === 'osts' && (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div className="style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-6">
+                            <h2 className="text-lg font-semibold style={{ color: 'var(--text-primary)' }} mb-6">Add OST</h2>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className={labelClass}>Select Item</label>
+                                    <select className={inputClass} id="ost-item">
+                                        <option value="">Select a ride/restaurant/etc</option>
+                                        {items.map(i => <option key={i.id} value={i.id}>{i.name} ({i.park_id})</option>)}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className={labelClass}>OST Title</label>
+                                    <input className={inputClass} id="ost-title" placeholder="e.g. Blue Fire Theme" />
+                                </div>
+                                <div>
+                                    <label className={labelClass}>YouTube Video ID</label>
+                                    <input className={inputClass} id="ost-youtube" placeholder="e.g. dQw4w9WgXcQ" />
+                                </div>
+                                <button onClick={async () => {
+                                    const itemId = (document.getElementById('ost-item') as HTMLSelectElement).value
+                                    const title = (document.getElementById('ost-title') as HTMLInputElement).value
+                                    const youtubeId = (document.getElementById('ost-youtube') as HTMLInputElement).value
+
+                                    if (!itemId || !title || !youtubeId) { notify('All fields required', true); return }
+
+                                    const { error } = await supabase.from('osts').insert({ item_id: itemId, title, youtube_video_id: youtubeId })
+                                    if (error) notify(error.message, true)
+                                    else { notify('OST added'); loadOsts() }
+                                }} disabled={loading} className={btnPrimary}>
+                                    {loading ? 'Adding...' : 'Add OST'}
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-6">
+                            <h2 className="text-lg font-semibold style={{ color: 'var(--text-primary)' }} mb-4">OSTs</h2>
+                            <div className="space-y-2 max-h-[600px] overflow-y-auto" id="osts-list">
+                                <p className="text-sm style={{ color: 'var(--text-muted)' }}">Loading...</p>
                             </div>
                         </div>
                     </div>

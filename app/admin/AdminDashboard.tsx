@@ -54,6 +54,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
     const [parkImages, setParkImages] = useState<{ id: string; url: string; sort_order: number; attribution_author?: string; attribution_url?: string; license?: string }[]>([])
     const [editingImage, setEditingImage] = useState<{ id: string; type: 'item' | 'park' } | null>(null)
     const [editFormData, setEditFormData] = useState({ author: '', sourceUrl: '', license: 'CC BY 4.0', sortOrder: 0 })
+    const [selectedParkForOst, setSelectedParkForOst] = useState('')
 
     useEffect(() => {
         loadManufacturers()
@@ -1047,10 +1048,21 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                             <div className="space-y-4">
                                 <div>
                                     <label className={labelClass}>Select Item</label>
-                                    <select className={inputClass} id="ost-item">
-                                        <option value="">Select a ride/restaurant/etc</option>
-                                        {items.map(i => <option key={i.id} value={i.id}>{i.name} ({i.park_id})</option>)}
-                                    </select>
+                                    <div>
+                                        <label className={labelClass}>Park</label>
+                                        <select className={inputClass} id="ost-park" onChange={e => setSelectedParkForOst(e.target.value)}>
+                                            <option value="">Select a park</option>
+                                            {parks.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label className={labelClass}>Item</label>
+                                        <select className={inputClass} id="ost-item">
+                                            <option value="">Select an item</option>
+                                            {items.filter(i => i.park_id === selectedParkForOst).map(i => <option key={i.id} value={i.id}>{i.name}</option>)}
+                                        </select>
+                                    </div>
                                 </div>
                                 <div>
                                     <label className={labelClass}>OST Title</label>

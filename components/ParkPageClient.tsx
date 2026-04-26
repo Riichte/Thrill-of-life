@@ -39,11 +39,11 @@ interface ParkPageClientProps {
 }
 
 const parkDimensions = [
-    { id: 'theming', label: 'Theming' },
-    { id: 'value', label: 'Value' },
-    { id: 'cleanliness', label: 'Cleanliness' },
-    { id: 'operation', label: 'Staff operation' },
-    { id: 'line_up', label: 'Ride Line Up' },
+  { id: 'theming', label: 'Theming' },
+  { id: 'value', label: 'Value' },
+  { id: 'cleanliness', label: 'Cleanliness' },
+  { id: 'operation', label: 'Staff operation' },
+  { id: 'line_up', label: 'Ride Line Up' },
 ]
 
 type Reaction = 'yes' | 'no' | 'funny' | 'award'
@@ -70,22 +70,25 @@ function ReviewCard({ reviewId, author, authorId, score, title, text, isOwn, rea
   onReact: (reviewId: string, reaction: Reaction) => void
   onEdit?: () => void
 }) {
-  const reactionButtons: { key: Reaction; label: string; activeClass: string }[] = [
-    { key: 'yes', label: '👍 Yes', activeClass: 'text-green-400 border-green-500 bg-green-500/10' },
-    { key: 'no', label: '👎 No', activeClass: 'text-red-400 border-red-500 bg-red-500/10' },
-    { key: 'funny', label: '😄 Funny', activeClass: 'text-yellow-400 border-yellow-500 bg-yellow-500/10' },
-    { key: 'award', label: '🏆 Award', activeClass: 'text-amber-400 border-amber-500 bg-amber-500/10' },
+  const scoreColor = (s: number) =>
+    s >= 80 ? 'var(--score-high)' : s >= 60 ? 'var(--score-mid)' : s >= 40 ? '#f97316' : 'var(--score-low)'
+
+  const reactionButtons: { key: Reaction; label: string }[] = [
+    { key: 'yes', label: '👍 Yes' },
+    { key: 'no', label: '👎 No' },
+    { key: 'funny', label: '😄 Funny' },
+    { key: 'award', label: '🏆 Award' },
   ]
 
   return (
-    <div className="bg-[#1b2838] border border-[#2a475e] rounded-sm p-6 flex gap-6 items-start">
+    <div className="flex gap-6 items-start p-6 rounded-sm" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
       <div className="flex-shrink-0">
         <svg className="w-20 h-20" viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="45" fill="none" stroke="#2a475e" strokeWidth="2" />
-          <circle cx="50" cy="50" r="45" fill="none" stroke={getScoreColor(score)} strokeWidth="2"
+          <circle cx="50" cy="50" r="45" fill="none" stroke="var(--border)" strokeWidth="2" />
+          <circle cx="50" cy="50" r="45" fill="none" stroke={scoreColor(score)} strokeWidth="2"
             strokeDasharray={`${(score / 100) * 282.7}`} strokeDashoffset="0" strokeLinecap="round"
             style={{ transform: 'rotate(-90deg)', transformOrigin: '50% 50%' }} />
-          <text x="50" y="50" textAnchor="middle" dy="0.3em" fill="#c6d4df" fontWeight="bold" fontSize="28">
+          <text x="50" y="50" textAnchor="middle" dy="0.3em" fill="var(--text-primary)" fontWeight="bold" fontSize="28">
             {score}
           </text>
         </svg>
@@ -94,37 +97,49 @@ function ReviewCard({ reviewId, author, authorId, score, title, text, isOwn, rea
         <div className="flex items-center justify-between gap-2 mb-3">
           <div className="flex items-center gap-2">
             {authorId && !isOwn ? (
-              <Link href={`/users/${authorId}`} className="font-bold text-lg text-[#f59e0b] hover:underline">{author}</Link>
+              <a href={`/users/${authorId}`} className="font-bold text-lg hover:underline" style={{ color: 'var(--score-mid)' }}>{author}</a>
             ) : (
-              <span className={`font-bold text-lg ${isOwn ? 'text-[#66c0f4]' : 'text-[#f59e0b]'}`}>{author}</span>
+              <span className="font-bold text-lg" style={{ color: isOwn ? 'var(--accent)' : 'var(--score-mid)' }}>{author}</span>
             )}
-            {isOwn && <span className="text-xs text-[#8f98a0] bg-[#2a475e] px-2 py-0.5 rounded-sm">Your review</span>}
+            {isOwn && (
+              <span className="text-xs px-2 py-0.5 rounded-sm" style={{ color: 'var(--text-muted)', background: 'var(--bg-elevated)' }}>
+                Your review
+              </span>
+            )}
           </div>
           {isOwn && onEdit && (
-            <button onClick={onEdit} className="text-xs text-[#8f98a0] hover:text-[#66c0f4] border border-[#2a475e] hover:border-[#66c0f4] px-2 py-1 rounded-sm transition-colors">
+            <button onClick={onEdit}
+              className="text-xs px-2 py-1 rounded-sm transition-colors"
+              style={{ color: 'var(--text-muted)', border: '1px solid var(--border)' }}
+              onMouseEnter={e => { e.currentTarget.style.color = 'var(--accent)'; e.currentTarget.style.borderColor = 'var(--accent)' }}
+              onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.borderColor = 'var(--border)' }}>
               Edit
             </button>
           )}
         </div>
-        <div className="border-t border-[#2a475e] pt-3 mb-3">
-          {title && <p className="text-lg font-bold text-[#c6d4df] mb-1">{title}</p>}
-          {text && <p className="text-sm text-[#acb2b8] leading-relaxed">{text}</p>}
+        <div className="pt-3 mb-3" style={{ borderTop: '1px solid var(--border)' }}>
+          {title && <p className="text-lg font-bold mb-1" style={{ color: 'var(--text-primary)' }}>{title}</p>}
+          {text && <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{text}</p>}
         </div>
         {!isOwn && (
-          <div className="border-t border-[#2a475e] pt-3 mt-2">
-            <p className="text-xs text-[#8f98a0] mb-2">Helpful?</p>
+          <div className="pt-3 mt-2" style={{ borderTop: '1px solid var(--border)' }}>
+            <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>Helpful?</p>
             <div className="flex flex-wrap gap-2">
-              {reactionButtons.map(({ key, label, activeClass }) => {
+              {reactionButtons.map(({ key, label }) => {
                 const isActive = userReactions[key]
                 const cantAfford = key === 'award' && !isActive && userPoints < 100
                 return (
-                  <button key={key} onClick={() => !cantAfford && onReact(reviewId, key)}
+                  <button key={key}
+                    onClick={() => !cantAfford && onReact(reviewId, key)}
                     title={cantAfford ? 'You need 100 points to give an award' : undefined}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-sm border text-xs font-medium transition-colors
-                      ${isActive ? activeClass : cantAfford
-                        ? 'text-[#4a6a82] border-[#2a475e] bg-transparent cursor-not-allowed opacity-50'
-                        : 'text-[#8f98a0] border-[#2a475e] bg-transparent hover:border-[#66c0f4] hover:text-[#66c0f4]'}`}
-                  >
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-medium transition-colors"
+                    style={{
+                      border: `1px solid ${isActive ? 'var(--accent)' : cantAfford ? 'var(--border)' : 'var(--border)'}`,
+                      color: isActive ? 'var(--accent)' : cantAfford ? 'var(--text-faint)' : 'var(--text-muted)',
+                      background: isActive ? 'var(--accent-bg)' : 'transparent',
+                      cursor: cantAfford ? 'not-allowed' : 'pointer',
+                      opacity: cantAfford ? 0.5 : 1,
+                    }}>
                     {label}
                     {reactions[key] > 0 && <span className="ml-1 text-[10px] opacity-75">({reactions[key]})</span>}
                     {key === 'award' && <span className="ml-1 text-[10px] opacity-60">100pts</span>}
@@ -276,7 +291,7 @@ export default function ParkPageClient({
   const mediaSlides = slides.map(src => ({ src, alt: park.name }))
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen style={{ background: 'var(--bg-tertiary)' }} style={{ color: 'var(--text-primary)' }}">
       <div className="container mx-auto px-4 py-8">
         <nav className="mb-6">
           <Link href="/parks" className="text-blue-400 hover:text-blue-300 text-sm">Parks</Link>
@@ -314,14 +329,14 @@ export default function ParkPageClient({
               isFavorited={isFavorited}
               onFavoriteToggle={handleFavoriteToggle}
             >
-              <div className="border-t border-[#2a475e] pt-4">
-                <p className="text-sm text-[#acb2b8] leading-relaxed">{park.description}</p>
+              <div className="border-t style={{ borderColor: 'var(--border)' }} pt-4">
+                <p className="text-sm style={{ color: 'var(--text-secondary)' }} leading-relaxed">{park.description}</p>
               </div>
-              <div className="border-t border-[#2a475e] pt-4 space-y-2 text-sm">
-                {park.location && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>Location</span><span className="text-[#c6d4df]">{park.location}</span></div>}
-                {park.country && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>Country</span><span className="text-[#c6d4df]">{park.country}</span></div>}
-                {park.company && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>Operated by</span><span className="text-[#c6d4df]">{park.company}</span></div>}
-                {park.park_type && <div className="flex justify-between gap-4 text-[#acb2b8]"><span>Type</span><span className="text-[#c6d4df]">{park.park_type}</span></div>}
+              <div className="border-t style={{ borderColor: 'var(--border)' }} pt-4 space-y-2 text-sm">
+                {park.location && <div className="flex justify-between gap-4 style={{ color: 'var(--text-secondary)' }}"><span>Location</span><span className="style={{ color: 'var(--text-primary)' }}">{park.location}</span></div>}
+                {park.country && <div className="flex justify-between gap-4 style={{ color: 'var(--text-secondary)' }}"><span>Country</span><span className="style={{ color: 'var(--text-primary)' }}">{park.country}</span></div>}
+                {park.company && <div className="flex justify-between gap-4 style={{ color: 'var(--text-secondary)' }}"><span>Operated by</span><span className="style={{ color: 'var(--text-primary)' }}">{park.company}</span></div>}
+                {park.park_type && <div className="flex justify-between gap-4 style={{ color: 'var(--text-secondary)' }}"><span>Type</span><span className="style={{ color: 'var(--text-primary)' }}">{park.park_type}</span></div>}
               </div>
             </SteamInfoPanel>
           </div>
@@ -331,53 +346,72 @@ export default function ParkPageClient({
         {isRatingOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-black/70" onClick={() => setIsRatingOpen(false)} />
-            <div className="relative z-10 w-full max-w-lg bg-[#1b2838] border border-[#2a475e] rounded-sm shadow-2xl">
-              <div className="flex items-center justify-between border-b border-[#2a475e] px-6 py-4">
-                <h2 className="text-lg font-semibold text-[#c6d4df]">Rate {park.name}</h2>
-                <button onClick={() => setIsRatingOpen(false)} className="text-[#8f98a0] hover:text-white text-xl leading-none">✕</button>
+            <div className="relative z-10 w-full max-w-lg rounded-sm shadow-2xl" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+
+              {/* Header */}
+              <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid var(--border)' }}>
+                <h2 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>Rate {park.name}</h2>
+                <button onClick={() => setIsRatingOpen(false)} className="text-xl leading-none transition-colors"
+                  style={{ color: 'var(--text-muted)' }}>✕</button>
               </div>
+
+              {/* Sliders */}
               <div className="px-6 py-5 space-y-6 max-h-[40vh] overflow-y-auto">
                 {parkDimensions.map(dimension => {
                   const userScore = userRatings[dimension.id] || 0
                   return (
                     <div key={dimension.id} className="space-y-2">
                       <div className="flex justify-between items-center">
-                        <label className="text-sm font-medium text-[#c6d4df]">{dimension.label}</label>
-                        <span className="text-lg font-bold text-[#66c0f4] w-10 text-right">{userScore}</span>
+                        <label className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{dimension.label}</label>
+                        <span className="text-lg font-bold w-10 text-right" style={{ color: 'var(--accent)' }}>{userScore}</span>
                       </div>
                       <input type="range" min="0" max="100" value={userScore}
                         onChange={e => setUserRatings(prev => ({ ...prev, [dimension.id]: parseInt(e.target.value) }))}
                         className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
-                        style={{ background: `linear-gradient(to right, #66c0f4 0%, #66c0f4 ${userScore}%, #2a475e ${userScore}%, #2a475e 100%)` }}
+                        style={{ background: `linear-gradient(to right, var(--accent) 0%, var(--accent) ${userScore}%, var(--border) ${userScore}%, var(--border) 100%)` }}
                       />
                     </div>
                   )
                 })}
               </div>
-              <div className="px-6 pb-5 space-y-3 border-t border-[#2a475e] pt-5">
-                <p className="text-xs font-medium uppercase tracking-wider text-[#8f98a0]">Leave a review (optional)</p>
+
+              {/* Review text */}
+              <div className="px-6 pb-5 space-y-3 pt-5" style={{ borderTop: '1px solid var(--border)' }}>
+                <p className="text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>Leave a review (optional)</p>
                 <input type="text" placeholder="Review title" value={reviewTitle}
                   onChange={e => setReviewTitle(e.target.value)}
-                  className="w-full bg-[#2a475e] border border-[#3d6a8a] rounded-sm px-3 py-2 text-sm text-[#c6d4df] placeholder-[#6a8a9a] focus:outline-none focus:border-[#66c0f4]"
+                  className="w-full rounded-sm px-3 py-2 text-sm focus:outline-none"
+                  style={{ background: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }}
                 />
                 <textarea placeholder="Share your experience..." value={reviewText}
                   onChange={e => setReviewText(e.target.value)} rows={3}
-                  className="w-full bg-[#2a475e] border border-[#3d6a8a] rounded-sm px-3 py-2 text-sm text-[#c6d4df] placeholder-[#6a8a9a] focus:outline-none focus:border-[#66c0f4] resize-none"
+                  className="w-full rounded-sm px-3 py-2 text-sm focus:outline-none resize-none"
+                  style={{ background: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }}
                 />
-                {submitError && <p className="text-sm text-red-400">{submitError}</p>}
+                {submitError && <p className="text-sm" style={{ color: 'var(--score-low)' }}>{submitError}</p>}
               </div>
-              <div className="flex items-center justify-between border-t border-[#2a475e] px-6 py-4">
-                <div className="text-sm text-[#8f98a0]">
-                  Your score: <span className="text-[#66c0f4] font-bold">{calculateMyScore()}</span>
+
+              {/* Footer */}
+              <div className="flex items-center justify-between px-6 py-4" style={{ borderTop: '1px solid var(--border)' }}>
+                <div className="text-sm" style={{ color: 'var(--text-muted)' }}>
+                  Your score: <span className="font-bold" style={{ color: 'var(--accent)' }}>{calculateMyScore()}</span>
                 </div>
                 <div className="flex gap-3">
-                  <button onClick={() => setIsRatingOpen(false)} className="px-4 py-2 text-sm text-[#8f98a0] hover:text-white transition-colors">Cancel</button>
+                  <button onClick={() => setIsRatingOpen(false)}
+                    className="px-4 py-2 text-sm transition-colors"
+                    style={{ color: 'var(--text-muted)' }}>
+                    Cancel
+                  </button>
                   <button onClick={handleSubmitRating} disabled={submitting}
-                    className="px-5 py-2 bg-[#4c6b22] hover:bg-[#5a7a28] disabled:opacity-50 text-white text-sm font-medium rounded-sm transition-colors">
+                    className="px-5 py-2 text-sm font-medium rounded-sm transition-colors disabled:opacity-50"
+                    style={{ background: 'var(--cta)', color: 'var(--cta-text)' }}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--cta-hover)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'var(--cta)')}>
                     {submitting ? 'Saving...' : hasRated ? 'Update rating' : 'Submit rating'}
                   </button>
                 </div>
               </div>
+
             </div>
           </div>
         )}
@@ -390,17 +424,17 @@ export default function ParkPageClient({
               const image = categoryImages[category.id]
               return (
                 <Link key={category.id} href={`/parks/${park.id}/category/${category.id}`}
-                  className="group relative h-48 rounded-sm overflow-hidden border border-[#2a475e] hover:border-[#66c0f4] transition-colors">
+                  className="group relative h-48 rounded-sm overflow-hidden border style={{ borderColor: 'var(--border)' }} hover:border-[#66c0f4] transition-colors">
                   {image ? (
                     <img src={image} alt={category.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   ) : (
-                    <div className="w-full h-full bg-[#1b2838]" />
+                    <div className="w-full h-full style={{ background: 'var(--card-bg)' }}" />
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
                   <div className="absolute inset-0 flex items-end p-3">
                     <div>
-                      <h3 className="text-sm font-bold text-white">{category.name}</h3>
-                      <p className="text-xs text-[#8f98a0]">{category.itemCount} items</p>
+                      <h3 className="text-sm font-bold style={{ color: 'var(--text-primary)' }}">{category.name}</h3>
+                      <p className="text-xs style={{ color: 'var(--text-muted)' }}">{category.itemCount} items</p>
                     </div>
                   </div>
                 </Link>
@@ -431,7 +465,7 @@ export default function ParkPageClient({
                 reactions={initialReactions}
                 userReactions={initialUserReactions}
                 userPoints={userPoints}
-                onReact={() => {}}
+                onReact={() => { }}
                 onEdit={() => setIsRatingOpen(true)}
               />
             )}
@@ -459,7 +493,7 @@ export default function ParkPageClient({
                 )
               })}
             {reviews.length === 0 && (
-              <p className="text-[#8f98a0] text-sm">No reviews yet. Be the first to rate this park!</p>
+              <p className="style={{ color: 'var(--text-muted)' }} text-sm">No reviews yet. Be the first to rate this park!</p>
             )}
           </div>
         </div>

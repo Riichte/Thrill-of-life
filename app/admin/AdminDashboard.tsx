@@ -388,10 +388,15 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                 {success && <div className="mb-4 px-4 py-3 bg-green-500/10 border border-green-500/30 rounded-sm text-green-400 text-sm">{success}</div>}
 
                 {/* Tabs */}
-                <div className="flex gap-1 mb-8 border-b style={{ borderColor: 'var(--border)' }}">
+                <div className="flex gap-1 mb-8 border-b" style={{ borderColor: 'var(--border)' }}>
                     {(['parks', 'items', 'images', 'park-images', 'images-manager', 'videos', 'manufacturers'] as const).map(t => (
-                        <button key={t} onClick={() => setTab(t)}
-                            className={`px-6 py-3 text-sm font-medium capitalize transition-colors border-b-2 -mb-px ${tab === t ? 'style={{ color: 'var(--accent)' }} border-[#66c0f4]' : 'style={{ color: 'var(--text-muted)' }} border-transparent hover:style={{ color: 'var(--text-primary)' }}'}`}>
+                        <button
+                            key={t}
+                            onClick={() => setTab(t)}
+                            className={`px-6 py-3 text-sm font-medium capitalize transition-colors border-b-2 -mb-px ${tab === t ? 'border-[#66c0f4]' : 'border-transparent'}`}
+                            style={tab === t ? { color: 'var(--accent)', borderColor: '#66c0f4' } : { color: 'var(--text-muted)' }}
+                            onMouseEnter={(e) => tab !== t && (e.currentTarget.style.color = 'var(--text-primary)')}
+                            onMouseLeave={(e) => tab !== t && (e.currentTarget.style.color = 'var(--text-muted)')}>
                             {t === 'items' ? 'Rides & Items' : t === 'images' ? 'Ride Images' : t === 'park-images' ? 'Park Images' : t === 'images-manager' ? 'Image Search' : t === 'videos' ? 'Ride Videos' : t === 'manufacturers' ? 'Manufacturers' : t.charAt(0).toUpperCase() + t.slice(1)}
                         </button>
                     ))}

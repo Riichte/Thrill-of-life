@@ -1,39 +1,232 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ─── Default (Dark Steam) ─────────────────────────────── */
+:root,
+[data-theme="dark-steam"] {
+  --bg-primary: #1b2838;
+  --bg-secondary: #16202d;
+  --bg-tertiary: #0e1621;
+  --bg-elevated: #2a475e;
+
+  --text-primary: #c6d4df;
+  --text-secondary: #acb2b8;
+  --text-muted: #8f98a0;
+  --text-faint: #4a6a82;
+
+  --accent: #66c0f4;
+  --accent-hover: #8fcefa;
+  --accent-bg: #1b3a5c;
+
+  --cta: #4c6b22;
+  --cta-hover: #5a7a28;
+  --cta-text: #ffffff;
+
+  --border: #2a475e;
+  --border-subtle: #1e3248;
+
+  --score-high: #10b981;
+  --score-mid: #f59e0b;
+  --score-low: #ef4444;
+
+  --card-bg: #1b2838;
+  --input-bg: #2a475e;
+  --input-border: #3d6a8a;
+  --input-focus: #66c0f4;
+
+  --navbar-bg: #0e1621;
+  --navbar-border: #1e2d3d;
+  --subnav-bg: #1b2838;
+
+  --badge-blue-bg: #1b3a5c;
+  --badge-blue-text: #66c0f4;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ─── Dark Neon ────────────────────────────────────────── */
+[data-theme="dark-neon"] {
+  --bg-primary: #110e20;
+  --bg-secondary: #0d0b1c;
+  --bg-tertiary: #0a0816;
+  --bg-elevated: #1e1540;
+
+  --text-primary: #e2d9ff;
+  --text-secondary: #9d8ec4;
+  --text-muted: #7c6aaa;
+  --text-faint: #4a3a7a;
+
+  --accent: #a78bfa;
+  --accent-hover: #c4b0ff;
+  --accent-bg: #1e1540;
+
+  --cta: #6d28d9;
+  --cta-hover: #7c3aed;
+  --cta-text: #ffffff;
+
+  --border: #2d1f5e;
+  --border-subtle: #1e1540;
+
+  --score-high: #38bdf8;
+  --score-mid: #f472b6;
+  --score-low: #f87171;
+
+  --card-bg: #110e20;
+  --input-bg: #1e1540;
+  --input-border: #3d2a7a;
+  --input-focus: #a78bfa;
+
+  --navbar-bg: #080612;
+  --navbar-border: #1e1540;
+  --subnav-bg: #0d0b1c;
+
+  --badge-blue-bg: #0f1f30;
+  --badge-blue-text: #38bdf8;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ─── Light Blueprint ──────────────────────────────────── */
+[data-theme="light-blueprint"] {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f0f4f9;
+  --bg-tertiary: #f5f8fc;
+  --bg-elevated: #ddeeff;
+
+  --text-primary: #1a2a3a;
+  --text-secondary: #4a6a8a;
+  --text-muted: #6a8aaa;
+  --text-faint: #9ab0c8;
+
+  --accent: #1a4a8a;
+  --accent-hover: #1a5aaa;
+  --accent-bg: #ddeeff;
+
+  --cta: #1a4a8a;
+  --cta-hover: #1a5aaa;
+  --cta-text: #ffffff;
+
+  --border: #c8d8e8;
+  --border-subtle: #ddeeff;
+
+  --score-high: #1a6a3a;
+  --score-mid: #b45309;
+  --score-low: #b91c1c;
+
+  --card-bg: #ffffff;
+  --input-bg: #f0f4f9;
+  --input-border: #c8d8e8;
+  --input-focus: #1a4a8a;
+
+  --navbar-bg: #f0f4f9;
+  --navbar-border: #c8d8e8;
+  --subnav-bg: #e8f0f8;
+
+  --badge-blue-bg: #ddeeff;
+  --badge-blue-text: #1a4a8a;
 }
 
+/* ─── Light Tropical ───────────────────────────────────── */
+[data-theme="light-tropical"] {
+  --bg-primary: #ffffff;
+  --bg-secondary: #e8f9f9;
+  --bg-tertiary: #f0fcfc;
+  --bg-elevated: #d0f2f3;
+
+  --text-primary: #0a2e30;
+  --text-secondary: #3a6e72;
+  --text-muted: #5a8e92;
+  --text-faint: #8ab8bc;
+
+  --accent: #23CED9;
+  --accent-hover: #1ab8c3;
+  --accent-bg: #d0f2f3;
+
+  --cta: #097C87;
+  --cta-hover: #0a8e9a;
+  --cta-text: #ffffff;
+
+  --border: #A1CCA6;
+  --border-subtle: #c8e8ca;
+
+  --score-high: #097C87;
+  --score-mid: #FCA47C;
+  --score-low: #e05a30;
+
+  --card-bg: #ffffff;
+  --input-bg: #f0fcfc;
+  --input-border: #A1CCA6;
+  --input-focus: #097C87;
+
+  --navbar-bg: #097C87;
+  --navbar-border: #076e78;
+  --subnav-bg: #0a8e9a;
+
+  --badge-blue-bg: #d0f2f3;
+  --badge-blue-text: #097C87;
+}
+
+/* ─── Theme-aware utility classes ──────────────────────── */
+/* Use these instead of hardcoded Tailwind colors          */
+
+.theme-bg-primary {
+  background-color: var(--bg-primary);
+}
+
+.theme-bg-secondary {
+  background-color: var(--bg-secondary);
+}
+
+.theme-bg-tertiary {
+  background-color: var(--bg-tertiary);
+}
+
+.theme-text-primary {
+  color: var(--text-primary);
+}
+
+.theme-text-secondary {
+  color: var(--text-secondary);
+}
+
+.theme-text-muted {
+  color: var(--text-muted);
+}
+
+.theme-border {
+  border-color: var(--border);
+}
+
+.theme-accent {
+  color: var(--accent);
+}
+
+/* ─── Neon glow effects (dark-neon only) ───────────────── */
+[data-theme="dark-neon"] .neon-glow-accent {
+  box-shadow: 0 0 12px var(--accent), 0 0 24px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+[data-theme="dark-neon"] .neon-glow-score {
+  box-shadow: 0 0 10px var(--score-high), 0 0 20px color-mix(in srgb, var(--score-high) 30%, transparent);
+}
+
+[data-theme="dark-neon"] .neon-text {
+  text-shadow: 0 0 10px color-mix(in srgb, var(--accent) 60%, transparent);
+}
+
+/* ─── Base body ────────────────────────────────────────── */
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
   font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.2s, color 0.2s;
 }
 
 .font-logo {
   font-family: var(--font-logo), cursive;
 }
 
-/* Home page: slow horizontal marquee (duplicated track moves -50%) */
+/* ─── Home page marquee ────────────────────────────────── */
 @keyframes home-marquee {
   from {
     transform: translate3d(0, 0, 0);
   }
+
   to {
     transform: translate3d(-50%, 0, 0);
   }
@@ -51,16 +244,15 @@ body {
   }
 }
 
-/* Image optimization */
 img {
   loading: lazy;
 }
 
-/* Lazy load fade-in animation */
 @keyframes fadeIn {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -75,6 +267,7 @@ img[loading="lazy"] {
     opacity: 0;
     transform: translateX(30px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);

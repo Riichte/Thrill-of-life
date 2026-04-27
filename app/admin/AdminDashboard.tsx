@@ -165,7 +165,9 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                 if (error) throw error
                 notify('Item created successfully')
             }
-            setItemForm(emptyItem)
+            const savedParkId = itemForm.park_id
+            const savedCategoryId = itemForm.category_id
+            setItemForm({ ...emptyItem, park_id: savedParkId, category_id: savedCategoryId })
             setItemIdInput('')
             setSpecsText('{}')
             setEditingItemId(null)
@@ -439,7 +441,19 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                         <input className={inputClass} value={parkIdInput} onChange={e => setParkIdInput(e.target.value)} placeholder="europa-park" />
                                     </div>
                                 )}
-                                {(['name', 'description', 'country', 'company', 'location', 'logo_url', 'cover_image_url'] as const).map(field => (
+                                <div>
+                                    <label className={labelClass}>name</label>
+                                    <input className={inputClass} value={itemForm.name}
+                                        onChange={e => {
+                                            const name = e.target.value
+                                            setItemForm(p => ({ ...p, name }))
+                                            if (!editingItemId) {
+                                                setItemIdInput(name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''))
+                                            }
+                                        }}
+                                    />
+                                </div>
+                                {(['description', 'location_in_park'] as const).map(field => (
                                     <div key={field}>
                                         <label className={labelClass}>{field.replace(/_/g, ' ')}</label>
                                         {field === 'description' ? (

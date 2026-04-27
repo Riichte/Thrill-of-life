@@ -453,7 +453,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                         }}
                                     />
                                 </div>
-                                {(['description', 'location'] as const).map(field => (
+                                {(['description', 'country', 'company', 'location', 'logo_url', 'cover_image_url'] as const).map(field => (
                                     <div key={field}>
                                         <label className={labelClass}>{field.replace(/_/g, ' ')}</label>
                                         {field === 'description' ? (

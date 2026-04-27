@@ -53,7 +53,7 @@ export function HomeMarqueeRow({
   const calcLayout = useCallback(() => {
     const container = containerRef.current
     if (!container) return
-    const PADDING = 48 // 24px each side (px-6)
+    const PADDING = 48
     const w = container.clientWidth - PADDING
     const visible = getVisibleCount(w)
     const cw = (w - GAP * (visible - 1)) / visible
@@ -103,19 +103,22 @@ export function HomeMarqueeRow({
     <section className="mb-16">
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4 px-1">
         <div>
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white">{title}</h2>
-          {subtitle && <p className="mt-2 text-lg text-zinc-400">{subtitle}</p>}
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>{title}</h2>
+          {subtitle && <p className="mt-2 text-lg" style={{ color: 'var(--text-muted)' }}>{subtitle}</p>}
         </div>
         <Link
           href={viewAllHref}
-          className="shrink-0 text-sm font-medium text-[#66c0f4] hover:text-[#8fcefa] transition-colors flex items-center gap-1"
-        >
+          className="shrink-0 text-sm font-medium transition-colors flex items-center gap-1"
+          style={{ color: 'var(--accent)' }}
+          onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent-hover)')}
+          onMouseLeave={e => (e.currentTarget.style.color = 'var(--accent)')}>
           {viewAllLabel} →
         </Link>
       </div>
 
       <div
-        className="relative rounded-3xl border border-white/10 bg-zinc-950 shadow-2xl"
+        className="relative rounded-3xl shadow-2xl"
+        style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}
         onMouseEnter={stopTimer}
         onMouseLeave={startTimer}
       >
@@ -123,19 +126,21 @@ export function HomeMarqueeRow({
           {cardWidth > 0 && (
             <div
               className="flex transition-transform duration-500 ease-out"
-              style={{
-                gap: `${GAP}px`,
-                transform: `translateX(-${getOffset(currentPage)}px)`
-              }}
+              style={{ gap: `${GAP}px`, transform: `translateX(-${getOffset(currentPage)}px)` }}
             >
               {items.map((item) => (
                 <Link
                   key={item.id}
                   href={item.href}
-                  className="group flex-none overflow-hidden bg-[#1b2838] border border-[#2a475e] rounded-2xl hover:border-[#66c0f4] hover:-translate-y-1 transition-all duration-300"
-                  style={{ width: `${cardWidth}px` }}
-                >
-                  <div className="relative aspect-[16/9] overflow-hidden bg-black">
+                  className="group flex-none overflow-hidden rounded-2xl transition-all duration-300 hover:-translate-y-1"
+                  style={{
+                    width: `${cardWidth}px`,
+                    background: 'var(--card-bg)',
+                    border: '1px solid var(--border)',
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--accent)')}
+                  onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}>
+                  <div className="relative aspect-[16/9] overflow-hidden" style={{ background: 'var(--bg-tertiary)' }}>
                     <Image
                       src={item.image}
                       alt={item.title}
@@ -144,11 +149,14 @@ export function HomeMarqueeRow({
                     />
                   </div>
                   <div className="p-5 space-y-2">
-                    <h3 className="font-semibold text-base md:text-lg leading-tight text-white line-clamp-2 group-hover:text-[#66c0f4] transition-colors">
+                    <h3 className="font-semibold text-base md:text-lg leading-tight line-clamp-2 transition-colors"
+                      style={{ color: 'var(--text-primary)' }}
+                      onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
+                      onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-primary)')}>
                       {item.title}
                     </h3>
                     {item.subtitle && (
-                      <p className="text-sm text-zinc-400 line-clamp-1">{item.subtitle}</p>
+                      <p className="text-sm line-clamp-1" style={{ color: 'var(--text-muted)' }}>{item.subtitle}</p>
                     )}
                   </div>
                 </Link>
@@ -162,8 +170,8 @@ export function HomeMarqueeRow({
             <button
               onClick={() => goToPage(currentPage === 0 ? totalPages - 1 : currentPage - 1)}
               disabled={isAnimating}
-              className="absolute left-3 top-1/2 -translate-y-1/2 z-20 bg-black/70 hover:bg-black/90 text-white rounded-full w-10 h-10 flex items-center justify-center transition-all border border-white/20 hover:border-white/40 disabled:opacity-40"
-            >
+              className="absolute left-3 top-1/2 -translate-y-1/2 z-20 text-white rounded-full w-10 h-10 flex items-center justify-center transition-all disabled:opacity-40"
+              style={{ background: 'rgba(0,0,0,0.7)', border: '1px solid rgba(255,255,255,0.2)' }}>
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M15 18l-6-6 6-6" />
               </svg>
@@ -171,8 +179,8 @@ export function HomeMarqueeRow({
             <button
               onClick={() => goToPage((currentPage + 1) % totalPages)}
               disabled={isAnimating}
-              className="absolute right-3 top-1/2 -translate-y-1/2 z-20 bg-black/70 hover:bg-black/90 text-white rounded-full w-10 h-10 flex items-center justify-center transition-all border border-white/20 hover:border-white/40 disabled:opacity-40"
-            >
+              className="absolute right-3 top-1/2 -translate-y-1/2 z-20 text-white rounded-full w-10 h-10 flex items-center justify-center transition-all disabled:opacity-40"
+              style={{ background: 'rgba(0,0,0,0.7)', border: '1px solid rgba(255,255,255,0.2)' }}>
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9 18l6-6-6-6" />
               </svg>
@@ -183,7 +191,8 @@ export function HomeMarqueeRow({
                 <button
                   key={i}
                   onClick={() => goToPage(i)}
-                  className={`w-2 h-2 rounded-full transition-colors ${i === currentPage ? 'bg-[#66c0f4]' : 'bg-white/20 hover:bg-white/40'}`}
+                  className="w-2 h-2 rounded-full transition-colors"
+                  style={{ background: i === currentPage ? 'var(--accent)' : 'rgba(255,255,255,0.2)' }}
                 />
               ))}
             </div>

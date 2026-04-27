@@ -453,7 +453,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                         }}
                                     />
                                 </div>
-                                {(['description', 'location_in_park'] as const).map(field => (
+                                {(['description', 'location'] as const).map(field => (
                                     <div key={field}>
                                         <label className={labelClass}>{field.replace(/_/g, ' ')}</label>
                                         {field === 'description' ? (
@@ -530,7 +530,19 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                         {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                                     </select>
                                 </div>
-                                {(['name', 'description', 'location'] as const).map(field => (
+                                <div>
+                                    <label className={labelClass}>name</label>
+                                    <input className={inputClass} value={itemForm.name}
+                                        onChange={e => {
+                                            const name = e.target.value
+                                            setItemForm(p => ({ ...p, name }))
+                                            if (!editingItemId) {
+                                                setItemIdInput(name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''))
+                                            }
+                                        }}
+                                    />
+                                </div>
+                                {(['description', 'location_in_park'] as const).map(field => (
                                     <div key={field}>
                                         <label className={labelClass}>{field.replace(/_/g, ' ')}</label>
                                         {field === 'description' ? (

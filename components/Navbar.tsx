@@ -179,7 +179,9 @@ export default function Navbar() {
                     style={{ background: unit === u ? 'var(--cta)' : 'transparent', color: unit === u ? 'var(--cta-text)' : 'var(--text-muted)' }}>
                     {u === 'metric' ? 'm' : 'ft'}
                   </button>
-                                </div>
+                ))}
+              </div>
+
               {/* Currency */}
               <select
                 value={currency}

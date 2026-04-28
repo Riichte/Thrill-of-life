@@ -179,16 +179,16 @@ export default function Navbar() {
                     style={{ background: unit === u ? 'var(--cta)' : 'transparent', color: unit === u ? 'var(--cta-text)' : 'var(--text-muted)' }}>
                     {u === 'metric' ? 'm' : 'ft'}
                   </button>
-                  <select
-  value={currency}
-  onChange={e => setCurrency(e.target.value)}
-  className="rounded-lg px-2 py-1.5 text-sm font-medium focus:outline-none"
-  style={{ background: 'var(--bg-elevated)', color: 'var(--text-muted)', border: 'none' }}
->
-  {CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}
-</select>
-                ))}
-              </div>
+                                </div>
+              {/* Currency */}
+              <select
+                value={currency}
+                onChange={e => setCurrency(e.target.value)}
+                className="rounded-lg px-2 py-1.5 text-sm font-medium focus:outline-none"
+                style={{ background: 'var(--bg-elevated)', color: 'var(--text-muted)', border: 'none' }}
+              >
+                {CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
 
               {/* Theme switcher */}
               <div className="relative" ref={themeRef}>

@@ -65,9 +65,8 @@ export default async function ParkPage({ params }: { params: Promise<{ parkId: s
         if (imgs[0]) categoryImages[cat.id] = imgs[0].url
       }
     })
-    const prices = await getParkPrices(parkId)
-  )
-
+      )
+const prices = await getParkPrices(parkId)
   const parkImageData = await getParkImages(parkId)
   const carouselImages = parkImageData.filter(img => (img as any).sort_order !== -1)
   const slides = carouselImages.length > 0

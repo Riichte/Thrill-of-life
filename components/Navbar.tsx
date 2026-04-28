@@ -251,6 +251,7 @@ export default function Navbar() {
                       {[
                         { href: '/dashboard', label: 'Dashboard' },
                         { href: '/profile', label: 'My Profile' },
+                        ...(user?.email === 'rietsch.adrien@gmail.com' ? [{ href: '/admin', label: '⚙️ Admin' }] : []),
                         { href: '/submit', label: 'Submit an Image' },
                       ].map(item => (
                         <Link key={item.href} href={item.href} onClick={() => setDropdownOpen(false)}

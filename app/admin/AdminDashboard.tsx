@@ -4,19 +4,19 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import ImageManager from './ImageManager'
-
+type AdminTab = 'parks' | 'items' | 'images' | 'park-images' | 'images-manager' | 'videos' | 'manufacturers' | 'osts' | 'prices'
 type Park = { id: string; name: string; description: string; logo_url: string; cover_image_url: string; country: string; company: string; park_type: string; location: string }
 type Category = { id: string; name: string }
 type Item = { id: string; park_id: string; category_id: string; name: string; description: string; location_in_park: string; specs: any; status: string; former_name: string }
 
 const emptyPark: Omit<Park, 'id'> = { name: '', description: '', logo_url: '', cover_image_url: '', country: '', company: '', park_type: 'Theme Park', location: '' }
 const emptyItem: Omit<Item, 'id'> = { park_id: '', category_id: '', name: '', description: '', location_in_park: '', specs: {}, status: 'operating', former_name: '' }
-const [tab, setTab] = useState<'parks' | 'items' | 'images' | 'park-images' | 'images-manager' | 'videos' | 'manufacturers' | 'osts' | 'prices'>('parks')
+const [tab, setTab] = useState<AdminTab>('parks')
 
 export default function AdminDashboard({ parks, categories, items }: { parks: Park[]; categories: Category[]; items: Item[] }) {
     const supabase = createClient()
     const router = useRouter()
-    const [tab, setTab] = useState<'parks' | 'items' | 'images' | 'park-images' | 'images-manager' | 'videos' | 'manufacturers' | 'osts'>('parks')
+    const [tab, setTab] = useState<AdminTab>('parks')
     const [loading, setLoading] = useState(false)
     const [manufacturers, setManufacturers] = useState<{ id: string; name: string }[]>([])
     const [mfrName, setMfrName] = useState('')

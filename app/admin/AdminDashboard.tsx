@@ -416,7 +416,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
 
                 {/* Tabs */}
                 <div className="flex gap-1 mb-8 border-b" style={{ borderColor: 'var(--border)' }}>
-                    {(['parks', 'items', 'images', 'park-images', 'images-manager', 'videos', 'manufacturers', 'osts'] as const).map(t => (
+                    {(['parks', 'items', 'images', 'park-images', 'images-manager', 'videos', 'manufacturers', 'osts', 'prices'] as const).map(t => (
                         <button
                             key={t}
                             onClick={() => setTab(t)}

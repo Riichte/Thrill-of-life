@@ -232,18 +232,20 @@ export default function ItemPageContent({ park, item, category, images, videos, 
   const [isFavorited, setIsFavorited] = useState(false)
   const [userReviewId, setUserReviewId] = useState<string | null>(null)
 
+
+
+  useEffect(() => {
+    const loadOsts = async () => {
+      const { data } = await supabase.from('osts').select('id, title').eq('item_id', item.id)
+      setOsts(data ?? [])
+    }
+    loadOsts()
+  }, [item.id])
+
   useEffect(() => {
     const load = async () => {
       const { data: { user } } = await supabase.auth.getUser()
       setUser(user)
-
-      useEffect(() => {
-        const loadOsts = async () => {
-          const { data } = await supabase.from('osts').select('id, title').eq('item_id', item.id)
-          setOsts(data ?? [])
-        }
-        loadOsts()
-      }, [item.id])
 
       // Load reactions for all reviews (works for logged out too)
       const reviewIds = reviews.map(r => r.id)

@@ -1131,12 +1131,13 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                     </div>
                 )}
                 {tab === 'prices' && (
-                    <PricesTab parks={parks} supabase={supabase} />
+                    <PricesTab parks={parks} />
                 )}
             </div>
         </div>
     )
-    function PricesTab({ parks, supabase }: { parks: any[]; supabase: any }) {
+    function PricesTab({ parks }: { parks: any[] }) {
+        const supabase = createClient()
         const [selectedPark, setSelectedPark] = useState('')
         const [prices, setPrices] = useState<any[]>([])
         const [loading, setLoading] = useState(false)

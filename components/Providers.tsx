@@ -1,12 +1,11 @@
-'use client'
+// line 3 — add import
+import { CurrencyProvider } from '@/lib/currencyContext'
 
-import { UnitProvider } from '@/lib/unitContext'
-import { ThemeProvider } from '@/lib/themeContext'
-
-export default function Providers({ children }: { children: React.ReactNode }) {
-    return (
-        <ThemeProvider>
-            <UnitProvider>{children}</UnitProvider>
-        </ThemeProvider>
-    )
-}
+// wrap children — replace return:
+return (
+  <ThemeProvider>
+    <CurrencyProvider>
+      <UnitProvider>{children}</UnitProvider>
+    </CurrencyProvider>
+  </ThemeProvider>
+)

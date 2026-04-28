@@ -545,3 +545,13 @@ export async function getProfileFollows(userId: string) {
   return data ?? []
 }
 
+export async function getParkPrices(parkId: string) {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('park_prices')
+    .select('*')
+    .eq('park_id', parkId)
+    .order('category')
+  if (error) return []
+  return data ?? []
+}

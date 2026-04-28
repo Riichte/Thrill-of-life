@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getParkById, getItemsByPark, getAllCategories, getItemImages, getIsFollowing, getParkImages, getParkReviews, getParkCommunityScore } from '@/lib/queries'
 import ParkPageClient from '@/components/ParkPageClient'
 import { PhotoCredit } from '@/components/PhotoCredits'
+import { getParkPrices } from '@/lib/queries'
 
 export async function generateMetadata({ params }: { params: Promise<{ parkId: string }> }) {
   const { parkId } = await params
@@ -64,6 +65,7 @@ export default async function ParkPage({ params }: { params: Promise<{ parkId: s
         if (imgs[0]) categoryImages[cat.id] = imgs[0].url
       }
     })
+    const prices = await getParkPrices(parkId)
   )
 
   const parkImageData = await getParkImages(parkId)
@@ -96,6 +98,7 @@ export default async function ParkPage({ params }: { params: Promise<{ parkId: s
       credits={credits}
       reviews={reviews}
       communityScore={communityScore}
+      prices={prices}
     />
   )
 }

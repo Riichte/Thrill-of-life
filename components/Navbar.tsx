@@ -8,13 +8,15 @@ import { createClient } from '@/lib/supabase/client'
 import type { User } from '@supabase/supabase-js'
 import { useUnit } from '@/lib/unitContext'
 import { useTheme, themes } from '@/lib/themeContext'
-
+import { useCurrencyContext } from '@/lib/currencyContext'
+import { CURRENCIES } from '@/lib/useCurrency'
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [language, setLanguage] = useState<'EN' | 'FR'>('EN')
   const { unit, setUnit } = useUnit()
   const { theme, setTheme } = useTheme()
+  const { currency, setCurrency } = useCurrencyContext()
   const [themeOpen, setThemeOpen] = useState(false)
   const themeRef = useRef<HTMLDivElement>(null)
   const [user, setUser] = useState<User | null>(null)
@@ -177,6 +179,14 @@ export default function Navbar() {
                     style={{ background: unit === u ? 'var(--cta)' : 'transparent', color: unit === u ? 'var(--cta-text)' : 'var(--text-muted)' }}>
                     {u === 'metric' ? 'm' : 'ft'}
                   </button>
+                  <select
+  value={currency}
+  onChange={e => setCurrency(e.target.value)}
+  className="rounded-lg px-2 py-1.5 text-sm font-medium focus:outline-none"
+  style={{ background: 'var(--bg-elevated)', color: 'var(--text-muted)', border: 'none' }}
+>
+  {CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}
+</select>
                 ))}
               </div>
 

@@ -6,6 +6,7 @@ import { SteamMediaCarousel } from '@/components/SteamMediaCarousel'
 import { SteamInfoPanel } from '@/components/SteamInfoPanel'
 import { createClient } from '@/lib/supabase/client'
 import PhotoCredits, { PhotoCredit } from '@/components/PhotoCredits'
+import PriceCard from '@/components/PriceCard'
 
 interface Park {
   id: string
@@ -36,6 +37,7 @@ interface ParkPageClientProps {
   credits: PhotoCredit[]
   reviews: any[]
   communityScore: { score: number; positive: number; mixed: number; negative: number } | null
+prices: any[]
 }
 
 const parkDimensions = [
@@ -157,7 +159,7 @@ function ReviewCard({ reviewId, author, authorId, score, title, text, isOwn, rea
 export default function ParkPageClient({
   park, slides, categoriesWithImages, categoryImages,
   userId, isFavorited: initialFavorited, credits = [],
-  reviews = [], communityScore,
+  reviews = [], communityScore, prices = [],
 }: ParkPageClientProps) {
   const supabase = createClient()
   const [isFavorited, setIsFavorited] = useState(initialFavorited)
@@ -339,6 +341,9 @@ export default function ParkPageClient({
                 {park.park_type && <div className="flex justify-between gap-4 style={{ color: 'var(--text-secondary)' }}"><span>Type</span><span className="style={{ color: 'var(--text-primary)' }}">{park.park_type}</span></div>}
               </div>
             </SteamInfoPanel>
+            {prices.length > 0 && (
+  <PriceCard prices={prices} parkCurrency={prices[0]?.currency ?? 'EUR'} />
+)}
           </div>
         </div>
 

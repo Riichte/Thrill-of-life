@@ -1,6 +1,5 @@
 'use client'
-import { createContext, useContext, useState, useEffect } from 'react'
-import { CURRENCIES } from './useCurrency'
+import { createContext, useContext, useState } from 'react'
 
 const CurrencyContext = createContext<{
   currency: string
@@ -8,18 +7,7 @@ const CurrencyContext = createContext<{
 }>({ currency: 'EUR', setCurrency: () => { } })
 
 export function CurrencyProvider({ children }: { children: React.ReactNode }) {
-  const [currency, setCurrencyState] = useState('EUR')
-
-  useEffect(() => {
-    const saved = localStorage.getItem('preferred_currency')
-    if (saved && CURRENCIES.includes(saved)) setCurrencyState(saved)
-  }, [])
-
-  const setCurrency = (c: string) => {
-    setCurrencyState(c)
-    localStorage.setItem('preferred_currency', c)
-  }
-
+  const [currency, setCurrency] = useState('EUR')
   return (
     <CurrencyContext.Provider value={{ currency, setCurrency }}>
       {children}

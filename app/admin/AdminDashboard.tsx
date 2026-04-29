@@ -11,10 +11,24 @@ type Item = { id: string; park_id: string; category_id: string; name: string; de
 
 const emptyPark: Omit<Park, 'id'> = { name: '', description: '', logo_url: '', cover_image_url: '', country: '', company: '', park_type: 'Theme Park', location: '' }
 const emptyItem: Omit<Item, 'id'> = { park_id: '', category_id: '', name: '', description: '', location_in_park: '', specs: {}, status: 'operating', former_name: '' }
-const [tab, setTab] = useState<AdminTab>('parks')
 
-export default function AdminDashboard({ parks, categories, items }: { parks: Park[]; categories: Category[]; items: Item[] }) {
+function PricesTab({ parks }: { parks: any[] }) {
     const supabase = createClient()
+    const [selectedPark, setSelectedPark] = useState('')
+    const [prices, setPrices] = useState<any[]>([])
+    const [loading, setLoading] = useState(false)
+    const [form, setForm] = useState({
+        category: 'adult',
+        label: '',
+        min_age: '',
+        max_age: '',
+        duration: '1day',
+        price: '',
+        currency: 'EUR',
+    }
+
+        export default function AdminDashboard({ parks, categories, items }: { parks: Park[]; categories: Category[]; items: Item[] }) {
+            const supabase = createClient()
     const router = useRouter()
     const [tab, setTab] = useState<AdminTab>('parks')
     const [loading, setLoading] = useState(false)
@@ -1130,175 +1144,163 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                         </div>
                     </div>
                 )}
-                {tab === 'prices' && <div>Prices tab coming soon</div>}
+                {tab === 'prices' && <PricesTab parks={parks} />}
             </div>
         </div>
     )
-    function PricesTab({ parks }: { parks: any[] }) {
-        const supabase = createClient()
-        const [selectedPark, setSelectedPark] = useState('')
-        const [prices, setPrices] = useState<any[]>([])
-        const [loading, setLoading] = useState(false)
-        const [form, setForm] = useState({
-            category: 'adult',
-            label: '',
-            min_age: '',
-            max_age: '',
-            duration: '1day',
-            price: '',
-            currency: 'EUR',
+
+
+
+    const CATEGORIES = [
+        { value: 'free', label: 'Free Entry' },
+        { value: 'child', label: 'Child' },
+        { value: 'adult', label: 'Adult' },
+        { value: 'senior', label: 'Senior' },
+        { value: 'parking', label: 'Parking' },
+        { value: 'skipline', label: 'Skip the Line' },
+        { value: 'season_tier1', label: 'Season Pass Tier 1' },
+        { value: 'season_tier2', label: 'Season Pass Tier 2' },
+        { value: 'season_tier3', label: 'Season Pass Tier 3' },
+    ]
+
+    const DURATIONS = [
+        { value: '1day', label: '1 Day' },
+        { value: '2day', label: '2 Days' },
+        { value: 'season', label: 'Season' },
+        { value: 'perday', label: 'Per Day' },
+        { value: 'none', label: 'N/A' },
+    ]
+
+    const inputClass = `w-full rounded-sm px-3 py-2 text-sm focus:outline-none`
+    const inputStyle = { background: 'var(--bg-elevated)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }
+    const labelClass = `block text-xs font-medium uppercase tracking-wider mb-1`
+    const labelStyle = { color: 'var(--text-muted)' }
+
+    const loadPrices = async (parkId: string) => {
+        setSelectedPark(parkId)
+        const { data } = await supabase.from('park_prices').select('*').eq('park_id', parkId).order('category')
+        setPrices(data ?? [])
+    }
+
+    const handleAdd = async () => {
+        if (!selectedPark || !form.price) return
+        setLoading(true)
+        const { error } = await supabase.from('park_prices').insert({
+            park_id: selectedPark,
+            category: form.category,
+            label: form.label || null,
+            min_age: form.min_age ? parseInt(form.min_age) : null,
+            max_age: form.max_age ? parseInt(form.max_age) : null,
+            duration: form.duration === 'none' ? null : form.duration,
+            price: parseFloat(form.price),
+            currency: form.currency,
         })
-
-        const CATEGORIES = [
-            { value: 'free', label: 'Free Entry' },
-            { value: 'child', label: 'Child' },
-            { value: 'adult', label: 'Adult' },
-            { value: 'senior', label: 'Senior' },
-            { value: 'parking', label: 'Parking' },
-            { value: 'skipline', label: 'Skip the Line' },
-            { value: 'season_tier1', label: 'Season Pass Tier 1' },
-            { value: 'season_tier2', label: 'Season Pass Tier 2' },
-            { value: 'season_tier3', label: 'Season Pass Tier 3' },
-        ]
-
-        const DURATIONS = [
-            { value: '1day', label: '1 Day' },
-            { value: '2day', label: '2 Days' },
-            { value: 'season', label: 'Season' },
-            { value: 'perday', label: 'Per Day' },
-            { value: 'none', label: 'N/A' },
-        ]
-
-        const inputClass = `w-full rounded-sm px-3 py-2 text-sm focus:outline-none`
-        const inputStyle = { background: 'var(--bg-elevated)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }
-        const labelClass = `block text-xs font-medium uppercase tracking-wider mb-1`
-        const labelStyle = { color: 'var(--text-muted)' }
-
-        const loadPrices = async (parkId: string) => {
-            setSelectedPark(parkId)
-            const { data } = await supabase.from('park_prices').select('*').eq('park_id', parkId).order('category')
-            setPrices(data ?? [])
-        }
-
-        const handleAdd = async () => {
-            if (!selectedPark || !form.price) return
-            setLoading(true)
-            const { error } = await supabase.from('park_prices').insert({
-                park_id: selectedPark,
-                category: form.category,
-                label: form.label || null,
-                min_age: form.min_age ? parseInt(form.min_age) : null,
-                max_age: form.max_age ? parseInt(form.max_age) : null,
-                duration: form.duration === 'none' ? null : form.duration,
-                price: parseFloat(form.price),
-                currency: form.currency,
-            })
-            if (!error) {
-                loadPrices(selectedPark)
-                setForm(f => ({ ...f, label: '', min_age: '', max_age: '', price: '' }))
-            }
-            setLoading(false)
-        }
-
-        const handleDelete = async (id: string) => {
-            await supabase.from('park_prices').delete().eq('id', id)
+        if (!error) {
             loadPrices(selectedPark)
+            setForm(f => ({ ...f, label: '', min_age: '', max_age: '', price: '' }))
         }
+        setLoading(false)
+    }
 
-        return (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
-                    <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>Add Price</h2>
-                    <div className="space-y-4">
-                        <div>
-                            <label className={labelClass} style={labelStyle}>Park</label>
-                            <select className={inputClass} style={inputStyle} value={selectedPark} onChange={e => loadPrices(e.target.value)}>
-                                <option value="">Select park</option>
-                                {parks.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-                            </select>
-                        </div>
-                        {selectedPark && (
-                            <>
-                                <div className="grid grid-cols-2 gap-3">
-                                    <div>
-                                        <label className={labelClass} style={labelStyle}>Category</label>
-                                        <select className={inputClass} style={inputStyle} value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))}>
-                                            {CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label className={labelClass} style={labelStyle}>Duration</label>
-                                        <select className={inputClass} style={inputStyle} value={form.duration} onChange={e => setForm(f => ({ ...f, duration: e.target.value }))}>
-                                            {DURATIONS.map(d => <option key={d.value} value={d.value}>{d.label}</option>)}
-                                        </select>
-                                    </div>
+    const handleDelete = async (id: string) => {
+        await supabase.from('park_prices').delete().eq('id', id)
+        loadPrices(selectedPark)
+    }
+
+    return (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>Add Price</h2>
+                <div className="space-y-4">
+                    <div>
+                        <label className={labelClass} style={labelStyle}>Park</label>
+                        <select className={inputClass} style={inputStyle} value={selectedPark} onChange={e => loadPrices(e.target.value)}>
+                            <option value="">Select park</option>
+                            {parks.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                        </select>
+                    </div>
+                    {selectedPark && (
+                        <>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className={labelClass} style={labelStyle}>Category</label>
+                                    <select className={inputClass} style={inputStyle} value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))}>
+                                        {CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+                                    </select>
                                 </div>
                                 <div>
-                                    <label className={labelClass} style={labelStyle}>Custom Label (optional)</label>
-                                    <input className={inputClass} style={inputStyle} value={form.label} onChange={e => setForm(f => ({ ...f, label: e.target.value }))} placeholder="e.g. VIP Pass, Toddler..." />
+                                    <label className={labelClass} style={labelStyle}>Duration</label>
+                                    <select className={inputClass} style={inputStyle} value={form.duration} onChange={e => setForm(f => ({ ...f, duration: e.target.value }))}>
+                                        {DURATIONS.map(d => <option key={d.value} value={d.value}>{d.label}</option>)}
+                                    </select>
                                 </div>
-                                <div className="grid grid-cols-2 gap-3">
-                                    <div>
-                                        <label className={labelClass} style={labelStyle}>Min Age</label>
-                                        <input type="number" className={inputClass} style={inputStyle} value={form.min_age} onChange={e => setForm(f => ({ ...f, min_age: e.target.value }))} placeholder="e.g. 3" />
-                                    </div>
-                                    <div>
-                                        <label className={labelClass} style={labelStyle}>Max Age</label>
-                                        <input type="number" className={inputClass} style={inputStyle} value={form.max_age} onChange={e => setForm(f => ({ ...f, max_age: e.target.value }))} placeholder="e.g. 12" />
-                                    </div>
+                            </div>
+                            <div>
+                                <label className={labelClass} style={labelStyle}>Custom Label (optional)</label>
+                                <input className={inputClass} style={inputStyle} value={form.label} onChange={e => setForm(f => ({ ...f, label: e.target.value }))} placeholder="e.g. VIP Pass, Toddler..." />
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className={labelClass} style={labelStyle}>Min Age</label>
+                                    <input type="number" className={inputClass} style={inputStyle} value={form.min_age} onChange={e => setForm(f => ({ ...f, min_age: e.target.value }))} placeholder="e.g. 3" />
                                 </div>
-                                <div className="grid grid-cols-2 gap-3">
-                                    <div>
-                                        <label className={labelClass} style={labelStyle}>Price</label>
-                                        <input type="number" step="0.01" className={inputClass} style={inputStyle} value={form.price} onChange={e => setForm(f => ({ ...f, price: e.target.value }))} placeholder="0.00" />
-                                    </div>
-                                    <div>
-                                        <label className={labelClass} style={labelStyle}>Currency</label>
-                                        <select className={inputClass} style={inputStyle} value={form.currency} onChange={e => setForm(f => ({ ...f, currency: e.target.value }))}>
-                                            {['EUR', 'USD', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'KRW', 'AED', 'DKK', 'SEK', 'NOK', 'PLN', 'CZK', 'HUF'].map(c => <option key={c}>{c}</option>)}
-                                        </select>
-                                    </div>
+                                <div>
+                                    <label className={labelClass} style={labelStyle}>Max Age</label>
+                                    <input type="number" className={inputClass} style={inputStyle} value={form.max_age} onChange={e => setForm(f => ({ ...f, max_age: e.target.value }))} placeholder="e.g. 12" />
                                 </div>
-                                <button onClick={handleAdd} disabled={loading}
-                                    className="w-full py-2 text-sm font-medium rounded-sm transition-colors disabled:opacity-50"
-                                    style={{ background: 'var(--cta)', color: 'var(--cta-text)' }}>
-                                    {loading ? 'Adding...' : 'Add Price'}
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className={labelClass} style={labelStyle}>Price</label>
+                                    <input type="number" step="0.01" className={inputClass} style={inputStyle} value={form.price} onChange={e => setForm(f => ({ ...f, price: e.target.value }))} placeholder="0.00" />
+                                </div>
+                                <div>
+                                    <label className={labelClass} style={labelStyle}>Currency</label>
+                                    <select className={inputClass} style={inputStyle} value={form.currency} onChange={e => setForm(f => ({ ...f, currency: e.target.value }))}>
+                                        {['EUR', 'USD', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'KRW', 'AED', 'DKK', 'SEK', 'NOK', 'PLN', 'CZK', 'HUF'].map(c => <option key={c}>{c}</option>)}
+                                    </select>
+                                </div>
+                            </div>
+                            <button onClick={handleAdd} disabled={loading}
+                                className="w-full py-2 text-sm font-medium rounded-sm transition-colors disabled:opacity-50"
+                                style={{ background: 'var(--cta)', color: 'var(--cta-text)' }}>
+                                {loading ? 'Adding...' : 'Add Price'}
+                            </button>
+                        </>
+                    )}
+                </div>
+            </div>
+
+            {selectedPark && (
+                <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                    <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
+                        Prices ({prices.length})
+                    </h2>
+                    <div className="space-y-2 max-h-[600px] overflow-y-auto">
+                        {prices.length === 0 && <p className="text-sm" style={{ color: 'var(--text-muted)' }}>No prices yet.</p>}
+                        {prices.map(p => (
+                            <div key={p.id} className="flex items-center justify-between gap-3 p-3 rounded-sm" style={{ background: 'var(--bg-elevated)' }}>
+                                <div className="min-w-0">
+                                    <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+                                        {p.label || p.category}
+                                        {p.duration && <span className="ml-2 text-xs" style={{ color: 'var(--text-muted)' }}>· {p.duration}</span>}
+                                    </p>
+                                    <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                                        {p.price === 0 ? 'Free' : `${p.price} ${p.currency}`}
+                                        {p.min_age !== null && ` · age ${p.min_age}${p.max_age !== null ? `–${p.max_age}` : '+'}`}
+                                    </p>
+                                </div>
+                                <button onClick={() => handleDelete(p.id)}
+                                    className="px-3 py-1.5 text-xs rounded-sm flex-shrink-0"
+                                    style={{ background: 'rgba(239,68,68,0.2)', color: '#ef4444' }}>
+                                    Delete
                                 </button>
-                            </>
-                        )}
+                            </div>
+                        ))}
                     </div>
                 </div>
-
-                {selectedPark && (
-                    <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
-                        <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
-                            Prices ({prices.length})
-                        </h2>
-                        <div className="space-y-2 max-h-[600px] overflow-y-auto">
-                            {prices.length === 0 && <p className="text-sm" style={{ color: 'var(--text-muted)' }}>No prices yet.</p>}
-                            {prices.map(p => (
-                                <div key={p.id} className="flex items-center justify-between gap-3 p-3 rounded-sm" style={{ background: 'var(--bg-elevated)' }}>
-                                    <div className="min-w-0">
-                                        <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
-                                            {p.label || p.category}
-                                            {p.duration && <span className="ml-2 text-xs" style={{ color: 'var(--text-muted)' }}>· {p.duration}</span>}
-                                        </p>
-                                        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                                            {p.price === 0 ? 'Free' : `${p.price} ${p.currency}`}
-                                            {p.min_age !== null && ` · age ${p.min_age}${p.max_age !== null ? `–${p.max_age}` : '+'}`}
-                                        </p>
-                                    </div>
-                                    <button onClick={() => handleDelete(p.id)}
-                                        className="px-3 py-1.5 text-xs rounded-sm flex-shrink-0"
-                                        style={{ background: 'rgba(239,68,68,0.2)', color: '#ef4444' }}>
-                                        Delete
-                                    </button>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
-            </div>
-        )
-    }
+            )}
+        </div>
+    )
+}
 }

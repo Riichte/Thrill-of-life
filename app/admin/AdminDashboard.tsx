@@ -823,343 +823,346 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                         </div>
                                     )
                                 })}
-
-                                {/* ─── Images Tab ─── */}
-                                {tab === 'images' && (
-                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
-                                            <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>Manage Images</h2>
-                                            <div className="space-y-4">
-                                                <div>
-                                                    <label className={labelClass} style={labelStyle}>Select Item</label>
-                                                    <select className={inputClass} style={inputStyle} value={imageItemId} onChange={e => loadImages(e.target.value)}>
-                                                        <option value="">Select an item</option>
-                                                        {items.map(i => <option key={i.id} value={i.id}>{i.name} ({i.park_id})</option>)}
-                                                    </select>
-                                                </div>
-                                                {imageItemId && (
-                                                    <>
-                                                        <div>
-                                                            <label className={labelClass} style={labelStyle}>Image URL</label>
-                                                            <input className={inputClass} style={inputStyle} value={imageUrl} onChange={e => setImageUrl(e.target.value)} />
-                                                        </div>
-                                                        <div>
-                                                            <label className={labelClass} style={labelStyle}>Sort Order</label>
-                                                            <select className={inputClass} style={inputStyle} value={imageOrder} onChange={e => setImageOrder(parseInt(e.target.value))}>
-                                                                <option value="-1">Logo</option>
-                                                                <option value="0">Main</option>
-                                                                {[1, 2, 3, 4, 5, 6].map(n => <option key={n} value={n}>Image 0{n}</option>)}
-                                                            </select>
-                                                        </div>
-                                                        <div>
-                                                            <label className={labelClass} style={labelStyle}>Attribution Author</label>
-                                                            <input className={inputClass} style={inputStyle} value={imageAuthor} onChange={e => setImageAuthor(e.target.value)} />
-                                                        </div>
-                                                        <div>
-                                                            <label className={labelClass} style={labelStyle}>Source URL</label>
-                                                            <input className={inputClass} style={inputStyle} value={imageSourceUrl} onChange={e => setImageSourceUrl(e.target.value)} />
-                                                        </div>
-                                                        <div>
-                                                            <label className={labelClass} style={labelStyle}>License</label>
-                                                            <select className={inputClass} style={inputStyle} value={imageLicense} onChange={e => setImageLicense(e.target.value)}>
-                                                                <option>CC BY 4.0</option><option>CC BY-SA 4.0</option><option>CC0</option><option>Own</option>
-                                                            </select>
-                                                        </div>
-                                                        <button onClick={handleAddImage} disabled={loading} className={btnPrimary} style={btnPrimaryStyle}>
-                                                            {loading ? 'Adding...' : 'Add Image'}
-                                                        </button>
-                                                    </>
-                                                )}
-                                            </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+                {/* ─── Images Tab ─── */}
+                {tab === 'images' && (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                            <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>Manage Images</h2>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className={labelClass} style={labelStyle}>Select Item</label>
+                                    <select className={inputClass} style={inputStyle} value={imageItemId} onChange={e => loadImages(e.target.value)}>
+                                        <option value="">Select an item</option>
+                                        {items.map(i => <option key={i.id} value={i.id}>{i.name} ({i.park_id})</option>)}
+                                    </select>
+                                </div>
+                                {imageItemId && (
+                                    <>
+                                        <div>
+                                            <label className={labelClass} style={labelStyle}>Image URL</label>
+                                            <input className={inputClass} style={inputStyle} value={imageUrl} onChange={e => setImageUrl(e.target.value)} />
                                         </div>
-                                        {imageItemId && (
-                                            <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
-                                                <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Images ({itemImages.length})</h2>
-                                                <div className="space-y-2 max-h-[600px] overflow-y-auto">
-                                                    {itemImages.map(img => (
-                                                        <div key={img.id} className="flex items-center justify-between gap-3 p-3 rounded-sm" style={{ background: 'var(--bg-elevated)' }}>
-                                                            <div className="flex items-center gap-3 min-w-0">
-                                                                <img src={img.url} alt="" className="w-16 h-10 object-cover rounded-sm flex-shrink-0" onError={e => { e.currentTarget.style.display = 'none' }} />
-                                                                <div className="min-w-0">
-                                                                    <p className="text-xs truncate" style={{ color: 'var(--text-primary)' }}>{img.url}</p>
-                                                                    <p className="text-xs" style={{ color: 'var(--text-muted)' }}>#{img.sort_order}</p>
-                                                                </div>
-                                                            </div>
-                                                            <div className="flex gap-2 flex-shrink-0">
-                                                                <button onClick={() => handleEditImage(img, 'item')} className={btnEdit} style={btnEditStyle}>Edit</button>
-                                                                <button onClick={() => handleDeleteImage(img.id)} className={btnDanger} style={btnDangerStyle}>Delete</button>
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
+                                        <div>
+                                            <label className={labelClass} style={labelStyle}>Sort Order</label>
+                                            <select className={inputClass} style={inputStyle} value={imageOrder} onChange={e => setImageOrder(parseInt(e.target.value))}>
+                                                <option value="-1">Logo</option>
+                                                <option value="0">Main</option>
+                                                {[1, 2, 3, 4, 5, 6].map(n => <option key={n} value={n}>Image 0{n}</option>)}
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className={labelClass} style={labelStyle}>Attribution Author</label>
+                                            <input className={inputClass} style={inputStyle} value={imageAuthor} onChange={e => setImageAuthor(e.target.value)} />
+                                        </div>
+                                        <div>
+                                            <label className={labelClass} style={labelStyle}>Source URL</label>
+                                            <input className={inputClass} style={inputStyle} value={imageSourceUrl} onChange={e => setImageSourceUrl(e.target.value)} />
+                                        </div>
+                                        <div>
+                                            <label className={labelClass} style={labelStyle}>License</label>
+                                            <select className={inputClass} style={inputStyle} value={imageLicense} onChange={e => setImageLicense(e.target.value)}>
+                                                <option>CC BY 4.0</option><option>CC BY-SA 4.0</option><option>CC0</option><option>Own</option>
+                                            </select>
+                                        </div>
+                                        <button onClick={handleAddImage} disabled={loading} className={btnPrimary} style={btnPrimaryStyle}>
+                                            {loading ? 'Adding...' : 'Add Image'}
+                                        </button>
+                                    </>
                                 )}
-
-                                {/* ─── Park Images Tab ─── */}
-                                {tab === 'park-images' && (
-                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
-                                            <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>Manage Park Images</h2>
-                                            <div className="space-y-4">
-                                                <div>
-                                                    <label className={labelClass} style={labelStyle}>Select Park</label>
-                                                    <select className={inputClass} style={inputStyle} value={parkImageParkId} onChange={e => loadParkImages(e.target.value)}>
-                                                        <option value="">Select a park</option>
-                                                        {parks.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-                                                    </select>
+                            </div>
+                        </div>
+                        {imageItemId && (
+                            <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                                <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Images ({itemImages.length})</h2>
+                                <div className="space-y-2 max-h-[600px] overflow-y-auto">
+                                    {itemImages.map(img => (
+                                        <div key={img.id} className="flex items-center justify-between gap-3 p-3 rounded-sm" style={{ background: 'var(--bg-elevated)' }}>
+                                            <div className="flex items-center gap-3 min-w-0">
+                                                <img src={img.url} alt="" className="w-16 h-10 object-cover rounded-sm flex-shrink-0" onError={e => { e.currentTarget.style.display = 'none' }} />
+                                                <div className="min-w-0">
+                                                    <p className="text-xs truncate" style={{ color: 'var(--text-primary)' }}>{img.url}</p>
+                                                    <p className="text-xs" style={{ color: 'var(--text-muted)' }}>#{img.sort_order}</p>
                                                 </div>
-                                                {parkImageParkId && (
-                                                    <>
-                                                        <div>
-                                                            <label className={labelClass} style={labelStyle}>Image URL</label>
-                                                            <input className={inputClass} style={inputStyle} value={parkImageUrl} onChange={e => setParkImageUrl(e.target.value)} />
-                                                        </div>
-                                                        <div>
-                                                            <label className={labelClass} style={labelStyle}>Sort Order</label>
-                                                            <input type="number" className={inputClass} style={inputStyle} value={parkImageOrder} onChange={e => setParkImageOrder(parseInt(e.target.value))} />
-                                                        </div>
-                                                        <div>
-                                                            <label className={labelClass} style={labelStyle}>Attribution Author</label>
-                                                            <input className={inputClass} style={inputStyle} value={parkImageAuthor} onChange={e => setParkImageAuthor(e.target.value)} />
-                                                        </div>
-                                                        <div>
-                                                            <label className={labelClass} style={labelStyle}>Source URL</label>
-                                                            <input className={inputClass} style={inputStyle} value={parkImageSourceUrl} onChange={e => setParkImageSourceUrl(e.target.value)} />
-                                                        </div>
-                                                        <div>
-                                                            <label className={labelClass} style={labelStyle}>License</label>
-                                                            <select className={inputClass} style={inputStyle} value={parkImageLicense} onChange={e => setParkImageLicense(e.target.value)}>
-                                                                <option>CC BY 4.0</option><option>CC BY-SA 4.0</option><option>CC0</option><option>Own</option>
-                                                            </select>
-                                                        </div>
-                                                        <button onClick={handleAddParkImage} disabled={loading} className={btnPrimary} style={btnPrimaryStyle}>
-                                                            {loading ? 'Adding...' : 'Add Image'}
-                                                        </button>
-                                                    </>
-                                                )}
+                                            </div>
+                                            <div className="flex gap-2 flex-shrink-0">
+                                                <button onClick={() => handleEditImage(img, 'item')} className={btnEdit} style={btnEditStyle}>Edit</button>
+                                                <button onClick={() => handleDeleteImage(img.id)} className={btnDanger} style={btnDangerStyle}>Delete</button>
                                             </div>
                                         </div>
-                                        {parkImageParkId && (
-                                            <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
-                                                <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Park Images ({parkImages.length})</h2>
-                                                <div className="space-y-2 max-h-[600px] overflow-y-auto">
-                                                    {parkImages.map(img => (
-                                                        <div key={img.id} className="flex items-center justify-between gap-3 p-3 rounded-sm" style={{ background: 'var(--bg-elevated)' }}>
-                                                            <div className="flex items-center gap-3 min-w-0">
-                                                                <img src={img.url} alt="" className="w-16 h-10 object-cover rounded-sm flex-shrink-0" onError={e => { e.currentTarget.style.display = 'none' }} />
-                                                                <div className="min-w-0">
-                                                                    <p className="text-xs truncate" style={{ color: 'var(--text-primary)' }}>{img.url}</p>
-                                                                    <p className="text-xs" style={{ color: 'var(--text-muted)' }}>#{img.sort_order}</p>
-                                                                </div>
-                                                            </div>
-                                                            <div className="flex gap-2 flex-shrink-0">
-                                                                <button onClick={() => handleEditImage(img, 'park')} className={btnEdit} style={btnEditStyle}>Edit</button>
-                                                                <button onClick={() => handleDeleteParkImage(img.id)} className={btnDanger} style={btnDangerStyle}>Delete</button>
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* ─── Park Images Tab ─── */}
+                {tab === 'park-images' && (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                            <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>Manage Park Images</h2>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className={labelClass} style={labelStyle}>Select Park</label>
+                                    <select className={inputClass} style={inputStyle} value={parkImageParkId} onChange={e => loadParkImages(e.target.value)}>
+                                        <option value="">Select a park</option>
+                                        {parks.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                                    </select>
+                                </div>
+                                {parkImageParkId && (
+                                    <>
+                                        <div>
+                                            <label className={labelClass} style={labelStyle}>Image URL</label>
+                                            <input className={inputClass} style={inputStyle} value={parkImageUrl} onChange={e => setParkImageUrl(e.target.value)} />
+                                        </div>
+                                        <div>
+                                            <label className={labelClass} style={labelStyle}>Sort Order</label>
+                                            <input type="number" className={inputClass} style={inputStyle} value={parkImageOrder} onChange={e => setParkImageOrder(parseInt(e.target.value))} />
+                                        </div>
+                                        <div>
+                                            <label className={labelClass} style={labelStyle}>Attribution Author</label>
+                                            <input className={inputClass} style={inputStyle} value={parkImageAuthor} onChange={e => setParkImageAuthor(e.target.value)} />
+                                        </div>
+                                        <div>
+                                            <label className={labelClass} style={labelStyle}>Source URL</label>
+                                            <input className={inputClass} style={inputStyle} value={parkImageSourceUrl} onChange={e => setParkImageSourceUrl(e.target.value)} />
+                                        </div>
+                                        <div>
+                                            <label className={labelClass} style={labelStyle}>License</label>
+                                            <select className={inputClass} style={inputStyle} value={parkImageLicense} onChange={e => setParkImageLicense(e.target.value)}>
+                                                <option>CC BY 4.0</option><option>CC BY-SA 4.0</option><option>CC0</option><option>Own</option>
+                                            </select>
+                                        </div>
+                                        <button onClick={handleAddParkImage} disabled={loading} className={btnPrimary} style={btnPrimaryStyle}>
+                                            {loading ? 'Adding...' : 'Add Image'}
+                                        </button>
+                                    </>
                                 )}
+                            </div>
+                        </div>
+                        {parkImageParkId && (
+                            <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                                <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Park Images ({parkImages.length})</h2>
+                                <div className="space-y-2 max-h-[600px] overflow-y-auto">
+                                    {parkImages.map(img => (
+                                        <div key={img.id} className="flex items-center justify-between gap-3 p-3 rounded-sm" style={{ background: 'var(--bg-elevated)' }}>
+                                            <div className="flex items-center gap-3 min-w-0">
+                                                <img src={img.url} alt="" className="w-16 h-10 object-cover rounded-sm flex-shrink-0" onError={e => { e.currentTarget.style.display = 'none' }} />
+                                                <div className="min-w-0">
+                                                    <p className="text-xs truncate" style={{ color: 'var(--text-primary)' }}>{img.url}</p>
+                                                    <p className="text-xs" style={{ color: 'var(--text-muted)' }}>#{img.sort_order}</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex gap-2 flex-shrink-0">
+                                                <button onClick={() => handleEditImage(img, 'park')} className={btnEdit} style={btnEditStyle}>Edit</button>
+                                                <button onClick={() => handleDeleteParkImage(img.id)} className={btnDanger} style={btnDangerStyle}>Delete</button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
 
-                                {/* ─── Image Manager Tab ─── */}
-                                {tab === 'images-manager' && (
-                                    <section>
-                                        <ImageManager items={items} categories={categories} parks={parks} />
-                                    </section>
+                {/* ─── Image Manager Tab ─── */}
+                {tab === 'images-manager' && (
+                    <section>
+                        <ImageManager items={items} categories={categories} parks={parks} />
+                    </section>
+                )}
+
+                {/* ─── Videos Tab ─── */}
+                {tab === 'videos' && (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                            <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>Manage Videos</h2>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className={labelClass} style={labelStyle}>Select Item</label>
+                                    <select className={inputClass} style={inputStyle} value={videoItemId} onChange={e => loadVideos(e.target.value)}>
+                                        <option value="">Select an item</option>
+                                        {items.map(i => <option key={i.id} value={i.id}>{i.name} ({i.park_id})</option>)}
+                                    </select>
+                                </div>
+                                {videoItemId && (
+                                    <>
+                                        <div>
+                                            <label className={labelClass} style={labelStyle}>YouTube URL</label>
+                                            <input className={inputClass} style={inputStyle} value={videoUrl} onChange={e => setVideoUrl(e.target.value)} placeholder="https://www.youtube.com/watch?v=..." />
+                                        </div>
+                                        <div>
+                                            <label className={labelClass} style={labelStyle}>Video Title</label>
+                                            <input className={inputClass} style={inputStyle} value={videoTitle} onChange={e => setVideoTitle(e.target.value)} />
+                                        </div>
+                                        <button onClick={handleAddVideo} disabled={loading} className={btnPrimary} style={btnPrimaryStyle}>
+                                            {loading ? 'Adding...' : 'Add Video'}
+                                        </button>
+                                    </>
                                 )}
-
-                                {/* ─── Videos Tab ─── */}
-                                {tab === 'videos' && (
-                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
-                                            <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>Manage Videos</h2>
-                                            <div className="space-y-4">
-                                                <div>
-                                                    <label className={labelClass} style={labelStyle}>Select Item</label>
-                                                    <select className={inputClass} style={inputStyle} value={videoItemId} onChange={e => loadVideos(e.target.value)}>
-                                                        <option value="">Select an item</option>
-                                                        {items.map(i => <option key={i.id} value={i.id}>{i.name} ({i.park_id})</option>)}
-                                                    </select>
+                                {videoItemId && (
+                                    <div className="mt-4 space-y-2 max-h-[400px] overflow-y-auto">
+                                        {itemVideos.map(vid => (
+                                            <div key={vid.id} className="flex items-center justify-between gap-3 p-3 rounded-sm" style={{ background: 'var(--bg-elevated)' }}>
+                                                <div className="min-w-0">
+                                                    <p className="text-sm truncate" style={{ color: 'var(--text-primary)' }}>{vid.title}</p>
+                                                    <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{vid.video_id}</p>
                                                 </div>
-                                                {videoItemId && (
-                                                    <>
-                                                        <div>
-                                                            <label className={labelClass} style={labelStyle}>YouTube URL</label>
-                                                            <input className={inputClass} style={inputStyle} value={videoUrl} onChange={e => setVideoUrl(e.target.value)} placeholder="https://www.youtube.com/watch?v=..." />
-                                                        </div>
-                                                        <div>
-                                                            <label className={labelClass} style={labelStyle}>Video Title</label>
-                                                            <input className={inputClass} style={inputStyle} value={videoTitle} onChange={e => setVideoTitle(e.target.value)} />
-                                                        </div>
-                                                        <button onClick={handleAddVideo} disabled={loading} className={btnPrimary} style={btnPrimaryStyle}>
-                                                            {loading ? 'Adding...' : 'Add Video'}
-                                                        </button>
-                                                    </>
-                                                )}
-                                                {videoItemId && (
-                                                    <div className="mt-4 space-y-2 max-h-[400px] overflow-y-auto">
-                                                        {itemVideos.map(vid => (
-                                                            <div key={vid.id} className="flex items-center justify-between gap-3 p-3 rounded-sm" style={{ background: 'var(--bg-elevated)' }}>
-                                                                <div className="min-w-0">
-                                                                    <p className="text-sm truncate" style={{ color: 'var(--text-primary)' }}>{vid.title}</p>
-                                                                    <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{vid.video_id}</p>
-                                                                </div>
-                                                                <button onClick={() => handleDeleteVideo(vid.id)} className={btnDanger} style={btnDangerStyle}>Delete</button>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                )}
+                                                <button onClick={() => handleDeleteVideo(vid.id)} className={btnDanger} style={btnDangerStyle}>Delete</button>
                                             </div>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* ─── Manufacturers Tab ─── */}
-                                {tab === 'manufacturers' && (
-                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
-                                            <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>{editingMfrId ? 'Edit Manufacturer' : 'Add Manufacturer'}</h2>
-                                            <div className="space-y-4">
-                                                <div>
-                                                    <label className={labelClass} style={labelStyle}>Name</label>
-                                                    <input className={inputClass} style={inputStyle} value={mfrName} onChange={e => setMfrName(e.target.value)} placeholder="e.g. Intamin" />
-                                                </div>
-                                                <div className="flex gap-3">
-                                                    <button onClick={async () => {
-                                                        if (!mfrName.trim()) return
-                                                        const slug = mfrName.trim().toLowerCase().replace(/\s+/g, '-')
-                                                        if (editingMfrId) await supabase.from('manufacturers').update({ name: mfrName.trim() }).eq('id', editingMfrId)
-                                                        else await supabase.from('manufacturers').insert({ id: slug, name: mfrName.trim() })
-                                                        setMfrName(''); setEditingMfrId(null); loadManufacturers()
-                                                        notify(editingMfrId ? 'Manufacturer updated' : 'Manufacturer added')
-                                                    }} disabled={loading} className={btnPrimary} style={btnPrimaryStyle}>
-                                                        {editingMfrId ? 'Update' : 'Add Manufacturer'}
-                                                    </button>
-                                                    {editingMfrId && <button onClick={() => { setEditingMfrId(null); setMfrName('') }} className={btnSecondary} style={btnSecondaryStyle}>Cancel</button>}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
-                                            <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Manufacturers ({manufacturers.length})</h2>
-                                            <div className="space-y-2 max-h-[600px] overflow-y-auto">
-                                                {manufacturers.map(m => (
-                                                    <div key={m.id} className="flex items-center justify-between gap-3 p-3 rounded-sm" style={{ background: 'var(--bg-elevated)' }}>
-                                                        <div>
-                                                            <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{m.name}</p>
-                                                            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{m.id}</p>
-                                                        </div>
-                                                        <div className="flex gap-2">
-                                                            <button onClick={() => { setEditingMfrId(m.id); setMfrName(m.name) }} className={btnEdit} style={btnEditStyle}>Edit</button>
-                                                            <button onClick={async () => {
-                                                                if (!confirm(`Delete "${m.name}"?`)) return
-                                                                await supabase.from('manufacturers').delete().eq('id', m.id)
-                                                                loadManufacturers(); notify('Manufacturer deleted')
-                                                            }} className={btnDanger} style={btnDangerStyle}>Delete</button>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* ─── OSTs Tab ─── */}
-                                {tab === 'osts' && (
-                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
-                                            <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>Add OST</h2>
-                                            <div className="space-y-4">
-                                                <div>
-                                                    <label className={labelClass} style={labelStyle}>Park</label>
-                                                    <select className={inputClass} style={inputStyle} id="ost-park" onChange={e => setSelectedParkForOst(e.target.value)}>
-                                                        <option value="">Select a park</option>
-                                                        {parks.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-                                                    </select>
-                                                </div>
-                                                <div>
-                                                    <label className={labelClass} style={labelStyle}>Item</label>
-                                                    <select className={inputClass} style={inputStyle} id="ost-item">
-                                                        <option value="">Select an item</option>
-                                                        {items.filter(i => i.park_id === selectedParkForOst).map(i => <option key={i.id} value={i.id}>{i.name}</option>)}
-                                                    </select>
-                                                </div>
-                                                <div>
-                                                    <label className={labelClass} style={labelStyle}>OST Title</label>
-                                                    <input className={inputClass} style={inputStyle} id="ost-title" placeholder="e.g. Blue Fire Theme" />
-                                                </div>
-                                                <div>
-                                                    <label className={labelClass} style={labelStyle}>YouTube Video ID</label>
-                                                    <input className={inputClass} style={inputStyle} id="ost-youtube" placeholder="e.g. dQw4w9WgXcQ" />
-                                                </div>
-                                                <button onClick={async () => {
-                                                    const itemId = (document.getElementById('ost-item') as HTMLSelectElement).value
-                                                    const title = (document.getElementById('ost-title') as HTMLInputElement).value
-                                                    const youtubeId = (document.getElementById('ost-youtube') as HTMLInputElement).value
-                                                    if (!itemId || !title || !youtubeId) { notify('All fields required', true); return }
-                                                    const { error } = await supabase.from('osts').insert({ item_id: itemId, title, youtube_video_id: youtubeId })
-                                                    if (error) notify(error.message, true)
-                                                    else { notify('OST added'); loadOsts() }
-                                                }} disabled={loading} className={btnPrimary} style={btnPrimaryStyle}>
-                                                    {loading ? 'Adding...' : 'Add OST'}
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
-                                            <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>OSTs</h2>
-                                            <div className="space-y-2 max-h-[600px] overflow-y-auto" id="osts-list">
-                                                <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Loading...</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* ─── Prices Tab ─── */}
-                                {tab === 'prices' && <PricesTab parks={parks} />}
-
-                                {/* ─── Edit Image Modal ─── */}
-                                {editingImage && (
-                                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                                        <div className="rounded-sm p-6 max-w-md w-full" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
-                                            <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Edit Image Info</h2>
-                                            <div className="space-y-4">
-                                                <div>
-                                                    <label className={labelClass} style={labelStyle}>Sort Order</label>
-                                                    <select className={inputClass} style={inputStyle} value={editFormData.sortOrder} onChange={e => setEditFormData({ ...editFormData, sortOrder: parseInt(e.target.value) })}>
-                                                        <option value="-1">Logo</option>
-                                                        <option value="0">Main</option>
-                                                        {[1, 2, 3, 4, 5, 6].map(n => <option key={n} value={n}>Image 0{n}</option>)}
-                                                    </select>
-                                                </div>
-                                                <div>
-                                                    <label className={labelClass} style={labelStyle}>Author / Channel</label>
-                                                    <input className={inputClass} style={inputStyle} value={editFormData.author} onChange={e => setEditFormData({ ...editFormData, author: e.target.value })} />
-                                                </div>
-                                                <div>
-                                                    <label className={labelClass} style={labelStyle}>Source URL</label>
-                                                    <input className={inputClass} style={inputStyle} value={editFormData.sourceUrl} onChange={e => setEditFormData({ ...editFormData, sourceUrl: e.target.value })} />
-                                                </div>
-                                                <div>
-                                                    <label className={labelClass} style={labelStyle}>License</label>
-                                                    <select className={inputClass} style={inputStyle} value={editFormData.license} onChange={e => setEditFormData({ ...editFormData, license: e.target.value })}>
-                                                        <option>CC BY 4.0</option><option>CC BY-SA 4.0</option><option>CC0</option><option>Own</option>
-                                                    </select>
-                                                </div>
-                                                <div className="flex gap-3 pt-2">
-                                                    <button onClick={handleSaveEditImage} disabled={loading} className={btnPrimary} style={btnPrimaryStyle}>
-                                                        {loading ? 'Saving...' : 'Save'}
-                                                    </button>
-                                                    <button onClick={() => setEditingImage(null)} className={btnSecondary} style={btnSecondaryStyle}>Cancel</button>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        ))}
                                     </div>
                                 )}
                             </div>
                         </div>
-                        )
-                }
+                    </div>
+                )}
+
+                {/* ─── Manufacturers Tab ─── */}
+                {tab === 'manufacturers' && (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                            <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>{editingMfrId ? 'Edit Manufacturer' : 'Add Manufacturer'}</h2>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className={labelClass} style={labelStyle}>Name</label>
+                                    <input className={inputClass} style={inputStyle} value={mfrName} onChange={e => setMfrName(e.target.value)} placeholder="e.g. Intamin" />
+                                </div>
+                                <div className="flex gap-3">
+                                    <button onClick={async () => {
+                                        if (!mfrName.trim()) return
+                                        const slug = mfrName.trim().toLowerCase().replace(/\s+/g, '-')
+                                        if (editingMfrId) await supabase.from('manufacturers').update({ name: mfrName.trim() }).eq('id', editingMfrId)
+                                        else await supabase.from('manufacturers').insert({ id: slug, name: mfrName.trim() })
+                                        setMfrName(''); setEditingMfrId(null); loadManufacturers()
+                                        notify(editingMfrId ? 'Manufacturer updated' : 'Manufacturer added')
+                                    }} disabled={loading} className={btnPrimary} style={btnPrimaryStyle}>
+                                        {editingMfrId ? 'Update' : 'Add Manufacturer'}
+                                    </button>
+                                    {editingMfrId && <button onClick={() => { setEditingMfrId(null); setMfrName('') }} className={btnSecondary} style={btnSecondaryStyle}>Cancel</button>}
+                                </div>
+                            </div>
+                        </div>
+                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                            <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Manufacturers ({manufacturers.length})</h2>
+                            <div className="space-y-2 max-h-[600px] overflow-y-auto">
+                                {manufacturers.map(m => (
+                                    <div key={m.id} className="flex items-center justify-between gap-3 p-3 rounded-sm" style={{ background: 'var(--bg-elevated)' }}>
+                                        <div>
+                                            <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{m.name}</p>
+                                            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{m.id}</p>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <button onClick={() => { setEditingMfrId(m.id); setMfrName(m.name) }} className={btnEdit} style={btnEditStyle}>Edit</button>
+                                            <button onClick={async () => {
+                                                if (!confirm(`Delete "${m.name}"?`)) return
+                                                await supabase.from('manufacturers').delete().eq('id', m.id)
+                                                loadManufacturers(); notify('Manufacturer deleted')
+                                            }} className={btnDanger} style={btnDangerStyle}>Delete</button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* ─── OSTs Tab ─── */}
+                {tab === 'osts' && (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                            <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>Add OST</h2>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className={labelClass} style={labelStyle}>Park</label>
+                                    <select className={inputClass} style={inputStyle} id="ost-park" onChange={e => setSelectedParkForOst(e.target.value)}>
+                                        <option value="">Select a park</option>
+                                        {parks.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className={labelClass} style={labelStyle}>Item</label>
+                                    <select className={inputClass} style={inputStyle} id="ost-item">
+                                        <option value="">Select an item</option>
+                                        {items.filter(i => i.park_id === selectedParkForOst).map(i => <option key={i.id} value={i.id}>{i.name}</option>)}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className={labelClass} style={labelStyle}>OST Title</label>
+                                    <input className={inputClass} style={inputStyle} id="ost-title" placeholder="e.g. Blue Fire Theme" />
+                                </div>
+                                <div>
+                                    <label className={labelClass} style={labelStyle}>YouTube Video ID</label>
+                                    <input className={inputClass} style={inputStyle} id="ost-youtube" placeholder="e.g. dQw4w9WgXcQ" />
+                                </div>
+                                <button onClick={async () => {
+                                    const itemId = (document.getElementById('ost-item') as HTMLSelectElement).value
+                                    const title = (document.getElementById('ost-title') as HTMLInputElement).value
+                                    const youtubeId = (document.getElementById('ost-youtube') as HTMLInputElement).value
+                                    if (!itemId || !title || !youtubeId) { notify('All fields required', true); return }
+                                    const { error } = await supabase.from('osts').insert({ item_id: itemId, title, youtube_video_id: youtubeId })
+                                    if (error) notify(error.message, true)
+                                    else { notify('OST added'); loadOsts() }
+                                }} disabled={loading} className={btnPrimary} style={btnPrimaryStyle}>
+                                    {loading ? 'Adding...' : 'Add OST'}
+                                </button>
+                            </div>
+                        </div>
+                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                            <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>OSTs</h2>
+                            <div className="space-y-2 max-h-[600px] overflow-y-auto" id="osts-list">
+                                <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Loading...</p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* ─── Prices Tab ─── */}
+                {tab === 'prices' && <PricesTab parks={parks} />}
+
+                {/* ─── Edit Image Modal ─── */}
+                {editingImage && (
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                        <div className="rounded-sm p-6 max-w-md w-full" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                            <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Edit Image Info</h2>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className={labelClass} style={labelStyle}>Sort Order</label>
+                                    <select className={inputClass} style={inputStyle} value={editFormData.sortOrder} onChange={e => setEditFormData({ ...editFormData, sortOrder: parseInt(e.target.value) })}>
+                                        <option value="-1">Logo</option>
+                                        <option value="0">Main</option>
+                                        {[1, 2, 3, 4, 5, 6].map(n => <option key={n} value={n}>Image 0{n}</option>)}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className={labelClass} style={labelStyle}>Author / Channel</label>
+                                    <input className={inputClass} style={inputStyle} value={editFormData.author} onChange={e => setEditFormData({ ...editFormData, author: e.target.value })} />
+                                </div>
+                                <div>
+                                    <label className={labelClass} style={labelStyle}>Source URL</label>
+                                    <input className={inputClass} style={inputStyle} value={editFormData.sourceUrl} onChange={e => setEditFormData({ ...editFormData, sourceUrl: e.target.value })} />
+                                </div>
+                                <div>
+                                    <label className={labelClass} style={labelStyle}>License</label>
+                                    <select className={inputClass} style={inputStyle} value={editFormData.license} onChange={e => setEditFormData({ ...editFormData, license: e.target.value })}>
+                                        <option>CC BY 4.0</option><option>CC BY-SA 4.0</option><option>CC0</option><option>Own</option>
+                                    </select>
+                                </div>
+                                <div className="flex gap-3 pt-2">
+                                    <button onClick={handleSaveEditImage} disabled={loading} className={btnPrimary} style={btnPrimaryStyle}>
+                                        {loading ? 'Saving...' : 'Save'}
+                                    </button>
+                                    <button onClick={() => setEditingImage(null)} className={btnSecondary} style={btnSecondaryStyle}>Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div>
+    )
+}

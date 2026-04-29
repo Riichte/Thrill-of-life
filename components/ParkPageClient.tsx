@@ -341,9 +341,9 @@ export default function ParkPageClient({
                 {park.park_type && <div className="flex justify-between gap-4 style={{ color: 'var(--text-secondary)' }}"><span>Type</span><span className="style={{ color: 'var(--text-primary)' }}">{park.park_type}</span></div>}
               </div>
             </SteamInfoPanel>
-            {prices.length > 0 && (
+            {/* {prices.length > 0 && (
   <PriceCard prices={prices} parkCurrency={prices[0]?.currency ?? 'EUR'} />
-)}
+)} */}
           </div>
         </div>
 

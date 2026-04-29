@@ -1130,9 +1130,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                         </div>
                     </div>
                 )}
-                {tab === 'prices' && (
-                    <PricesTab parks={parks} />
-                )}
+                {tab === 'prices' && <div>Prices tab coming soon</div>}
             </div>
         </div>
     )

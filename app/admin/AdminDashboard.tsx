@@ -499,7 +499,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
     const btnDangerStyle = { background: 'rgba(239,68,68,0.2)', color: '#ef4444' }
     const btnEdit = `px-3 py-1.5 text-xs rounded-sm transition-colors`
     const btnEditStyle = { background: 'var(--bg-elevated)', color: 'var(--accent)' }
-
+    const [listParkFilter, setListParkFilter] = useState('')
     const getSpecFields = (categoryId: string): { key: string; label: string; type?: 'number' | 'text' }[] => {
         switch (categoryId) {
             case 'roller-coasters': return [
@@ -785,9 +785,16 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                             </div>
                         </div>
                         <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
-                            <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Items ({items.length})</h2>
+                            <div className="flex gap-3 mb-4 items-center">
+                                <h2 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>Items</h2>
+                                <select className={inputClass} style={{ ...inputStyle, maxWidth: '200px' }}
+                                    value={listParkFilter} onChange={e => setListParkFilter(e.target.value)}>
+                                    <option value="">All parks</option>
+                                    {parks.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                                </select>
+                            </div>
                             <div className="space-y-2 max-h-[600px] overflow-y-auto">
-                                {parks.map(park => {
+                                {parks.filter(p => !listParkFilter || p.id === listParkFilter).map(park => {
                                     const parkItems = items.filter(i => i.park_id === park.id)
                                     if (!parkItems.length) return null
                                     return (

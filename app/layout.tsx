@@ -25,8 +25,8 @@ export const metadata: Metadata = {
   title: 'Thrill of Life',
   description: 'Browse and rate theme parks, roller coasters, and rides.',
   icons: {
-    icon: '/ThrillOfLife_Logo.jpg',
-    apple: '/ThrillOfLife_Logo.jpg',
+    icon: '/favicon.ico',
+    apple: '/favicon.ico',
   },
   openGraph: {
     siteName: 'Thrill of Life',

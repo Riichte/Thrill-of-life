@@ -564,6 +564,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
     }
 
     const handleBulkImport = async () => {
+        setLoading(true)
         const results: string[] = []
 
         const lines = bulkText.split(/\n(?=\d+\.)/).filter(l => l.trim())
@@ -608,6 +609,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
         }
 
         setBulkResults(results)
+        setLoading(false)
     }
 
     return (
@@ -1239,7 +1241,9 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                 <label className={labelClass} style={labelStyle}>Paste Item List</label>
                                 <textarea className={inputClass} style={inputStyle} rows={10} value={bulkText} onChange={e => setBulkText(e.target.value)} placeholder="Paste your formatted list here..." />
                             </div>
-                            <button onClick={handleBulkImport} className={btnPrimary} style={btnPrimaryStyle}>Import All</button>
+                            <button onClick={handleBulkImport} disabled={loading} className={btnPrimary} style={btnPrimaryStyle}>
+                                {loading ? 'Importing...' : 'Import All'}
+                            </button>
                         </div>
                         {bulkResults.length > 0 && (
                             <div className="mt-4 space-y-1 text-sm">

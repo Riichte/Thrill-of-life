@@ -567,7 +567,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
         setLoading(true)
         const results: string[] = []
 
-        const blocks = bulkText.split(/(?=\d+\.)/).filter(l => l.trim())
+        const blocks = bulkText.split(/\d+\.\s+/).filter(l => l.trim())
 
         for (const block of blocks) {
             try {

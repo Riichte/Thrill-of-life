@@ -567,15 +567,16 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
         setLoading(true)
         const results: string[] = []
 
-        const lines = bulkText.split(/\n(?=\d+\.)/).filter(l => l.trim())
+        const blocks = bulkText.split(/\d+\.\s+Name:/).filter(l => l.trim())
 
-        for (const block of lines) {
+        for (const block of blocks) {
             try {
                 const item: any = {}
-                const lines = block.split('\n')
+                const fullBlock = 'Name: ' + block // add back the Name: prefix
+                const lines = fullBlock.split('\n')
 
                 lines.forEach(line => {
-                    if (line.includes('NAME:')) item.name = line.split('NAME:')[1]?.trim()
+                    if (line.includes('Name:')) item.name = line.split('Name:')[1]?.trim()
                     if (line.includes('Description:')) item.description = line.split('Description:')[1]?.trim()
                     if (line.includes('Location in Park:')) item.location_in_park = line.split('Location in Park:')[1]?.trim()
                     if (line.includes('Type:')) item.type = line.split('Type:')[1]?.trim()

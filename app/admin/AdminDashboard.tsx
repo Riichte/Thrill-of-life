@@ -564,7 +564,6 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
     }
 
     const handleBulkImport = async () => {
-        const lines = bulkText.split('\n').filter(l => l.trim())
         const results: string[] = []
 
         const lines = bulkText.split(/\n(?=\d+\.)/).filter(l => l.trim())

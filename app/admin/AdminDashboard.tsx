@@ -586,7 +586,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
 
                 if (!item.name || !itemForm.park_id || !itemForm.category_id) {
                     results.push(`❌ Skipped: Missing required fields`)
-                    return
+                    continue  // ✅ CORRECT - goes to next item
                 }
 
                 const { error } = await supabase.from('items').insert({

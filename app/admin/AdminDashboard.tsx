@@ -576,11 +576,11 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                 const lines = fullBlock.split('\n')
 
                 lines.forEach(line => {
-                    if (line.includes('Name:') && !line.includes('Former')) item.name = line.split('Name:')[1]?.trim()
+                    if (line.startsWith('1.') || line.startsWith('Name:')) item.name = line.replace(/^(\d+\.|Name:)/, '').trim()
                     if (line.includes('Description:')) item.description = line.split('Description:')[1]?.trim()
                     if (line.includes('Location in Park:')) item.location_in_park = line.split('Location in Park:')[1]?.trim()
-                    if (line.includes('Type:')) item.type = line.split('Type:')[1]?.trim()
-                    if (line.includes('Cuisine')) item.cuisine = line.split('Cuisine')[1]?.trim()
+                    if (line.includes('Type:')) item.type = line.split('Type:')[1]?.split('/')[0]?.trim()
+                    if (line.includes('Cuisine')) item.cuisine = line.split('Cuisine')[1]?.split('(')[0]?.trim()
                     if (line.includes('Capacity:')) item.capacity = line.split('Capacity:')[1]?.trim()
                     if (line.includes('Price Range:')) item.price_range = line.split('Price Range:')[1]?.trim()
                 })

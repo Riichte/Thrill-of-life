@@ -567,27 +567,31 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
         setLoading(true)
         const results: string[] = []
 
-        const blocks = bulkText.split(/\d+\.\s+Name:/).filter(l => l.trim())
+        const blocks = bulkText.split(/(?=\d+\.)/).filter(l => l.trim())
 
         for (const block of blocks) {
             try {
                 const item: any = {}
-                const fullBlock = 'Name: ' + block // add back the Name: prefix
-                const lines = fullBlock.split('\n')
 
-                lines.forEach(line => {
-                    if (line.startsWith('1.') || line.startsWith('Name:')) item.name = line.replace(/^(\d+\.|Name:)/, '').trim()
-                    if (line.includes('Description:')) item.description = line.split('Description:')[1]?.trim()
-                    if (line.includes('Location in Park:')) item.location_in_park = line.split('Location in Park:')[1]?.trim()
-                    if (line.includes('Type:')) item.type = line.split('Type:')[1]?.split('/')[0]?.trim()
-                    if (line.includes('Cuisine')) item.cuisine = line.split('Cuisine')[1]?.split('(')[0]?.trim()
-                    if (line.includes('Capacity:')) item.capacity = line.split('Capacity:')[1]?.trim()
-                    if (line.includes('Price Range:')) item.price_range = line.split('Price Range:')[1]?.trim()
-                })
+                const nameMatch = block.match(/Name:\s*(.+?)(?:\n|$)/)
+                const descMatch = block.match(/Description:\s*(.+?)(?:\n|$)/)
+                const locMatch = block.match(/Location in Park:\s*(.+?)(?:\n|$)/)
+                const typeMatch = block.match(/Type:\s*(.+?)(?:\n|$)/)
+                const cuisineMatch = block.match(/Cuisine[^:]*:\s*(.+?)(?:\n|$)/)
+                const capMatch = block.match(/Capacity:\s*(.+?)(?:\n|$)/)
+                const priceMatch = block.match(/Price Range:\s*(.+?)(?:\n|$)/)
+
+                item.name = nameMatch?.[1]?.trim()
+                item.description = descMatch?.[1]?.trim()
+                item.location_in_park = locMatch?.[1]?.trim()
+                item.type = typeMatch?.[1]?.split('/')[0]?.trim()
+                item.cuisine = cuisineMatch?.[1]?.trim()
+                item.capacity = capMatch?.[1]?.trim()
+                item.price_range = priceMatch?.[1]?.trim()
 
                 if (!item.name || !itemForm.park_id || !itemForm.category_id) {
                     results.push(`❌ Skipped: Missing required fields`)
-                    continue  // ✅ CORRECT - goes to next item
+                    continue
                 }
 
                 const { error } = await supabase.from('items').insert({

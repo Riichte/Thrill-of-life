@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import ImageManager from './ImageManager'
 
-type AdminTab = 'parks' | 'items' | 'images' | 'park-images' | 'images-manager' | 'videos' | 'manufacturers' | 'osts' | 'prices'
+type AdminTab = 'parks' | 'items' | 'images' | 'park-images' | 'images-manager' | 'videos' | 'manufacturers' | 'osts' | 'prices' | 'bulk-import'
 type Park = { id: string; name: string; description: string; logo_url: string; cover_image_url: string; country: string; company: string; park_type: string; location: string }
 type Category = { id: string; name: string }
 type Item = { id: string; park_id: string; category_id: string; name: string; description: string; location_in_park: string; specs: any; status: string; former_name: string }
@@ -500,6 +500,8 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
     const btnEdit = `px-3 py-1.5 text-xs rounded-sm transition-colors`
     const btnEditStyle = { background: 'var(--bg-elevated)', color: 'var(--accent)' }
     const [listParkFilter, setListParkFilter] = useState('')
+    const [bulkText, setBulkText] = useState('')
+    const [bulkResults, setBulkResults] = useState<string[]>([])
     const getSpecFields = (categoryId: string): { key: string; label: string; type?: 'number' | 'text' }[] => {
         switch (categoryId) {
             case 'roller-coasters': return [
@@ -561,6 +563,54 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
         }
     }
 
+    const handleBulkImport = async () => {
+        const lines = bulkText.split('\n').filter(l => l.trim())
+        const results: string[] = []
+
+        const lines = bulkText.split(/\n(?=\d+\.)/).filter(l => l.trim())
+
+        for (const block of lines) {
+            try {
+                const item: any = {}
+                const lines = block.split('\n')
+
+                lines.forEach(line => {
+                    if (line.includes('NAME:')) item.name = line.split('NAME:')[1]?.trim()
+                    if (line.includes('Description:')) item.description = line.split('Description:')[1]?.trim()
+                    if (line.includes('Location in Park:')) item.location_in_park = line.split('Location in Park:')[1]?.trim()
+                    if (line.includes('Type:')) item.type = line.split('Type:')[1]?.trim()
+                    if (line.includes('Cuisine')) item.cuisine = line.split('Cuisine')[1]?.trim()
+                    if (line.includes('Capacity:')) item.capacity = line.split('Capacity:')[1]?.trim()
+                    if (line.includes('Price Range:')) item.price_range = line.split('Price Range:')[1]?.trim()
+                })
+
+                if (!item.name || !itemForm.park_id || !itemForm.category_id) {
+                    results.push(`❌ Skipped: Missing required fields`)
+                    return
+                }
+
+                const { error } = await supabase.from('items').insert({
+                    id: item.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
+                    park_id: itemForm.park_id,
+                    category_id: itemForm.category_id,
+                    name: item.name,
+                    description: item.description || '',
+                    location_in_park: item.location_in_park || '',
+                    specs: { type: item.type, cuisine: item.cuisine, capacity: item.capacity, price_range: item.price_range },
+                    status: 'operating',
+                    former_name: '',
+                })
+
+                if (error) throw error
+                results.push(`✅ Added: ${item.name}`)
+            } catch (err: any) {
+                results.push(`❌ Error: ${err.message}`)
+            }
+        }
+
+        setBulkResults(results)
+    }
+
     return (
         <div className="min-h-screen" style={{ background: 'var(--bg-tertiary)', color: 'var(--text-primary)' }}>
             <div className="container mx-auto px-4 py-8 max-w-6xl">
@@ -574,7 +624,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
 
                 {/* Tabs */}
                 <div className="flex gap-1 mb-8 border-b overflow-x-auto" style={{ borderColor: 'var(--border)' }}>
-                    {(['parks', 'items', 'images', 'park-images', 'images-manager', 'videos', 'manufacturers', 'osts', 'prices'] as AdminTab[]).map(t => (
+                    {(['parks', 'items', 'images', 'park-images', 'images-manager', 'videos', 'manufacturers', 'osts', 'prices', 'bulk-import'] as AdminTab[]).map(t => (
                         <button
                             key={t}
                             onClick={() => setTab(t)}
@@ -1167,6 +1217,36 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                 </div>
                             </div>
                         </div>
+                    </div>
+                )}
+                {tab === 'bulk-import' && (
+                    <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                        <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Bulk Import Items</h2>
+                        <div className="space-y-4">
+                            <div>
+                                <label className={labelClass} style={labelStyle}>Select Park & Category First</label>
+                                <select className={inputClass} style={inputStyle} value={itemForm.park_id} onChange={e => setItemForm(p => ({ ...p, park_id: e.target.value }))}>
+                                    <option value="">Select Park</option>
+                                    {parks.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                                </select>
+                            </div>
+                            <div>
+                                <select className={inputClass} style={inputStyle} value={itemForm.category_id} onChange={e => setItemForm(p => ({ ...p, category_id: e.target.value }))}>
+                                    <option value="">Select Category</option>
+                                    {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                                </select>
+                            </div>
+                            <div>
+                                <label className={labelClass} style={labelStyle}>Paste Item List</label>
+                                <textarea className={inputClass} style={inputStyle} rows={10} value={bulkText} onChange={e => setBulkText(e.target.value)} placeholder="Paste your formatted list here..." />
+                            </div>
+                            <button onClick={handleBulkImport} className={btnPrimary} style={btnPrimaryStyle}>Import All</button>
+                        </div>
+                        {bulkResults.length > 0 && (
+                            <div className="mt-4 space-y-1 text-sm">
+                                {bulkResults.map((r, i) => <p key={i} style={{ color: r.includes('✅') ? '#10b981' : '#ef4444' }}>{r}</p>)}
+                            </div>
+                        )}
                     </div>
                 )}
             </div>

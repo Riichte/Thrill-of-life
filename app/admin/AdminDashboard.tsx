@@ -566,58 +566,35 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
     const handleBulkImport = async () => {
         setLoading(true)
         const results: string[] = []
-
-        const blocks = bulkText.split(/\n(?=\d+\.\s+Name:)/).filter(l => l.trim())
-
-        for (const block of blocks) {
-            try {
-                const item: any = {}
-
-                const nameMatch = block.match(/Name:\s*([^|]+)/)
-                const descMatch = block.match(/Description:\s*([^|]+)/)
-                const locMatch = block.match(/Location in Park:\s*([^|]+)/)
-                const typeMatch = block.match(/Type:\s*([^|]+)/)
-                const cuisineMatch = block.match(/Cuisine[^:]*:\s*([^|]+)/)
-                const capMatch = block.match(/Capacity:\s*([^|]+)/)
-                const priceMatch = block.match(/Price Range:\s*([^|]+)/)
-
-                item.name = nameMatch?.[1]?.trim()
-                item.description = descMatch?.[1]?.trim()
-                item.location_in_park = locMatch?.[1]?.trim()
-                item.type = typeMatch?.[1]?.split('/')[0]?.trim()
-                item.cuisine = cuisineMatch?.[1]?.trim()
-                item.capacity = capMatch?.[1]?.trim()
-                item.price_range = priceMatch?.[1]?.trim()
-
-                if (!item.name || !itemForm.park_id || !itemForm.category_id) {
-                    results.push(`❌ Skipped: Missing required fields`)
-                    continue
+        try {
+            const parsed = JSON.parse(bulkText)
+            for (const item of parsed) {
+                try {
+                    const { error } = await supabase.from('items').insert({
+                        id: item.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
+                        park_id: itemForm.park_id,
+                        category_id: itemForm.category_id,
+                        name: item.name,
+                        description: item.description || '',
+                        location_in_park: item.location_in_park || '',
+                        former_name: item.former_name || '',
+                        specs: {
+                            type: item.type,
+                            cuisine: item.cuisine,
+                            capacity: item.capacity,
+                            price_range: item.price_range,
+                        },
+                        status: 'operating',
+                    })
+                    if (error) throw error
+                    results.push(`✅ Added: ${item.name}`)
+                } catch (err: any) {
+                    results.push(`❌ Error: ${item.name} — ${err.message}`)
                 }
-
-                const { error } = await supabase.from('items').insert({
-                    id: item.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
-                    park_id: itemForm.park_id,
-                    category_id: itemForm.category_id,
-                    name: item.name,
-                    description: item.description || '',
-                    location_in_park: item.location_in_park || '',
-                    specs: {
-                        ...(item.type && { type: item.type }),
-                        ...(item.cuisine && { cuisine: item.cuisine }),
-                        ...(item.capacity && { capacity: item.capacity }),
-                        ...(item.price_range && { price_range: item.price_range }),
-                    },
-                    status: 'operating',
-                    former_name: '',
-                })
-
-                if (error) throw error
-                results.push(`✅ Added: ${item.name}`)
-            } catch (err: any) {
-                results.push(`❌ Error: ${err.message}`)
             }
+        } catch {
+            results.push('❌ Invalid JSON — paste the raw array from the AI')
         }
-
         setBulkResults(results)
         setLoading(false)
     }

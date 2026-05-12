@@ -571,7 +571,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
             for (const item of parsed) {
                 try {
                     const { error } = await supabase.from('items').insert({
-                        id: item.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
+                        id: `${itemForm.park_id}-${item.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}`,
                         park_id: itemForm.park_id,
                         category_id: itemForm.category_id,
                         name: item.name,

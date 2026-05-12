@@ -573,13 +573,13 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
             try {
                 const item: any = {}
 
-                const nameMatch = block.match(/Name:\s*([^\n]+)/)
-                const descMatch = block.match(/Description:\s*([^\n]+(?:\n(?!\d|[A-Z])[^\n]+)*)/)
-                const locMatch = block.match(/Location in Park:\s*([^\n]+)/)
-                const typeMatch = block.match(/Type:\s*([^\n]+)/)
-                const cuisineMatch = block.match(/Cuisine[^:]*:\s*([^\n]+)/)
-                const capMatch = block.match(/Capacity:\s*([^\n]+)/)
-                const priceMatch = block.match(/Price Range:\s*([^\n]+)/)
+                const nameMatch = block.match(/Name:\s*([^|]+)/)
+                const descMatch = block.match(/Description:\s*([^|]+)/)
+                const locMatch = block.match(/Location in Park:\s*([^|]+)/)
+                const typeMatch = block.match(/Type:\s*([^|]+)/)
+                const cuisineMatch = block.match(/Cuisine[^:]*:\s*([^|]+)/)
+                const capMatch = block.match(/Capacity:\s*([^|]+)/)
+                const priceMatch = block.match(/Price Range:\s*([^|]+)/)
 
                 item.name = nameMatch?.[1]?.trim()
                 item.description = descMatch?.[1]?.trim()

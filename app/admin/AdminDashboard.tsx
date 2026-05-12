@@ -567,7 +567,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
         setLoading(true)
         const results: string[] = []
 
-        const blocks = bulkText.split(/\d+\.\s+/).filter(l => l.trim())
+        const blocks = bulkText.split(/\n(?=\d+\.\s+Name:)/).filter(l => l.trim())
 
         for (const block of blocks) {
             try {
@@ -601,7 +601,12 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                     name: item.name,
                     description: item.description || '',
                     location_in_park: item.location_in_park || '',
-                    specs: { type: item.type, cuisine: item.cuisine, capacity: item.capacity, price_range: item.price_range },
+                    specs: {
+                        ...(item.type && { type: item.type }),
+                        ...(item.cuisine && { cuisine: item.cuisine }),
+                        ...(item.capacity && { capacity: item.capacity }),
+                        ...(item.price_range && { price_range: item.price_range }),
+                    },
                     status: 'operating',
                     former_name: '',
                 })

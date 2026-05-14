@@ -580,11 +580,15 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                         former_name: item.former_name || '',
                         specs: {
                             type: item.type,
+                            manufacturer: item.manufacturer,
+                            duration: item.duration,
+                            year_opened: item.year_opened,
+                            technology: item.technology,
                             cuisine: item.cuisine,
                             capacity: item.capacity,
                             price_range: item.price_range,
                         },
-                        status: 'operating',
+                        status: item.status || 'operating',
                     })
                     if (error) throw error
                     results.push(`✅ Added: ${item.name}`)

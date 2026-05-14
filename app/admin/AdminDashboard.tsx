@@ -487,6 +487,20 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
         setLoading(false)
     }
 
+    const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set())
+
+    const handleBulkDelete = async () => {
+        if (!confirm(`Delete ${selectedItems.size} items?`)) return
+        setLoading(true)
+        for (const id of selectedItems) {
+            await supabase.from('items').delete().eq('id', id)
+        }
+        setSelectedItems(new Set())
+        notify(`${selectedItems.size} items deleted`)
+        router.refresh()
+        setLoading(false)
+    }
+
     const inputClass = `w-full rounded-sm px-3 py-2 text-sm focus:outline-none`
     const inputStyle = { background: 'var(--bg-elevated)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }
     const labelClass = `block text-xs font-medium uppercase tracking-wider mb-1`
@@ -500,6 +514,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
     const btnEdit = `px-3 py-1.5 text-xs rounded-sm transition-colors`
     const btnEditStyle = { background: 'var(--bg-elevated)', color: 'var(--accent)' }
     const [listParkFilter, setListParkFilter] = useState('')
+    const [listCategoryFilter, setListCategoryFilter] = useState('')
     const [bulkText, setBulkText] = useState('')
     const [bulkResults, setBulkResults] = useState<string[]>([])
     const getSpecFields = (categoryId: string): { key: string; label: string; type?: 'number' | 'text' }[] => {
@@ -834,17 +849,28 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                             </div>
                         </div>
                         <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
-                            <div className="flex gap-3 mb-4 items-center">
+                            <div className="flex gap-3 mb-4 items-center flex-wrap">
                                 <h2 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>Items</h2>
                                 <select className={inputClass} style={{ ...inputStyle, maxWidth: '200px' }}
                                     value={listParkFilter} onChange={e => setListParkFilter(e.target.value)}>
                                     <option value="">All parks</option>
                                     {parks.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                                 </select>
+                                <select className={inputClass} style={{ ...inputStyle, maxWidth: '180px' }}
+                                    value={listCategoryFilter} onChange={e => setListCategoryFilter(e.target.value)}>
+                                    <option value="">All categories</option>
+                                    {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                                </select>
+                                {selectedItems.size > 0 && (
+                                    <button onClick={handleBulkDelete} disabled={loading}
+                                        className={btnDanger} style={{ ...btnDangerStyle, padding: '6px 12px', fontSize: '13px' }}>
+                                        Delete selected ({selectedItems.size})
+                                    </button>
+                                )}
                             </div>
                             <div className="space-y-2 max-h-[600px] overflow-y-auto">
                                 {parks.filter(p => !listParkFilter || p.id === listParkFilter).map(park => {
-                                    const parkItems = items.filter(i => i.park_id === park.id)
+                                    const parkItems = items.filter(i => i.park_id === park.id && (!listCategoryFilter || i.category_id === listCategoryFilter))
                                     if (!parkItems.length) return null
                                     return (
                                         <div key={park.id}>
@@ -862,7 +888,15 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                                             {cat.name}
                                                         </p>
                                                         {catItems.map(item => (
-                                                            <div key={item.id} className="flex items-center justify-between gap-3 p-3 rounded-sm" style={{ background: 'var(--bg-elevated)' }}>
+                                                            <div key={item.id} className="flex items-center justify-between gap-3 p-3 rounded-sm" style={{ background: selectedItems.has(item.id) ? 'var(--accent-bg)' : 'var(--bg-elevated)' }}>
+                                                                <input type="checkbox" checked={selectedItems.has(item.id)}
+                                                                    onChange={e => setSelectedItems(prev => {
+                                                                        const next = new Set(prev)
+                                                                        e.target.checked ? next.add(item.id) : next.delete(item.id)
+                                                                        return next
+                                                                    })}
+                                                                    className="flex-shrink-0"
+                                                                />
                                                                 <div className="min-w-0">
                                                                     <p className="text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>{item.name}</p>
                                                                     <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{item.id} · {item.category_id}</p>

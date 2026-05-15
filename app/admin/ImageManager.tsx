@@ -40,6 +40,7 @@ export default function ImageManager({ items: initialItems, categories, parks }:
   const [deleting, setDeleting] = useState<string | null>(null);
   const [selectedPark, setSelectedPark] = useState('');
   const filteredItems = initialItems.filter(item => item.category_id === selectedCategory);
+  const [toast, setToast] = useState<string | null>(null);
 
   useEffect(() => {
     loadSavedImages();
@@ -82,10 +83,12 @@ export default function ImageManager({ items: initialItems, categories, parks }:
       } else {
         await saveImageToItemAction(image, selectedItem, typeSelect.value);
       }
-      alert('Image saved!');
+      setToast('Image saved!');
+      setTimeout(() => setToast(null), 2000);
       loadSavedImages();
     } catch (error) {
-      alert('Failed to save image');
+      setToast('Failed to save image');
+      setTimeout(() => setToast(null), 2000);
     }
   };
 
@@ -299,6 +302,12 @@ export default function ImageManager({ items: initialItems, categories, parks }:
           </div>
         )}
       </div>
+      {toast && (
+        <div className="fixed bottom-4 right-4 z-50 px-4 py-2 rounded-sm text-sm text-white"
+          style={{ background: toast.includes('Failed') ? '#ef4444' : 'var(--cta)' }}>
+          {toast}
+        </div>
+      )}
     </div>
   );
 }

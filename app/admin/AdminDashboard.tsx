@@ -434,13 +434,16 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
         if (!videoId) { notify('Invalid YouTube URL', true); return }
         setLoading(true)
 
-        // Check if editing
-        if (videoItemId.includes('|edit|')) {
-            const [itemId, _, vidId] = videoItemId.split('|')
-            const { error } = await supabase.from('item_videos').update({ title: videoTitle.trim() || 'Ride Video' }).eq('id', vidId)
+        // Find if we're editing an existing video
+        const existingVideo = itemVideos.find(v => v.video_id === videoId)
+
+        if (existingVideo) {
+            // Update existing video title
+            const { error } = await supabase.from('item_videos').update({ title: videoTitle.trim() || 'Ride Video' }).eq('id', existingVideo.id)
             if (error) notify(error.message, true)
-            else { notify('Video updated'); loadVideos(itemId) }
+            else { notify('Video updated'); loadVideos(videoItemId) }
         } else {
+            // Add new video
             const { error } = await supabase.from('item_videos').insert({
                 item_id: videoItemId,
                 url: videoUrl.trim(),

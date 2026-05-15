@@ -231,7 +231,7 @@ export default function ItemPageContent({ park, item, category, images, videos, 
   )
   const [isFavorited, setIsFavorited] = useState(false)
   const [userReviewId, setUserReviewId] = useState<string | null>(null)
-
+  const [videoTitles, setVideoTitles] = useState<Record<string, string>>({})
 
 
   useEffect(() => {
@@ -240,6 +240,21 @@ export default function ItemPageContent({ park, item, category, images, videos, 
       setOsts(data ?? [])
     }
     loadOsts()
+  }, [item.id])
+
+  useEffect(() => {
+    const loadData = async () => {
+      // Load OSTs
+      const { data } = await supabase.from('osts').select('id, title').eq('item_id', item.id)
+      setOsts(data ?? [])
+
+      // Load video titles
+      const { data: videoData } = await supabase.from('item_videos').select('video_id, title').eq('item_id', item.id)
+      const titleMap: Record<string, string> = {}
+      videoData?.forEach(v => { titleMap[v.video_id] = v.title })
+      setVideoTitles(titleMap)
+    }
+    loadData()
   }, [item.id])
 
   useEffect(() => {
@@ -553,9 +568,8 @@ export default function ItemPageContent({ park, item, category, images, videos, 
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen />
                   </div>
-                  <div className="p-4 text-sm style={{ color: 'var(--text-secondary)' }}">
-                    <p className="font-medium style={{ color: 'var(--text-primary)' }} mb-1">{item.name} Experience</p>
-                    <p>Official ride footage</p>
+                  <div className="p-4 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                    <p className="font-medium mb-1" style={{ color: 'var(--text-primary)' }}>{videoTitles[videos[idx + (filteredImages.length === 0 ? 1 : 0)]] || `${item.name} Experience`}</p>
                   </div>
                 </div>
               ))

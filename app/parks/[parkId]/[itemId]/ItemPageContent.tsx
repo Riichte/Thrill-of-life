@@ -475,13 +475,12 @@ export default function ItemPageContent({ park, item, category, images, videos, 
     ? { positive: communityScore.positive, mixed: communityScore.mixed, negative: communityScore.negative }
     : { positive: 0, mixed: 0, negative: 0 }
 
-  const mediaSlides = images
-    ?.filter(img => img.sort_order !== -1)
-    .map((img, i) => ({
-      src: img.url,
-      alt: item.name,
-      isVideo: Boolean(videos[i])
-    })) || []
+  const filteredImages = images?.filter(img => img.sort_order !== -1) || []
+  const mediaSlides = filteredImages.map((img, i) => ({
+    src: img.url,
+    alt: item.name,
+    isVideo: Boolean(videos[i])
+  }))
 
   console.log('Images data:', images)
 
@@ -522,35 +521,45 @@ export default function ItemPageContent({ park, item, category, images, videos, 
 
         <div className="mb-12 grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8">
           <div className="lg:col-span-2">
-            <SteamMediaCarousel
-              key={item.id}
-              slides={mediaSlides}
-              autoAdvanceMs={mediaSlides.length > 1 ? 8000 : undefined}
-            />
+            {filteredImages.length > 0 ? (
+              <SteamMediaCarousel
+                key={item.id}
+                slides={mediaSlides}
+                autoAdvanceMs={mediaSlides.length > 1 ? 8000 : undefined}
+              />
+            ) : videos && videos.length > 0 ? (
+              <div className="rounded-sm overflow-hidden" style={{ border: '1px solid var(--border)' }}>
+                <div className="aspect-video">
+                  <iframe
+                    width="100%"
+                    height="100%"
+                    src={`https://www.youtube.com/embed/${videos[0]}`}
+                    title={`${item.name} Video`}
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+              </div>
+            ) : null}
 
             {/* YouTube Videos */}
-            {videos && videos.length > 0 && videos.map((videoId, idx) => {
-              const videoUrl = `https://www.youtube.com/embed/${videoId}`
-              return (
-                <div key={idx} className="mt-6 style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm overflow-hidden">
+            {videos && videos.length > (filteredImages.length === 0 ? 1 : 0) &&
+              videos.slice(filteredImages.length === 0 ? 1 : 0).map((videoId, idx) => (
+                <div key={idx} className="mt-6 rounded-sm overflow-hidden" style={{ border: '1px solid var(--border)' }}>
                   <div className="aspect-video">
-                    <iframe
-                      width="100%"
-                      height="100%"
-                      src={videoUrl}
-                      title={`${item.name} Video ${idx + 1}`}
-                      frameBorder="0"
+                    <iframe width="100%" height="100%" src={`https://www.youtube.com/embed/${videoId}`}
+                      title={`${item.name} Video ${idx + 2}`} frameBorder="0"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
+                      allowFullScreen />
                   </div>
                   <div className="p-4 text-sm style={{ color: 'var(--text-secondary)' }}">
                     <p className="font-medium style={{ color: 'var(--text-primary)' }} mb-1">{item.name} Experience</p>
                     <p>Official ride footage</p>
                   </div>
                 </div>
-              )
-            })}
+              ))
+            }
           </div>
           <div className="lg:col-span-1">
             <SteamInfoPanel

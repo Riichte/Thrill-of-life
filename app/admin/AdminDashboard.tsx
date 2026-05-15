@@ -86,15 +86,6 @@ function PricesTab({ parks }: { parks: Park[] }) {
         loadPrices(selectedPark)
     }
 
-    const handleEditVideo = async (videoId: string, newTitle: string) => {
-        setLoading(true)
-        const { error } = await supabase.from('item_videos').update({ title: newTitle }).eq('id', videoId)
-        if (error) notify(error.message, true)
-        else { notify('Video updated'); loadVideos(videoItemId.split('|')[0]) }
-        setLoading(false)
-        setVideoTitle('')
-        setVideoUrl('')
-    }
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -1124,12 +1115,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                                 <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{vid.video_id}</p>
                                             </div>
                                             <div className="flex gap-2 flex-shrink-0">
-                                                <button onClick={() => {
-                                                    setVideoTitle(vid.title)
-                                                    setVideoUrl(`https://www.youtube.com/watch?v=${vid.video_id}`)
-                                                    // Mark for edit by storing the vid.id temporarily
-                                                    setVideoItemId(`${videoItemId}|edit|${vid.id}`)
-                                                }} className={btnEdit} style={btnEditStyle}>Edit</button>
+                                                <button onClick={() => { setVideoTitle(vid.title); setVideoUrl(`https://www.youtube.com/watch?v=${vid.video_id}`) }} className={btnEdit} style={btnEditStyle}>Edit Title</button>
                                                 <button onClick={() => handleDeleteVideo(vid.id)} className={btnDanger} style={btnDangerStyle}>Delete</button>
                                             </div>
                                         </div>

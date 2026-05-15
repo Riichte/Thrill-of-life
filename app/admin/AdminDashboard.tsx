@@ -1092,7 +1092,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                 </div>
                                 <div>
                                     <label className={labelClass} style={labelStyle}>Select Category</label>
-                                    <select className={inputClass} style={inputStyle} id="video-category" onChange={e => { document.getElementById('video-item')!.value = '' }}>
+                                    <select className={inputClass} style={inputStyle} id="video-category" onChange={e => { (document.getElementById('video-item') as HTMLSelectElement).value = '' }}>
                                         <option value="">Select a category</option>
                                         {categories.filter(c => {
                                             const parkId = (document.getElementById('video-park') as HTMLSelectElement)?.value

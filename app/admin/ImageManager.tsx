@@ -25,6 +25,7 @@ interface Item {
   id: string;
   name: string;
   category_id: string;
+  park_id: string; // add this
 }
 
 export default function ImageManager({ items: initialItems, categories, parks }: { items: Item[]; categories: any[]; parks: any[] }) {
@@ -37,7 +38,7 @@ export default function ImageManager({ items: initialItems, categories, parks }:
   const [savedImages, setSavedImages] = useState<SavedImage[]>([]);
   const [showSaved, setShowSaved] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
-
+  const [selectedPark, setSelectedPark] = useState('');
   const filteredItems = initialItems.filter(item => item.category_id === selectedCategory);
 
   useEffect(() => {
@@ -70,23 +71,23 @@ export default function ImageManager({ items: initialItems, categories, parks }:
   };
 
   const handleSaveImage = async (image: ImageResult, idx: number) => {
-  if (!selectedItem) {
-    alert('Please select an item');
-    return;
-  }
-  const typeSelect = document.getElementById(`sort-${idx}`) as HTMLSelectElement;
-  try {
-    if (selectedItem.startsWith('park-')) {
-      await saveParkImageAction(image, selectedItem.replace('park-', ''), typeSelect.value);
-    } else {
-      await saveImageToItemAction(image, selectedItem, typeSelect.value);
+    if (!selectedItem) {
+      alert('Please select an item');
+      return;
     }
-    alert('Image saved!');
-    loadSavedImages();
-  } catch (error) {
-    alert('Failed to save image');
-  }
-};
+    const typeSelect = document.getElementById(`sort-${idx}`) as HTMLSelectElement;
+    try {
+      if (selectedItem.startsWith('park-')) {
+        await saveParkImageAction(image, selectedItem.replace('park-', ''), typeSelect.value);
+      } else {
+        await saveImageToItemAction(image, selectedItem, typeSelect.value);
+      }
+      alert('Image saved!');
+      loadSavedImages();
+    } catch (error) {
+      alert('Failed to save image');
+    }
+  };
 
   const handleDeleteImage = async (imageId: string) => {
     if (!window.confirm('Delete this image?')) return;
@@ -108,61 +109,78 @@ export default function ImageManager({ items: initialItems, categories, parks }:
         <h3 className="text-lg font-bold mb-4 style={{ color: 'var(--text-primary)' }}">Search & Add Images</h3>
 
         <div className="space-y-4">
-          {/* Category Dropdown */}
+          {/* Park Dropdown */}
           <div>
-            <label className="block text-xs font-medium uppercase tracking-wider style={{ color: 'var(--text-muted)' }} mb-2">
-              Category *
+            <label className="block text-xs font-medium uppercase tracking-wider text-[#8f98a0] mb-2">
+              Park *
             </label>
             <select
-              value={selectedCategory}
+              value={selectedPark}
               onChange={(e) => {
-                setSelectedCategory(e.target.value);
-                setSelectedItem('');
-                setResults([]);
+                setSelectedPark(e.target.value)
+                setSelectedCategory('')
+                setSelectedItem('')
+                setResults([])
               }}
-              className="w-full style={{ background: 'var(--bg-elevated)' }} border style={{ borderColor: 'var(--input-border)' }} rounded-sm px-3 py-2 text-sm style={{ color: 'var(--text-primary)' }} focus:outline-none style={{ outlineColor: 'var(--input-focus)' }}"
+              className="w-full bg-[#2a475e] border border-[#3d6a8a] rounded-sm px-3 py-2 text-sm text-[#c6d4df] focus:outline-none"
             >
-              <option value="">-- Select Category --</option>
-              {categories.map(cat => (
-                <option key={cat.id} value={cat.id}>{cat.name}</option>
+              <option value="">-- Select Park --</option>
+              {parks.map(park => (
+                <option key={park.id} value={park.id}>{park.name}</option>
               ))}
-              <option value="parks"> Park Images</option>
             </select>
           </div>
 
-          {/* Item Dropdown */}
-          {selectedCategory && selectedCategory !== 'parks' && (
+          {/* Category Dropdown */}
+          {selectedPark && (
             <div>
-              <label className="block text-xs font-medium uppercase tracking-wider style={{ color: 'var(--text-muted)' }} mb-2">
+              <label className="block text-xs font-medium uppercase tracking-wider text-[#8f98a0] mb-2">
+                Category *
+              </label>
+              <select
+                value={selectedCategory}
+                onChange={(e) => {
+                  setSelectedCategory(e.target.value)
+                  setSelectedItem('')
+                  setResults([])
+                }}
+                className="w-full bg-[#2a475e] border border-[#3d6a8a] rounded-sm px-3 py-2 text-sm text-[#c6d4df] focus:outline-none"
+              >
+                <option value="">-- Select Category --</option>
+                {categories.map(cat => (
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                ))}
+                <option value="parks">Park Images</option>
+              </select>
+            </div>
+          )}
+
+          {/* Item Dropdown */}
+          {selectedPark && selectedCategory && selectedCategory !== 'parks' && (
+            <div>
+              <label className="block text-xs font-medium uppercase tracking-wider text-[#8f98a0] mb-2">
                 Item *
               </label>
               <select
                 value={selectedItem}
                 onChange={(e) => { setSelectedItem(e.target.value); setResults([]) }}
-                className="w-full style={{ background: 'var(--bg-elevated)' }} border style={{ borderColor: 'var(--input-border)' }} rounded-sm px-3 py-2 text-sm style={{ color: 'var(--text-primary)' }} focus:outline-none style={{ outlineColor: 'var(--input-focus)' }}"
+                className="w-full bg-[#2a475e] border border-[#3d6a8a] rounded-sm px-3 py-2 text-sm text-[#c6d4df] focus:outline-none"
               >
                 <option value="">-- Select Item --</option>
-                {filteredItems.map(item => (
-                  <option key={item.id} value={item.id}>{item.name}</option>
-                ))}
+                {initialItems
+                  .filter(item => item.category_id === selectedCategory && (item as any).park_id === selectedPark)
+                  .map(item => (
+                    <option key={item.id} value={item.id}>{item.name}</option>
+                  ))}
               </select>
             </div>
           )}
-          {selectedCategory === 'parks' && (
+
+          {selectedPark && selectedCategory === 'parks' && (
             <div>
-              <label className="block text-xs font-medium uppercase tracking-wider style={{ color: 'var(--text-muted)' }} mb-2">
-                Park *
-              </label>
-              <select
-                value={selectedItem}
-                onChange={(e) => { setSelectedItem(e.target.value); setResults([]) }}
-                className="w-full style={{ background: 'var(--bg-elevated)' }} border style={{ borderColor: 'var(--input-border)' }} rounded-sm px-3 py-2 text-sm style={{ color: 'var(--text-primary)' }} focus:outline-none style={{ outlineColor: 'var(--input-focus)' }}"
-              >
-                <option value="">-- Select Park --</option>
-                {parks.map(park => (
-                  <option key={park.id} value={`park-${park.id}`}>{park.name}</option>
-                ))}
-              </select>
+              {/* auto-set selectedItem to the park */}
+              {selectedItem !== `park-${selectedPark}` && (() => { setSelectedItem(`park-${selectedPark}`); return null })()}
+              <p className="text-sm text-[#8f98a0]">Images will be added to: <span className="text-[#c6d4df]">{parks.find(p => p.id === selectedPark)?.name}</span></p>
             </div>
           )}
 
@@ -219,7 +237,7 @@ export default function ImageManager({ items: initialItems, categories, parks }:
                     className="w-full style={{ background: 'var(--bg-elevated)' }} border style={{ borderColor: 'var(--input-border)' }} rounded-sm px-2 py-1 text-xs style={{ color: 'var(--text-primary)' }}"
                   >
                     <option value="0">Main</option>
-                    <option value="1">Logo</option>     
+                    <option value="1">Logo</option>
                     <option value="2">Image 1</option>
                     <option value="3">Image 2</option>
                     <option value="4">Image 3</option>

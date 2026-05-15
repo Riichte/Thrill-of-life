@@ -86,6 +86,16 @@ function PricesTab({ parks }: { parks: Park[] }) {
         loadPrices(selectedPark)
     }
 
+    const handleEditVideo = async (videoId: string, newTitle: string) => {
+        setLoading(true)
+        const { error } = await supabase.from('item_videos').update({ title: newTitle }).eq('id', videoId)
+        if (error) notify(error.message, true)
+        else { notify('Video updated'); loadVideos(videoItemId.split('|')[0]) }
+        setLoading(false)
+        setVideoTitle('')
+        setVideoUrl('')
+    }
+
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
@@ -432,19 +442,26 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
         const videoId = extractYouTubeId(videoUrl.trim())
         if (!videoId) { notify('Invalid YouTube URL', true); return }
         setLoading(true)
-        const { error } = await supabase.from('item_videos').insert({
-            item_id: videoItemId,
-            url: videoUrl.trim(),
-            video_id: videoId,
-            title: videoTitle.trim() || 'Ride Video',
-        })
-        if (error) notify(error.message, true)
-        else {
-            notify('Video added')
-            setVideoUrl('')
-            setVideoTitle('')
-            loadVideos(videoItemId)
+
+        // Check if editing
+        if (videoItemId.includes('|edit|')) {
+            const [itemId, _, vidId] = videoItemId.split('|')
+            const { error } = await supabase.from('item_videos').update({ title: videoTitle.trim() || 'Ride Video' }).eq('id', vidId)
+            if (error) notify(error.message, true)
+            else { notify('Video updated'); loadVideos(itemId) }
+        } else {
+            const { error } = await supabase.from('item_videos').insert({
+                item_id: videoItemId,
+                url: videoUrl.trim(),
+                video_id: videoId,
+                title: videoTitle.trim() || 'Ride Video',
+            })
+            if (error) notify(error.message, true)
+            else { notify('Video added'); loadVideos(videoItemId) }
         }
+
+        setVideoUrl('')
+        setVideoTitle('')
         setLoading(false)
     }
 
@@ -1094,21 +1111,32 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                         </button>
                                     </>
                                 )}
-                                {videoItemId && (
-                                    <div className="mt-4 space-y-2 max-h-[400px] overflow-y-auto">
-                                        {itemVideos.map(vid => (
-                                            <div key={vid.id} className="flex items-center justify-between gap-3 p-3 rounded-sm" style={{ background: 'var(--bg-elevated)' }}>
-                                                <div className="min-w-0">
-                                                    <p className="text-sm truncate" style={{ color: 'var(--text-primary)' }}>{vid.title}</p>
-                                                    <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{vid.video_id}</p>
-                                                </div>
-                                                <button onClick={() => handleDeleteVideo(vid.id)} className={btnDanger} style={btnDangerStyle}>Delete</button>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
                             </div>
                         </div>
+                        {videoItemId && (
+                            <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                                <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Videos ({itemVideos.length})</h2>
+                                <div className="space-y-2 max-h-[600px] overflow-y-auto">
+                                    {itemVideos.map(vid => (
+                                        <div key={vid.id} className="flex items-center justify-between gap-3 p-3 rounded-sm" style={{ background: 'var(--bg-elevated)' }}>
+                                            <div className="min-w-0">
+                                                <p className="text-sm truncate" style={{ color: 'var(--text-primary)' }}>{vid.title}</p>
+                                                <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{vid.video_id}</p>
+                                            </div>
+                                            <div className="flex gap-2 flex-shrink-0">
+                                                <button onClick={() => {
+                                                    setVideoTitle(vid.title)
+                                                    setVideoUrl(`https://www.youtube.com/watch?v=${vid.video_id}`)
+                                                    // Mark for edit by storing the vid.id temporarily
+                                                    setVideoItemId(`${videoItemId}|edit|${vid.id}`)
+                                                }} className={btnEdit} style={btnEditStyle}>Edit</button>
+                                                <button onClick={() => handleDeleteVideo(vid.id)} className={btnDanger} style={btnDangerStyle}>Delete</button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 )}
 

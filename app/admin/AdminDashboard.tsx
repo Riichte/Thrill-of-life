@@ -217,6 +217,8 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
     const [videoUrl, setVideoUrl] = useState('')
     const [videoTitle, setVideoTitle] = useState('')
     const [itemVideos, setItemVideos] = useState<{ id: string; url: string; video_id: string; title: string }[]>([])
+    const [videoParkId, setVideoParkId] = useState('')
+    const [videoCategoryId, setVideoCategoryId] = useState('')
     const [parkImageParkId, setParkImageParkId] = useState('')
     const [parkImageUrl, setParkImageUrl] = useState('')
     const [parkImageOrder, setParkImageOrder] = useState(0)
@@ -1083,19 +1085,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                         <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
                             <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>Manage Videos</h2>
                             <div className="space-y-4">
-                                <div>
-                                    <label className={labelClass} style={labelStyle}>Select Park</label>
-                                    <select className={inputClass} style={inputStyle} id="video-park" onChange={() => {
-                                        setVideoItemId('')
-                                        // @ts-ignore
-                                        document.getElementById('video-category').value = ''
-                                        // @ts-ignore
-                                        document.getElementById('video-item').value = ''
-                                    }}>
-                                        <option value="">Select a park</option>
-                                        {parks.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-                                    </select>
-                                </div>
+
                                 <div>
                                     <label className={labelClass} style={labelStyle}>Select Category</label>
                                     <select className={inputClass} style={inputStyle} id="video-category" onChange={e => { (document.getElementById('video-item') as HTMLSelectElement).value = '' }}>
@@ -1154,181 +1144,190 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                             </div>
                         )}
                     </div>
-                )}
+                )
+                }
 
                 {/* ─── Manufacturers Tab ─── */}
-                {tab === 'manufacturers' && (
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
-                            <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>{editingMfrId ? 'Edit Manufacturer' : 'Add Manufacturer'}</h2>
-                            <div className="space-y-4">
-                                <div>
-                                    <label className={labelClass} style={labelStyle}>Name</label>
-                                    <input className={inputClass} style={inputStyle} value={mfrName} onChange={e => setMfrName(e.target.value)} placeholder="e.g. Intamin" />
-                                </div>
-                                <div className="flex gap-3">
-                                    <button onClick={async () => {
-                                        if (!mfrName.trim()) return
-                                        const slug = mfrName.trim().toLowerCase().replace(/\s+/g, '-')
-                                        if (editingMfrId) await supabase.from('manufacturers').update({ name: mfrName.trim() }).eq('id', editingMfrId)
-                                        else await supabase.from('manufacturers').insert({ id: slug, name: mfrName.trim() })
-                                        setMfrName(''); setEditingMfrId(null); loadManufacturers()
-                                        notify(editingMfrId ? 'Manufacturer updated' : 'Manufacturer added')
-                                    }} disabled={loading} className={btnPrimary} style={btnPrimaryStyle}>
-                                        {editingMfrId ? 'Update' : 'Add Manufacturer'}
-                                    </button>
-                                    {editingMfrId && <button onClick={() => { setEditingMfrId(null); setMfrName('') }} className={btnSecondary} style={btnSecondaryStyle}>Cancel</button>}
-                                </div>
-                            </div>
-                        </div>
-                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
-                            <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Manufacturers ({manufacturers.length})</h2>
-                            <div className="space-y-2 max-h-[600px] overflow-y-auto">
-                                {manufacturers.map(m => (
-                                    <div key={m.id} className="flex items-center justify-between gap-3 p-3 rounded-sm" style={{ background: 'var(--bg-elevated)' }}>
-                                        <div>
-                                            <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{m.name}</p>
-                                            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{m.id}</p>
-                                        </div>
-                                        <div className="flex gap-2">
-                                            <button onClick={() => { setEditingMfrId(m.id); setMfrName(m.name) }} className={btnEdit} style={btnEditStyle}>Edit</button>
-                                            <button onClick={async () => {
-                                                if (!confirm(`Delete "${m.name}"?`)) return
-                                                await supabase.from('manufacturers').delete().eq('id', m.id)
-                                                loadManufacturers(); notify('Manufacturer deleted')
-                                            }} className={btnDanger} style={btnDangerStyle}>Delete</button>
-                                        </div>
+                {
+                    tab === 'manufacturers' && (
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                                <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>{editingMfrId ? 'Edit Manufacturer' : 'Add Manufacturer'}</h2>
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className={labelClass} style={labelStyle}>Name</label>
+                                        <input className={inputClass} style={inputStyle} value={mfrName} onChange={e => setMfrName(e.target.value)} placeholder="e.g. Intamin" />
                                     </div>
-                                ))}
+                                    <div className="flex gap-3">
+                                        <button onClick={async () => {
+                                            if (!mfrName.trim()) return
+                                            const slug = mfrName.trim().toLowerCase().replace(/\s+/g, '-')
+                                            if (editingMfrId) await supabase.from('manufacturers').update({ name: mfrName.trim() }).eq('id', editingMfrId)
+                                            else await supabase.from('manufacturers').insert({ id: slug, name: mfrName.trim() })
+                                            setMfrName(''); setEditingMfrId(null); loadManufacturers()
+                                            notify(editingMfrId ? 'Manufacturer updated' : 'Manufacturer added')
+                                        }} disabled={loading} className={btnPrimary} style={btnPrimaryStyle}>
+                                            {editingMfrId ? 'Update' : 'Add Manufacturer'}
+                                        </button>
+                                        {editingMfrId && <button onClick={() => { setEditingMfrId(null); setMfrName('') }} className={btnSecondary} style={btnSecondaryStyle}>Cancel</button>}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                                <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Manufacturers ({manufacturers.length})</h2>
+                                <div className="space-y-2 max-h-[600px] overflow-y-auto">
+                                    {manufacturers.map(m => (
+                                        <div key={m.id} className="flex items-center justify-between gap-3 p-3 rounded-sm" style={{ background: 'var(--bg-elevated)' }}>
+                                            <div>
+                                                <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{m.name}</p>
+                                                <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{m.id}</p>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <button onClick={() => { setEditingMfrId(m.id); setMfrName(m.name) }} className={btnEdit} style={btnEditStyle}>Edit</button>
+                                                <button onClick={async () => {
+                                                    if (!confirm(`Delete "${m.name}"?`)) return
+                                                    await supabase.from('manufacturers').delete().eq('id', m.id)
+                                                    loadManufacturers(); notify('Manufacturer deleted')
+                                                }} className={btnDanger} style={btnDangerStyle}>Delete</button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                )}
+                    )
+                }
 
                 {/* ─── OSTs Tab ─── */}
-                {tab === 'osts' && (
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
-                            <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>Add OST</h2>
-                            <div className="space-y-4">
-                                <div>
-                                    <label className={labelClass} style={labelStyle}>Park</label>
-                                    <select className={inputClass} style={inputStyle} id="ost-park" onChange={e => setSelectedParkForOst(e.target.value)}>
-                                        <option value="">Select a park</option>
-                                        {parks.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-                                    </select>
+                {
+                    tab === 'osts' && (
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                                <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>Add OST</h2>
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className={labelClass} style={labelStyle}>Park</label>
+                                        <select className={inputClass} style={inputStyle} id="ost-park" onChange={e => setSelectedParkForOst(e.target.value)}>
+                                            <option value="">Select a park</option>
+                                            {parks.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className={labelClass} style={labelStyle}>Item</label>
+                                        <select className={inputClass} style={inputStyle} id="ost-item">
+                                            <option value="">Select an item</option>
+                                            {items.filter(i => i.park_id === selectedParkForOst).map(i => <option key={i.id} value={i.id}>{i.name}</option>)}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className={labelClass} style={labelStyle}>OST Title</label>
+                                        <input className={inputClass} style={inputStyle} id="ost-title" placeholder="e.g. Blue Fire Theme" />
+                                    </div>
+                                    <div>
+                                        <label className={labelClass} style={labelStyle}>YouTube Video ID</label>
+                                        <input className={inputClass} style={inputStyle} id="ost-youtube" placeholder="e.g. dQw4w9WgXcQ" />
+                                    </div>
+                                    <button onClick={async () => {
+                                        const itemId = (document.getElementById('ost-item') as HTMLSelectElement).value
+                                        const title = (document.getElementById('ost-title') as HTMLInputElement).value
+                                        const youtubeId = (document.getElementById('ost-youtube') as HTMLInputElement).value
+                                        if (!itemId || !title || !youtubeId) { notify('All fields required', true); return }
+                                        const { error } = await supabase.from('osts').insert({ item_id: itemId, title, youtube_video_id: youtubeId })
+                                        if (error) notify(error.message, true)
+                                        else { notify('OST added'); loadOsts() }
+                                    }} disabled={loading} className={btnPrimary} style={btnPrimaryStyle}>
+                                        {loading ? 'Adding...' : 'Add OST'}
+                                    </button>
                                 </div>
-                                <div>
-                                    <label className={labelClass} style={labelStyle}>Item</label>
-                                    <select className={inputClass} style={inputStyle} id="ost-item">
-                                        <option value="">Select an item</option>
-                                        {items.filter(i => i.park_id === selectedParkForOst).map(i => <option key={i.id} value={i.id}>{i.name}</option>)}
-                                    </select>
+                            </div>
+                            <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                                <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>OSTs</h2>
+                                <div className="space-y-2 max-h-[600px] overflow-y-auto" id="osts-list">
+                                    <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Loading...</p>
                                 </div>
-                                <div>
-                                    <label className={labelClass} style={labelStyle}>OST Title</label>
-                                    <input className={inputClass} style={inputStyle} id="ost-title" placeholder="e.g. Blue Fire Theme" />
-                                </div>
-                                <div>
-                                    <label className={labelClass} style={labelStyle}>YouTube Video ID</label>
-                                    <input className={inputClass} style={inputStyle} id="ost-youtube" placeholder="e.g. dQw4w9WgXcQ" />
-                                </div>
-                                <button onClick={async () => {
-                                    const itemId = (document.getElementById('ost-item') as HTMLSelectElement).value
-                                    const title = (document.getElementById('ost-title') as HTMLInputElement).value
-                                    const youtubeId = (document.getElementById('ost-youtube') as HTMLInputElement).value
-                                    if (!itemId || !title || !youtubeId) { notify('All fields required', true); return }
-                                    const { error } = await supabase.from('osts').insert({ item_id: itemId, title, youtube_video_id: youtubeId })
-                                    if (error) notify(error.message, true)
-                                    else { notify('OST added'); loadOsts() }
-                                }} disabled={loading} className={btnPrimary} style={btnPrimaryStyle}>
-                                    {loading ? 'Adding...' : 'Add OST'}
-                                </button>
                             </div>
                         </div>
-                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
-                            <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>OSTs</h2>
-                            <div className="space-y-2 max-h-[600px] overflow-y-auto" id="osts-list">
-                                <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Loading...</p>
-                            </div>
-                        </div>
-                    </div>
-                )}
+                    )
+                }
 
                 {/* ─── Prices Tab ─── */}
                 {tab === 'prices' && <PricesTab parks={parks} />}
 
                 {/* ─── Edit Image Modal ─── */}
-                {editingImage && (
-                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                        <div className="rounded-sm p-6 max-w-md w-full" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
-                            <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Edit Image Info</h2>
+                {
+                    editingImage && (
+                        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                            <div className="rounded-sm p-6 max-w-md w-full" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                                <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Edit Image Info</h2>
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className={labelClass} style={labelStyle}>Sort Order</label>
+                                        <select className={inputClass} style={inputStyle} value={editFormData.sortOrder} onChange={e => setEditFormData({ ...editFormData, sortOrder: parseInt(e.target.value) })}>
+                                            <option value="-1">Logo</option>
+                                            <option value="0">Main</option>
+                                            {[1, 2, 3, 4, 5, 6].map(n => <option key={n} value={n}>Image 0{n}</option>)}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className={labelClass} style={labelStyle}>Author / Channel</label>
+                                        <input className={inputClass} style={inputStyle} value={editFormData.author} onChange={e => setEditFormData({ ...editFormData, author: e.target.value })} />
+                                    </div>
+                                    <div>
+                                        <label className={labelClass} style={labelStyle}>Source URL</label>
+                                        <input className={inputClass} style={inputStyle} value={editFormData.sourceUrl} onChange={e => setEditFormData({ ...editFormData, sourceUrl: e.target.value })} />
+                                    </div>
+                                    <div>
+                                        <label className={labelClass} style={labelStyle}>License</label>
+                                        <select className={inputClass} style={inputStyle} value={editFormData.license} onChange={e => setEditFormData({ ...editFormData, license: e.target.value })}>
+                                            <option>CC BY 4.0</option><option>CC BY-SA 4.0</option><option>CC0</option><option>Own</option>
+                                        </select>
+                                    </div>
+                                    <div className="flex gap-3 pt-2">
+                                        <button onClick={handleSaveEditImage} disabled={loading} className={btnPrimary} style={btnPrimaryStyle}>
+                                            {loading ? 'Saving...' : 'Save'}
+                                        </button>
+                                        <button onClick={() => setEditingImage(null)} className={btnSecondary} style={btnSecondaryStyle}>Cancel</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )
+                }
+                {
+                    tab === 'bulk-import' && (
+                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                            <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Bulk Import Items</h2>
                             <div className="space-y-4">
                                 <div>
-                                    <label className={labelClass} style={labelStyle}>Sort Order</label>
-                                    <select className={inputClass} style={inputStyle} value={editFormData.sortOrder} onChange={e => setEditFormData({ ...editFormData, sortOrder: parseInt(e.target.value) })}>
-                                        <option value="-1">Logo</option>
-                                        <option value="0">Main</option>
-                                        {[1, 2, 3, 4, 5, 6].map(n => <option key={n} value={n}>Image 0{n}</option>)}
+                                    <label className={labelClass} style={labelStyle}>Select Park & Category First</label>
+                                    <select className={inputClass} style={inputStyle} value={itemForm.park_id} onChange={e => setItemForm(p => ({ ...p, park_id: e.target.value }))}>
+                                        <option value="">Select Park</option>
+                                        {parks.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                                     </select>
                                 </div>
                                 <div>
-                                    <label className={labelClass} style={labelStyle}>Author / Channel</label>
-                                    <input className={inputClass} style={inputStyle} value={editFormData.author} onChange={e => setEditFormData({ ...editFormData, author: e.target.value })} />
-                                </div>
-                                <div>
-                                    <label className={labelClass} style={labelStyle}>Source URL</label>
-                                    <input className={inputClass} style={inputStyle} value={editFormData.sourceUrl} onChange={e => setEditFormData({ ...editFormData, sourceUrl: e.target.value })} />
-                                </div>
-                                <div>
-                                    <label className={labelClass} style={labelStyle}>License</label>
-                                    <select className={inputClass} style={inputStyle} value={editFormData.license} onChange={e => setEditFormData({ ...editFormData, license: e.target.value })}>
-                                        <option>CC BY 4.0</option><option>CC BY-SA 4.0</option><option>CC0</option><option>Own</option>
+                                    <select className={inputClass} style={inputStyle} value={itemForm.category_id} onChange={e => setItemForm(p => ({ ...p, category_id: e.target.value }))}>
+                                        <option value="">Select Category</option>
+                                        {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                                     </select>
                                 </div>
-                                <div className="flex gap-3 pt-2">
-                                    <button onClick={handleSaveEditImage} disabled={loading} className={btnPrimary} style={btnPrimaryStyle}>
-                                        {loading ? 'Saving...' : 'Save'}
-                                    </button>
-                                    <button onClick={() => setEditingImage(null)} className={btnSecondary} style={btnSecondaryStyle}>Cancel</button>
+                                <div>
+                                    <label className={labelClass} style={labelStyle}>Paste Item List</label>
+                                    <textarea className={inputClass} style={inputStyle} rows={10} value={bulkText} onChange={e => setBulkText(e.target.value)} placeholder="Paste your formatted list here..." />
                                 </div>
+                                <button onClick={handleBulkImport} disabled={loading} className={btnPrimary} style={btnPrimaryStyle}>
+                                    {loading ? 'Importing...' : 'Import All'}
+                                </button>
                             </div>
+                            {bulkResults.length > 0 && (
+                                <div className="mt-4 space-y-1 text-sm">
+                                    {bulkResults.map((r, i) => <p key={i} style={{ color: r.includes('✅') ? '#10b981' : '#ef4444' }}>{r}</p>)}
+                                </div>
+                            )}
                         </div>
-                    </div>
-                )}
-                {tab === 'bulk-import' && (
-                    <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
-                        <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Bulk Import Items</h2>
-                        <div className="space-y-4">
-                            <div>
-                                <label className={labelClass} style={labelStyle}>Select Park & Category First</label>
-                                <select className={inputClass} style={inputStyle} value={itemForm.park_id} onChange={e => setItemForm(p => ({ ...p, park_id: e.target.value }))}>
-                                    <option value="">Select Park</option>
-                                    {parks.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-                                </select>
-                            </div>
-                            <div>
-                                <select className={inputClass} style={inputStyle} value={itemForm.category_id} onChange={e => setItemForm(p => ({ ...p, category_id: e.target.value }))}>
-                                    <option value="">Select Category</option>
-                                    {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                                </select>
-                            </div>
-                            <div>
-                                <label className={labelClass} style={labelStyle}>Paste Item List</label>
-                                <textarea className={inputClass} style={inputStyle} rows={10} value={bulkText} onChange={e => setBulkText(e.target.value)} placeholder="Paste your formatted list here..." />
-                            </div>
-                            <button onClick={handleBulkImport} disabled={loading} className={btnPrimary} style={btnPrimaryStyle}>
-                                {loading ? 'Importing...' : 'Import All'}
-                            </button>
-                        </div>
-                        {bulkResults.length > 0 && (
-                            <div className="mt-4 space-y-1 text-sm">
-                                {bulkResults.map((r, i) => <p key={i} style={{ color: r.includes('✅') ? '#10b981' : '#ef4444' }}>{r}</p>)}
-                            </div>
-                        )}
-                    </div>
-                )}
-            </div>
-        </div>
+                    )
+                }
+            </div >
+        </div >
     )
 }

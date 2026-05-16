@@ -235,14 +235,6 @@ export default function ItemPageContent({ park, item, category, images, videos, 
 
 
   useEffect(() => {
-    const loadOsts = async () => {
-      const { data } = await supabase.from('osts').select('id, title').eq('item_id', item.id)
-      setOsts(data ?? [])
-    }
-    loadOsts()
-  }, [item.id])
-
-  useEffect(() => {
     const loadData = async () => {
       // Load OSTs
       const { data } = await supabase.from('osts').select('id, title').eq('item_id', item.id)

@@ -1137,7 +1137,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                         {videoItemId && (
                             <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
                                 <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Videos ({itemVideos.length})</h2>
-                                <div className="space-y-2 max-h-[600px] overflow-y-auto">
+                                <div className="space-y-2 max-h-[800px] overflow-y-auto">
                                     {itemVideos.map(vid => (
                                         <div key={vid.id} className="flex items-center justify-between gap-3 p-3 rounded-sm" style={{ background: 'var(--bg-elevated)' }}>
                                             <div className="min-w-0">

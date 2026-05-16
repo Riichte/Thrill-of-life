@@ -1085,26 +1085,36 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                         <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
                             <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>Manage Videos</h2>
                             <div className="space-y-4">
-
+                                <div>
+                                    <label className={labelClass} style={labelStyle}>Select Park</label>
+                                    <select className={inputClass} style={inputStyle} value={videoParkId} onChange={e => {
+                                        setVideoParkId(e.target.value)
+                                        setVideoCategoryId('')
+                                        setVideoItemId('')
+                                    }}>
+                                        <option value="">Select a park</option>
+                                        {parks.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                                    </select>
+                                </div>
                                 <div>
                                     <label className={labelClass} style={labelStyle}>Select Category</label>
-                                    <select className={inputClass} style={inputStyle} id="video-category" onChange={e => { (document.getElementById('video-item') as HTMLSelectElement).value = '' }}>
+                                    <select className={inputClass} style={inputStyle} value={videoCategoryId} onChange={e => {
+                                        setVideoCategoryId(e.target.value)
+                                        setVideoItemId('')
+                                    }}>
                                         <option value="">Select a category</option>
-                                        {categories.filter(c => {
-                                            const parkId = (document.getElementById('video-park') as HTMLSelectElement)?.value
-                                            return items.some(i => i.park_id === parkId && i.category_id === c.id)
-                                        }).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                                        {categories.filter(c => items.some(i => i.park_id === videoParkId && i.category_id === c.id)).map(c => (
+                                            <option key={c.id} value={c.id}>{c.name}</option>
+                                        ))}
                                     </select>
                                 </div>
                                 <div>
                                     <label className={labelClass} style={labelStyle}>Select Item</label>
-                                    <select className={inputClass} style={inputStyle} id="video-item" onChange={e => loadVideos(e.target.value)}>
+                                    <select className={inputClass} style={inputStyle} value={videoItemId} onChange={e => loadVideos(e.target.value)}>
                                         <option value="">Select an item</option>
-                                        {items.filter(i => {
-                                            const parkId = (document.getElementById('video-park') as HTMLSelectElement)?.value
-                                            const categoryId = (document.getElementById('video-category') as HTMLSelectElement)?.value
-                                            return i.park_id === parkId && i.category_id === categoryId
-                                        }).map(i => <option key={i.id} value={i.id}>{i.name}</option>)}
+                                        {items.filter(i => i.park_id === videoParkId && i.category_id === videoCategoryId).map(i => (
+                                            <option key={i.id} value={i.id}>{i.name}</option>
+                                        ))}
                                     </select>
                                 </div>
                                 {videoItemId && (

@@ -15,7 +15,7 @@ export default async function AdminPage() {
 
   const { data: parks } = await supabase.from('parks').select('*').order('name')
   const { data: categories } = await supabase.from('categories').select('*').order('name')
-  const { data: items } = await supabase.from('items').select('*').order('name').limit(10000)
+  const { data: items } = await supabase.from('items').select('*').order('name').limit(5000)
 
   return (
     <AdminDashboard

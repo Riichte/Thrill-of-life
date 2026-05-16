@@ -1087,7 +1087,9 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                     <label className={labelClass} style={labelStyle}>Select Park</label>
                                     <select className={inputClass} style={inputStyle} id="video-park" onChange={() => {
                                         setVideoItemId('')
+                                        // @ts-ignore
                                         document.getElementById('video-category').value = ''
+                                        // @ts-ignore
                                         document.getElementById('video-item').value = ''
                                     }}>
                                         <option value="">Select a park</option>

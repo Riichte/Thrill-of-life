@@ -547,6 +547,9 @@ export default function ItemPageContent({ park, item, category, images, videos, 
                     allowFullScreen
                   />
                 </div>
+                <div className="p-4 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                  <p className="font-medium mb-1" style={{ color: 'var(--text-primary)' }}>{videoTitles[videos[0]] || `${item.name} Experience`}</p>
+                </div>
               </div>
             ) : null}
 

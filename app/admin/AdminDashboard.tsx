@@ -229,6 +229,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
     const [editFormData, setEditFormData] = useState({ author: '', sourceUrl: '', license: 'CC BY 4.0', sortOrder: 0 })
     const [selectedParkForOst, setSelectedParkForOst] = useState('')
     const [imageItemSearch, setImageItemSearch] = useState('')
+    const [imageParkSearch, setImageParkSearch] = useState('')
 
     useEffect(() => {
         loadManufacturers()

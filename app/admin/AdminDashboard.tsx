@@ -88,8 +88,8 @@ function PricesTab({ parks }: { parks: Park[] }) {
 
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8" style={{ overflow: 'visible' }}>
+            <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', overflow: 'visible' }}>
                 <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>Add Price</h2>
                 <div className="space-y-4">
                     <div>
@@ -152,11 +152,11 @@ function PricesTab({ parks }: { parks: Park[] }) {
             </div>
 
             {selectedPark && (
-                <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', overflow: 'visible' }}>
                     <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
                         Prices ({prices.length})
                     </h2>
-                    <div className="space-y-2 max-h-[600px] overflow-y-auto">
+                    <div className="space-y-2 max-h-[600px] overflow-y-auto overflow-x-visible">
                         {prices.length === 0 && <p className="text-sm" style={{ color: 'var(--text-muted)' }}>No prices yet.</p>}
                         {prices.map(p => (
                             <div key={p.id} className="flex items-center justify-between gap-3 p-3 rounded-sm" style={{ background: 'var(--bg-elevated)' }}>
@@ -676,8 +676,8 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
 
                 {/* ─── Parks Tab ─── */}
                 {tab === 'parks' && (
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8" style={{ overflow: 'visible' }}>
+                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', overflow: 'visible' }}>
                             <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>{editingParkId ? 'Edit Park' : 'Add Park'}</h2>
                             <div className="space-y-4">
                                 {!editingParkId && (
@@ -712,9 +712,9 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                 </div>
                             </div>
                         </div>
-                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', overflow: 'visible' }}>
                             <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Parks ({parks.length})</h2>
-                            <div className="space-y-2 max-h-[600px] overflow-y-auto">
+                            <div className="space-y-2 max-h-[600px] overflow-y-auto overflow-x-visible">
                                 {parks.map(park => (
                                     <div key={park.id} className="flex items-center justify-between gap-3 p-3 rounded-sm" style={{ background: 'var(--bg-elevated)' }}>
                                         <div className="min-w-0">
@@ -734,8 +734,8 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
 
                 {/* ─── Items Tab ─── */}
                 {tab === 'items' && (
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8" style={{ overflow: 'visible' }}>
+                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', overflow: 'visible' }}>
                             <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>{editingItemId ? 'Edit Item' : 'Add Item'}</h2>
                             <div className="space-y-4">
                                 {!editingItemId && (
@@ -864,7 +864,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                 </div>
                             </div>
                         </div>
-                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', overflow: 'visible' }}>
                             <div className="flex gap-3 mb-4 items-center flex-wrap">
                                 <h2 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>Items</h2>
                                 <select className={inputClass} style={{ ...inputStyle, maxWidth: '200px' }}
@@ -884,7 +884,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                     </button>
                                 )}
                             </div>
-                            <div className="space-y-2 max-h-[600px] overflow-y-auto">
+                            <div className="space-y-2 max-h-[600px] overflow-y-auto overflow-x-visible">
                                 {parks.filter(p => !listParkFilter || p.id === listParkFilter).map(park => {
                                     const parkItems = items.filter(i => i.park_id === park.id && (!listCategoryFilter || i.category_id === listCategoryFilter))
                                     if (!parkItems.length) return null
@@ -935,8 +935,8 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                 )}
                 {/* ─── Images Tab ─── */}
                 {tab === 'images' && (
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8" style={{ overflow: 'visible' }}>
+                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', overflow: 'visible' }}>
                             <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>Manage Images</h2>
                             <div className="space-y-4">
                                 <div>
@@ -1000,9 +1000,9 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                             </div>
                         </div>
                         {imageItemId && (
-                            <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                            <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', overflow: 'visible' }}>
                                 <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Images ({itemImages.length})</h2>
-                                <div className="space-y-2 max-h-[600px] overflow-y-auto">
+                                <div className="space-y-2 max-h-[600px] overflow-y-auto overflow-x-visible">
                                     {itemImages.map(img => (
                                         <div key={img.id} className="flex items-center justify-between gap-3 p-3 rounded-sm" style={{ background: 'var(--bg-elevated)' }}>
                                             <div className="flex items-center gap-3 min-w-0">
@@ -1026,8 +1026,8 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
 
                 {/* ─── Park Images Tab ─── */}
                 {tab === 'park-images' && (
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8" style={{ overflow: 'visible' }}>
+                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', overflow: 'visible' }}>
                             <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>Manage Park Images</h2>
                             <div className="space-y-4">
                                 <div>
@@ -1069,9 +1069,9 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                             </div>
                         </div>
                         {parkImageParkId && (
-                            <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                            <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', overflow: 'visible' }}>
                                 <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Park Images ({parkImages.length})</h2>
-                                <div className="space-y-2 max-h-[600px] overflow-y-auto">
+                                <div className="space-y-2 max-h-[600px] overflow-y-auto overflow-x-visible">
                                     {parkImages.map(img => (
                                         <div key={img.id} className="flex items-center justify-between gap-3 p-3 rounded-sm" style={{ background: 'var(--bg-elevated)' }}>
                                             <div className="flex items-center gap-3 min-w-0">
@@ -1102,8 +1102,8 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
 
                 {/* ─── Videos Tab ─── */}
                 {tab === 'videos' && (
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8" style={{ overflow: 'visible' }}>
+                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', overflow: 'visible' }}>
                             <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>Manage Videos</h2>
                             <div className="space-y-4">
                                 <div>
@@ -1156,7 +1156,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                             </div>
                         </div>
                         {videoItemId && (
-                            <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                            <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', overflow: 'visible' }}>
                                 <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Videos ({itemVideos.length})</h2>
                                 <div className="space-y-2 max-h-[800px] overflow-y-auto">
                                     {itemVideos.map(vid => (
@@ -1181,8 +1181,8 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                 {/* ─── Manufacturers Tab ─── */}
                 {
                     tab === 'manufacturers' && (
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                            <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8" style={{ overflow: 'visible' }}>
+                            <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', overflow: 'visible' }}>
                                 <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>{editingMfrId ? 'Edit Manufacturer' : 'Add Manufacturer'}</h2>
                                 <div className="space-y-4">
                                     <div>
@@ -1204,9 +1204,9 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                     </div>
                                 </div>
                             </div>
-                            <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                            <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', overflow: 'visible' }}>
                                 <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Manufacturers ({manufacturers.length})</h2>
-                                <div className="space-y-2 max-h-[600px] overflow-y-auto">
+                                <div className="space-y-2 max-h-[600px] overflow-y-auto overflow-x-visible">
                                     {manufacturers.map(m => (
                                         <div key={m.id} className="flex items-center justify-between gap-3 p-3 rounded-sm" style={{ background: 'var(--bg-elevated)' }}>
                                             <div>
@@ -1232,8 +1232,8 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                 {/* ─── OSTs Tab ─── */}
                 {
                     tab === 'osts' && (
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                            <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8" style={{ overflow: 'visible' }}>
+                            <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', overflow: 'visible' }}>
                                 <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>Add OST</h2>
                                 <div className="space-y-4">
                                     <div>
@@ -1271,7 +1271,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                     </button>
                                 </div>
                             </div>
-                            <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                            <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', overflow: 'visible' }}>
                                 <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>OSTs</h2>
                                 <div className="space-y-2 max-h-[600px] overflow-y-auto" id="osts-list">
                                     <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Loading...</p>
@@ -1326,7 +1326,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                 }
                 {
                     tab === 'bulk-import' && (
-                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', overflow: 'visible' }}>
                             <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Bulk Import Items</h2>
                             <div className="space-y-4">
                                 <div>

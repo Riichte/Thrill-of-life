@@ -230,6 +230,9 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
     const [selectedParkForOst, setSelectedParkForOst] = useState('')
     const [imageItemSearch, setImageItemSearch] = useState('')
     const [imageParkSearch, setImageParkSearch] = useState('')
+    const [videoItemSearch, setVideoItemSearch] = useState('')
+    const [videoParkSearch, setVideoParkSearch] = useState('')
+    const [itemParkSearch, setItemParkSearch] = useState('')
 
     useEffect(() => {
         loadManufacturers()

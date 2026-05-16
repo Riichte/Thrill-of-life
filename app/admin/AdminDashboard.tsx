@@ -207,6 +207,8 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
     const [specsText, setSpecsText] = useState('{}')
 
     const [imageItemId, setImageItemId] = useState('')
+    const [imageParkFilter, setImageParkFilter] = useState('')
+    const [imageCategoryFilter, setImageCategoryFilter] = useState('')
     const [imageUrl, setImageUrl] = useState('')
     const [imageOrder, setImageOrder] = useState(0)
     const [imageAuthor, setImageAuthor] = useState('')
@@ -229,6 +231,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
     const [editingImage, setEditingImage] = useState<{ id: string; type: 'item' | 'park' } | null>(null)
     const [editFormData, setEditFormData] = useState({ author: '', sourceUrl: '', license: 'CC BY 4.0', sortOrder: 0 })
     const [selectedParkForOst, setSelectedParkForOst] = useState('')
+
 
     useEffect(() => {
         loadManufacturers()
@@ -937,12 +940,30 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                             <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>Manage Images</h2>
                             <div className="space-y-4">
                                 <div>
-                                    <label className={labelClass} style={labelStyle}>Select Item</label>
-                                    <select className={inputClass} style={inputStyle} value={imageItemId} onChange={e => loadImages(e.target.value)}>
-                                        <option value="">Select an item</option>
-                                        {items.map(i => <option key={i.id} value={i.id}>{i.name} ({i.park_id})</option>)}
+                                    <label className={labelClass} style={labelStyle}>Select Park</label>
+                                    <select className={inputClass} style={inputStyle} value={imageParkFilter} onChange={e => { setImageParkFilter(e.target.value); setImageCategoryFilter(''); setImageItemId('') }}>
+                                        <option value="">Select a park</option>
+                                        {parks.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                                     </select>
                                 </div>
+                                {imageParkFilter && (
+                                    <div>
+                                        <label className={labelClass} style={labelStyle}>Select Category</label>
+                                        <select className={inputClass} style={inputStyle} value={imageCategoryFilter} onChange={e => { setImageCategoryFilter(e.target.value); setImageItemId('') }}>
+                                            <option value="">Select a category</option>
+                                            {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                                        </select>
+                                    </div>
+                                )}
+                                {imageCategoryFilter && (
+                                    <div>
+                                        <label className={labelClass} style={labelStyle}>Select Item</label>
+                                        <select className={inputClass} style={inputStyle} value={imageItemId} onChange={e => loadImages(e.target.value)}>
+                                            <option value="">Select an item</option>
+                                            {items.filter(i => i.park_id === imageParkFilter && i.category_id === imageCategoryFilter).map(i => <option key={i.id} value={i.id}>{i.name}</option>)}
+                                        </select>
+                                    </div>
+                                )}
                                 {imageItemId && (
                                     <>
                                         <div>

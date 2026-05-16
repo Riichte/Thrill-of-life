@@ -642,8 +642,8 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
     }
 
     return (
-        <div className="min-h-screen" style={{ background: 'var(--bg-tertiary)', color: 'var(--text-primary)' }}>
-            <div className="container mx-auto px-4 py-8 max-w-6xl">
+        <div className="min-h-screen" style={{ background: 'var(--bg-tertiary)', color: 'var(--text-primary)', overflow: 'visible' }}>
+            <div className="px-4 py-8 max-w-6xl mx-auto" style={{ overflow: 'visible' }}>
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>Admin Dashboard</h1>
                     <p className="mt-1" style={{ color: 'var(--text-muted)' }}>Manage parks, rides, and media</p>

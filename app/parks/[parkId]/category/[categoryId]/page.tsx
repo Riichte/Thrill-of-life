@@ -55,7 +55,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                   <div className="relative w-full aspect-[16/9] bg-black overflow-hidden">
                     {(item.item_images?.find((img: any) => img.sort_order === 0) ?? item.item_images?.[0])?.url ? (
                       <Image
-                        src={item.item_images[0].url}
+                        src={(item.item_images?.find((img: any) => img.sort_order === 0) ?? item.item_images?.[0])?.url ?? ''}
                         alt={item.name}
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-300"

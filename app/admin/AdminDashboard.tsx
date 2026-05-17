@@ -1141,7 +1141,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                     <select className={inputClass} style={{ ...inputStyle, marginTop: '4px' }} value={videoItemId} onChange={e => loadVideos(e.target.value)}>
                                         <option value="">Select an item</option>
                                         {items
-                                            .filter(i => i.park_id === videoParkId && i.category_id === videoCategoryId)
+                                            .filter(i => i.park_id === videoParkId)
                                             .filter(i => i.name.toLowerCase().includes(videoItemSearch.toLowerCase()))
                                             .map(i => <option key={i.id} value={i.id}>{i.name}</option>)}
                                     </select>

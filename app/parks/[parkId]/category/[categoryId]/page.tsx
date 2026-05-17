@@ -53,7 +53,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                 <div className="style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-lg overflow-hidden hover:border-[#66c0f4] transition-all duration-300 hover:-translate-y-1 h-full flex flex-col">
                   {/* Image */}
                   <div className="relative w-full aspect-[16/9] bg-black overflow-hidden">
-                    {item.item_images?.[0]?.url ? (
+                    {(item.item_images?.find((img: any) => img.sort_order === 0) ?? item.item_images?.[0])?.url ? (
                       <Image
                         src={item.item_images[0].url}
                         alt={item.name}

@@ -15,7 +15,17 @@ export default async function AdminPage() {
 
   const { data: parks } = await supabase.from('parks').select('*').order('name')
   const { data: categories } = await supabase.from('categories').select('*').order('name')
-  const { data: items } = await supabase.from('items').select('*').order('name').range(0, 2000)
+  let allItems: any[] = []
+  let from = 0
+  const pageSize = 1000
+  while (true) {
+    const { data } = await supabase.from('items').select('*').order('name').range(from, from + pageSize - 1)
+    if (!data || data.length === 0) break
+    allItems = [...allItems, ...data]
+    if (data.length < pageSize) break
+    from += pageSize
+  }
+  const items = allItems
 
   return (
     <AdminDashboard

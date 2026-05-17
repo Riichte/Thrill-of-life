@@ -76,7 +76,7 @@ export async function getItemsByCategory(parkId: string, categoryId: string) {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('items')
-    .select('*, item_images(url, attribution_author, license)')
+    .select('*, item_images(url, attribution_author, license, sort_order)')
     .eq('park_id', parkId)
     .eq('category_id', categoryId)
     .order('name')

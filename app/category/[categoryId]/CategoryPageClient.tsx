@@ -104,7 +104,7 @@ export default function CategoryPageClient({
                 {/* Grid */}
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                     {filtered.map(item => {
-                        const image = item.item_images?.[0]?.url
+                        const image = (item.item_images?.find((img: any) => img.sort_order === 0) ?? item.item_images?.[0])?.url
                         return (
                             <Link
                                 key={item.id}

@@ -978,7 +978,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                         </div>
                                         <div>
                                             <label className={labelClass} style={labelStyle}>Sort Order</label>
-                                            <select size={8} className={inputClass} style={{ ...inputStyle, height: 'auto' }} value={imageOrder} onChange={e => setImageOrder(parseInt(e.target.value))}>
+                                            <select className={inputClass} style={{ ...inputStyle, height: 'auto' }} value={imageOrder} onChange={e => setImageOrder(parseInt(e.target.value))}>
                                                 <option value="-1">Logo</option>
                                                 <option value="0">Main</option>
                                                 {[1, 2, 3, 4, 5, 6].map(n => <option key={n} value={n}>Image 0{n}</option>)}
@@ -994,7 +994,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                         </div>
                                         <div>
                                             <label className={labelClass} style={labelStyle}>License</label>
-                                            <select size={8} className={inputClass} style={{ ...inputStyle, height: 'auto' }} value={imageLicense} onChange={e => setImageLicense(e.target.value)}>
+                                            <select className={inputClass} style={{ ...inputStyle, height: 'auto' }} value={imageLicense} onChange={e => setImageLicense(e.target.value)}>
                                                 <option>CC BY 4.0</option><option>CC BY-SA 4.0</option><option>CC0</option><option>Own</option>
                                             </select>
                                         </div>
@@ -1038,7 +1038,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                             <div className="space-y-4">
                                 <div>
                                     <label className={labelClass} style={labelStyle}>Select Park</label>
-                                    <select size={8} className={inputClass} style={{ ...inputStyle, height: 'auto' }} value={parkImageParkId} onChange={e => loadParkImages(e.target.value)}>
+                                    <select className={inputClass} style={{ ...inputStyle, height: 'auto' }} value={parkImageParkId} onChange={e => loadParkImages(e.target.value)}>
                                         <option value="">Select a park</option>
                                         {parks.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                                     </select>
@@ -1063,7 +1063,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                         </div>
                                         <div>
                                             <label className={labelClass} style={labelStyle}>License</label>
-                                            <select size={8} className={inputClass} style={{ ...inputStyle, height: 'auto' }} value={parkImageLicense} onChange={e => setParkImageLicense(e.target.value)}>
+                                            <select className={inputClass} style={{ ...inputStyle, height: 'auto' }} value={parkImageLicense} onChange={e => setParkImageLicense(e.target.value)}>
                                                 <option>CC BY 4.0</option><option>CC BY-SA 4.0</option><option>CC0</option><option>Own</option>
                                             </select>
                                         </div>
@@ -1137,11 +1137,13 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                 </div>
                                 <div>
                                     <label className={labelClass} style={labelStyle}>Select Item</label>
-                                    <select size={8} className={inputClass} style={{ ...inputStyle, height: 'auto' }} value={videoItemId} onChange={e => loadVideos(e.target.value)}>
+                                    <input className={inputClass} style={inputStyle} placeholder="Search item..." value={videoItemSearch} onChange={e => setVideoItemSearch(e.target.value)} />
+                                    <select className={inputClass} style={{ ...inputStyle, marginTop: '4px' }} value={videoItemId} onChange={e => loadVideos(e.target.value)}>
                                         <option value="">Select an item</option>
-                                        {items.filter(i => i.park_id === videoParkId && i.category_id === videoCategoryId).map(i => (
-                                            <option key={i.id} value={i.id}>{i.name}</option>
-                                        ))}
+                                        {items
+                                            .filter(i => i.park_id === videoParkId && i.category_id === videoCategoryId)
+                                            .filter(i => i.name.toLowerCase().includes(videoItemSearch.toLowerCase()))
+                                            .map(i => <option key={i.id} value={i.id}>{i.name}</option>)}
                                     </select>
                                 </div>
                                 {videoItemId && (

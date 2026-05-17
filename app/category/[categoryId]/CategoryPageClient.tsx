@@ -52,7 +52,7 @@ export default function CategoryPageClient({
         color: 'var(--text-primary)',
     }
 
-    console.log('images for', item.name, item.item_images)
+    
 
     return (
         <div className="min-h-screen" style={{ background: 'var(--bg-tertiary)', color: 'var(--text-primary)' }}>
@@ -107,6 +107,7 @@ export default function CategoryPageClient({
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                     {filtered.map(item => {
                         const image = (item.item_images?.find((img: any) => img.sort_order === 0) ?? item.item_images?.[0])?.url
+                        console.log('images for', item.name, item.item_images)  // add this line
                         return (
                             <Link
                                 key={item.id}

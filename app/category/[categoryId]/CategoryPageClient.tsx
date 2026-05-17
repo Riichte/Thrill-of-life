@@ -52,6 +52,8 @@ export default function CategoryPageClient({
         color: 'var(--text-primary)',
     }
 
+    console.log('images for', item.name, item.item_images)
+
     return (
         <div className="min-h-screen" style={{ background: 'var(--bg-tertiary)', color: 'var(--text-primary)' }}>
             <div className="container mx-auto px-4 py-8">

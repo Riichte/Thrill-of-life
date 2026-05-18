@@ -77,7 +77,7 @@ export function SteamInfoPanel({
     >
       {headerImage && (
         <div className="relative h-[220px] w-full shrink-0 overflow-hidden md:h-[260px]" style={{ background: 'var(--bg-tertiary)' }}>
-          <img src={headerImage} alt={headerImageAlt} className="h-full w-full object-cover" />
+          <img src={headerImage} alt={headerImageAlt} className="h-full w-full object-contain" />
           <div className="absolute inset-0 bg-gradient-to-t from-[var(--card-bg)] via-[var(--card-bg)]/20 to-transparent" />
           {ribbon && (
             <span className="absolute left-3 top-3 rounded-sm px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide style={{ color: 'var(--text-primary)' }}"

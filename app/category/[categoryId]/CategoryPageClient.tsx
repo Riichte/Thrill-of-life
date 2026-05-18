@@ -57,8 +57,6 @@ export default function CategoryPageClient({
         color: 'var(--text-primary)',
     }
 
-
-
     return (
         <div className="min-h-screen" style={{ background: 'var(--bg-tertiary)', color: 'var(--text-primary)' }}>
             <div className="container mx-auto px-4 py-8">
@@ -99,99 +97,84 @@ export default function CategoryPageClient({
                     </div>
                 </div>
 
-                <div>
-                    <label className="block text-xs font-medium uppercase tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>Type</label>
-                    <select
-                        value={filterType}
-                        onChange={e => setFilterType(e.target.value)}
-                        className="w-full rounded-sm px-3 py-2 text-sm focus:outline-none"
-                        style={inputStyle}
-                    >
-                        <option value="">All Types</option>
-                        {types.map(t => <option key={t} value={t}>{t}</option>)}
-                    </select>
+                {/* Count */}
+                <p className="text-sm mb-6" style={{ color: 'var(--text-muted)' }}>
+                    {filtered.length} {category.name.toLowerCase()} found — page {page} of {totalPages || 1}
+                </p>
+
+                {/* Grid */}
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                    {paginated.map(item => {
+                        const image = (item.item_images?.find((img: any) => img.sort_order === 0) ?? item.item_images?.[0])?.url
+                        return (
+                            <Link
+                                key={item.id}
+                                href={`/parks/${item.park_id}/${item.category_id}/${item.id}`}
+                                className="group rounded-sm overflow-hidden transition-colors"
+                                style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}
+                                onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--accent)')}
+                                onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}>
+                                <div className="aspect-square overflow-hidden" style={{ background: 'var(--bg-tertiary)' }}>
+                                    {image ? (
+                                        <img src={image} alt={item.name}
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center text-xs" style={{ color: 'var(--text-faint)' }}>
+                                            No image
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="p-3">
+                                    <p className="text-sm font-semibold truncate transition-colors"
+                                        style={{ color: 'var(--text-primary)' }}
+                                        onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
+                                        onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-primary)')}>
+                                        {item.name}
+                                    </p>
+                                    <p className="text-xs mt-0.5 truncate" style={{ color: 'var(--text-muted)' }}>{item.parks?.name ?? ''}</p>
+                                    {item.specs?.type && (
+                                        <p className="text-xs mt-0.5 truncate" style={{ color: 'var(--text-faint)' }}>{item.specs.type}</p>
+                                    )}
+                                </div>
+                            </Link>
+                        )
+                    })}
                 </div>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                    <div className="flex items-center justify-center gap-2 mt-8">
+                        <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
+                            className="px-4 py-2 rounded-sm text-sm font-medium disabled:opacity-40"
+                            style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}>
+                            ← Prev
+                        </button>
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                            <button key={p} onClick={() => setPage(p)}
+                                className="px-3 py-2 rounded-sm text-sm font-medium"
+                                style={{
+                                    background: p === page ? 'var(--accent)' : 'var(--card-bg)',
+                                    border: '1px solid var(--border)',
+                                    color: p === page ? 'var(--bg-tertiary)' : 'var(--text-muted)'
+                                }}>
+                                {p}
+                            </button>
+                        ))}
+                        <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
+                            className="px-4 py-2 rounded-sm text-sm font-medium disabled:opacity-40"
+                            style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}>
+                            Next →
+                        </button>
+                    </div>
+                )}
+
+                {/* Empty state */}
+                {filtered.length === 0 && (
+                    <div className="text-center py-16">
+                        <p style={{ color: 'var(--text-muted)' }}>No results found.</p>
+                    </div>
+                )}
             </div>
         </div>
     )
-
-    {/* Count */ }
-    <p className="text-sm mb-6" style={{ color: 'var(--text-muted)' }}>{filtered.length} {category.name.toLowerCase()} found — page {page} of {totalPages}</p>
-
-    {/* Grid */ }
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-        {paginated.map(item => {
-            const image = (item.item_images?.find((img: any) => img.sort_order === 0) ?? item.item_images?.[0])?.url
-            console.log('images for', item.name, item.item_images)  // add this line
-            return (
-                <Link
-                    key={item.id}
-                    href={`/parks/${item.park_id}/${item.category_id}/${item.id}`}
-                    className="group rounded-sm overflow-hidden transition-colors"
-                    style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}
-                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--accent)')}
-                    onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}>
-                    <div className="aspect-square overflow-hidden" style={{ background: 'var(--bg-tertiary)' }}>
-                        {image ? (
-                            <img
-                                src={image}
-                                alt={item.name}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                            />
-                        ) : (
-                            <div className="w-full h-full flex items-center justify-center text-xs" style={{ color: 'var(--text-faint)' }}>
-                                No image
-                            </div>
-                        )}
-                    </div>
-                    <div className="p-3">
-                        <p className="text-sm font-semibold truncate transition-colors"
-                            style={{ color: 'var(--text-primary)' }}
-                            onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
-                            onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-primary)')}>
-                            {item.name}
-                        </p>
-                        <p className="text-xs mt-0.5 truncate" style={{ color: 'var(--text-muted)' }}>{item.parks?.name ?? ''}</p>
-                        {item.specs?.type && (
-                            <p className="text-xs mt-0.5 truncate" style={{ color: 'var(--text-faint)' }}>{item.specs.type}</p>
-                        )}
-                    </div>
-                </Link>
-            )
-        })}
-    </div>
-    {
-        totalPages > 1 && (
-            <div className="flex items-center justify-center gap-2 mt-8">
-                <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
-                    className="px-4 py-2 rounded-sm text-sm font-medium disabled:opacity-40"
-                    style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}>
-                    ← Prev
-                </button>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-                    <button key={p} onClick={() => setPage(p)}
-                        className="px-3 py-2 rounded-sm text-sm font-medium"
-                        style={{
-                            background: p === page ? 'var(--accent)' : 'var(--card-bg)',
-                            border: '1px solid var(--border)',
-                            color: p === page ? 'var(--bg-tertiary)' : 'var(--text-muted)'
-                        }}>
-                        {p}
-                    </button>
-                ))}
-                <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
-                    className="px-4 py-2 rounded-sm text-sm font-medium disabled:opacity-40"
-                    style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}>
-                    Next →
-                </button>
-            </div>
-        )
-    }
-    {
-        filtered.length === 0 && (
-            <div className="text-center py-16">
-                <p style={{ color: 'var(--text-muted)' }}>No results found.</p>
-            </div>
-        )
-    }
 }

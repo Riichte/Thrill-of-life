@@ -239,13 +239,13 @@ export default function ImageManager({ items: initialItems, categories, parks }:
                     defaultValue="1"
                     className="w-full style={{ background: 'var(--bg-elevated)' }} border style={{ borderColor: 'var(--input-border)' }} rounded-sm px-2 py-1 text-xs style={{ color: 'var(--text-primary)' }}"
                   >
+                    <option value="-1">Logo</option>
                     <option value="0">Main</option>
-                    <option value="1">Logo</option>
-                    <option value="2">Image 1</option>
-                    <option value="3">Image 2</option>
-                    <option value="4">Image 3</option>
-                    <option value="5">Image 4</option>
-                    <option value="6">Image 5</option>
+                    <option value="1">Image 1</option>
+                    <option value="2">Image 2</option>
+                    <option value="3">Image 3</option>
+                    <option value="4">Image 4</option>
+                    <option value="5">Image 5</option>
                   </select>
                 </div>
               </div>

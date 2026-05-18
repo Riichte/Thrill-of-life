@@ -94,7 +94,7 @@ function PricesTab({ parks }: { parks: Park[] }) {
                 <div className="space-y-4">
                     <div>
                         <label className={labelClass} style={labelStyle}>Park</label>
-                        <select className={inputClass} style={{ ...inputStyle}} value={selectedPark} onChange={e => loadPrices(e.target.value)}>
+                        <select className={inputClass} style={{ ...inputStyle }} value={selectedPark} onChange={e => loadPrices(e.target.value)}>
                             <option value="">Select park</option>
                             {parks.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                         </select>
@@ -104,13 +104,13 @@ function PricesTab({ parks }: { parks: Park[] }) {
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
                                     <label className={labelClass} style={labelStyle}>Category</label>
-                                    <select className={inputClass} style={{ ...inputStyle}} value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))}>
+                                    <select className={inputClass} style={{ ...inputStyle }} value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))}>
                                         {CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
                                     </select>
                                 </div>
                                 <div>
                                     <label className={labelClass} style={labelStyle}>Duration</label>
-                                    <select className={inputClass} style={{ ...inputStyle}} value={form.duration} onChange={e => setForm(f => ({ ...f, duration: e.target.value }))}>
+                                    <select className={inputClass} style={{ ...inputStyle }} value={form.duration} onChange={e => setForm(f => ({ ...f, duration: e.target.value }))}>
                                         {DURATIONS.map(d => <option key={d.value} value={d.value}>{d.label}</option>)}
                                     </select>
                                 </div>
@@ -136,7 +136,7 @@ function PricesTab({ parks }: { parks: Park[] }) {
                                 </div>
                                 <div>
                                     <label className={labelClass} style={labelStyle}>Currency</label>
-                                    <select className={inputClass} style={{ ...inputStyle}} value={form.currency} onChange={e => setForm(f => ({ ...f, currency: e.target.value }))}>
+                                    <select className={inputClass} style={{ ...inputStyle }} value={form.currency} onChange={e => setForm(f => ({ ...f, currency: e.target.value }))}>
                                         {['EUR', 'USD', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'KRW', 'AED', 'DKK', 'SEK', 'NOK', 'PLN', 'CZK', 'HUF'].map(c => <option key={c}>{c}</option>)}
                                     </select>
                                 </div>
@@ -602,10 +602,12 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
             const parsed = JSON.parse(bulkText)
             for (const item of parsed) {
                 try {
+                    const parkId = item.park_id || itemForm.park_id
+                    const categoryId = item.category_id || itemForm.category_id
                     const { error } = await supabase.from('items').insert({
-                        id: `${itemForm.park_id}-${item.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}`,
-                        park_id: itemForm.park_id,
-                        category_id: itemForm.category_id,
+                        id: `${parkId}-${item.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}`,
+                        park_id: parkId,
+                        category_id: categoryId,
                         name: item.name,
                         description: item.description || '',
                         location_in_park: item.location_in_park || '',
@@ -699,7 +701,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                 ))}
                                 <div>
                                     <label className={labelClass} style={labelStyle}>Park Type</label>
-                                    <select className={inputClass} style={{ ...inputStyle}} value={parkForm.park_type} onChange={e => setParkForm(p => ({ ...p, park_type: e.target.value }))}>
+                                    <select className={inputClass} style={{ ...inputStyle }} value={parkForm.park_type} onChange={e => setParkForm(p => ({ ...p, park_type: e.target.value }))}>
                                         {['Theme Park', 'Amusement Park', 'Water Park', 'Resort'].map(t => <option key={t}>{t}</option>)}
                                     </select>
                                 </div>
@@ -747,14 +749,14 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                 )}
                                 <div>
                                     <label className={labelClass} style={labelStyle}>Park</label>
-                                    <select className={inputClass} style={{ ...inputStyle}} value={itemForm.park_id} onChange={e => setItemForm(p => ({ ...p, park_id: e.target.value }))}>
+                                    <select className={inputClass} style={{ ...inputStyle }} value={itemForm.park_id} onChange={e => setItemForm(p => ({ ...p, park_id: e.target.value }))}>
                                         <option value="">Select a park</option>
                                         {parks.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                                     </select>
                                 </div>
                                 <div>
                                     <label className={labelClass} style={labelStyle}>Category</label>
-                                    <select className={inputClass} style={{ ...inputStyle}} value={itemForm.category_id} onChange={e => setItemForm(p => ({ ...p, category_id: e.target.value }))}>
+                                    <select className={inputClass} style={{ ...inputStyle }} value={itemForm.category_id} onChange={e => setItemForm(p => ({ ...p, category_id: e.target.value }))}>
                                         <option value="">Select a category</option>
                                         {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                                     </select>
@@ -785,7 +787,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                 </div>
                                 <div>
                                     <label className={labelClass} style={labelStyle}>Status</label>
-                                    <select className={inputClass} style={{ ...inputStyle}} value={itemForm.status} onChange={e => setItemForm(p => ({ ...p, status: e.target.value }))}>
+                                    <select className={inputClass} style={{ ...inputStyle }} value={itemForm.status} onChange={e => setItemForm(p => ({ ...p, status: e.target.value }))}>
                                         <option value="operating">Operating</option>
                                         <option value="sbno">SBNO</option>
                                         <option value="defunct">Defunct</option>
@@ -951,7 +953,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                 {imageParkFilter && (
                                     <div>
                                         <label className={labelClass} style={labelStyle}>Select Category</label>
-                                        <select className={inputClass} style={{ ...inputStyle}} value={imageCategoryFilter} onChange={e => { setImageCategoryFilter(e.target.value); setImageItemId('') }}>
+                                        <select className={inputClass} style={{ ...inputStyle }} value={imageCategoryFilter} onChange={e => { setImageCategoryFilter(e.target.value); setImageItemId('') }}>
                                             <option value="">Select a category</option>
                                             {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                                         </select>
@@ -978,7 +980,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                         </div>
                                         <div>
                                             <label className={labelClass} style={labelStyle}>Sort Order</label>
-                                            <select className={inputClass} style={{ ...inputStyle}} value={imageOrder} onChange={e => setImageOrder(parseInt(e.target.value))}>
+                                            <select className={inputClass} style={{ ...inputStyle }} value={imageOrder} onChange={e => setImageOrder(parseInt(e.target.value))}>
                                                 <option value="-1">Logo</option>
                                                 <option value="0">Main</option>
                                                 {[1, 2, 3, 4, 5, 6].map(n => <option key={n} value={n}>Image 0{n}</option>)}
@@ -994,7 +996,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                         </div>
                                         <div>
                                             <label className={labelClass} style={labelStyle}>License</label>
-                                            <select className={inputClass} style={{ ...inputStyle}} value={imageLicense} onChange={e => setImageLicense(e.target.value)}>
+                                            <select className={inputClass} style={{ ...inputStyle }} value={imageLicense} onChange={e => setImageLicense(e.target.value)}>
                                                 <option>CC BY 4.0</option><option>CC BY-SA 4.0</option><option>CC0</option><option>Own</option>
                                             </select>
                                         </div>
@@ -1038,7 +1040,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                             <div className="space-y-4">
                                 <div>
                                     <label className={labelClass} style={labelStyle}>Select Park</label>
-                                    <select className={inputClass} style={{ ...inputStyle}} value={parkImageParkId} onChange={e => loadParkImages(e.target.value)}>
+                                    <select className={inputClass} style={{ ...inputStyle }} value={parkImageParkId} onChange={e => loadParkImages(e.target.value)}>
                                         <option value="">Select a park</option>
                                         {parks.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                                     </select>
@@ -1063,7 +1065,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                         </div>
                                         <div>
                                             <label className={labelClass} style={labelStyle}>License</label>
-                                            <select className={inputClass} style={{ ...inputStyle}} value={parkImageLicense} onChange={e => setParkImageLicense(e.target.value)}>
+                                            <select className={inputClass} style={{ ...inputStyle }} value={parkImageLicense} onChange={e => setParkImageLicense(e.target.value)}>
                                                 <option>CC BY 4.0</option><option>CC BY-SA 4.0</option><option>CC0</option><option>Own</option>
                                             </select>
                                         </div>
@@ -1114,7 +1116,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                             <div className="space-y-4">
                                 <div>
                                     <label className={labelClass} style={labelStyle}>Select Park</label>
-                                    <select className={inputClass} style={{ ...inputStyle}} value={videoParkId} onChange={e => {
+                                    <select className={inputClass} style={{ ...inputStyle }} value={videoParkId} onChange={e => {
                                         setVideoParkId(e.target.value)
                                         setVideoCategoryId('')
                                         setVideoItemId('')
@@ -1125,7 +1127,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                 </div>
                                 <div>
                                     <label className={labelClass} style={labelStyle}>Select Category</label>
-                                    <select className={inputClass} style={{ ...inputStyle}} value={videoCategoryId} onChange={e => {
+                                    <select className={inputClass} style={{ ...inputStyle }} value={videoCategoryId} onChange={e => {
                                         setVideoCategoryId(e.target.value)
                                         setVideoItemId('')
                                     }}>
@@ -1246,14 +1248,14 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                 <div className="space-y-4">
                                     <div>
                                         <label className={labelClass} style={labelStyle}>Park</label>
-                                        <select className={inputClass} style={{ ...inputStyle}} id="ost-park" onChange={e => setSelectedParkForOst(e.target.value)}>
+                                        <select className={inputClass} style={{ ...inputStyle }} id="ost-park" onChange={e => setSelectedParkForOst(e.target.value)}>
                                             <option value="">Select a park</option>
                                             {parks.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                                         </select>
                                     </div>
                                     <div>
                                         <label className={labelClass} style={labelStyle}>Item</label>
-                                        <select className={inputClass} style={{ ...inputStyle}} id="ost-item">
+                                        <select className={inputClass} style={{ ...inputStyle }} id="ost-item">
                                             <option value="">Select an item</option>
                                             {items.filter(i => i.park_id === selectedParkForOst).map(i => <option key={i.id} value={i.id}>{i.name}</option>)}
                                         </select>
@@ -1301,7 +1303,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                 <div className="space-y-4">
                                     <div>
                                         <label className={labelClass} style={labelStyle}>Sort Order</label>
-                                        <select className={inputClass} style={{ ...inputStyle}} value={editFormData.sortOrder} onChange={e => setEditFormData({ ...editFormData, sortOrder: parseInt(e.target.value) })}>
+                                        <select className={inputClass} style={{ ...inputStyle }} value={editFormData.sortOrder} onChange={e => setEditFormData({ ...editFormData, sortOrder: parseInt(e.target.value) })}>
                                             <option value="-1">Logo</option>
                                             <option value="0">Main</option>
                                             {[1, 2, 3, 4, 5, 6].map(n => <option key={n} value={n}>Image 0{n}</option>)}
@@ -1317,7 +1319,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                     </div>
                                     <div>
                                         <label className={labelClass} style={labelStyle}>License</label>
-                                        <select className={inputClass} style={{ ...inputStyle}} value={editFormData.license} onChange={e => setEditFormData({ ...editFormData, license: e.target.value })}>
+                                        <select className={inputClass} style={{ ...inputStyle }} value={editFormData.license} onChange={e => setEditFormData({ ...editFormData, license: e.target.value })}>
                                             <option>CC BY 4.0</option><option>CC BY-SA 4.0</option><option>CC0</option><option>Own</option>
                                         </select>
                                     </div>
@@ -1339,13 +1341,13 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                             <div className="space-y-4">
                                 <div>
                                     <label className={labelClass} style={labelStyle}>Select Park & Category First</label>
-                                    <select className={inputClass} style={{ ...inputStyle}} value={itemForm.park_id} onChange={e => setItemForm(p => ({ ...p, park_id: e.target.value }))}>
+                                    <select className={inputClass} style={{ ...inputStyle }} value={itemForm.park_id} onChange={e => setItemForm(p => ({ ...p, park_id: e.target.value }))}>
                                         <option value="">Select Park</option>
                                         {parks.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                                     </select>
                                 </div>
                                 <div>
-                                    <select className={inputClass} style={{ ...inputStyle}} value={itemForm.category_id} onChange={e => setItemForm(p => ({ ...p, category_id: e.target.value }))}>
+                                    <select className={inputClass} style={{ ...inputStyle }} value={itemForm.category_id} onChange={e => setItemForm(p => ({ ...p, category_id: e.target.value }))}>
                                         <option value="">Select Category</option>
                                         {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                                     </select>

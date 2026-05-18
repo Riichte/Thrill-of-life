@@ -29,6 +29,7 @@ export default function CategoryPageClient({
     const [search, setSearch] = useState('')
     const [sortBy, setSortBy] = useState<'name' | 'park'>('name')
     const [filterType, setFilterType] = useState('')
+    const [limit, setLimit] = useState(25)
 
     const types = useMemo(() => {
         const all = items.map(i => i.specs?.type).filter(Boolean) as string[]
@@ -43,8 +44,8 @@ export default function CategoryPageClient({
         )
         if (sortBy === 'name') result = [...result].sort((a, b) => a.name.localeCompare(b.name))
         if (sortBy === 'park') result = [...result].sort((a, b) => (a.parks?.name ?? '').localeCompare(b.parks?.name ?? ''))
-        return result
-    }, [items, search, sortBy, filterType])
+        return result.slice(0, limit)
+    }, [items, search, sortBy, filterType, limit])
 
     const inputStyle = {
         background: 'var(--input-bg)',
@@ -52,7 +53,7 @@ export default function CategoryPageClient({
         color: 'var(--text-primary)',
     }
 
-    
+
 
     return (
         <div className="min-h-screen" style={{ background: 'var(--bg-tertiary)', color: 'var(--text-primary)' }}>
@@ -85,6 +86,20 @@ export default function CategoryPageClient({
                                 <option value="park">Park</option>
                             </select>
                         </div>
+                        <div>
+                            <label className="block text-xs font-medium uppercase tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>Show</label>
+                            <select
+                                value={limit}
+                                onChange={e => setLimit(parseInt(e.target.value))}
+                                className="w-full rounded-sm px-3 py-2 text-sm focus:outline-none"
+                                style={inputStyle}
+                            >
+                                <option value={25}>25</option>
+                                <option value={50}>50</option>
+                                <option value={100}>100</option>
+                            </select>
+                        </div>
+
                         <div>
                             <label className="block text-xs font-medium uppercase tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>Type</label>
                             <select

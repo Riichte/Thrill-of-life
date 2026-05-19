@@ -120,20 +120,10 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen style={{ background: 'var(--bg-tertiary)' }} style={{ color: 'var(--text-primary)' }}">
-      <div className="border-b border-white/10 bg-[#0a0f16]">
-        <div className="container mx-auto px-4 py-10 text-center md:py-14">
-          <h1 className="font-logo text-4xl font-bold tracking-tight style={{ color: 'var(--text-primary)' }} md:text-5xl">
-            Theme Park Review
-          </h1>
-          <p className="mx-auto mt-3 max-w-2xl text-gray-400">
-            Browse parks and standout rides—each row scrolls slowly on its own. Hover a row to pause.
-          </p>
-        </div>
-      </div>
-
+      
       <div className="container mx-auto px-4 py-10 md:py-14">
         <HomeMarqueeRow
-          title="Theme parks"
+          title="Parks"
           items={homeParkCards}
           durationSec={130}
           viewAllHref="/parks"

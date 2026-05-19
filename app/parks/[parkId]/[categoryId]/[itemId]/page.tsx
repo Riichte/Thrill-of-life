@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import { getParkById, getCategoryById, getItemById, getItemImages, getItemVideos, getSimilarRides, getItemReviews, getItemCommunityScore } from '@/lib/queries'
-import ItemPageContent from '../../[itemId]/ItemPageContent'
+import ItemPageContent from './ItemPageContent'
 import { PhotoCredit } from '@/components/PhotoCredits'
 
 interface ItemPageProps {

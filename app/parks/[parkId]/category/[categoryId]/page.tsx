@@ -16,6 +16,8 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   const park = await getParkById(parkId)
   const category = await getCategoryById(categoryId)
   const items = await getItemsByCategory(parkId, categoryId)
+  const statusOrder = (s: string) => ['defunct', 'sbno'].includes(s) ? 2 : s === 'coming_soon' ? 1 : 0
+  const sortedItems = [...items].sort((a, b) => statusOrder(a.status ?? '') - statusOrder(b.status ?? '') || a.name.localeCompare(b.name))
 
   if (!park || !category) notFound()
 
@@ -37,14 +39,14 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
       {/* Header */}
       <div className="container mx-auto px-4 py-12">
         <h1 className="text-4xl md:text-5xl font-bold style={{ color: 'var(--text-primary)' }} mb-2">{category.name}</h1>
-        <p className="text-lg text-zinc-400">{items.length} {items.length === 1 ? 'item' : 'items'} in {park.name}</p>
+        <p className="text-lg text-zinc-400">{sortedItems.length} {sortedItems.length === 1 ? 'item' : 'items'} in {park.name}</p>
       </div>
 
       {/* Items Grid */}
       {items.length > 0 ? (
         <div className="container mx-auto px-4 pb-16">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {items.map((item) => (
+            {sortedItems.map((item) => (
               <Link
                 key={item.id}
                 href={`/parks/${parkId}/${categoryId}/${item.id}`}
@@ -82,13 +84,19 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                     )}
 
                     {/* Type badge if available */}
-                    {item.specs?.type && (
-                      <div className="mt-auto">
-                        <span className="inline-block text-xs px-2.5 py-1 rounded bg-[#66c0f4]/10 style={{ color: 'var(--accent)' }} border border-[#66c0f4]/20">
+                    <div className="mt-auto flex flex-wrap items-center gap-2">
+                      {item.specs?.type && (
+                        <span className="inline-block text-xs px-2.5 py-1 rounded bg-[#66c0f4]/10 border border-[#66c0f4]/20" style={{ color: 'var(--accent)' }}>
                           {item.specs.type}
                         </span>
-                      </div>
-                    )}
+                      )}
+                      {['sbno', 'defunct'].includes(item.status) && (
+                        <span className="inline-block text-xs px-2.5 py-1 rounded font-semibold uppercase"
+                          style={{ background: item.status === 'defunct' ? 'rgba(239,68,68,0.15)' : 'rgba(249,115,22,0.15)', color: item.status === 'defunct' ? '#ef4444' : '#f97316' }}>
+                          {item.status === 'sbno' ? 'SBNO' : 'Defunct'}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
               </Link>

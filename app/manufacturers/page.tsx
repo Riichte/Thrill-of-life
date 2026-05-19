@@ -3,6 +3,7 @@ import ManufacturersClient from './ManufacturersClient'
 
 export const metadata = { title: 'Manufacturers — Thrill of Life' }
 
+export const revalidate = 3600
 export default async function ManufacturersPage() {
   const supabase = await createClient()
   const { data: items } = await supabase

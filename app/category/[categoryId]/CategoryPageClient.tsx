@@ -12,6 +12,7 @@ interface Item {
     specs: any
     parks: { name: string } | null
     item_images: { url: string; attribution_author?: string; license?: string }[]
+    status: string
 }
 
 interface Category {
@@ -43,6 +44,8 @@ export default function CategoryPageClient({
                 item.parks?.name.toLowerCase().includes(search.toLowerCase())) &&
             (!filterType || item.specs?.type === filterType)
         )
+        const statusOrder = (s: string) => ['defunct', 'sbno'].includes(s) ? 2 : s === 'coming_soon' ? 1 : 0
+
         if (sortBy === 'name') result = [...result].sort((a, b) => a.name.localeCompare(b.name))
         if (sortBy === 'park') result = [...result].sort((a, b) => (a.parks?.name ?? '').localeCompare(b.parks?.name ?? ''))
         return result
@@ -134,6 +137,12 @@ export default function CategoryPageClient({
                                     <p className="text-xs mt-0.5 truncate" style={{ color: 'var(--text-muted)' }}>{item.parks?.name ?? ''}</p>
                                     {item.specs?.type && (
                                         <p className="text-xs mt-0.5 truncate" style={{ color: 'var(--text-faint)' }}>{item.specs.type}</p>
+                                    )}
+                                    {['sbno', 'defunct'].includes(item.status) && (
+                                        <span className="text-xs mt-0.5 px-1.5 py-0.5 rounded-sm font-semibold uppercase tracking-wide inline-block"
+                                            style={{ background: item.status === 'defunct' ? 'rgba(239,68,68,0.15)' : 'rgba(249,115,22,0.15)', color: item.status === 'defunct' ? '#ef4444' : '#f97316' }}>
+                                            {item.status === 'sbno' ? 'SBNO' : 'Defunct'}
+                                        </span>
                                     )}
                                 </div>
                             </Link>

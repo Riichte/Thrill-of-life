@@ -665,7 +665,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                             style={tab === t ? { color: 'var(--accent)', borderColor: 'var(--accent)' } : { color: 'var(--text-muted)', borderColor: 'transparent' }}
                             onMouseEnter={e => { if (tab !== t) e.currentTarget.style.color = 'var(--text-primary)' }}
                             onMouseLeave={e => { if (tab !== t) e.currentTarget.style.color = 'var(--text-muted)' }}>
-                            {t === 'items' ? 'Rides & Items' :
+                            {t === 'items' ? 'Items' :
                                 t === 'images' ? 'Ride Images' :
                                     t === 'park-images' ? 'Park Images' :
                                         t === 'images-manager' ? 'Image Search' :

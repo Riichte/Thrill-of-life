@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
+import { useSearchParams, useRouter, usePathname } from 'next/navigation'
 
 interface Item {
     id: string
@@ -27,11 +28,25 @@ export default function CategoryPageClient({
     category: Category
     items: Item[]
 }) {
-    const [search, setSearch] = useState('')
-    const [sortBy, setSortBy] = useState<'name' | 'park'>('name')
-    const [filterType, setFilterType] = useState('')
-    const [limit, setLimit] = useState(25)
-    const [page, setPage] = useState(1)
+
+
+    
+
+    const router = useRouter()
+    const pathname = usePathname()
+    const searchParams = useSearchParams()
+
+    const search = searchParams.get('q') ?? ''
+    const sortBy = (searchParams.get('sort') ?? 'name') as 'name' | 'park'
+    const filterType = searchParams.get('type') ?? ''
+    const limit = parseInt(searchParams.get('limit') ?? '25')
+    const page = parseInt(searchParams.get('page') ?? '1')
+
+    const updateParams = (updates: Record<string, string>) => {
+        const params = new URLSearchParams(searchParams.toString())
+        Object.entries(updates).forEach(([k, v]) => v ? params.set(k, v) : params.delete(k))
+        router.replace(`${pathname}?${params.toString()}`, { scroll: false })
+    }
 
     const types = useMemo(() => {
         const all = items.map(i => i.specs?.type).filter(Boolean) as string[]
@@ -69,13 +84,13 @@ export default function CategoryPageClient({
                 <div className="rounded-sm p-4 mb-8 flex flex-wrap items-end gap-4" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
                     <div className="flex-1 min-w-[180px]">
                         <label className="block text-xs font-medium uppercase tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>Search</label>
-                        <input type="text" value={search} onChange={e => { setSearch(e.target.value); setPage(1) }}
+                        <input type="text" value={search} onChange={e => updateParams({ q: e.target.value, page: '1' })}
                             placeholder={`Search ${category.name.toLowerCase()}...`}
                             className="w-full rounded-sm px-3 py-2 text-sm focus:outline-none" style={inputStyle} />
                     </div>
                     <div className="min-w-[140px]">
                         <label className="block text-xs font-medium uppercase tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>Sort by</label>
-                        <select value={sortBy} onChange={e => setSortBy(e.target.value as 'name' | 'park')}
+                        <select value={sortBy} onChange={e => updateParams({ sort: e.target.value })}
                             className="w-full rounded-sm px-3 py-2 text-sm focus:outline-none" style={inputStyle}>
                             <option value="name">Name</option>
                             <option value="park">Park</option>
@@ -83,7 +98,7 @@ export default function CategoryPageClient({
                     </div>
                     <div className="min-w-[140px]">
                         <label className="block text-xs font-medium uppercase tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>Type</label>
-                        <select value={filterType} onChange={e => { setFilterType(e.target.value); setPage(1) }}
+                        <select value={filterType} onChange={e => updateParams({ type: e.target.value, page: '1' })}
                             className="w-full rounded-sm px-3 py-2 text-sm focus:outline-none" style={inputStyle}>
                             <option value="">All Types</option>
                             {types.map(t => <option key={t} value={t}>{t}</option>)}
@@ -91,7 +106,7 @@ export default function CategoryPageClient({
                     </div>
                     <div className="min-w-[100px]">
                         <label className="block text-xs font-medium uppercase tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>Show</label>
-                        <select value={limit} onChange={e => { setLimit(parseInt(e.target.value)); setPage(1) }}
+                        <select value={limit} onChange={e => updateParams({ limit: e.target.value, page: '1' })}
                             className="w-full rounded-sm px-3 py-2 text-sm focus:outline-none" style={inputStyle}>
                             <option value={25}>25</option>
                             <option value={50}>50</option>
@@ -153,13 +168,13 @@ export default function CategoryPageClient({
                 {/* Pagination */}
                 {totalPages > 1 && (
                     <div className="flex items-center justify-center gap-2 mt-8">
-                        <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
+                        <button onClick={() => { updateParams({ page: String(Math.max(1, page - 1)) }); window.scrollTo(0, 0) }}
                             className="px-4 py-2 rounded-sm text-sm font-medium disabled:opacity-40"
                             style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}>
                             ← Prev
                         </button>
                         {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-                            <button key={p} onClick={() => setPage(p)}
+                            <button key={p} onClick={() => { updateParams({ page: String(p) }); window.scrollTo(0, 0) }}
                                 className="px-3 py-2 rounded-sm text-sm font-medium"
                                 style={{
                                     background: p === page ? 'var(--accent)' : 'var(--card-bg)',
@@ -169,7 +184,7 @@ export default function CategoryPageClient({
                                 {p}
                             </button>
                         ))}
-                        <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
+                        <button onClick={() => { updateParams({ page: String(Math.min(totalPages, page + 1)) }); window.scrollTo(0, 0) }}
                             className="px-4 py-2 rounded-sm text-sm font-medium disabled:opacity-40"
                             style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}>
                             Next →

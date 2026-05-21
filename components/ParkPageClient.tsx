@@ -197,11 +197,12 @@ export default function ParkPageClient({
         setUserRatings(restored)
         const avg = Math.round(existingReview.review_ratings.reduce((s: number, r: any) => s + r.score, 0) / existingReview.review_ratings.length)
         setMyScore(avg)
-        const { data: existingVisit } = await supabase
-          .from('visited').select('id')
-          .eq('item_id', park.id).eq('user_id', userId).single()
-        setIsVisited(!!existingVisit)
       }
+      const { data: existingVisit } = await supabase
+        .from('visited').select('id')
+        .eq('item_id', park.id).eq('user_id', userId).single()
+      setIsVisited(!!existingVisit)
+
 
       const { data: pointsRow } = await supabase.from('user_points').select('points').eq('user_id', userId).single()
       if (pointsRow) setUserPoints(pointsRow.points)

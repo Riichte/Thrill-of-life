@@ -683,6 +683,7 @@ export default function ProfileClient({
           )}
           {activeTab === 'visited' && (
             <div className="space-y-6">
+              <pre className="text-xs text-green-400">{JSON.stringify(visited.slice(0,3), null, 2)}</pre>
               {visited.length === 0 && <p className="text-sm" style={{ color: 'var(--text-muted)' }}>No visited items yet.</p>}
               {/* Group by category */}
               {(() => {

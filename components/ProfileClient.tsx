@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { FaInstagram, FaYoutube, FaTiktok, FaXTwitter, FaFacebook } from 'react-icons/fa6'
 
+
 interface Profile {
   id: string
   username: string | null
@@ -21,13 +22,11 @@ interface Profile {
 
 interface Review {
   id: string
+  item_id: string
   title: string | null
   body: string | null
   created_at: string
-  review_ratings: { category: string; score: number }[]
-  items: { id: string; name: string; park_id: string; category_id: string } | null
 }
-
 interface Favorite {
   id: string
   item_id: string
@@ -711,7 +710,7 @@ export default function ProfileClient({
                               className="flex items-center gap-3 p-3 rounded-sm transition-colors"
                               style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
                               {(() => {
-                                const review = reviews.find(r => r.items?.id === v.item_id)
+                                const review = reviews.find(r => r.items?.id === v.item_id || r.item_id === v.item_id)
                                 const ratings = review?.review_ratings ?? []
                                 const avg = ratings.length > 0
                                   ? Math.round(ratings.reduce((s: number, r: any) => s + r.score, 0) / ratings.length)

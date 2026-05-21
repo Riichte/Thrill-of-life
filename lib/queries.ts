@@ -560,7 +560,7 @@ export async function getProfileVisited(userId: string) {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('visited')
-    .select('*, items(id, name, park_id, category_id, specs, item_images(url))')
+    .select('*')
     .eq('user_id', userId)
     .order('created_at', { ascending: false })
   if (error) return []

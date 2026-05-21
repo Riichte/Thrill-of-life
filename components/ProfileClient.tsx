@@ -683,7 +683,6 @@ export default function ProfileClient({
           )}
           {activeTab === 'visited' && (
             <div className="space-y-6">
-              <pre className="text-xs text-green-400">{JSON.stringify(visited.slice(0,3), null, 2)}</pre>
               {visited.length === 0 && <p className="text-sm" style={{ color: 'var(--text-muted)' }}>No visited items yet.</p>}
               {/* Group by category */}
               {(() => {
@@ -711,9 +710,23 @@ export default function ProfileClient({
                             <Link key={i} href={`/parks/${v.item_id}`}
                               className="flex items-center gap-3 p-3 rounded-sm transition-colors"
                               style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
-                              <span className="text-lg">🏟️</span>
+                              {(() => {
+                                const review = reviews.find(r => r.items?.id === v.item_id || r.item_id === v.item_id)
+                                const avg = review?.review_ratings?.length > 0
+                                  ? Math.round(review.review_ratings.reduce((s: number, r: any) => s + r.score, 0) / review.review_ratings.length)
+                                  : null
+                                return avg ? (
+                                  <span className="text-sm font-bold w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+                                    style={{
+                                      background: avg >= 75 ? 'rgba(16,185,129,0.2)' : avg >= 50 ? 'rgba(245,158,11,0.2)' : 'rgba(239,68,68,0.2)',
+                                      color: avg >= 75 ? '#10b981' : avg >= 50 ? '#f59e0b' : '#ef4444'
+                                    }}>
+                                    {avg}
+                                  </span>
+                                ) : <span className="text-lg">🏟️</span>
+                              })()}
                               <span className="text-sm font-medium" style={{ color: 'var(--accent)' }}>
-                                {v.parks?.name ?? v.item_id}
+                                {v.item_id.split('-').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
                               </span>
                             </Link>
                           ))}

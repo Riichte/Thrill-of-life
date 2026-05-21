@@ -249,6 +249,7 @@ export default function ProfileClient({
           {username?.[0]?.toUpperCase() ?? '?'}
         </div>
 
+        {/* Username + follow outside the flex-1 pb-2 */}
         <div className="flex-1 pb-2">
 
           {/* Username */}
@@ -283,478 +284,473 @@ export default function ProfileClient({
 
           {/* Follow button */}
           {!isOwnProfile && viewerId && (
-            <div className="pb-2">
-              <button onClick={handleFollow}
-                className="px-6 py-2 rounded-sm text-sm font-medium transition-colors"
-                style={{
-                  background: isFollowing ? 'var(--bg-elevated)' : 'var(--cta)',
-                  color: isFollowing ? 'var(--text-secondary)' : 'var(--cta-text)',
-                  border: isFollowing ? '1px solid var(--border)' : 'none',
-                }}>
-                {isFollowing ? 'Unfollow' : '+ Follow'}
-              </button>
+            <button onClick={handleFollow}
+              className="px-6 py-2 rounded-sm text-sm font-medium transition-colors"
+              style={{
+                background: isFollowing ? 'var(--bg-elevated)' : 'var(--cta)',
+                color: isFollowing ? 'var(--text-secondary)' : 'var(--cta-text)',
+                border: isFollowing ? '1px solid var(--border)' : 'none',
+              }}>
+              {isFollowing ? 'Unfollow' : '+ Follow'}
+            </button>
+          )}
+        </div> {/* closes flex-1 pb-2 */}
+      </div> {/* closes profile header flex */}
 
-              {/* Main layout */}
-              <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-12">
+      {/* Main layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-12">
+        <div className="lg:col-span-1 space-y-4">
 
-                {/* Sidebar */}
-                <div className="lg:col-span-1 space-y-4">
-
-                  {/* Bio */}
-                  <div className="rounded-sm p-4" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>Bio</h3>
-                      {isOwnProfile && !isEditingBio && (
-                        <button onClick={() => setIsEditingBio(true)}
-                          className="text-xs transition-colors"
-                          style={{ color: 'var(--text-muted)' }}
-                          onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
-                          onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-muted)')}>
-                          ✏️ Edit
-                        </button>
-                      )}
-                    </div>
-                    {isEditingBio ? (
-                      <div className="space-y-2">
-                        <textarea value={bioInput} onChange={e => setBioInput(e.target.value)} rows={4}
-                          placeholder="Tell the community about yourself..."
-                          className="w-full rounded-sm px-3 py-2 text-sm focus:outline-none resize-none"
-                          style={{ background: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }}
-                        />
-                        <div className="flex gap-2">
-                          <button onClick={handleSaveBio} disabled={saving}
-                            className="px-3 py-1 text-white text-xs rounded-sm disabled:opacity-50"
-                            style={{ background: 'var(--cta)' }}>
-                            {saving ? 'Saving...' : 'Save'}
-                          </button>
-                          <button onClick={() => { setIsEditingBio(false); setBioInput(bio) }}
-                            className="px-3 py-1 text-xs" style={{ color: 'var(--text-muted)' }}>
-                            Cancel
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-                        {bio || <span style={{ color: 'var(--text-faint)', fontStyle: 'italic' }}>{isOwnProfile ? 'Add a bio...' : 'No bio yet.'}</span>}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Stats */}
-                  <div className="rounded-sm p-4" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
-                    <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--text-muted)' }}>Stats</h3>
-                    <div className="space-y-2.5">
-                      <div className="flex justify-between text-sm">
-                        <span style={{ color: 'var(--text-muted)' }}>Points</span>
-                        <span className="font-bold" style={{ color: 'var(--score-mid)' }}>🏅 {points}</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span style={{ color: 'var(--text-muted)' }}>Avg Score Given</span>
-                        <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>{avgScore ?? '—'}</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span style={{ color: 'var(--text-muted)' }}>Followers</span>
-                        <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>{followerCountState}</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span style={{ color: 'var(--text-muted)' }}>Following</span>
-                        <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>{followingCount}</span>
-                      </div>
-
-                      {/* Home Park */}
-                      <div className="pt-2.5 mt-1" style={{ borderTop: '1px solid var(--border)' }}>
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-xs" style={{ color: 'var(--text-muted)' }}>Home Park</span>
-                          {isOwnProfile && !isEditingHomePark && (
-                            <button onClick={() => setIsEditingHomePark(true)}
-                              className="text-xs transition-colors"
-                              style={{ color: 'var(--text-muted)' }}
-                              onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
-                              onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-muted)')}>
-                              ✏️
-                            </button>
-                          )}
-                        </div>
-                        {isEditingHomePark ? (
-                          <div className="space-y-2">
-                            <select value={homeParkInput} onChange={e => setHomeParkInput(e.target.value)}
-                              className="w-full rounded-sm px-2 py-1 text-xs focus:outline-none"
-                              style={{ background: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }}>
-                              <option value="">— None —</option>
-                              {parks.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-                            </select>
-                            <div className="flex gap-2">
-                              <button onClick={handleSaveHomePark} disabled={saving}
-                                className="px-2 py-1 text-white text-xs rounded-sm disabled:opacity-50"
-                                style={{ background: 'var(--cta)' }}>
-                                {saving ? '...' : 'Save'}
-                              </button>
-                              <button onClick={() => { setIsEditingHomePark(false); setHomeParkInput(homeParkId) }}
-                                className="px-2 py-1 text-xs" style={{ color: 'var(--text-muted)' }}>
-                                Cancel
-                              </button>
-                            </div>
-                          </div>
-                        ) : (
-                          homeParkId ? (
-                            <Link href={`/parks/${homeParkId}`} className="text-sm hover:underline" style={{ color: 'var(--accent)' }}>
-                              🏠 {parks.find(p => p.id === homeParkId)?.name ?? homeParkId}
-                            </Link>
-                          ) : (
-                            <p className="text-xs italic" style={{ color: 'var(--text-faint)' }}>
-                              {isOwnProfile ? 'Set your home park...' : 'No home park set.'}
-                            </p>
-                          )
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Socials */}
-                  <div className="rounded-sm p-4" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>Socials</h3>
-                      {isOwnProfile && !isEditingSocials && (
-                        <button onClick={() => setIsEditingSocials(true)}
-                          className="text-xs transition-colors"
-                          style={{ color: 'var(--text-muted)' }}
-                          onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
-                          onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-muted)')}>
-                          ✏️ Edit
-                        </button>
-                      )}
-                    </div>
-                    {isEditingSocials ? (
-                      <div className="space-y-2">
-                        {(['instagram', 'youtube', 'tiktok', 'twitter', 'facebook'] as const).map(key => (
-                          <input key={key} type="text"
-                            placeholder={key.charAt(0).toUpperCase() + key.slice(1) + ' username'}
-                            value={socialsInput[key]}
-                            onChange={e => setSocialsInput({ ...socialsInput, [key]: e.target.value })}
-                            className="w-full rounded-sm px-3 py-1.5 text-sm focus:outline-none"
-                            style={{ background: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }}
-                          />
-                        ))}
-                        <div className="flex gap-2 pt-1">
-                          <button onClick={handleSaveSocials} disabled={saving}
-                            className="px-3 py-1 text-white text-xs rounded-sm disabled:opacity-50"
-                            style={{ background: 'var(--cta)' }}>
-                            {saving ? 'Saving...' : 'Save'}
-                          </button>
-                          <button onClick={() => { setIsEditingSocials(false); setSocialsInput({ ...socials }) }}
-                            className="px-3 py-1 text-xs" style={{ color: 'var(--text-muted)' }}>
-                            Cancel
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex flex-wrap gap-3">
-                        {socials.instagram && (
-                          <a href={`https://instagram.com/${socials.instagram}`} target="_blank" rel="noopener noreferrer"
-                            className="transition-colors" style={{ color: '#e1306c' }}><FaInstagram size={20} /></a>
-                        )}
-                        {socials.youtube && (
-                          <a href={`https://youtube.com/@${socials.youtube}`} target="_blank" rel="noopener noreferrer"
-                            className="transition-colors" style={{ color: '#ff0000' }}><FaYoutube size={20} /></a>
-                        )}
-                        {socials.tiktok && (
-                          <a href={`https://tiktok.com/@${socials.tiktok}`} target="_blank" rel="noopener noreferrer"
-                            className="transition-colors" style={{ color: 'var(--text-primary)' }}><FaTiktok size={20} /></a>
-                        )}
-                        {socials.twitter && (
-                          <a href={`https://x.com/${socials.twitter}`} target="_blank" rel="noopener noreferrer"
-                            className="transition-colors" style={{ color: '#1da1f2' }}><FaXTwitter size={20} /></a>
-                        )}
-                        {socials.facebook && (
-                          <a href={`https://facebook.com/${socials.facebook}`} target="_blank" rel="noopener noreferrer"
-                            className="transition-colors" style={{ color: '#1877f2' }}><FaFacebook size={20} /></a>
-                        )}
-                        {!hasSocials && (
-                          <p className="text-xs italic" style={{ color: 'var(--text-faint)' }}>
-                            {isOwnProfile ? 'Add your socials...' : 'No socials yet.'}
-                          </p>
-                        )}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Main content */}
-                  <div className="lg:col-span-3">
-
-                    {/* Stats banner */}
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-                      {[
-                        { label: 'Reviews', value: reviews.length, color: 'var(--accent)' },
-                        { label: 'Favorites', value: favorites.length, color: '#f472b6' },
-                        { label: 'Followers', value: followerCountState, color: 'var(--score-high)' },
-                        { label: 'Points', value: points, color: 'var(--score-mid)' },
-                      ].map(stat => (
-                        <div key={stat.label} className="rounded-sm p-4 text-center"
-                          style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
-                          <p className="text-2xl font-bold" style={{ color: stat.color }}>{stat.value}</p>
-                          <p className="text-xs mt-0.5 uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>{stat.label}</p>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Tabs */}
-                    <div className="flex gap-0 mb-6" style={{ borderBottom: '1px solid var(--border)' }}>
-                      {(['activity', 'reviews', 'favorites', 'visited'] as const).map(tab => (
-                        <button
-                          key={tab}
-                          onClick={() => setActiveTab(tab)}
-                          className="px-6 py-3 text-sm font-medium capitalize transition-colors border-b-2 -mb-px"
-                          style={{
-                            color: activeTab === tab ? 'var(--accent)' : 'var(--text-muted)',
-                            borderColor: activeTab === tab ? 'var(--accent)' : 'transparent',
-                          }}
-                        >
-                          {tab === 'activity' ? 'Activity'
-                            : tab === 'reviews' ? `Reviews (${reviews.length})`
-                              : tab === 'favorites' ? `Favorites (${favorites.length})`
-                                : `Visited (${visited.length})`}
-                        </button>
-                      ))}
-                    </div>
-
-                    {/* Activity Tab */}
-                    {activeTab === 'activity' && (
-                      <div className="space-y-8">
-                        {activityItems.length === 0 && (
-                          <p className="style={{ color: 'var(--text-muted)' }} text-sm">No activity yet.</p>
-                        )}
-                        {Object.entries(groupedActivity).map(([dateLabel, items]) => (
-                          <div key={dateLabel}>
-                            <p className="text-xs font-semibold uppercase tracking-wider style={{ color: 'var(--text-muted)' }} mb-3 flex items-center gap-2">
-                              <span className="h-px flex-1 style={{ background: 'var(--border)' }}" />
-                              {dateLabel}
-                              <span className="h-px flex-1 style={{ background: 'var(--border)' }}" />
-                            </p>
-                            <div className="space-y-3">
-                              {items.map((item, i) => {
-                                if (item.type === 'review') {
-                                  const avg = item.review.review_ratings.length > 0
-                                    ? Math.round(item.review.review_ratings.reduce((s, r) => s + r.score, 0) / item.review.review_ratings.length)
-                                    : 0
-                                  return (
-                                    <div key={i} className="flex gap-4 items-start style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-4 hover:style={{ borderColor: 'var(--input-border)' }} transition-colors">
-                                      <div className="text-2xl">⭐</div>
-                                      <div className="flex-1 min-w-0">
-                                        <p className="text-xs style={{ color: 'var(--text-muted)' }} mb-1">Rated a ride</p>
-                                        {item.review.items && (
-                                          <Link href={`/parks/${item.review.items.park_id}/${item.review.items.category_id}/${item.review.items.id}`}
-                                            className="text-sm font-semibold style={{ color: 'var(--accent)' }} hover:underline">
-                                            {item.review.items.name}
-                                          </Link>
-                                        )}
-                                        {item.review.title && (
-                                          <p className="text-sm style={{ color: 'var(--text-primary)' }} mt-0.5">"{item.review.title}"</p>
-                                        )}
-                                        {item.review.body && (
-                                          <p className="text-xs style={{ color: 'var(--text-secondary)' }} mt-1 line-clamp-2">{item.review.body}</p>
-                                        )}
-                                      </div>
-                                      <ScoreCircle score={avg} />
-                                    </div>
-                                  )
-                                }
-                                if (item.type === 'favorite') {
-                                  const favItem = item.favorite.items
-                                  if (!favItem) return null
-                                  const image = favItem.item_images?.[0]?.url
-                                  return (
-                                    <div key={i} className="flex gap-4 items-center style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-4 hover:style={{ borderColor: 'var(--input-border)' }} transition-colors">
-                                      <div className="text-2xl">❤️</div>
-                                      <div className="flex-1 min-w-0">
-                                        <p className="text-xs style={{ color: 'var(--text-muted)' }} mb-1">Added to favorites</p>
-                                        <Link href={`/parks/${favItem.park_id}/${favItem.category_id}/${favItem.id}`}
-                                          className="text-sm font-semibold style={{ color: 'var(--accent)' }} hover:underline">
-                                          {favItem.name}
-                                        </Link>
-                                      </div>
-                                      {image && (
-                                        <img src={image} alt={favItem.name}
-                                          className="w-16 h-10 object-cover rounded-sm flex-shrink-0" />
-                                      )}
-                                    </div>
-                                  )
-                                }
-
-                                if (item.type === 'reaction') {
-                                  const reactionEmoji = item.reaction.type === 'yes' ? '👍' : item.reaction.type === 'no' ? '👎' : item.reaction.type === 'funny' ? '😄' : '🏆'
-                                  const reactionLabel = item.reaction.type === 'yes' ? 'Marked a review helpful' : item.reaction.type === 'no' ? 'Marked a review unhelpful' : item.reaction.type === 'funny' ? 'Found a review funny' : 'Awarded a review'
-                                  const itemData = item.reaction.reviews?.items
-                                  return (
-                                    <div key={i} className="flex gap-4 items-center style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-4 hover:style={{ borderColor: 'var(--input-border)' }} transition-colors">
-                                      <div className="text-2xl">{reactionEmoji}</div>
-                                      <div className="flex-1 min-w-0">
-                                        <p className="text-xs style={{ color: 'var(--text-muted)' }} mb-1">{reactionLabel}</p>
-                                        {itemData && (
-                                          <Link href={`/parks/${itemData.park_id}/${itemData.category_id}/${itemData.id}`}
-                                            className="text-sm font-semibold style={{ color: 'var(--accent)' }} hover:underline">
-                                            {itemData.name}
-                                          </Link>
-                                        )}
-                                      </div>
-                                    </div>
-                                  )
-                                }
-                                if (item.type === 'follow') {
-                                  const followed = item.follow.profiles
-                                  return (
-                                    <div key={i} className="flex gap-4 items-center style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-4 hover:style={{ borderColor: 'var(--input-border)' }} transition-colors">
-                                      <div className="text-2xl">🤝</div>
-                                      <div className="flex-1 min-w-0">
-                                        <p className="text-xs style={{ color: 'var(--text-muted)' }} mb-1">Started following</p>
-                                        {followed && (
-                                          <Link href={`/users/${followed.id}`}
-                                            className="text-sm font-semibold style={{ color: 'var(--accent)' }} hover:underline">
-                                            {followed.username}
-                                          </Link>
-                                        )}
-                                      </div>
-                                    </div>
-                                  )
-                                }
-                                return null
-                              })}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* Reviews Tab */}
-                    {activeTab === 'reviews' && (
-                      <div className="space-y-4">
-                        {reviews.length === 0 && <p className="style={{ color: 'var(--text-muted)' }} text-sm">No reviews yet.</p>}
-                        {reviews.map(review => {
-                          const avg = review.review_ratings.length > 0
-                            ? Math.round(review.review_ratings.reduce((s, r) => s + r.score, 0) / review.review_ratings.length)
-                            : 0
-                          return (
-                            <div key={review.id} className="rounded-sm p-4 flex gap-4 items-start transition-colors"
-                              style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
-                              <ScoreCircle score={avg} />
-                              <div className="flex-1 min-w-0">
-                                {review.items && (
-                                  <Link href={`/parks/${review.items.park_id}/${review.items.category_id}/${review.items.id}`}
-                                    className="hover:underline font-semibold text-sm" style={{ color: 'var(--accent)' }}>
-                                    {review.items.name}
-                                  </Link>
-                                )}
-                                {review.title && <p className="text-sm font-medium mt-0.5" style={{ color: 'var(--text-primary)' }}>{review.title}</p>}
-                                {review.body && <p className="text-sm leading-relaxed mt-1 line-clamp-3" style={{ color: 'var(--text-secondary)' }}>{review.body}</p>}
-                                <p className="text-xs mt-2" style={{ color: 'var(--text-faint)' }}>{new Date(review.created_at).toLocaleDateString()}</p>
-                              </div>
-                            </div>
-                          )
-                        })}
-                      </div>
-                    )}
-
-                    {/* Favorites Tab */}
-                    {activeTab === 'favorites' && (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {favorites.length === 0 && <p className="style={{ color: 'var(--text-muted)' }} text-sm col-span-2">No favorites yet.</p>}
-                        {favorites.map(fav => {
-                          const item = fav.items
-                          if (!item) return null
-                          const image = item.item_images?.[0]?.url
-                          return (
-                            <Link key={fav.id} href={`/parks/${item.park_id}/${item.category_id}/${item.id}`}
-                              className="rounded-sm overflow-hidden transition-colors group"
-                              style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
-                              {image && (
-                                <div className="h-32 overflow-hidden">
-                                  <img src={image} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                                </div>
-                              )}
-                              <div className="p-3">
-                                <p className="text-sm font-semibold transition-colors" style={{ color: 'var(--text-primary)' }}>{item.name}</p>
-                                <p className="text-xs mt-0.5 capitalize" style={{ color: 'var(--text-muted)' }}>{item.category_id?.replace(/-/g, ' ')}</p>
-                              </div>
-                            </Link>
-                          )
-                        })}
-                      </div>
-                    )}
-                    {activeTab === 'visited' && (
-                      <div className="space-y-6">
-                        {visited.length === 0 && <p className="text-sm" style={{ color: 'var(--text-muted)' }}>No visited items yet.</p>}
-                        {/* Group by category */}
-                        {(() => {
-                          const parks = visited.filter(v => v.item_type === 'park')
-                          const byCategory: Record<string, typeof visited> = {}
-                          visited.filter(v => v.item_type !== 'park').forEach(v => {
-                            if (!byCategory[v.item_type]) byCategory[v.item_type] = []
-                            byCategory[v.item_type].push(v)
-                          })
-                          const categoryLabels: Record<string, string> = {
-                            'roller-coasters': 'Roller Coasters', 'flat-rides': 'Flat Rides',
-                            'dark-rides': 'Dark Rides', 'water-rides': 'Water Rides',
-                            'restaurants': 'Restaurants', 'hotels': 'Hotels',
-                            'shops': 'Shops', 'shows': 'Shows',
-                          }
-                          return (
-                            <>
-                              {parks.length > 0 && (
-                                <div>
-                                  <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--text-muted)' }}>
-                                    Parks ({parks.length})
-                                  </h3>
-                                  <div className="space-y-2">
-                                    {parks.map((v, i) => (
-                                      <Link key={i} href={`/parks/${v.item_id}`}
-                                        className="flex items-center gap-3 p-3 rounded-sm transition-colors"
-                                        style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
-                                        <span className="text-lg">🏟️</span>
-                                        <span className="text-sm font-medium" style={{ color: 'var(--accent)' }}>
-                                          {v.parks?.name ?? v.item_id}
-                                        </span>
-                                      </Link>
-                                    ))}
-                                  </div>
-                                </div>
-                              )}
-                              {Object.entries(byCategory).map(([cat, catItems]) => (
-                                <div key={cat}>
-                                  <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--text-muted)' }}>
-                                    {categoryLabels[cat] ?? cat} ({catItems.length})
-                                  </h3>
-                                  <div className="space-y-2">
-                                    {catItems.map((v, i) => {
-                                      const it = v.items
-                                      if (!it) return null
-                                      const image = it.item_images?.[0]?.url
-                                      // find score from reviews if available
-                                      return (
-                                        <Link key={i} href={`/parks/${it.park_id}/${it.category_id}/${it.id}`}
-                                          className="flex items-center gap-3 p-3 rounded-sm transition-colors group"
-                                          style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
-                                          {image && <img src={image} alt={it.name} className="w-14 h-10 object-cover rounded-sm flex-shrink-0" />}
-                                          <span className="flex-1 text-sm font-medium group-hover:underline" style={{ color: 'var(--accent)' }}>{it.name}</span>
-                                          <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{v.parks?.name ?? ''}</span>
-                                        </Link>
-                                      )
-                                    })}
-                                  </div>
-                                </div>
-                              ))}
-                            </>
-                          )
-                        })()}
-                      </div>
-                    )}
-
-                  </div>
+          {/* Bio */}
+          <div className="rounded-sm p-4" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>Bio</h3>
+              {isOwnProfile && !isEditingBio && (
+                <button onClick={() => setIsEditingBio(true)}
+                  className="text-xs transition-colors"
+                  style={{ color: 'var(--text-muted)' }}
+                  onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
+                  onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-muted)')}>
+                  ✏️ Edit
+                </button>
+              )}
+            </div>
+            {isEditingBio ? (
+              <div className="space-y-2">
+                <textarea value={bioInput} onChange={e => setBioInput(e.target.value)} rows={4}
+                  placeholder="Tell the community about yourself..."
+                  className="w-full rounded-sm px-3 py-2 text-sm focus:outline-none resize-none"
+                  style={{ background: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }}
+                />
+                <div className="flex gap-2">
+                  <button onClick={handleSaveBio} disabled={saving}
+                    className="px-3 py-1 text-white text-xs rounded-sm disabled:opacity-50"
+                    style={{ background: 'var(--cta)' }}>
+                    {saving ? 'Saving...' : 'Save'}
+                  </button>
+                  <button onClick={() => { setIsEditingBio(false); setBioInput(bio) }}
+                    className="px-3 py-1 text-xs" style={{ color: 'var(--text-muted)' }}>
+                    Cancel
+                  </button>
                 </div>
               </div>
-            </div >
-          )
-          }
-        </div >
-      </div >
-    </div >
+            ) : (
+              <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                {bio || <span style={{ color: 'var(--text-faint)', fontStyle: 'italic' }}>{isOwnProfile ? 'Add a bio...' : 'No bio yet.'}</span>}
+              </p>
+            )}
+          </div>
+
+          {/* Stats */}
+          <div className="rounded-sm p-4" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+            <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--text-muted)' }}>Stats</h3>
+            <div className="space-y-2.5">
+              <div className="flex justify-between text-sm">
+                <span style={{ color: 'var(--text-muted)' }}>Points</span>
+                <span className="font-bold" style={{ color: 'var(--score-mid)' }}>🏅 {points}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span style={{ color: 'var(--text-muted)' }}>Avg Score Given</span>
+                <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>{avgScore ?? '—'}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span style={{ color: 'var(--text-muted)' }}>Followers</span>
+                <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>{followerCountState}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span style={{ color: 'var(--text-muted)' }}>Following</span>
+                <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>{followingCount}</span>
+              </div>
+
+              {/* Home Park */}
+              <div className="pt-2.5 mt-1" style={{ borderTop: '1px solid var(--border)' }}>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs" style={{ color: 'var(--text-muted)' }}>Home Park</span>
+                  {isOwnProfile && !isEditingHomePark && (
+                    <button onClick={() => setIsEditingHomePark(true)}
+                      className="text-xs transition-colors"
+                      style={{ color: 'var(--text-muted)' }}
+                      onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
+                      onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-muted)')}>
+                      ✏️
+                    </button>
+                  )}
+                </div>
+                {isEditingHomePark ? (
+                  <div className="space-y-2">
+                    <select value={homeParkInput} onChange={e => setHomeParkInput(e.target.value)}
+                      className="w-full rounded-sm px-2 py-1 text-xs focus:outline-none"
+                      style={{ background: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }}>
+                      <option value="">— None —</option>
+                      {parks.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                    </select>
+                    <div className="flex gap-2">
+                      <button onClick={handleSaveHomePark} disabled={saving}
+                        className="px-2 py-1 text-white text-xs rounded-sm disabled:opacity-50"
+                        style={{ background: 'var(--cta)' }}>
+                        {saving ? '...' : 'Save'}
+                      </button>
+                      <button onClick={() => { setIsEditingHomePark(false); setHomeParkInput(homeParkId) }}
+                        className="px-2 py-1 text-xs" style={{ color: 'var(--text-muted)' }}>
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  homeParkId ? (
+                    <Link href={`/parks/${homeParkId}`} className="text-sm hover:underline" style={{ color: 'var(--accent)' }}>
+                      🏠 {parks.find(p => p.id === homeParkId)?.name ?? homeParkId}
+                    </Link>
+                  ) : (
+                    <p className="text-xs italic" style={{ color: 'var(--text-faint)' }}>
+                      {isOwnProfile ? 'Set your home park...' : 'No home park set.'}
+                    </p>
+                  )
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Socials */}
+          <div className="rounded-sm p-4" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>Socials</h3>
+              {isOwnProfile && !isEditingSocials && (
+                <button onClick={() => setIsEditingSocials(true)}
+                  className="text-xs transition-colors"
+                  style={{ color: 'var(--text-muted)' }}
+                  onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
+                  onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-muted)')}>
+                  ✏️ Edit
+                </button>
+              )}
+            </div>
+            {isEditingSocials ? (
+              <div className="space-y-2">
+                {(['instagram', 'youtube', 'tiktok', 'twitter', 'facebook'] as const).map(key => (
+                  <input key={key} type="text"
+                    placeholder={key.charAt(0).toUpperCase() + key.slice(1) + ' username'}
+                    value={socialsInput[key]}
+                    onChange={e => setSocialsInput({ ...socialsInput, [key]: e.target.value })}
+                    className="w-full rounded-sm px-3 py-1.5 text-sm focus:outline-none"
+                    style={{ background: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }}
+                  />
+                ))}
+                <div className="flex gap-2 pt-1">
+                  <button onClick={handleSaveSocials} disabled={saving}
+                    className="px-3 py-1 text-white text-xs rounded-sm disabled:opacity-50"
+                    style={{ background: 'var(--cta)' }}>
+                    {saving ? 'Saving...' : 'Save'}
+                  </button>
+                  <button onClick={() => { setIsEditingSocials(false); setSocialsInput({ ...socials }) }}
+                    className="px-3 py-1 text-xs" style={{ color: 'var(--text-muted)' }}>
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-wrap gap-3">
+                {socials.instagram && (
+                  <a href={`https://instagram.com/${socials.instagram}`} target="_blank" rel="noopener noreferrer"
+                    className="transition-colors" style={{ color: '#e1306c' }}><FaInstagram size={20} /></a>
+                )}
+                {socials.youtube && (
+                  <a href={`https://youtube.com/@${socials.youtube}`} target="_blank" rel="noopener noreferrer"
+                    className="transition-colors" style={{ color: '#ff0000' }}><FaYoutube size={20} /></a>
+                )}
+                {socials.tiktok && (
+                  <a href={`https://tiktok.com/@${socials.tiktok}`} target="_blank" rel="noopener noreferrer"
+                    className="transition-colors" style={{ color: 'var(--text-primary)' }}><FaTiktok size={20} /></a>
+                )}
+                {socials.twitter && (
+                  <a href={`https://x.com/${socials.twitter}`} target="_blank" rel="noopener noreferrer"
+                    className="transition-colors" style={{ color: '#1da1f2' }}><FaXTwitter size={20} /></a>
+                )}
+                {socials.facebook && (
+                  <a href={`https://facebook.com/${socials.facebook}`} target="_blank" rel="noopener noreferrer"
+                    className="transition-colors" style={{ color: '#1877f2' }}><FaFacebook size={20} /></a>
+                )}
+                {!hasSocials && (
+                  <p className="text-xs italic" style={{ color: 'var(--text-faint)' }}>
+                    {isOwnProfile ? 'Add your socials...' : 'No socials yet.'}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Main content */}
+        <div className="lg:col-span-3">
+
+          {/* Stats banner */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+            {[
+              { label: 'Reviews', value: reviews.length, color: 'var(--accent)' },
+              { label: 'Favorites', value: favorites.length, color: '#f472b6' },
+              { label: 'Followers', value: followerCountState, color: 'var(--score-high)' },
+              { label: 'Points', value: points, color: 'var(--score-mid)' },
+            ].map(stat => (
+              <div key={stat.label} className="rounded-sm p-4 text-center"
+                style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                <p className="text-2xl font-bold" style={{ color: stat.color }}>{stat.value}</p>
+                <p className="text-xs mt-0.5 uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>{stat.label}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Tabs */}
+          <div className="flex gap-0 mb-6" style={{ borderBottom: '1px solid var(--border)' }}>
+            {(['activity', 'reviews', 'favorites', 'visited'] as const).map(tab => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className="px-6 py-3 text-sm font-medium capitalize transition-colors border-b-2 -mb-px"
+                style={{
+                  color: activeTab === tab ? 'var(--accent)' : 'var(--text-muted)',
+                  borderColor: activeTab === tab ? 'var(--accent)' : 'transparent',
+                }}
+              >
+                {tab === 'activity' ? 'Activity'
+                  : tab === 'reviews' ? `Reviews (${reviews.length})`
+                    : tab === 'favorites' ? `Favorites (${favorites.length})`
+                      : `Visited (${visited.length})`}
+              </button>
+            ))}
+          </div>
+
+          {/* Activity Tab */}
+          {activeTab === 'activity' && (
+            <div className="space-y-8">
+              {activityItems.length === 0 && (
+                <p className="style={{ color: 'var(--text-muted)' }} text-sm">No activity yet.</p>
+              )}
+              {Object.entries(groupedActivity).map(([dateLabel, items]) => (
+                <div key={dateLabel}>
+                  <p className="text-xs font-semibold uppercase tracking-wider style={{ color: 'var(--text-muted)' }} mb-3 flex items-center gap-2">
+                    <span className="h-px flex-1 style={{ background: 'var(--border)' }}" />
+                    {dateLabel}
+                    <span className="h-px flex-1 style={{ background: 'var(--border)' }}" />
+                  </p>
+                  <div className="space-y-3">
+                    {items.map((item, i) => {
+                      if (item.type === 'review') {
+                        const avg = item.review.review_ratings.length > 0
+                          ? Math.round(item.review.review_ratings.reduce((s, r) => s + r.score, 0) / item.review.review_ratings.length)
+                          : 0
+                        return (
+                          <div key={i} className="flex gap-4 items-start style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-4 hover:style={{ borderColor: 'var(--input-border)' }} transition-colors">
+                            <div className="text-2xl">⭐</div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs style={{ color: 'var(--text-muted)' }} mb-1">Rated a ride</p>
+                              {item.review.items && (
+                                <Link href={`/parks/${item.review.items.park_id}/${item.review.items.category_id}/${item.review.items.id}`}
+                                  className="text-sm font-semibold style={{ color: 'var(--accent)' }} hover:underline">
+                                  {item.review.items.name}
+                                </Link>
+                              )}
+                              {item.review.title && (
+                                <p className="text-sm style={{ color: 'var(--text-primary)' }} mt-0.5">"{item.review.title}"</p>
+                              )}
+                              {item.review.body && (
+                                <p className="text-xs style={{ color: 'var(--text-secondary)' }} mt-1 line-clamp-2">{item.review.body}</p>
+                              )}
+                            </div>
+                            <ScoreCircle score={avg} />
+                          </div>
+                        )
+                      }
+                      if (item.type === 'favorite') {
+                        const favItem = item.favorite.items
+                        if (!favItem) return null
+                        const image = favItem.item_images?.[0]?.url
+                        return (
+                          <div key={i} className="flex gap-4 items-center style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-4 hover:style={{ borderColor: 'var(--input-border)' }} transition-colors">
+                            <div className="text-2xl">❤️</div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs style={{ color: 'var(--text-muted)' }} mb-1">Added to favorites</p>
+                              <Link href={`/parks/${favItem.park_id}/${favItem.category_id}/${favItem.id}`}
+                                className="text-sm font-semibold style={{ color: 'var(--accent)' }} hover:underline">
+                                {favItem.name}
+                              </Link>
+                            </div>
+                            {image && (
+                              <img src={image} alt={favItem.name}
+                                className="w-16 h-10 object-cover rounded-sm flex-shrink-0" />
+                            )}
+                          </div>
+                        )
+                      }
+
+                      if (item.type === 'reaction') {
+                        const reactionEmoji = item.reaction.type === 'yes' ? '👍' : item.reaction.type === 'no' ? '👎' : item.reaction.type === 'funny' ? '😄' : '🏆'
+                        const reactionLabel = item.reaction.type === 'yes' ? 'Marked a review helpful' : item.reaction.type === 'no' ? 'Marked a review unhelpful' : item.reaction.type === 'funny' ? 'Found a review funny' : 'Awarded a review'
+                        const itemData = item.reaction.reviews?.items
+                        return (
+                          <div key={i} className="flex gap-4 items-center style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-4 hover:style={{ borderColor: 'var(--input-border)' }} transition-colors">
+                            <div className="text-2xl">{reactionEmoji}</div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs style={{ color: 'var(--text-muted)' }} mb-1">{reactionLabel}</p>
+                              {itemData && (
+                                <Link href={`/parks/${itemData.park_id}/${itemData.category_id}/${itemData.id}`}
+                                  className="text-sm font-semibold style={{ color: 'var(--accent)' }} hover:underline">
+                                  {itemData.name}
+                                </Link>
+                              )}
+                            </div>
+                          </div>
+                        )
+                      }
+                      if (item.type === 'follow') {
+                        const followed = item.follow.profiles
+                        return (
+                          <div key={i} className="flex gap-4 items-center style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-4 hover:style={{ borderColor: 'var(--input-border)' }} transition-colors">
+                            <div className="text-2xl">🤝</div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs style={{ color: 'var(--text-muted)' }} mb-1">Started following</p>
+                              {followed && (
+                                <Link href={`/users/${followed.id}`}
+                                  className="text-sm font-semibold style={{ color: 'var(--accent)' }} hover:underline">
+                                  {followed.username}
+                                </Link>
+                              )}
+                            </div>
+                          </div>
+                        )
+                      }
+                      return null
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Reviews Tab */}
+          {activeTab === 'reviews' && (
+            <div className="space-y-4">
+              {reviews.length === 0 && <p className="style={{ color: 'var(--text-muted)' }} text-sm">No reviews yet.</p>}
+              {reviews.map(review => {
+                const avg = review.review_ratings.length > 0
+                  ? Math.round(review.review_ratings.reduce((s, r) => s + r.score, 0) / review.review_ratings.length)
+                  : 0
+                return (
+                  <div key={review.id} className="rounded-sm p-4 flex gap-4 items-start transition-colors"
+                    style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                    <ScoreCircle score={avg} />
+                    <div className="flex-1 min-w-0">
+                      {review.items && (
+                        <Link href={`/parks/${review.items.park_id}/${review.items.category_id}/${review.items.id}`}
+                          className="hover:underline font-semibold text-sm" style={{ color: 'var(--accent)' }}>
+                          {review.items.name}
+                        </Link>
+                      )}
+                      {review.title && <p className="text-sm font-medium mt-0.5" style={{ color: 'var(--text-primary)' }}>{review.title}</p>}
+                      {review.body && <p className="text-sm leading-relaxed mt-1 line-clamp-3" style={{ color: 'var(--text-secondary)' }}>{review.body}</p>}
+                      <p className="text-xs mt-2" style={{ color: 'var(--text-faint)' }}>{new Date(review.created_at).toLocaleDateString()}</p>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+
+          {/* Favorites Tab */}
+          {activeTab === 'favorites' && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {favorites.length === 0 && <p className="style={{ color: 'var(--text-muted)' }} text-sm col-span-2">No favorites yet.</p>}
+              {favorites.map(fav => {
+                const item = fav.items
+                if (!item) return null
+                const image = item.item_images?.[0]?.url
+                return (
+                  <Link key={fav.id} href={`/parks/${item.park_id}/${item.category_id}/${item.id}`}
+                    className="rounded-sm overflow-hidden transition-colors group"
+                    style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                    {image && (
+                      <div className="h-32 overflow-hidden">
+                        <img src={image} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                      </div>
+                    )}
+                    <div className="p-3">
+                      <p className="text-sm font-semibold transition-colors" style={{ color: 'var(--text-primary)' }}>{item.name}</p>
+                      <p className="text-xs mt-0.5 capitalize" style={{ color: 'var(--text-muted)' }}>{item.category_id?.replace(/-/g, ' ')}</p>
+                    </div>
+                  </Link>
+                )
+              })}
+            </div>
+          )}
+          {activeTab === 'visited' && (
+            <div className="space-y-6">
+              {visited.length === 0 && <p className="text-sm" style={{ color: 'var(--text-muted)' }}>No visited items yet.</p>}
+              {/* Group by category */}
+              {(() => {
+                const parks = visited.filter(v => v.item_type === 'park')
+                const byCategory: Record<string, typeof visited> = {}
+                visited.filter(v => v.item_type !== 'park').forEach(v => {
+                  if (!byCategory[v.item_type]) byCategory[v.item_type] = []
+                  byCategory[v.item_type].push(v)
+                })
+                const categoryLabels: Record<string, string> = {
+                  'roller-coasters': 'Roller Coasters', 'flat-rides': 'Flat Rides',
+                  'dark-rides': 'Dark Rides', 'water-rides': 'Water Rides',
+                  'restaurants': 'Restaurants', 'hotels': 'Hotels',
+                  'shops': 'Shops', 'shows': 'Shows',
+                }
+                return (
+                  <>
+                    {parks.length > 0 && (
+                      <div>
+                        <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--text-muted)' }}>
+                          Parks ({parks.length})
+                        </h3>
+                        <div className="space-y-2">
+                          {parks.map((v, i) => (
+                            <Link key={i} href={`/parks/${v.item_id}`}
+                              className="flex items-center gap-3 p-3 rounded-sm transition-colors"
+                              style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                              <span className="text-lg">🏟️</span>
+                              <span className="text-sm font-medium" style={{ color: 'var(--accent)' }}>
+                                {v.parks?.name ?? v.item_id}
+                              </span>
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {Object.entries(byCategory).map(([cat, catItems]) => (
+                      <div key={cat}>
+                        <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--text-muted)' }}>
+                          {categoryLabels[cat] ?? cat} ({catItems.length})
+                        </h3>
+                        <div className="space-y-2">
+                          {catItems.map((v, i) => {
+                            const it = v.items
+                            if (!it) return null
+                            const image = it.item_images?.[0]?.url
+                            // find score from reviews if available
+                            return (
+                              <Link key={i} href={`/parks/${it.park_id}/${it.category_id}/${it.id}`}
+                                className="flex items-center gap-3 p-3 rounded-sm transition-colors group"
+                                style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                                {image && <img src={image} alt={it.name} className="w-14 h-10 object-cover rounded-sm flex-shrink-0" />}
+                                <span className="flex-1 text-sm font-medium group-hover:underline" style={{ color: 'var(--accent)' }}>{it.name}</span>
+                                <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{v.parks?.name ?? ''}</span>
+                              </Link>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </>
+                )
+              })()}
+            </div>
+          )}
+
+        </div>
+      </div>
+    </div>
   )
-}
+}   

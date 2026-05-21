@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import {
   getProfileById,
   getProfileReviews,
+  getProfileAllReviews,
   getProfileFavorites,
   getProfilePoints,
   getFollowerCount,
@@ -21,7 +22,7 @@ export default async function ProfilePage() {
 
   const [profile, reviews, favorites, points, followerCount, followingCount, profileReactions, follows, visited] = await Promise.all([
     getProfileById(user.id),
-    getProfileReviews(user.id),
+    getProfileAllReviews(user.id),
     getProfileFavorites(user.id),
     getProfilePoints(user.id),
     getFollowerCount(user.id),

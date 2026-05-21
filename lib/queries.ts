@@ -566,3 +566,14 @@ export async function getProfileVisited(userId: string) {
   if (error) return []
   return data ?? []
 }
+
+export async function getProfileAllReviews(userId: string) {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('reviews')
+    .select('*, review_ratings(*), items(id, name, park_id, category_id)')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+  if (error) return []
+  return data ?? []
+}

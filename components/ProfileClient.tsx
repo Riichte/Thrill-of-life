@@ -26,6 +26,7 @@ interface Review {
   title: string | null
   body: string | null
   created_at: string
+  review_ratings: { category: string; score: number }[]
 }
 interface Favorite {
   id: string
@@ -711,6 +712,7 @@ export default function ProfileClient({
                               style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
                               {(() => {
                                 const review = reviews.find(r => r.items?.id === v.item_id || r.item_id === v.item_id)
+                                console.log('looking for', v.item_id, 'in reviews:', reviews.map(r => r.item_id))
                                 const ratings = review?.review_ratings ?? []
                                 const avg = ratings.length > 0
                                   ? Math.round(ratings.reduce((s: number, r: any) => s + r.score, 0) / ratings.length)

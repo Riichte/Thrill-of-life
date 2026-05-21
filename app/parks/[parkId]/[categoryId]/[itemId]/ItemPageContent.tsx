@@ -93,7 +93,7 @@ const initialUserReactions: UserReactions = { yes: false, no: false, funny: fals
 
 function ReviewCard({
   reviewId, author, score, title, text, isOwn,
-  reactions, userReactions, userPoints, onReact, onEdit, authorId,
+  reactions, userReactions, userPoints, onReact, onEdit, authorId, review_ratings,
 }: {
   reviewId: string
   author: string
@@ -107,6 +107,7 @@ function ReviewCard({
   onReact: (reviewId: string, reaction: Reaction) => void
   onEdit?: () => void
   authorId?: string
+  review_ratings?: { category: string; score: number }[]
 }) {
   const scoreColor = (s: number) =>
     s >= 80 ? 'var(--score-high)' : s >= 60 ? 'var(--score-mid)' : s >= 40 ? '#f97316' : 'var(--score-low)'
@@ -161,7 +162,21 @@ function ReviewCard({
         </div>
         <div className="pt-3 mb-3" style={{ borderTop: '1px solid var(--border)' }}>
           {title && <p className="text-lg font-bold mb-1" style={{ color: 'var(--text-primary)' }}>{title}</p>}
-          {text && <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{text}</p>}
+          {text ? (
+            <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{text}</p>
+          ) : (
+            review_ratings && review_ratings.length > 0 && (
+              <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1">
+                {review_ratings.map((r: any) => (
+                  <span key={r.category} className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                    <span className="capitalize">{r.category.replace(/_/g, ' ')}</span>
+                    {': '}
+                    <span className="font-semibold" style={{ color: 'var(--accent)' }}>{r.score}</span>
+                  </span>
+                ))}
+              </div>
+            )
+          )}
         </div>
         {!isOwn && (
           <div className="pt-3 mt-2" style={{ borderTop: '1px solid var(--border)' }}>
@@ -726,6 +741,7 @@ export default function ItemPageContent({ park, item, category, images, videos, 
                 reviewId={userReviewId ?? 'user'}
                 author="You"
                 score={myScore}
+                review_ratings={Object.entries(userRatings).map(([category, score]) => ({ category, score }))}
                 title={userReview.title}
                 text={userReview.text}
                 isOwn={true}

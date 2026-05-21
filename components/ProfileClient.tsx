@@ -711,7 +711,7 @@ export default function ProfileClient({
                               className="flex items-center gap-3 p-3 rounded-sm transition-colors"
                               style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
                               {(() => {
-                                const review = reviews.find(r => r.items?.id === v.item_id || r.item_id === v.item_id)
+                                const review = reviews.find(r => r.items?.id === v.item_id)
                                 const avg = review?.review_ratings?.length > 0
                                   ? Math.round(review.review_ratings.reduce((s: number, r: any) => s + r.score, 0) / review.review_ratings.length)
                                   : null

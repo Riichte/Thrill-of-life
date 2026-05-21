@@ -27,6 +27,7 @@ interface Review {
   body: string | null
   created_at: string
   review_ratings: { category: string; score: number }[]
+  items: { id: string; name: string; park_id: string; category_id: string } | null
 }
 interface Favorite {
   id: string

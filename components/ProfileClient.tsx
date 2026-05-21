@@ -54,6 +54,7 @@ interface ProfileClientProps {
   isFollowing?: boolean
   reactions?: any[]
   follows?: any[]
+  visited?: any[]
 }
 
 type ActivityItem =
@@ -115,10 +116,11 @@ export default function ProfileClient({
   isFollowing: initialIsFollowing = false,
   reactions: profileReactions = [],
   follows = [],
+  visited = [],
 }: ProfileClientProps) {
 
   const supabase = createClient()
-  const [activeTab, setActiveTab] = useState<'activity' | 'reviews' | 'favorites'>('activity')
+  const [activeTab, setActiveTab] = useState<'activity' | 'reviews' | 'favorites' | 'visited'>('activity')
   const [isFollowing, setIsFollowing] = useState(initialIsFollowing)
   const [followerCountState, setFollowerCountState] = useState(followerCount)
   const [isEditingBio, setIsEditingBio] = useState(false)
@@ -497,7 +499,7 @@ export default function ProfileClient({
 
                     {/* Tabs */}
                     <div className="flex gap-0 mb-6" style={{ borderBottom: '1px solid var(--border)' }}>
-                      {(['activity', 'reviews', 'favorites'] as const).map(tab => (
+                      {(['activity', 'reviews', 'favorites', 'visited'] as const).map(tab => (
                         <button
                           key={tab}
                           onClick={() => setActiveTab(tab)}
@@ -507,7 +509,10 @@ export default function ProfileClient({
                             borderColor: activeTab === tab ? 'var(--accent)' : 'transparent',
                           }}
                         >
-                          {tab === 'activity' ? 'Activity' : tab === 'reviews' ? `Reviews (${reviews.length})` : `Favorites (${favorites.length})`}
+                          {tab === 'activity' ? 'Activity'
+                            : tab === 'reviews' ? `Reviews (${reviews.length})`
+                              : tab === 'favorites' ? `Favorites (${favorites.length})`
+                                : `Visited (${visited.length})`}
                         </button>
                       ))}
                     </div>
@@ -672,6 +677,73 @@ export default function ProfileClient({
                             </Link>
                           )
                         })}
+                      </div>
+                    )}
+                    {activeTab === 'visited' && (
+                      <div className="space-y-6">
+                        {visited.length === 0 && <p className="text-sm" style={{ color: 'var(--text-muted)' }}>No visited items yet.</p>}
+                        {/* Group by category */}
+                        {(() => {
+                          const parks = visited.filter(v => v.item_type === 'park')
+                          const byCategory: Record<string, typeof visited> = {}
+                          visited.filter(v => v.item_type !== 'park').forEach(v => {
+                            if (!byCategory[v.item_type]) byCategory[v.item_type] = []
+                            byCategory[v.item_type].push(v)
+                          })
+                          const categoryLabels: Record<string, string> = {
+                            'roller-coasters': 'Roller Coasters', 'flat-rides': 'Flat Rides',
+                            'dark-rides': 'Dark Rides', 'water-rides': 'Water Rides',
+                            'restaurants': 'Restaurants', 'hotels': 'Hotels',
+                            'shops': 'Shops', 'shows': 'Shows',
+                          }
+                          return (
+                            <>
+                              {parks.length > 0 && (
+                                <div>
+                                  <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--text-muted)' }}>
+                                    Parks ({parks.length})
+                                  </h3>
+                                  <div className="space-y-2">
+                                    {parks.map((v, i) => (
+                                      <Link key={i} href={`/parks/${v.item_id}`}
+                                        className="flex items-center gap-3 p-3 rounded-sm transition-colors"
+                                        style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                                        <span className="text-lg">🏟️</span>
+                                        <span className="text-sm font-medium" style={{ color: 'var(--accent)' }}>
+                                          {v.parks?.name ?? v.item_id}
+                                        </span>
+                                      </Link>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                              {Object.entries(byCategory).map(([cat, catItems]) => (
+                                <div key={cat}>
+                                  <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--text-muted)' }}>
+                                    {categoryLabels[cat] ?? cat} ({catItems.length})
+                                  </h3>
+                                  <div className="space-y-2">
+                                    {catItems.map((v, i) => {
+                                      const it = v.items
+                                      if (!it) return null
+                                      const image = it.item_images?.[0]?.url
+                                      // find score from reviews if available
+                                      return (
+                                        <Link key={i} href={`/parks/${it.park_id}/${it.category_id}/${it.id}`}
+                                          className="flex items-center gap-3 p-3 rounded-sm transition-colors group"
+                                          style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                                          {image && <img src={image} alt={it.name} className="w-14 h-10 object-cover rounded-sm flex-shrink-0" />}
+                                          <span className="flex-1 text-sm font-medium group-hover:underline" style={{ color: 'var(--accent)' }}>{it.name}</span>
+                                          <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{v.parks?.name ?? ''}</span>
+                                        </Link>
+                                      )
+                                    })}
+                                  </div>
+                                </div>
+                              ))}
+                            </>
+                          )
+                        })()}
                       </div>
                     )}
 

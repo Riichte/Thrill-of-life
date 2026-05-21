@@ -555,3 +555,14 @@ export async function getParkPrices(parkId: string) {
   if (error) return []
   return data ?? []
 }
+
+export async function getProfileVisited(userId: string) {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('visited')
+    .select('*, items(id, name, park_id, category_id, specs, item_images(url)), parks!visited_park_id_fkey(id, name)')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+  if (error) return []
+  return data ?? []
+}

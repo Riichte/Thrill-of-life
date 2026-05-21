@@ -37,7 +37,7 @@ interface ParkPageClientProps {
   credits: PhotoCredit[]
   reviews: any[]
   communityScore: { score: number; positive: number; mixed: number; negative: number } | null
-prices: any[]
+  prices: any[]
 }
 
 const parkDimensions = [
@@ -163,6 +163,7 @@ export default function ParkPageClient({
 }: ParkPageClientProps) {
   const supabase = createClient()
   const [isFavorited, setIsFavorited] = useState(initialFavorited)
+  const [isVisited, setIsVisited] = useState(false)
   const [isRatingOpen, setIsRatingOpen] = useState(false)
   const [hasRated, setHasRated] = useState(false)
   const [myScore, setMyScore] = useState<number | null>(null)
@@ -196,6 +197,10 @@ export default function ParkPageClient({
         setUserRatings(restored)
         const avg = Math.round(existingReview.review_ratings.reduce((s: number, r: any) => s + r.score, 0) / existingReview.review_ratings.length)
         setMyScore(avg)
+        const { data: existingVisit } = await supabase
+          .from('visited').select('id')
+          .eq('item_id', park.id).eq('user_id', userId).single()
+        setIsVisited(!!existingVisit)
       }
 
       const { data: pointsRow } = await supabase.from('user_points').select('points').eq('user_id', userId).single()
@@ -215,6 +220,19 @@ export default function ParkPageClient({
     } else {
       await supabase.from('favorites').insert({ item_id: park.id, user_id: userId })
       setIsFavorited(true)
+    }
+  }
+
+  const handleVisitedToggle = async () => {
+    if (!userId) { window.location.href = `/auth/login?redirect=/parks/${park.id}`; return }
+    if (isVisited) {
+      await supabase.from('visited').delete().eq('item_id', park.id).eq('user_id', userId)
+      setIsVisited(false)
+    } else {
+      await supabase.from('visited').upsert({
+        user_id: userId, item_id: park.id, item_type: 'park', park_id: park.id
+      }, { onConflict: 'user_id,item_id' })
+      setIsVisited(true)
     }
   }
 
@@ -281,7 +299,7 @@ export default function ParkPageClient({
     if (reaction === 'award') setUserPoints(prev => current ? prev + 100 : prev - 100)
   }
 
-  const baseScore = communityScore?.score ?? 0
+  const baseScore = communityScore?.score ?? 50
   const overallScore = hasRated && myScore !== null
     ? Math.round(baseScore * 0.6 + myScore * 0.4)
     : baseScore
@@ -341,6 +359,18 @@ export default function ParkPageClient({
                 {park.park_type && <div className="flex justify-between gap-4 style={{ color: 'var(--text-secondary)' }}"><span>Type</span><span className="style={{ color: 'var(--text-primary)' }}">{park.park_type}</span></div>}
               </div>
             </SteamInfoPanel>
+
+            <button
+              onClick={handleVisitedToggle}
+              className="mt-3 w-full py-2 text-sm font-medium rounded-sm transition-colors"
+              style={{
+                background: isVisited ? 'var(--bg-elevated)' : 'transparent',
+                border: `1px solid ${isVisited ? 'var(--score-high)' : 'var(--border)'}`,
+                color: isVisited ? 'var(--score-high)' : 'var(--text-muted)',
+              }}>
+              {isVisited ? '✓ Visited' : '+ Mark as Visited'}
+            </button>
+
             {/* {prices.length > 0 && (
   <PriceCard prices={prices} parkCurrency={prices[0]?.currency ?? 'EUR'} />
 )} */}

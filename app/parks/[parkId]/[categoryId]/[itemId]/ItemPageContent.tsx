@@ -245,6 +245,7 @@ export default function ItemPageContent({ park, item, category, images, videos, 
     dimensions.reduce((acc, dim) => ({ ...acc, [dim.id]: 50 }), {})
   )
   const [isFavorited, setIsFavorited] = useState(false)
+  const [isVisited, setIsVisited] = useState(false)
   const [userReviewId, setUserReviewId] = useState<string | null>(null)
   const [videoTitles, setVideoTitles] = useState<Record<string, string>>({})
 
@@ -335,6 +336,13 @@ export default function ItemPageContent({ park, item, category, images, videos, 
         .single()
       setIsFavorited(!!existingFav)
 
+      const { data: existingVisit } = await supabase
+        .from('visited')
+        .select('id')
+        .eq('item_id', item.id)
+        .eq('user_id', user.id)
+        .single()
+      setIsVisited(!!existingVisit)
 
       // Load points
       const { data: pointsRow } = await supabase
@@ -428,6 +436,29 @@ export default function ItemPageContent({ park, item, category, images, videos, 
     }
   }
 
+  const handleVisitedToggle = async () => {
+    if (!user) {
+      window.location.href = `/auth/login?redirect=${encodeURIComponent(window.location.pathname)}`
+      return
+    }
+    if (isVisited) {
+      await supabase.from('visited').delete().eq('item_id', item.id).eq('user_id', user.id)
+      setIsVisited(false)
+    } else {
+      // Add item
+      await supabase.from('visited').upsert({
+        user_id: user.id, item_id: item.id,
+        item_type: item.category_id, park_id: park.id
+      }, { onConflict: 'user_id,item_id' })
+      // Auto-add park
+      await supabase.from('visited').upsert({
+        user_id: user.id, item_id: park.id,
+        item_type: 'park', park_id: park.id
+      }, { onConflict: 'user_id,item_id' })
+      setIsVisited(true)
+    }
+  }
+
   const calculateMyScore = () =>
     Math.round(dimensions.reduce((sum, dim) => sum + (userRatings[dim.id] || 0), 0) / dimensions.length)
 
@@ -488,7 +519,7 @@ export default function ItemPageContent({ park, item, category, images, videos, 
     }
   }
 
-  const baseScore = communityScore?.score ?? 75
+  const baseScore = communityScore?.score ?? 50
   const overallScore = hasRated && myScore !== null
     ? Math.round(baseScore * 0.6 + myScore * 0.4)
     : baseScore
@@ -625,6 +656,16 @@ export default function ItemPageContent({ park, item, category, images, videos, 
                 </div>
               )}
             </SteamInfoPanel>
+            <button
+              onClick={handleVisitedToggle}
+              className="mt-3 w-full py-2 text-sm font-medium rounded-sm transition-colors"
+              style={{
+                background: isVisited ? 'var(--bg-elevated)' : 'transparent',
+                border: `1px solid ${isVisited ? 'var(--score-high)' : 'var(--border)'}`,
+                color: isVisited ? 'var(--score-high)' : 'var(--text-muted)',
+              }}>
+              {isVisited ? '✓ Visited' : '+ Mark as Visited'}
+            </button>
           </div>
         </div>
 

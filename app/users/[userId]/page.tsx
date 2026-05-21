@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { getProfileVisited } from '@/lib/queries'
 import {
   getProfileById,
   getProfileReviews,
@@ -18,7 +19,7 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  const [profile, reviews, favorites, points, followerCount, followingCount, profileReactions, follows] = await Promise.all([
+  const [profile, reviews, favorites, points, followerCount, followingCount, profileReactions, follows, visited] = await Promise.all([
     getProfileById(userId),
     getProfileReviews(userId),
     getProfileFavorites(userId),
@@ -27,6 +28,7 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
     getFollowingCount(userId),
     getProfileReactions(userId),
     getProfileFollows(userId),
+    getProfileVisited(userId),
   ])
 
   if (!profile) notFound()
@@ -46,6 +48,7 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
       isFollowing={isFollowing}
       reactions={profileReactions}
       follows={follows}
+      visited={visited}
     />
   )
 }

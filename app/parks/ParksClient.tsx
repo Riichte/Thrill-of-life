@@ -80,14 +80,18 @@ export default function ParksClient({ parks }: { parks: Park[] }) {
                 onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-elevated)')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'var(--card-bg)')}>
                 <div className="relative w-full h-48 overflow-hidden">
-                  <Image
-                    src={park.cover_image_url}
-                    alt={park.name}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-300"
-                    quality={75}
-                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  />
+                  {park.cover_image_url ? (
+                    <Image
+                      src={park.cover_image_url}
+                      alt={park.name}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      quality={75}
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-4xl" style={{ background: 'var(--bg-elevated)' }}>🏟️</div>
+                  )}
                 </div>
                 <div className="p-4">
                   <h3 className="text-xl font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>

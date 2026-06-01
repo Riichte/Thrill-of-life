@@ -55,10 +55,8 @@ export default async function ParkSoundtracksPage({ params }: { params: Promise<
               {catItems.map(item => (
                 <Link key={item.id}
                   href={`/parks/${parkId}/${item.category_id}/${item.id}/osts`}
-                  className="flex items-center justify-between p-4 rounded-sm transition-colors"
-                  style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}
-                  onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--accent)')}
-                  onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}>
+                  className="flex items-center justify-between p-4 rounded-sm transition-colors hover:border-[var(--accent)]"
+                  style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
                   <p className="font-medium">{item.name}</p>
                   <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
                     🎵 {(item.osts as any[]).length} track{(item.osts as any[]).length !== 1 ? 's' : ''}

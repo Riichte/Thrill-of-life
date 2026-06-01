@@ -119,9 +119,16 @@ export default async function Home() {
 
 
   return (
-    <div className="min-h-screen style={{ background: 'var(--bg-tertiary)' }} style={{ color: 'var(--text-primary)' }}">
-      
+    <div className="min-h-screen" style={{ background: 'var(--bg-tertiary)', color: 'var(--text-primary)' }}>
+
       <div className="container mx-auto px-4 py-10 md:py-14">
+
+        <div className="rounded-2xl p-6 mb-10 text-center" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+          <span className="text-xs px-2 py-1 rounded-sm font-semibold uppercase tracking-wider" style={{ background: 'var(--cta)', color: 'var(--cta-text)' }}>Early Access</span>
+          <h2 className="text-2xl font-bold mt-3 mb-1" style={{ color: 'var(--text-primary)' }}>We're just getting started</h2>
+          <p className="text-sm" style={{ color: 'var(--text-muted)' }}>New parks, rides, and features are being added regularly.</p>
+        </div>
+
         <HomeMarqueeRow
           title="Parks"
           items={homeParkCards}
@@ -182,8 +189,11 @@ export default async function Home() {
           <div className="rounded-xl border border-white/10 bg-gray-800/80 p-6">
             <h2 className="mb-3 text-lg font-semibold style={{ color: 'var(--accent)' }}">Explore</h2>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/parks" className="text-gray-300 hover:style={{ color: 'var(--text-primary)' }}">All parks</Link></li>
+              <li><Link href="/parks" className="text-gray-300 hover:style={{ color: 'var(--text-primary)' }}">Parks</Link></li>
               <li><Link href="/category/roller-coasters" className="text-gray-300 hover:style={{ color: 'var(--text-primary)' }}">Roller Coasters</Link></li>
+              <li><Link href="/category/water-rides" className="text-gray-300 hover:style={{ color: 'var(--text-primary)' }}">Water Rides</Link></li>
+              <li><Link href="/category/dark-rides" className="text-gray-300 hover:style={{ color: 'var(--text-primary)' }}">Dark Rides</Link></li>
+              <li><Link href="/category/flat-rides" className="text-gray-300 hover:style={{ color: 'var(--text-primary)' }}">Flat Rides</Link></li>
             </ul>
           </div>
           <div className="rounded-xl border border-white/10 bg-gray-800/80 p-6">
@@ -197,8 +207,13 @@ export default async function Home() {
           <div className="rounded-xl border border-white/10 bg-gray-800/80 p-6">
             <h2 className="mb-3 text-lg font-semibold text-gray-200">About this page</h2>
             <p className="text-sm leading-relaxed text-gray-400">
-              Marquees loop smoothly; motion is reduced automatically if you prefer less movement in system settings.
+              Thrill of Life is a community database for theme park enthusiasts. Rate rides, write reviews,
+              and track what you've visited.
             </p>
+            <Link href="/auth/signup" className="inline-block mt-3 text-xs px-3 py-1.5 rounded-sm font-medium"
+              style={{ background: 'var(--cta)', color: 'var(--cta-text)' }}>
+              Join for free →
+            </Link>
           </div>
         </div>
       </div>

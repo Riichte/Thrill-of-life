@@ -669,7 +669,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                 t === 'images' ? 'Ride Images' :
                                     t === 'park-images' ? 'Park Images' :
                                         t === 'images-manager' ? 'Image Search' :
-                                            t === 'videos' ? 'Ride Videos' :
+                                            t === 'videos' ? 'Videos' :
                                                 t === 'manufacturers' ? 'Manufacturers' :
                                                     t === 'prices' ? 'Prices' :
                                                         t.charAt(0).toUpperCase() + t.slice(1)}

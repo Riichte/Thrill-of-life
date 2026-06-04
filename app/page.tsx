@@ -4,51 +4,53 @@ import Link from 'next/link'
 import { HomeMarqueeRow } from '@/components/HomeMarqueeRow'
 import { HomeMarqueeCard } from '@/lib/homeCarouselData'
 import { createClient } from '@/lib/supabase/server'
+export const dynamic = 'force-dynamic'
 
 export default async function Home() {
+  const shuffle = <T,>(arr: T[]) => [...arr].sort(() => Math.random() - 0.5)
   const supabase = await createClient()
-  const { data: parks } = await supabase.from('parks').select('*').limit(20)
+  const { data: parks } = await supabase.from('parks').select('*').limit(60)
   const recentReviews = await getRecentReviews(10)
 
   const { data: coasterItems } = await supabase
     .from('items')
     .select('id, name, park_id, item_images(url, attribution_author, license)')
     .eq('category_id', 'roller-coasters')
-    .limit(20)
+    .limit(60)
 
   const { data: waterItems } = await supabase
     .from('items')
     .select('id, name, park_id, item_images(url, attribution_author, license)')
     .eq('category_id', 'water-rides')
-    .limit(20)
+    .limit(60)
 
   const { data: darkRideItems } = await supabase
     .from('items')
     .select('id, name, park_id, item_images(url, attribution_author, license)')
     .eq('category_id', 'dark-rides')
-    .limit(20)
+    .limit(60)
 
   const { data: flatRideItems } = await supabase
     .from('items')
     .select('id, name, park_id, item_images(url, attribution_author, license)')
     .eq('category_id', 'flat-rides')
-    .limit(20)
+    .limit(60)
 
   const { data: mixItems } = await supabase
     .from('items')
     .select('id, name, park_id, category_id, item_images(url, attribution_author, license)')
     .in('category_id', ['restaurants', 'shows', 'shops', 'hotels'])
-    .limit(20)
+    .limit(60)
 
   const highlightCategories = ['dark-rides', 'flat-rides', 'hotels', 'transport', 'shows', 'shops']
   const { data: highlightItems } = await supabase
     .from('items')
     .select('id, name, park_id, category_id, item_images(url, attribution_author, license)')
     .in('category_id', highlightCategories)
-    .limit(20)
+    .limit(60)
 
 
-  const homeRollerCoasterCards: HomeMarqueeCard[] = (coasterItems ?? [])
+  const homeRollerCoasterCards: HomeMarqueeCard[] = shuffle(coasterItems ?? [])
     .filter(i => i.item_images?.[0]?.url)
     .map(i => ({
       id: i.id,
@@ -59,7 +61,7 @@ export default async function Home() {
       license: i.item_images[0].license ?? null,
     }))
 
-  const homeWaterRideCards: HomeMarqueeCard[] = (waterItems ?? [])
+  const homeWaterRideCards: HomeMarqueeCard[] = shuffle(waterItems ?? [])
     .filter(i => i.item_images?.[0]?.url)
     .map(i => ({
       id: i.id,
@@ -70,7 +72,7 @@ export default async function Home() {
       license: i.item_images[0].license ?? null,
     }))
 
-  const homeDarkRideCards: HomeMarqueeCard[] = (darkRideItems ?? [])
+  const homeDarkRideCards: HomeMarqueeCard[] = shuffle(darkRideItems ?? [])
     .filter(i => i.item_images?.[0]?.url)
     .map(i => ({
       id: i.id,
@@ -82,7 +84,7 @@ export default async function Home() {
       license: i.item_images[0].license ?? null,
     }))
 
-  const homeFlatRideCards: HomeMarqueeCard[] = (flatRideItems ?? [])
+  const homeFlatRideCards: HomeMarqueeCard[] = shuffle(flatRideItems ?? [])
     .filter(i => i.item_images?.[0]?.url)
     .map(i => ({
       id: i.id,
@@ -94,7 +96,7 @@ export default async function Home() {
       license: i.item_images[0].license ?? null,
     }))
 
-  const homeMixCards: HomeMarqueeCard[] = (mixItems ?? [])
+  const homeMixCards: HomeMarqueeCard[] = shuffle(mixItems ?? [])
     .filter(i => i.item_images?.[0]?.url)
     .map(i => ({
       id: i.id,
@@ -107,7 +109,7 @@ export default async function Home() {
     }))
 
 
-  const homeParkCards: HomeMarqueeCard[] = (parks ?? []).map(park => ({
+  const homeParkCards: HomeMarqueeCard[] = shuffle(parks ?? []).map(park => ({
     id: park.id,
     href: `/parks/${park.id}`,
     image: park.cover_image_url || '',

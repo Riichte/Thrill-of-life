@@ -40,11 +40,28 @@ export function SteamMediaCarousel({ slides, autoAdvanceMs, className = '' }: St
 
   useEffect(() => {
     if (!autoAdvanceMs || n <= 1) return
+    if (slides[safeIndex]?.isVideo) return
     const t = setInterval(() => {
       setTimeout(() => setIndex(prev => (prev + 1) % n), 300)
     }, autoAdvanceMs)
     return () => clearInterval(t)
-  }, [autoAdvanceMs, n, resetTimer])
+  }, [autoAdvanceMs, n, resetTimer, safeIndex, slides])
+
+  useEffect(() => {
+    const handler = (event: MessageEvent) => {
+      if (!event.origin.includes('youtube.com')) return
+      try {
+        const data = JSON.parse(event.data)
+        if (data.event === 'onStateChange' && data.info === 0) {
+          // 0 = ended, advance to next slide
+          setIndex(prev => (prev + 1) % n)
+          setResetTimer(p => p + 1)
+        }
+      } catch { }
+    }
+    window.addEventListener('message', handler)
+    return () => window.removeEventListener('message', handler)
+  }, [n])
 
   const go = useCallback((delta: number) => {
     if (!n) return
@@ -72,10 +89,22 @@ export function SteamMediaCarousel({ slides, autoAdvanceMs, className = '' }: St
         {slides.map((slide, i) => (
           <div key={slide.src} className="absolute inset-0"
             style={{ opacity: i === safeIndex ? 1 : 0, transition: 'opacity 0.6s ease', zIndex: i === safeIndex ? 1 : 0 }}>
-            <Image src={slide.src} alt={slide.alt ?? 'Media'} fill
-              className="object-cover" priority={i === 0} quality={75}
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 85vw"
-            />
+            {slide.isVideo ? (
+              <iframe
+                src={i === safeIndex
+                  ? `https://www.youtube.com/embed/${slide.src}?autoplay=1&mute=1&controls=1&enablejsapi=1`
+                  : `https://www.youtube.com/embed/${slide.src}?autoplay=0&mute=1&controls=1`
+                }
+                className="w-full h-full"
+                allow="autoplay; encrypted-media"
+                allowFullScreen
+              />
+            ) : (
+              <Image src={slide.src} alt={slide.alt ?? 'Media'} fill
+                className="object-cover" priority={i === 0} quality={75}
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 85vw"
+              />
+            )}
           </div>
         ))}
 
@@ -149,14 +178,23 @@ export function SteamMediaCarousel({ slides, autoAdvanceMs, className = '' }: St
                   outlineOffset: '2px',
                   opacity: i === safeIndex ? 1 : 0.8,
                 }}>
-                <Image src={slide.src} alt={slide.alt ?? ''} fill
-                  className="object-cover animate-fade-slide"
-                  quality={60} sizes="116px" loading="lazy"
-                />
-                {slide.isVideo && (
-                  <span className="absolute inset-0 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.35)' }}>
-                    <Play className="h-8 w-8 text-white drop-shadow-md" fill="currentColor" />
-                  </span>
+                {slide.isVideo ? (
+                  <div className="absolute inset-0">
+                    <img
+                      src={`https://img.youtube.com/vi/${slide.src}/mqdefault.jpg`}
+                      alt={slide.alt ?? ''}
+                      className="w-full h-full object-cover"
+                    />
+                    <span className="absolute inset-0 flex items-center justify-center"
+                      style={{ background: 'rgba(0,0,0,0.35)' }}>
+                      <Play className="h-6 w-6 text-white drop-shadow-md" fill="currentColor" />
+                    </span>
+                  </div>
+                ) : (
+                  <Image src={slide.src} alt={slide.alt ?? ''} fill
+                    className="object-cover animate-fade-slide"
+                    quality={60} sizes="116px" loading="lazy"
+                  />
                 )}
               </button>
             ))}

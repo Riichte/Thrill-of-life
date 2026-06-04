@@ -253,7 +253,7 @@ export default function ItemPageContent({ park, item, category, images, videos, 
   useEffect(() => {
     const loadData = async () => {
       // Load OSTs
-      const { data } = await supabase.from('osts').select('id, title').eq('item_id', item.id)
+      const { data } = await supabase.from('osts').select('id, title, youtube_video_id, composer, location').eq('item_id', item.id)
       setOsts(data ?? [])
 
       // Load video titles
@@ -524,16 +524,18 @@ export default function ItemPageContent({ park, item, category, images, videos, 
     ? Math.round(baseScore * 0.6 + myScore * 0.4)
     : baseScore
 
+
   const ratingBreakdown = communityScore
     ? { positive: communityScore.positive, mixed: communityScore.mixed, negative: communityScore.negative }
     : { positive: 0, mixed: 0, negative: 0 }
 
   const filteredImages = images?.filter(img => img.sort_order !== -1) || []
-  const mediaSlides = filteredImages.map((img, i) => ({
-    src: img.url,
-    alt: item.name,
-    isVideo: Boolean(videos[i])
-  }))
+  const videoSlides = (videos ?? []).map(v => ({ src: v, alt: item.name, isVideo: true }))
+  const mediaSlides = [
+    ...videoSlides,
+    ...filteredImages.map(img => ({ src: img.url, alt: item.name, isVideo: false }))
+  ]
+
 
   console.log('Images data:', images)
 
@@ -599,23 +601,207 @@ export default function ItemPageContent({ park, item, category, images, videos, 
               </div>
             ) : null}
 
-            {/* YouTube Videos */}
-            {videos && videos.length > (filteredImages.length === 0 ? 1 : 0) &&
-              videos.slice(filteredImages.length === 0 ? 1 : 0).map((videoId, idx) => (
-                <div key={idx} className="mt-6 rounded-sm overflow-hidden" style={{ border: '1px solid var(--border)' }}>
-                  <div className="aspect-video">
-                    <iframe width="100%" height="100%" src={`https://www.youtube.com/embed/${videoId}`}
-                      title={`${item.name} Video ${idx + 2}`} frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen />
-                  </div>
-                  <div className="p-4 text-sm" style={{ color: 'var(--text-secondary)' }}>
-                    <p className="font-medium mb-1" style={{ color: 'var(--text-primary)' }}>{videoTitles[videoId] || `${item.name} Experience`}</p>
-                  </div>
+            {/* OST Playlist */}
+            {osts && osts.length > 0 && (
+              <div className="mt-6 rounded-sm overflow-hidden" style={{ border: '1px solid var(--border)' }}>
+                <div className="px-4 py-3 flex items-center justify-between"
+                  style={{ borderBottom: '1px solid var(--border)', background: 'var(--card-bg)' }}>
+                  <h3 className="text-sm font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
+                    🎵 Soundtrack — {osts.length} track{osts.length !== 1 ? 's' : ''}
+                  </h3>
+                  <Link href={`/parks/${park.id}/${item.category_id}/${item.id}/osts`}
+                    className="text-xs" style={{ color: 'var(--accent)' }}>
+                    Full page →
+                  </Link>
                 </div>
-              ))
-            }
+                <div className="divide-y" style={{ background: 'var(--bg-secondary)', borderColor: 'var(--border)' }}>
+                  {osts.map((ost: any) => (
+                    <div key={ost.id} className="flex gap-3 p-3 items-center">
+                      <div className="flex-shrink-0 rounded-sm overflow-hidden" style={{ width: 120, height: 68 }}>
+                        <iframe
+                          width="120" height="68"
+                          src={`https://www.youtube.com/embed/${ost.youtube_video_id}?autoplay=0&controls=1&modestbranding=1`}
+                          frameBorder="0"
+                          allow="encrypted-media"
+                          allowFullScreen
+                        />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>{ost.title}</p>
+                        {ost.composer && <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>🎼 {ost.composer}</p>}
+                        {ost.location && <p className="text-xs" style={{ color: 'var(--text-muted)' }}>📍 {ost.location}</p>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+
+            {/* Rating Modal */}
+            {isRatingOpen && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                <div className="absolute inset-0 bg-black/70" onClick={() => setIsRatingOpen(false)} />
+                <div className="relative z-10 w-full max-w-lg rounded-sm shadow-2xl"
+                  style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+
+                  {/* Header */}
+                  <div className="flex items-center justify-between px-6 py-4"
+                    style={{ borderBottom: '1px solid var(--border)' }}>
+                    <h2 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>Rate {item.name}</h2>
+                    <button onClick={() => setIsRatingOpen(false)}
+                      className="text-xl leading-none" style={{ color: 'var(--text-muted)' }}>✕</button>
+                  </div>
+
+                  {/* Sliders */}
+                  <div className="px-6 py-5 space-y-6 max-h-[40vh] overflow-y-auto">
+                    {dimensions.map(dimension => {
+                      const userScore = userRatings[dimension.id] || 0
+                      return (
+                        <div key={dimension.id} className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <label className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+                              {dimension.label}
+                            </label>
+                            <span className="text-lg font-bold w-10 text-right" style={{ color: 'var(--accent)' }}>
+                              {userScore}
+                            </span>
+                          </div>
+                          <input type="range" min="0" max="100" value={userScore}
+                            onChange={e => setUserRatings(prev => ({ ...prev, [dimension.id]: parseInt(e.target.value) }))}
+                            className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
+                            style={{ background: `linear-gradient(to right, var(--accent) 0%, var(--accent) ${userScore}%, var(--border) ${userScore}%, var(--border) 100%)` }}
+                          />
+                        </div>
+                      )
+                    })}
+                  </div>
+
+                  {/* Review text */}
+                  <div className="px-6 pb-5 space-y-3 pt-5" style={{ borderTop: '1px solid var(--border)' }}>
+                    <p className="text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
+                      Leave a review (optional)
+                    </p>
+                    <input type="text" placeholder="Review title" value={reviewTitle}
+                      onChange={e => setReviewTitle(e.target.value)}
+                      className="w-full rounded-sm px-3 py-2 text-sm focus:outline-none"
+                      style={{ background: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }}
+                    />
+                    <textarea placeholder="Share your experience..." value={reviewText}
+                      onChange={e => setReviewText(e.target.value)} rows={3}
+                      className="w-full rounded-sm px-3 py-2 text-sm focus:outline-none resize-none"
+                      style={{ background: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }}
+                    />
+                    {submitError && <p className="text-sm" style={{ color: 'var(--score-low)' }}>{submitError}</p>}
+                  </div>
+
+                  {/* Footer */}
+                  <div className="flex items-center justify-between px-6 py-4"
+                    style={{ borderTop: '1px solid var(--border)' }}>
+                    <div className="text-sm" style={{ color: 'var(--text-muted)' }}>
+                      Your score: <span className="font-bold" style={{ color: 'var(--accent)' }}>{calculateMyScore()}</span>
+                    </div>
+                    <div className="flex gap-3">
+                      <button onClick={() => setIsRatingOpen(false)}
+                        className="px-4 py-2 text-sm transition-colors"
+                        style={{ color: 'var(--text-muted)' }}>
+                        Cancel
+                      </button>
+                      <button onClick={handleSubmitRating} disabled={submitting}
+                        className="px-5 py-2 text-sm font-medium rounded-sm transition-colors disabled:opacity-50"
+                        style={{ background: 'var(--cta)', color: 'var(--cta-text)' }}
+                        onMouseEnter={e => (e.currentTarget.style.background = 'var(--cta-hover)')}
+                        onMouseLeave={e => (e.currentTarget.style.background = 'var(--cta)')}>
+                        {submitting ? 'Saving...' : hasRated ? 'Update rating' : 'Submit rating'}
+                      </button>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            )}
+
+            {/* Reviews Section */}
+            <div className="mb-12">
+              <h2 className="text-2xl font-semibold mb-6">All Reviews</h2>
+
+              <div className="flex gap-2 mb-8 overflow-x-auto pb-2 border-b border-gray-700">
+                {['all', 'positive', 'mixed', 'negative', 'funny'].map((f) => (
+                  <button
+                    key={f}
+                    onClick={() => setReviewFilter(f)}
+                    className={`px-4 py-2 whitespace-nowrap font-medium capitalize transition-colors ${reviewFilter === f ? 'text-blue-400 border-b-2 border-blue-400' : 'text-gray-400 hover:text-gray-300'}`}
+                  >
+                    {f} Reviews
+                  </button>
+                ))}
+              </div>
+              <div className="space-y-6">
+                {userReview && myScore !== null && (
+                  <ReviewCard
+                    reviewId={userReviewId ?? 'user'}
+                    author="You"
+                    score={myScore}
+                    review_ratings={Object.entries(userRatings).map(([category, score]) => ({ category, score }))}
+                    title={userReview.title}
+                    text={userReview.text}
+                    isOwn={true}
+                    reactions={reactions[userReviewId ?? 'user'] ?? initialReactions}
+                    userReactions={initialUserReactions}
+                    userPoints={userPoints}
+                    onReact={() => { }}
+                    onEdit={() => setIsRatingOpen(true)}
+                  />
+                )}
+                {reviews
+                  .filter(r => !user || r.user_id !== user.id)
+                  .map(review => {
+                    const avg = review.review_ratings?.length > 0
+                      ? Math.round(review.review_ratings.reduce((s: number, r: any) => s + r.score, 0) / review.review_ratings.length)
+                      : 0
+                    const reviewReactions = reactions[review.id] ?? initialReactions
+                    const reviewUserReactions = myReactions[review.id] ?? initialUserReactions
+                    if (!reviewReactions || !reviewUserReactions) return null
+                    return (
+                      <ReviewCard
+                        key={review.id}
+                        reviewId={review.id}
+                        author={review.profiles?.username ?? 'Anonymous'}
+                        authorId={review.user_id}
+                        score={avg}
+                        title={review.title}
+                        text={review.body}
+                        isOwn={false}
+                        reactions={reviewReactions}
+                        userReactions={reviewUserReactions}
+                        userPoints={userPoints}
+                        onReact={handleReact}
+                      />
+                    )
+                  })
+                }
+              </div>
+            </div>
+
+            {similarRides.length > 0 && (
+              <SimilarRidesCarousel
+                title="Similar Rides"
+                subtitle={`Other ${currentType} coasters you might enjoy`}
+                items={similarRides}
+                currentRideId={item.id}
+              />
+            )}
+
+            <div className="flex justify-center mb-8">
+              <Link href={`/parks/${park.id}`} className="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-lg font-semibold transition-colors">
+                Back to {park.name}
+              </Link>
+            </div>
+
+            <PhotoCredits credits={credits} />
           </div>
+
+          {/* Right column */}
           <div className="lg:col-span-1">
             <SteamInfoPanel
               headerImage={images?.find(img => img.sort_order === -1)?.url || null}
@@ -638,24 +824,24 @@ export default function ItemPageContent({ park, item, category, images, videos, 
               onFavoriteToggle={handleFavoriteToggle}
             >
               {hasSpecs && (
-                <div className="border-t style={{ borderColor: 'var(--border)' }} pt-4">
+                <div className="border-t pt-4" style={{ borderColor: 'var(--border)' }}>
                   <div className="space-y-2 text-sm">
-                    {specs.type && <div className="flex justify-between gap-4 style={{ color: 'var(--text-secondary)' }}"><span>Roller Coaster Type</span><span className="style={{ color: 'var(--text-primary)' }}">{specs.type}</span></div>}
-                    {specs.status && <div className="flex justify-between gap-4 style={{ color: 'var(--text-secondary)' }}"><span>Status</span><span className="style={{ color: 'var(--text-primary)' }}">{specs.status}</span></div>}
-                    {specs.manufacturer && <div className="flex justify-between gap-4 style={{ color: 'var(--text-secondary)' }}"><span>Manufacturer</span><span className="style={{ color: 'var(--text-primary)' }}">{specs.manufacturer}</span></div>}
-                    {specs.height && <div className="flex justify-between gap-4 style={{ color: 'var(--text-secondary)' }}"><span>Height</span><span className="style={{ color: 'var(--text-primary)' }}">{convertHeight(String(specs.height))}</span></div>}
-                    {specs.drop && <div className="flex justify-between gap-4 style={{ color: 'var(--text-secondary)' }}"><span>Drop</span><span className="style={{ color: 'var(--text-primary)' }}">{convertHeight(String(specs.drop))}</span></div>}
-                    {specs.speed && <div className="flex justify-between gap-4 style={{ color: 'var(--text-secondary)' }}"><span>Speed</span><span className="style={{ color: 'var(--text-primary)' }}">{convertSpeed(String(specs.speed))}</span></div>}
-                    {specs.length && <div className="flex justify-between gap-4 style={{ color: 'var(--text-secondary)' }}"><span>Length</span><span className="style={{ color: 'var(--text-primary)' }}">{convertHeight(String(specs.length))}</span></div>}
-                    {specs.inversions !== undefined && <div className="flex justify-between gap-4 style={{ color: 'var(--text-secondary)' }}"><span>Inversions</span><span className="style={{ color: 'var(--text-primary)' }}">{specs.inversions}</span></div>}
-                    {specs.gForce && <div className="flex justify-between gap-4 style={{ color: 'var(--text-secondary)' }}"><span>G-Forces</span><span className="style={{ color: 'var(--text-primary)' }}">{specs.gForce}</span></div>}
-                    {specs.duration && <div className="flex justify-between gap-4 style={{ color: 'var(--text-secondary)' }}"><span>Duration</span><span className="style={{ color: 'var(--text-primary)' }}">{specs.duration}</span></div>}
-                    {specs.min_height && <div className="flex justify-between gap-4 style={{ color: 'var(--text-secondary)' }}"><span>Min Height</span><span className="style={{ color: 'var(--text-primary)' }}">📏 {convertMinHeight(String(specs.min_height))}</span></div>}
-                    {item.former_name && <div className="flex justify-between gap-4 style={{ color: 'var(--text-secondary)' }}"><span>Former Name</span><span className="style={{ color: 'var(--text-primary)' }}">{item.former_name}</span></div>}
+                    {specs.type && <div className="flex justify-between gap-4" style={{ color: 'var(--text-secondary)' }}><span>Type</span><span style={{ color: 'var(--text-primary)' }}>{specs.type}</span></div>}
+                    {specs.manufacturer && <div className="flex justify-between gap-4" style={{ color: 'var(--text-secondary)' }}><span>Manufacturer</span><span style={{ color: 'var(--text-primary)' }}>{specs.manufacturer}</span></div>}
+                    {specs.height && <div className="flex justify-between gap-4" style={{ color: 'var(--text-secondary)' }}><span>Height</span><span style={{ color: 'var(--text-primary)' }}>{convertHeight(String(specs.height))}</span></div>}
+                    {specs.drop && <div className="flex justify-between gap-4" style={{ color: 'var(--text-secondary)' }}><span>Drop</span><span style={{ color: 'var(--text-primary)' }}>{convertHeight(String(specs.drop))}</span></div>}
+                    {specs.speed && <div className="flex justify-between gap-4" style={{ color: 'var(--text-secondary)' }}><span>Speed</span><span style={{ color: 'var(--text-primary)' }}>{convertSpeed(String(specs.speed))}</span></div>}
+                    {specs.length && <div className="flex justify-between gap-4" style={{ color: 'var(--text-secondary)' }}><span>Length</span><span style={{ color: 'var(--text-primary)' }}>{convertHeight(String(specs.length))}</span></div>}
+                    {specs.inversions !== undefined && <div className="flex justify-between gap-4" style={{ color: 'var(--text-secondary)' }}><span>Inversions</span><span style={{ color: 'var(--text-primary)' }}>{specs.inversions}</span></div>}
+                    {specs.gForce && <div className="flex justify-between gap-4" style={{ color: 'var(--text-secondary)' }}><span>G-Forces</span><span style={{ color: 'var(--text-primary)' }}>{specs.gForce}</span></div>}
+                    {specs.duration && <div className="flex justify-between gap-4" style={{ color: 'var(--text-secondary)' }}><span>Duration</span><span style={{ color: 'var(--text-primary)' }}>{specs.duration}</span></div>}
+                    {specs.min_height && <div className="flex justify-between gap-4" style={{ color: 'var(--text-secondary)' }}><span>Min Height</span><span style={{ color: 'var(--text-primary)' }}>📏 {convertMinHeight(String(specs.min_height))}</span></div>}
+                    {item.former_name && <div className="flex justify-between gap-4" style={{ color: 'var(--text-secondary)' }}><span>Former Name</span><span style={{ color: 'var(--text-primary)' }}>{item.former_name}</span></div>}
                   </div>
                 </div>
               )}
             </SteamInfoPanel>
+
             <button
               onClick={handleVisitedToggle}
               className="mt-3 w-full py-2 text-sm font-medium rounded-sm transition-colors"
@@ -668,177 +854,6 @@ export default function ItemPageContent({ park, item, category, images, videos, 
             </button>
           </div>
         </div>
-
-        {/* Link to OST page - only show if OSTs exist */}
-        {osts && osts.length > 0 && (
-          <Link href={`/parks/${park.id}/${item.id}/osts`}
-            className="mt-8 inline-block px-6 py-3 rounded-sm text-white font-medium transition-colors"
-            style={{ background: 'var(--cta)' }}>
-            🎵 View Soundtrack ({osts.length})
-          </Link>
-        )}
-
-        {/* Rating Modal */}
-        {isRatingOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-black/70" onClick={() => setIsRatingOpen(false)} />
-            <div className="relative z-10 w-full max-w-lg rounded-sm shadow-2xl"
-              style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
-
-              {/* Header */}
-              <div className="flex items-center justify-between px-6 py-4"
-                style={{ borderBottom: '1px solid var(--border)' }}>
-                <h2 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>Rate {item.name}</h2>
-                <button onClick={() => setIsRatingOpen(false)}
-                  className="text-xl leading-none" style={{ color: 'var(--text-muted)' }}>✕</button>
-              </div>
-
-              {/* Sliders */}
-              <div className="px-6 py-5 space-y-6 max-h-[40vh] overflow-y-auto">
-                {dimensions.map(dimension => {
-                  const userScore = userRatings[dimension.id] || 0
-                  return (
-                    <div key={dimension.id} className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <label className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
-                          {dimension.label}
-                        </label>
-                        <span className="text-lg font-bold w-10 text-right" style={{ color: 'var(--accent)' }}>
-                          {userScore}
-                        </span>
-                      </div>
-                      <input type="range" min="0" max="100" value={userScore}
-                        onChange={e => setUserRatings(prev => ({ ...prev, [dimension.id]: parseInt(e.target.value) }))}
-                        className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
-                        style={{ background: `linear-gradient(to right, var(--accent) 0%, var(--accent) ${userScore}%, var(--border) ${userScore}%, var(--border) 100%)` }}
-                      />
-                    </div>
-                  )
-                })}
-              </div>
-
-              {/* Review text */}
-              <div className="px-6 pb-5 space-y-3 pt-5" style={{ borderTop: '1px solid var(--border)' }}>
-                <p className="text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
-                  Leave a review (optional)
-                </p>
-                <input type="text" placeholder="Review title" value={reviewTitle}
-                  onChange={e => setReviewTitle(e.target.value)}
-                  className="w-full rounded-sm px-3 py-2 text-sm focus:outline-none"
-                  style={{ background: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }}
-                />
-                <textarea placeholder="Share your experience..." value={reviewText}
-                  onChange={e => setReviewText(e.target.value)} rows={3}
-                  className="w-full rounded-sm px-3 py-2 text-sm focus:outline-none resize-none"
-                  style={{ background: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }}
-                />
-                {submitError && <p className="text-sm" style={{ color: 'var(--score-low)' }}>{submitError}</p>}
-              </div>
-
-              {/* Footer */}
-              <div className="flex items-center justify-between px-6 py-4"
-                style={{ borderTop: '1px solid var(--border)' }}>
-                <div className="text-sm" style={{ color: 'var(--text-muted)' }}>
-                  Your score: <span className="font-bold" style={{ color: 'var(--accent)' }}>{calculateMyScore()}</span>
-                </div>
-                <div className="flex gap-3">
-                  <button onClick={() => setIsRatingOpen(false)}
-                    className="px-4 py-2 text-sm transition-colors"
-                    style={{ color: 'var(--text-muted)' }}>
-                    Cancel
-                  </button>
-                  <button onClick={handleSubmitRating} disabled={submitting}
-                    className="px-5 py-2 text-sm font-medium rounded-sm transition-colors disabled:opacity-50"
-                    style={{ background: 'var(--cta)', color: 'var(--cta-text)' }}
-                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--cta-hover)')}
-                    onMouseLeave={e => (e.currentTarget.style.background = 'var(--cta)')}>
-                    {submitting ? 'Saving...' : hasRated ? 'Update rating' : 'Submit rating'}
-                  </button>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        )}
-
-        {/* Reviews Section */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-semibold mb-6">All Reviews</h2>
-
-          <div className="flex gap-2 mb-8 overflow-x-auto pb-2 border-b border-gray-700">
-            {['all', 'positive', 'mixed', 'negative', 'funny'].map((f) => (
-              <button
-                key={f}
-                onClick={() => setReviewFilter(f)}
-                className={`px-4 py-2 whitespace-nowrap font-medium capitalize transition-colors ${reviewFilter === f ? 'text-blue-400 border-b-2 border-blue-400' : 'text-gray-400 hover:text-gray-300'}`}
-              >
-                {f} Reviews
-              </button>
-            ))}
-          </div>
-          <div className="space-y-6">
-            {userReview && myScore !== null && (
-              <ReviewCard
-                reviewId={userReviewId ?? 'user'}
-                author="You"
-                score={myScore}
-                review_ratings={Object.entries(userRatings).map(([category, score]) => ({ category, score }))}
-                title={userReview.title}
-                text={userReview.text}
-                isOwn={true}
-                reactions={reactions[userReviewId ?? 'user'] ?? initialReactions}
-                userReactions={initialUserReactions}
-                userPoints={userPoints}
-                onReact={() => { }}
-                onEdit={() => setIsRatingOpen(true)}
-              />
-            )}
-            {reviews
-              .filter(r => !user || r.user_id !== user.id)
-              .map(review => {
-                const avg = review.review_ratings?.length > 0
-                  ? Math.round(review.review_ratings.reduce((s: number, r: any) => s + r.score, 0) / review.review_ratings.length)
-                  : 0
-                const reviewReactions = reactions[review.id] ?? initialReactions
-                const reviewUserReactions = myReactions[review.id] ?? initialUserReactions
-                if (!reviewReactions || !reviewUserReactions) return null
-                return (
-                  <ReviewCard
-                    key={review.id}
-                    reviewId={review.id}
-                    author={review.profiles?.username ?? 'Anonymous'}
-                    authorId={review.user_id}
-                    score={avg}
-                    title={review.title}
-                    text={review.body}
-                    isOwn={false}
-                    reactions={reviewReactions}
-                    userReactions={reviewUserReactions}
-                    userPoints={userPoints}
-                    onReact={handleReact}
-                  />
-                )
-              })
-            }
-          </div>
-        </div>
-
-        {similarRides.length > 0 && (
-          <SimilarRidesCarousel
-            title="Similar Rides"
-            subtitle={`Other ${currentType} coasters you might enjoy`}
-            items={similarRides}
-            currentRideId={item.id}
-          />
-        )}
-
-        <div className="flex justify-center mb-8">
-          <Link href={`/parks/${park.id}`} className="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-lg font-semibold transition-colors">
-            Back to {park.name}
-          </Link>
-        </div>
-
-        <PhotoCredits credits={credits} />
       </div>
     </div>
   )

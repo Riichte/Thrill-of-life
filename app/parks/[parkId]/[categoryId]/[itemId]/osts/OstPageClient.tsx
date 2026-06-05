@@ -182,7 +182,8 @@ export default function OstPageClient({ park, item, category, osts }: {
                                 <div className="w-32 h-20 flex-shrink-0 rounded-sm overflow-hidden bg-black">
                                     <iframe width="100%" height="100%" src={`https://www.youtube.com/embed/${ost.youtube_video_id}`}
                                         frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                        style={{ pointerEvents: 'none' }} />
+                                        allowFullScreen
+                                    ></iframe>
                                 </div>
 
                                 {/* Info */}

@@ -292,7 +292,8 @@ export default function ItemPageContent({ park, item, category, images, videos, 
         setVideoTitles(titleMap)
       }
       loadData()
-    }, [item.id])
+    }
+  }, [item.id])
 
   useEffect(() => {
     const load = async () => {
@@ -688,174 +689,148 @@ export default function ItemPageContent({ park, item, category, images, videos, 
                           </div>
                         )}
                       </div>
-
-
-
-                      {/* Rating Modal */}
-                      {isRatingOpen && (
-                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                          <div className="absolute inset-0 bg-black/70" onClick={() => setIsRatingOpen(false)} />
-                          <div className="relative z-10 w-full max-w-lg rounded-sm shadow-2xl"
-                            style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
-
-                            {/* Header */}
-                            <div className="flex items-center justify-between px-6 py-4"
-                              style={{ borderBottom: '1px solid var(--border)' }}>
-                              <h2 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>Rate {item.name}</h2>
-                              <button onClick={() => setIsRatingOpen(false)}
-                                className="text-xl leading-none" style={{ color: 'var(--text-muted)' }}>✕</button>
-                            </div>
-
-                            {/* Sliders */}
-                            <div className="px-6 py-5 space-y-6 max-h-[40vh] overflow-y-auto">
-                              {dimensions.map(dimension => {
-                                const userScore = userRatings[dimension.id] || 0
-                                return (
-                                  <div key={dimension.id} className="space-y-2">
-                                    <div className="flex justify-between items-center">
-                                      <label className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
-                                        {dimension.label}
-                                      </label>
-                                      <span className="text-lg font-bold w-10 text-right" style={{ color: 'var(--accent)' }}>
-                                        {userScore}
-                                      </span>
-                                    </div>
-                                    <input type="range" min="0" max="100" value={userScore}
-                                      onChange={e => setUserRatings(prev => ({ ...prev, [dimension.id]: parseInt(e.target.value) }))}
-                                      className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
-                                      style={{ background: `linear-gradient(to right, var(--accent) 0%, var(--accent) ${userScore}%, var(--border) ${userScore}%, var(--border) 100%)` }}
-                                    />
-                                  </div>
-                                )
-                              })}
-                            </div>
-
-                            {/* Review text */}
-                            <div className="px-6 pb-5 space-y-3 pt-5" style={{ borderTop: '1px solid var(--border)' }}>
-                              <p className="text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
-                                Leave a review (optional)
-                              </p>
-                              <input type="text" placeholder="Review title" value={reviewTitle}
-                                onChange={e => setReviewTitle(e.target.value)}
-                                className="w-full rounded-sm px-3 py-2 text-sm focus:outline-none"
-                                style={{ background: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }}
-                              />
-                              <textarea placeholder="Share your experience..." value={reviewText}
-                                onChange={e => setReviewText(e.target.value)} rows={3}
-                                className="w-full rounded-sm px-3 py-2 text-sm focus:outline-none resize-none"
-                                style={{ background: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }}
-                              />
-                              {submitError && <p className="text-sm" style={{ color: 'var(--score-low)' }}>{submitError}</p>}
-                            </div>
-
-                            {/* Footer */}
-                            <div className="flex items-center justify-between px-6 py-4"
-                              style={{ borderTop: '1px solid var(--border)' }}>
-                              <div className="text-sm" style={{ color: 'var(--text-muted)' }}>
-                                Your score: <span className="font-bold" style={{ color: 'var(--accent)' }}>{calculateMyScore()}</span>
-                              </div>
-                              <div className="flex gap-3">
-                                <button onClick={() => setIsRatingOpen(false)}
-                                  className="px-4 py-2 text-sm transition-colors"
-                                  style={{ color: 'var(--text-muted)' }}>
-                                  Cancel
-                                </button>
-                                <button onClick={handleSubmitRating} disabled={submitting}
-                                  className="px-5 py-2 text-sm font-medium rounded-sm transition-colors disabled:opacity-50"
-                                  style={{ background: 'var(--cta)', color: 'var(--cta-text)' }}
-                                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--cta-hover)')}
-                                  onMouseLeave={e => (e.currentTarget.style.background = 'var(--cta)')}>
-                                  {submitting ? 'Saving...' : hasRated ? 'Update rating' : 'Submit rating'}
-                                </button>
-                              </div>
-                            </div>
-
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Reviews Section */}
-                      <div className="mb-12">
-                        <h2 className="text-2xl font-semibold mb-6">All Reviews</h2>
-
-                        <div className="flex gap-2 mb-8 overflow-x-auto pb-2 border-b border-gray-700">
-                          {['all', 'positive', 'mixed', 'negative', 'funny'].map((f) => (
-                            <button
-                              key={f}
-                              onClick={() => setReviewFilter(f)}
-                              className={`px-4 py-2 whitespace-nowrap font-medium capitalize transition-colors ${reviewFilter === f ? 'text-blue-400 border-b-2 border-blue-400' : 'text-gray-400 hover:text-gray-300'}`}
-                            >
-                              {f} Reviews
-                            </button>
-                          ))}
-                        </div>
-                        <div className="space-y-6">
-                          {userReview && myScore !== null && (
-                            <ReviewCard
-                              reviewId={userReviewId ?? 'user'}
-                              author="You"
-                              score={myScore}
-                              review_ratings={Object.entries(userRatings).map(([category, score]) => ({ category, score }))}
-                              title={userReview.title}
-                              text={userReview.text}
-                              isOwn={true}
-                              reactions={reactions[userReviewId ?? 'user'] ?? initialReactions}
-                              userReactions={initialUserReactions}
-                              userPoints={userPoints}
-                              onReact={() => { }}
-                              onEdit={() => setIsRatingOpen(true)}
-                            />
-                          )}
-                          {reviews
-                            .filter(r => !user || r.user_id !== user.id)
-                            .map(review => {
-                              const avg = review.review_ratings?.length > 0
-                                ? Math.round(review.review_ratings.reduce((s: number, r: any) => s + r.score, 0) / review.review_ratings.length)
-                                : 0
-                              const reviewReactions = reactions[review.id] ?? initialReactions
-                              const reviewUserReactions = myReactions[review.id] ?? initialUserReactions
-                              if (!reviewReactions || !reviewUserReactions) return null
-                              return (
-                                <ReviewCard
-                                  key={review.id}
-                                  reviewId={review.id}
-                                  author={review.profiles?.username ?? 'Anonymous'}
-                                  authorId={review.user_id}
-                                  score={avg}
-                                  title={review.title}
-                                  text={review.body}
-                                  isOwn={false}
-                                  reactions={reviewReactions}
-                                  userReactions={reviewUserReactions}
-                                  userPoints={userPoints}
-                                  onReact={handleReact}
-                                />
-                              )
-                            })
-                          }
-                        </div>
-                      </div>
-
-                      {similarRides.length > 0 && (
-                        <SimilarRidesCarousel
-                          title="Similar Rides"
-                          subtitle={`Other ${currentType} coasters you might enjoy`}
-                          items={similarRides}
-                          currentRideId={item.id}
-                        />
-                      )}
-
-                      <div className="flex justify-center mb-8">
-                        <Link href={`/parks/${park.id}`} className="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-lg font-semibold transition-colors">
-                          Back to {park.name}
-                        </Link>
-                      </div>
-
-                      <PhotoCredits credits={credits} />
                     </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
-          {/* Right column */ }
-                    < div className = "lg:col-span-1" >
+            {/* Rating Modal */}
+            {isRatingOpen && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                <div className="absolute inset-0 bg-black/70" onClick={() => setIsRatingOpen(false)} />
+                <div className="relative z-10 w-full max-w-lg rounded-sm shadow-2xl"
+                  style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                  <div className="flex items-center justify-between px-6 py-4"
+                    style={{ borderBottom: '1px solid var(--border)' }}>
+                    <h2 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>Rate {item.name}</h2>
+                    <button onClick={() => setIsRatingOpen(false)}
+                      className="text-xl leading-none" style={{ color: 'var(--text-muted)' }}>✕</button>
+                  </div>
+                  <div className="px-6 py-5 space-y-6 max-h-[40vh] overflow-y-auto">
+                    {dimensions.map(dimension => {
+                      const userScore = userRatings[dimension.id] || 0
+                      return (
+                        <div key={dimension.id} className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <label className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{dimension.label}</label>
+                            <span className="text-lg font-bold w-10 text-right" style={{ color: 'var(--accent)' }}>{userScore}</span>
+                          </div>
+                          <input type="range" min="0" max="100" value={userScore}
+                            onChange={e => setUserRatings(prev => ({ ...prev, [dimension.id]: parseInt(e.target.value) }))}
+                            className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
+                            style={{ background: `linear-gradient(to right, var(--accent) 0%, var(--accent) ${userScore}%, var(--border) ${userScore}%, var(--border) 100%)` }}
+                          />
+                        </div>
+                      )
+                    })}
+                  </div>
+                  <div className="px-6 pb-5 space-y-3 pt-5" style={{ borderTop: '1px solid var(--border)' }}>
+                    <p className="text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>Leave a review (optional)</p>
+                    <input type="text" placeholder="Review title" value={reviewTitle}
+                      onChange={e => setReviewTitle(e.target.value)}
+                      className="w-full rounded-sm px-3 py-2 text-sm focus:outline-none"
+                      style={{ background: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }}
+                    />
+                    <textarea placeholder="Share your experience..." value={reviewText}
+                      onChange={e => setReviewText(e.target.value)} rows={3}
+                      className="w-full rounded-sm px-3 py-2 text-sm focus:outline-none resize-none"
+                      style={{ background: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }}
+                    />
+                    {submitError && <p className="text-sm" style={{ color: 'var(--score-low)' }}>{submitError}</p>}
+                  </div>
+                  <div className="flex items-center justify-between px-6 py-4" style={{ borderTop: '1px solid var(--border)' }}>
+                    <div className="text-sm" style={{ color: 'var(--text-muted)' }}>
+                      Your score: <span className="font-bold" style={{ color: 'var(--accent)' }}>{calculateMyScore()}</span>
+                    </div>
+                    <div className="flex gap-3">
+                      <button onClick={() => setIsRatingOpen(false)} className="px-4 py-2 text-sm" style={{ color: 'var(--text-muted)' }}>Cancel</button>
+                      <button onClick={handleSubmitRating} disabled={submitting}
+                        className="px-5 py-2 text-sm font-medium rounded-sm disabled:opacity-50"
+                        style={{ background: 'var(--cta)', color: 'var(--cta-text)' }}>
+                        {submitting ? 'Saving...' : hasRated ? 'Update rating' : 'Submit rating'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Reviews Section */}
+            <div className="mb-12">
+              <h2 className="text-2xl font-semibold mb-6">All Reviews</h2>
+              <div className="flex gap-2 mb-8 overflow-x-auto pb-2 border-b border-gray-700">
+                {['all', 'positive', 'mixed', 'negative', 'funny'].map((f) => (
+                  <button key={f} onClick={() => setReviewFilter(f)}
+                    className={`px-4 py-2 whitespace-nowrap font-medium capitalize transition-colors ${reviewFilter === f ? 'text-blue-400 border-b-2 border-blue-400' : 'text-gray-400 hover:text-gray-300'}`}>
+                    {f} Reviews
+                  </button>
+                ))}
+              </div>
+              <div className="space-y-6">
+                {userReview && myScore !== null && (
+                  <ReviewCard
+                    reviewId={userReviewId ?? 'user'}
+                    author="You"
+                    score={myScore}
+                    review_ratings={Object.entries(userRatings).map(([category, score]) => ({ category, score }))}
+                    title={userReview.title}
+                    text={userReview.text}
+                    isOwn={true}
+                    reactions={reactions[userReviewId ?? 'user'] ?? initialReactions}
+                    userReactions={initialUserReactions}
+                    userPoints={userPoints}
+                    onReact={() => { }}
+                    onEdit={() => setIsRatingOpen(true)}
+                  />
+                )}
+                {reviews.filter(r => !user || r.user_id !== user.id).map(review => {
+                  const avg = review.review_ratings?.length > 0
+                    ? Math.round(review.review_ratings.reduce((s: number, r: any) => s + r.score, 0) / review.review_ratings.length)
+                    : 0
+                  const reviewReactions = reactions[review.id] ?? initialReactions
+                  const reviewUserReactions = myReactions[review.id] ?? initialUserReactions
+                  if (!reviewReactions || !reviewUserReactions) return null
+                  return (
+                    <ReviewCard
+                      key={review.id}
+                      reviewId={review.id}
+                      author={review.profiles?.username ?? 'Anonymous'}
+                      authorId={review.user_id}
+                      score={avg}
+                      title={review.title}
+                      text={review.body}
+                      isOwn={false}
+                      reactions={reviewReactions}
+                      userReactions={reviewUserReactions}
+                      userPoints={userPoints}
+                      onReact={handleReact}
+                    />
+                  )
+                })}
+              </div>
+            </div>
+
+            {similarRides.length > 0 && (
+              <SimilarRidesCarousel
+                title="Similar Rides"
+                subtitle={`Other ${currentType} coasters you might enjoy`}
+                items={similarRides}
+                currentRideId={item.id}
+              />
+            )}
+
+            <div className="flex justify-center mb-8">
+              <Link href={`/parks/${park.id}`} className="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-lg font-semibold transition-colors">
+                Back to {park.name}
+              </Link>
+            </div>
+
+            <PhotoCredits credits={credits} />
+          </div>
+
+          {/* Right column */}
+          <div className="lg:col-span-1">
             <SteamInfoPanel
               headerImage={images?.find(img => img.sort_order === -1)?.url || null}
               headerImageAlt={item.name}
@@ -906,8 +881,8 @@ export default function ItemPageContent({ park, item, category, images, videos, 
               {isVisited ? '✓ Visited' : '+ Mark as Visited'}
             </button>
           </div>
-              </div>
-      </div>
         </div>
-        )
+      </div>
+    </div>
+  )
 }

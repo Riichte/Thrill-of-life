@@ -227,12 +227,13 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
     const [parkImages, setParkImages] = useState<{ id: string; url: string; sort_order: number; attribution_author?: string; attribution_url?: string; license?: string }[]>([])
     const [editingImage, setEditingImage] = useState<{ id: string; type: 'item' | 'park' } | null>(null)
     const [editFormData, setEditFormData] = useState({ author: '', sourceUrl: '', license: 'CC BY 4.0', sortOrder: 0 })
-    const [selectedParkForOst, setSelectedParkForOst] = useState('')
+    const [selectedCategoryForOst, setSelectedCategoryForOst] = useState('')
     const [imageItemSearch, setImageItemSearch] = useState('')
     const [imageParkSearch, setImageParkSearch] = useState('')
     const [videoItemSearch, setVideoItemSearch] = useState('')
     const [videoParkSearch, setVideoParkSearch] = useState('')
     const [itemParkSearch, setItemParkSearch] = useState('')
+    const [selectedParkForOst, setSelectedParkForOst] = useState('')
 
     useEffect(() => {
         loadManufacturers()
@@ -255,19 +256,16 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
         setTimeout(() => { setError(''); setSuccess('') }, 4000)
     }
 
-    const loadOsts = async () => {
-        const { data } = await supabase.from('osts').select('*').order('created_at', { ascending: false })
-        const listEl = document.getElementById('osts-list')
-        if (listEl) {
-            listEl.innerHTML = (data ?? []).map(ost => `
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;border-radius:4px;background:var(--bg-elevated);color:var(--text-primary)">
-        <div>
-          <p style="font-size:14px;font-weight:500">${ost.title}</p>
-          <p style="font-size:12px;color:var(--text-muted)">${ost.item_id}</p>
-        </div>
-      </div>
-    `).join('')
-        }
+    const [ostList, setOstList] = useState<any[]>([])
+    const [editingOst, setEditingOst] = useState<any | null>(null)
+    const [editOstTitle, setEditOstTitle] = useState('')
+    const [editOstYoutube, setEditOstYoutube] = useState('')
+
+    const loadOsts = async (parkId?: string) => {
+        let query = supabase.from('osts').select('*, items(park_id, name)').order('created_at', { ascending: false })
+        const { data } = await query
+        const filtered = parkId ? (data ?? []).filter((o: any) => o.items?.park_id === parkId) : (data ?? [])
+        setOstList(filtered)
     }
 
     const handleEditPark = (park: Park) => {
@@ -503,7 +501,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
         else loadParkImages(parkImageParkId)
         setLoading(false)
     }
-
+    const [osts, setOsts] = useState<any[]>([])
     const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set())
 
     const handleBulkDelete = async () => {
@@ -669,7 +667,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                 t === 'images' ? 'Ride Images' :
                                     t === 'park-images' ? 'Park Images' :
                                         t === 'images-manager' ? 'Image Search' :
-                                            t === 'videos' ? 'Videos' :
+                                            t === 'videos' ? 'Ride Videos' :
                                                 t === 'manufacturers' ? 'Manufacturers' :
                                                     t === 'prices' ? 'Prices' :
                                                         t.charAt(0).toUpperCase() + t.slice(1)}
@@ -1239,57 +1237,112 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                     )
                 }
 
-                {/* ─── OSTs Tab ─── */}
-                {
-                    tab === 'osts' && (
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8" style={{ overflow: 'visible' }}>
-                            <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', overflow: 'visible' }}>
-                                <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>Add OST</h2>
-                                <div className="space-y-4">
-                                    <div>
-                                        <label className={labelClass} style={labelStyle}>Park</label>
-                                        <select className={inputClass} style={{ ...inputStyle }} id="ost-park" onChange={e => setSelectedParkForOst(e.target.value)}>
-                                            <option value="">Select a park</option>
-                                            {parks.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label className={labelClass} style={labelStyle}>Item</label>
-                                        <select className={inputClass} style={{ ...inputStyle }} id="ost-item">
-                                            <option value="">Select an item</option>
-                                            {items.filter(i => i.park_id === selectedParkForOst).map(i => <option key={i.id} value={i.id}>{i.name}</option>)}
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label className={labelClass} style={labelStyle}>OST Title</label>
-                                        <input className={inputClass} style={inputStyle} id="ost-title" placeholder="e.g. Blue Fire Theme" />
-                                    </div>
-                                    <div>
-                                        <label className={labelClass} style={labelStyle}>YouTube Video ID</label>
-                                        <input className={inputClass} style={inputStyle} id="ost-youtube" placeholder="e.g. dQw4w9WgXcQ" />
-                                    </div>
-                                    <button onClick={async () => {
-                                        const itemId = (document.getElementById('ost-item') as HTMLSelectElement).value
-                                        const title = (document.getElementById('ost-title') as HTMLInputElement).value
-                                        const youtubeId = (document.getElementById('ost-youtube') as HTMLInputElement).value
-                                        if (!itemId || !title || !youtubeId) { notify('All fields required', true); return }
-                                        const { error } = await supabase.from('osts').insert({ item_id: itemId, title, youtube_video_id: youtubeId })
-                                        if (error) notify(error.message, true)
-                                        else { notify('OST added'); loadOsts() }
-                                    }} disabled={loading} className={btnPrimary} style={btnPrimaryStyle}>
-                                        {loading ? 'Adding...' : 'Add OST'}
-                                    </button>
+                {tab === 'osts' && (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8" style={{ overflow: 'visible' }}>
+                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                            <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>Add OST</h2>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className={labelClass} style={labelStyle}>Park</label>
+                                    <select className={inputClass} style={{ ...inputStyle }} id="ost-park" onChange={e => { setSelectedParkForOst(e.target.value); loadOsts(e.target.value) }}>
+                                        <option value="">Select a park</option>
+                                        {parks.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                                    </select>
                                 </div>
+                                <div>
+                                    <label className={labelClass} style={labelStyle}>Category</label>
+                                    <select className={inputClass} style={{ ...inputStyle }} id="ost-category"
+                                        onChange={e => setItemForm(p => ({ ...p, category_id: e.target.value }))}>
+                                        <option value="">Select a category</option>
+                                        {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className={labelClass} style={labelStyle}>Item</label>
+                                    <select className={inputClass} style={{ ...inputStyle }} id="ost-item">
+                                        <option value="">Select an item</option>
+                                        {items.filter(i => i.park_id === selectedParkForOst && (!itemForm.category_id || i.category_id === itemForm.category_id)).map(i => <option key={i.id} value={i.id}>{i.name}</option>)}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className={labelClass} style={labelStyle}>OST Title</label>
+                                    <input className={inputClass} style={inputStyle} id="ost-title" placeholder="e.g. Blue Fire Theme" />
+                                </div>
+                                <div>
+                                    <label className={labelClass} style={labelStyle}>YouTube Video ID</label>
+                                    <input className={inputClass} style={inputStyle} id="ost-youtube" placeholder="e.g. dQw4w9WgXcQ" />
+                                </div>
+                                <button onClick={async () => {
+                                    const itemId = (document.getElementById('ost-item') as HTMLSelectElement).value
+                                    const title = (document.getElementById('ost-title') as HTMLInputElement).value
+                                    const youtubeRaw = (document.getElementById('ost-youtube') as HTMLInputElement).value
+                                    const youtubeId = youtubeRaw.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/)?.[1] ?? youtubeRaw.trim()
+                                    if (!itemId || !title || !youtubeId) { notify('All fields required', true); return }
+                                    const { error } = await supabase.from('osts').insert({ item_id: itemId, title, youtube_video_id: youtubeId })
+                                    if (error) notify(error.message, true)
+                                    else { notify('OST added'); loadOsts(selectedParkForOst) }
+                                }} disabled={loading} className={btnPrimary} style={btnPrimaryStyle}>
+                                    {loading ? 'Adding...' : 'Add OST'}
+                                </button>
                             </div>
-                            <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', overflow: 'visible' }}>
-                                <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>OSTs</h2>
-                                <div className="space-y-2 max-h-[600px] overflow-y-auto" id="osts-list">
-                                    <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Loading...</p>
+                        </div>
+                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                            <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>OSTs ({ostList.length})</h2>
+                            <div className="space-y-2 max-h-[600px] overflow-y-auto">
+                                {ostList.map(ost => (
+                                    <div key={ost.id} className="flex items-center justify-between gap-3 p-3 rounded-sm" style={{ background: 'var(--bg-elevated)' }}>
+                                        <div className="min-w-0">
+                                            <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{ost.title}</p>
+                                            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{ost.items?.name} · {ost.youtube_video_id}</p>
+                                        </div>
+                                        <div className="flex gap-2 flex-shrink-0">
+                                            <button onClick={() => { setEditingOst(ost); setEditOstTitle(ost.title); setEditOstYoutube(ost.youtube_video_id) }}
+                                                className={btnEdit} style={btnEditStyle}>Edit</button>
+                                            <button onClick={async () => {
+                                                const { data, error } = await supabase.from('osts').delete().eq('id', ost.id).select()
+                                                if (error) { notify(error.message, true); console.error(error) }
+                                                else {
+                                                    console.log('deleted', data)
+                                                    setOstList(prev => prev.filter(o => o.id !== ost.id))
+                                                    notify('OST deleted')
+                                                }
+                                            }} className={btnDanger} style={btnDangerStyle}>Delete</button>
+                                        </div>
+                                    </div>
+                                ))}
+                                {ostList.length === 0 && <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Select a park to see OSTs.</p>}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Edit OST Modal */}
+                {editingOst && (
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                        <div className="rounded-sm p-6 max-w-md w-full" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                            <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Edit OST</h2>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className={labelClass} style={labelStyle}>Title</label>
+                                    <input className={inputClass} style={inputStyle} value={editOstTitle} onChange={e => setEditOstTitle(e.target.value)} />
+                                </div>
+                                <div>
+                                    <label className={labelClass} style={labelStyle}>YouTube Video ID</label>
+                                    <input className={inputClass} style={inputStyle} value={editOstYoutube} onChange={e => setEditOstYoutube(e.target.value)} />
+                                </div>
+                                <div className="flex gap-3 pt-2">
+                                    <button onClick={async () => {
+                                        await supabase.from('osts').update({ title: editOstTitle, youtube_video_id: editOstYoutube }).eq('id', editingOst.id)
+                                        setEditingOst(null)
+                                        notify('OST updated')
+                                        loadOsts(selectedParkForOst)
+                                    }} className={btnPrimary} style={btnPrimaryStyle}>Save</button>
+                                    <button onClick={() => setEditingOst(null)} className={btnSecondary} style={btnSecondaryStyle}>Cancel</button>
                                 </div>
                             </div>
                         </div>
-                    )
-                }
+                    </div>
+                )}
 
                 {/* ─── Prices Tab ─── */}
                 {tab === 'prices' && <PricesTab parks={parks} />}

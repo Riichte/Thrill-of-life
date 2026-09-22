@@ -254,7 +254,6 @@ export default function ItemPageContent({ park, item, category, images, videos, 
 
   useEffect(() => {
     const loadData = async () => {
-      // Load OSTs
       const { data } = await supabase.from('osts').select('id, title, youtube_video_id, composer, location').eq('item_id', item.id)
       setOsts(data ?? [])
       if (data && data.length > 0) {
@@ -265,34 +264,30 @@ export default function ItemPageContent({ park, item, category, images, videos, 
 
         const avgMap: Record<string, number> = {}
         const rawMap: Record<string, Record<string, number>> = {}
-
-        const grouped: Record<string, typeof ratings> = {}
+        const grouped: Record<string, any[]> = {}
         ratings?.forEach(r => {
           if (!grouped[r.ost_id]) grouped[r.ost_id] = []
           grouped[r.ost_id]!.push(r)
         })
-
         Object.entries(grouped).forEach(([ostId, rows]) => {
           const dims = ['emotion', 'nostalgia', 'appeal', 'experience'] as const
           const dimAvgs: Record<string, number> = {}
           dims.forEach(d => {
-            dimAvgs[d] = Math.round(rows!.reduce((s, r) => s + r[d], 0) / rows!.length)
+            dimAvgs[d] = Math.round(rows.reduce((s, r) => s + r[d], 0) / rows.length)
           })
           rawMap[ostId] = dimAvgs
           avgMap[ostId] = Math.round(Object.values(dimAvgs).reduce((a, b) => a + b, 0) / 4)
         })
-
         setOstAvgRatings(avgMap)
         setOstRawRatings(rawMap)
-
-        // Load video titles
-        const { data: videoData } = await supabase.from('item_videos').select('video_id, title').eq('item_id', item.id)
-        const titleMap: Record<string, string> = {}
-        videoData?.forEach(v => { titleMap[v.video_id] = v.title })
-        setVideoTitles(titleMap)
       }
-      loadData()
+
+      const { data: videoData } = await supabase.from('item_videos').select('video_id, title').eq('item_id', item.id)
+      const titleMap: Record<string, string> = {}
+      videoData?.forEach(v => { titleMap[v.video_id] = v.title })
+      setVideoTitles(titleMap)
     }
+    loadData()
   }, [item.id])
 
   useEffect(() => {
@@ -658,8 +653,24 @@ export default function ItemPageContent({ park, item, category, images, videos, 
                           />
                         </div>
                       </div>
-                      <div className="min-w-0 flex items-center justify-between gap-3 flex-1">
+                      <div className="min-w-0 flex flex-col gap-2 flex-1">
                         <p className="text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>{ost.title}</p>
+                        <div className="flex gap-2">
+                          <button onClick={() => {
+                            window.location.href = `/parks/${park.id}/${item.category_id}/${item.id}/osts`
+                          }}
+                            className="text-xs px-3 py-1 rounded-sm transition-colors"
+                            style={{ background: 'var(--cta)', color: 'var(--cta-text)' }}>
+                            ⭐ Rate
+                          </button>
+                          <button onClick={() => {
+                            window.location.href = `/parks/${park.id}/${item.category_id}/${item.id}/osts`
+                          }}
+                            className="text-xs px-3 py-1 rounded-sm transition-colors"
+                            style={{ background: 'var(--bg-elevated)', color: 'var(--text-muted)' }}>
+                            🤍 Favorite
+                          </button>
+                        </div>
                         {ostAvgRatings[ost.id] && (
                           <div className="flex items-center gap-3 flex-shrink-0">
                             {/* Circle */}
@@ -688,6 +699,7 @@ export default function ItemPageContent({ park, item, category, images, videos, 
                             </div>
                           </div>
                         )}
+
                       </div>
                     </div>
                   ))}

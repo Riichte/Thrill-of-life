@@ -91,10 +91,10 @@ export default function Navbar() {
   }
 
   const themeIcons: Record<string, string> = {
-    'dark-steam': '🌊',
-    'dark-neon': '🔮',
-    'light-blueprint': '📐',
-    'light-tropical': '🌴',
+    'dark-steam': '',
+    'dark-neon': '',
+    'light-blueprint': '',
+    'light-tropical': '',
   }
 
   const currentTheme = themes.find(t => t.id === theme)
@@ -326,6 +326,11 @@ export default function Navbar() {
               style={{ color: '#f59e0b' }}>
               🏆 Leaderboard
             </Link>
+            <Link href="/games/guess-the-ride"
+              className="px-4 py-3 text-sm font-medium border-b-2 border-transparent transition-colors whitespace-nowrap"
+              style={{ color: 'var(--accent)' }}>
+              Guess the Ride
+            </Link>
           </div>
 
           {isOpen && (
@@ -344,6 +349,12 @@ export default function Navbar() {
                   style={{ color: '#f59e0b' }}
                   onClick={() => setIsOpen(false)}>
                   🏆 Leaderboard
+                </Link>
+                <Link href="/games/guess-the-ride"
+                  className="block py-2 px-2 rounded text-sm font-medium"
+                  style={{ color: 'var(--accent)' }}
+                  onClick={() => setIsOpen(false)}>
+                  Guess the Ride
                 </Link>
               </div>
               {/* Mobile theme picker */}

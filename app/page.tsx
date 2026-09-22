@@ -125,11 +125,14 @@ export default async function Home() {
 
       <div className="container mx-auto px-4 py-10 md:py-14">
 
-        <div className="rounded-2xl p-6 mb-10 text-center" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
-          <span className="text-xs px-2 py-1 rounded-sm font-semibold uppercase tracking-wider" style={{ background: 'var(--cta)', color: 'var(--cta-text)' }}>Early Access</span>
-          <h2 className="text-2xl font-bold mt-3 mb-1" style={{ color: 'var(--text-primary)' }}>We're just getting started</h2>
-          <p className="text-sm" style={{ color: 'var(--text-muted)' }}>New parks, rides, and features are being added regularly.</p>
-        </div>
+        <Link href="/games/guess-the-ride" className="block mb-10">
+          <div className="rounded-2xl p-6 text-center transition-transform hover:-translate-y-0.5"
+            style={{ background: 'var(--card-bg)', border: '1px solid var(--accent)' }}>
+            <span className="text-3xl">🎮</span>
+            <h2 className="text-2xl font-bold mt-2 mb-1" style={{ color: 'var(--text-primary)' }}>Can you guess the ride?</h2>
+            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Test your theme park knowledge — play now!</p>
+          </div>
+        </Link>
 
         <HomeMarqueeRow
           title="Parks"

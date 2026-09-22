@@ -577,3 +577,30 @@ export async function getProfileAllReviews(userId: string) {
   if (error) return []
   return data ?? []
 }
+
+// ─── Guess the Ride game ──────────────────────────────────
+
+export async function getRandomGuessItem() {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('items')
+    .select('id, name, park_id, category_id, item_images(url, sort_order)')
+    .not('item_images', 'is', null)
+
+  if (error || !data?.length) return null
+
+  // keep only items that actually have a usable image
+  const withImages = data.filter(i => (i.item_images as any[])?.some(img => img.sort_order !== -1))
+  if (!withImages.length) return null
+
+  const pick = withImages[Math.floor(Math.random() * withImages.length)]
+  const image = (pick.item_images as any[]).find(img => img.sort_order !== -1)
+
+  return {
+    id: pick.id,
+    name: pick.name,
+    parkId: pick.park_id,
+    categoryId: pick.category_id,
+    imageUrl: image.url,
+  }
+}

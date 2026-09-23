@@ -611,7 +611,7 @@ export async function getRandomGuessStatsItem() {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('items')
-    .select('id, name, park_id, category_id, specs')
+    .select('id, name, park_id, category_id, specs, status')
     .in('category_id', ['roller-coasters', 'water-rides', 'flat-rides'])
 
   if (error || !data?.length) return null
@@ -639,6 +639,7 @@ export async function getRandomGuessStatsItem() {
       inversions: pick.specs?.inversions ?? null,
       duration: pick.specs?.duration ?? null,
       manufacturer: pick.specs?.manufacturer ?? null,
+      status: pick.status ?? null,
     },
   }
 }

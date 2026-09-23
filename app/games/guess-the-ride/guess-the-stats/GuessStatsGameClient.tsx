@@ -11,6 +11,7 @@ type Specs = {
   inversions: number | null
   duration: string | null
   manufacturer: string | null
+  status: string | null
 }
 
 type Item = {
@@ -24,6 +25,7 @@ type Item = {
 const STAT_LABELS: { key: keyof Specs; label: string; unit?: string }[] = [
   { key: 'type', label: 'Type' },
   { key: 'manufacturer', label: 'Manufacturer' },
+  { key: 'status', label: 'Status' },
   { key: 'height', label: 'Height', unit: 'm' },
   { key: 'speed', label: 'Speed', unit: 'km/h' },
   { key: 'length', label: 'Length', unit: 'm' },
@@ -40,12 +42,19 @@ export default function GuessStatsGameClient({ item }: { item: Item }) {
     return <div className="p-8 text-center" style={{ color: 'var(--text-muted)' }}>No items available.</div>
   }
 
+  const formatStatus = (value: string) => {
+    if (value === 'sbno') return 'SBNO'
+    return value
+      .replace(/_/g, ' ')
+      .replace(/\b\w/g, (c) => c.toUpperCase())
+  }
+
   const maxAttempts = 10
   const lost = attempts.length >= maxAttempts && !won
 
-  // reveal one more stat every 2 wrong attempts (min 1 shown at start)
+  // reveal one more stat every wrong attempt (min 1 shown at start)
   const availableStats = STAT_LABELS.filter(s => item.specs[s.key] !== null && item.specs[s.key] !== '')
-  const revealCount = Math.min(availableStats.length, 1 + Math.floor(attempts.length / 2))
+  const revealCount = Math.min(availableStats.length, 1 + attempts.length)
   const revealedStats = won || lost ? availableStats : availableStats.slice(0, revealCount)
 
   const normalize = (s: string) =>
@@ -123,13 +132,13 @@ export default function GuessStatsGameClient({ item }: { item: Item }) {
             <div key={s.key} className="flex justify-between text-sm">
               <span style={{ color: 'var(--text-muted)' }}>{s.label}</span>
               <span style={{ color: 'var(--text-primary)' }}>
-                {item.specs[s.key]}{s.unit ? ` ${s.unit}` : ''}
+                {s.key === 'status' ? formatStatus(String(item.specs[s.key])) : item.specs[s.key]}{s.unit ? ` ${s.unit}` : ''}
               </span>
             </div>
           ))}
           {revealedStats.length < availableStats.length && !won && !lost && (
             <p className="text-xs pt-2" style={{ color: 'var(--text-faint)' }}>
-              More stats unlock every 2 guesses...
+              A new stat unlocks after every guess...
             </p>
           )}
         </div>
@@ -175,7 +184,7 @@ export default function GuessStatsGameClient({ item }: { item: Item }) {
             className="px-4 py-2 rounded-sm text-sm" style={{ background: 'var(--bg-elevated)', color: 'var(--text-primary)' }}>
             View ride
           </Link>
-          <Link href="/games/guess-the-stats"
+          <Link href="/games/guess-the-ride/guess-the-stats"
             className="px-4 py-2 rounded-sm text-sm font-medium" style={{ background: 'var(--cta)', color: 'var(--cta-text)' }}>
             Play again
           </Link>

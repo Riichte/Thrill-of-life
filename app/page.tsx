@@ -109,13 +109,15 @@ export default async function Home() {
     }))
 
 
-  const homeParkCards: HomeMarqueeCard[] = shuffle(parks ?? []).map(park => ({
-    id: park.id,
-    href: `/parks/${park.id}`,
-    image: park.cover_image_url || '',
-    title: park.name,
-    subtitle: park.country
-  }))
+  const homeParkCards: HomeMarqueeCard[] = shuffle(parks ?? [])
+    .filter(park => !!park.cover_image_url)
+    .map(park => ({
+      id: park.id,
+      href: `/parks/${park.id}`,
+      image: park.cover_image_url,
+      title: park.name,
+      subtitle: park.country
+    }))
 
 
 
@@ -128,7 +130,7 @@ export default async function Home() {
         <Link href="/games/guess-the-ride" className="block mb-10">
           <div className="rounded-2xl p-6 text-center transition-transform hover:-translate-y-0.5"
             style={{ background: 'var(--card-bg)', border: '1px solid var(--accent)' }}>
-            <span className="text-3xl">🎮</span>
+            <span className="text-3xl"></span>
             <h2 className="text-2xl font-bold mt-2 mb-1" style={{ color: 'var(--text-primary)' }}>Can you guess the ride?</h2>
             <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Test your theme park knowledge — play now!</p>
           </div>

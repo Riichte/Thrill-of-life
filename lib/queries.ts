@@ -604,3 +604,41 @@ export async function getRandomGuessItem() {
     imageUrl: image.url,
   }
 }
+
+// ─── Guess the Ride by Stats game ─────────────────────────
+
+export async function getRandomGuessStatsItem() {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('items')
+    .select('id, name, park_id, category_id, specs')
+    .in('category_id', ['roller-coasters', 'water-rides', 'flat-rides'])
+
+  if (error || !data?.length) return null
+
+  // keep only items with at least 3 usable stats
+  const withStats = data.filter(i => {
+    const s = i.specs || {}
+    const count = ['type', 'height', 'speed', 'length', 'inversions', 'duration', 'manufacturer']
+      .filter(k => s[k] !== undefined && s[k] !== null && s[k] !== '').length
+    return count >= 3
+  })
+  if (!withStats.length) return null
+
+  const pick = withStats[Math.floor(Math.random() * withStats.length)]
+  return {
+    id: pick.id,
+    name: pick.name,
+    parkId: pick.park_id,
+    categoryId: pick.category_id,
+    specs: {
+      type: pick.specs?.type ?? null,
+      height: pick.specs?.height ?? null,
+      speed: pick.specs?.speed ?? null,
+      length: pick.specs?.length ?? null,
+      inversions: pick.specs?.inversions ?? null,
+      duration: pick.specs?.duration ?? null,
+      manufacturer: pick.specs?.manufacturer ?? null,
+    },
+  }
+}

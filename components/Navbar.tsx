@@ -331,6 +331,11 @@ export default function Navbar() {
               style={{ color: 'var(--accent)' }}>
               Guess the Ride
             </Link>
+            <Link href="/games/guess-the-stats"
+              className="px-4 py-3 text-sm font-medium border-b-2 border-transparent transition-colors whitespace-nowrap"
+              style={{ color: 'var(--accent)' }}>
+              Guess by Stats
+            </Link>            
           </div>
 
           {isOpen && (

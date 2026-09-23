@@ -11,6 +11,16 @@ type Item = {
   imageUrl: string
 } | null
 
+type Specs = {
+  type: string | null
+  height: number | null
+  speed: number | null
+  length: number | null
+  inversions: number | null
+  duration: string | null
+  manufacturer: string | null
+}
+
 export default function GuessGameClient({ item }: { item: Item }) {
   const [guess, setGuess] = useState('')
   const [attempts, setAttempts] = useState<string[]>([])

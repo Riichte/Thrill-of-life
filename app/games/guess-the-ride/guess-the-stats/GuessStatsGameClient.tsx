@@ -24,6 +24,7 @@ type Item = {
   categoryId: string
   specs: Specs
   imageUrl: string
+  parkName?: string | null
 } | null
 
 const STAT_LABELS: { key: keyof Specs; label: string; unit?: string }[] = [
@@ -105,6 +106,9 @@ export default function GuessStatsGameClient({ item }: { item: Item }) {
           <img src={item.imageUrl} alt={item.name} className="w-12 h-12 rounded-sm object-cover flex-shrink-0" />
           <div>
             <p className="font-semibold" style={{ color: 'var(--score-high)' }}>{item.name}</p>
+            {item.parkName && (
+              <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{item.parkName}</p>
+            )}
             <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
               Solved in {guesses.length} {guesses.length === 1 ? 'try' : 'tries'}
             </p>
@@ -115,9 +119,12 @@ export default function GuessStatsGameClient({ item }: { item: Item }) {
       {lost && (
         <div className="w-full max-w-md mb-4 rounded-sm px-4 py-3 flex items-center gap-3"
           style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid var(--score-low)' }}>
-          <span className="text-2xl">😬</span>
+          <img src={item.imageUrl} alt={item.name} className="w-12 h-12 rounded-sm object-cover flex-shrink-0" />
           <div>
             <p className="font-semibold" style={{ color: 'var(--score-low)' }}>{item.name}</p>
+            {item.parkName && (
+              <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{item.parkName}</p>
+            )}
             <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Better luck next time</p>
           </div>
         </div>

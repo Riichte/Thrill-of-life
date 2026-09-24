@@ -91,7 +91,7 @@ export default function Navbar() {
   }
 
   const themeIcons: Record<string, string> = {
-    'dark-steam': '',
+    'dark-blue': '',
     'dark-neon': '',
     'light-blueprint': '',
     'light-tropical': '',

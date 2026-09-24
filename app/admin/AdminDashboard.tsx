@@ -189,82 +189,87 @@ function PricesTab({ parks }: { parks: Park[] }) {
 function ItemElementsManager({ itemId }: { itemId: string }) {
     const supabase = createClient()
     const [masterElements, setMasterElements] = useState<{ id: string; name: string }[]>([])
-    const [assignedElements, setAssignedElements] = useState<any[]>([])
+    const [assignedElements, setAssignedElements] = useState<{ id: string; element_id: string; sort_order: number; elements: { name: string } }[]>([])
     const [selectedElementId, setSelectedElementId] = useState('')
+    const [loading, setLoading] = useState(false)
+
+    const loadData = async () => {
+        const { data: master } = await supabase.from('elements').select('*').order('name')
+        setMasterElements(master ?? [])
+
+        const { data: assigned } = await supabase
+            .from('coaster_elements')
+            .select('id, element_id, sort_order, elements(name)')
+            .eq('item_id', itemId)
+            .order('sort_order')
+        setAssignedElements((assigned as any) ?? [])
+    }
 
     useEffect(() => {
         if (itemId) loadData()
     }, [itemId])
 
-    const loadData = async () => {
-        const [{ data: master }, { data: assigned }] = await Promise.all([
-            supabase.from('elements').select('*').order('name'),
-            supabase.from('coaster_elements').select('*, elements(name)').eq('item_id', itemId).order('sort_order')
-        ])
-        setMasterElements(master ?? [])
-        setAssignedElements(assigned ?? [])
-    }
-
-    const handleAddCoasterElement = async () => {
-        if (!selectedElementId || !itemId) return
-        const nextOrder = assignedElements.length > 0 ? Math.max(...assignedElements.map(a => a.sort_order)) + 1 : 0
+    const handleAdd = async () => {
+        if (!selectedElementId) return
+        setLoading(true)
+        const nextOrder = assignedElements.length + 1
         await supabase.from('coaster_elements').insert({
             item_id: itemId,
             element_id: selectedElementId,
             sort_order: nextOrder
         })
         setSelectedElementId('')
-        loadData()
+        await loadData()
+        setLoading(false)
     }
 
-    const handleDeleteCoasterElement = async (id: string) => {
+    const handleRemove = async (id: string) => {
         await supabase.from('coaster_elements').delete().eq('id', id)
-        loadData()
+        await loadData()
     }
 
     return (
-        <div className="mt-6 pt-6 border-t" style={{ borderColor: 'var(--border)' }}>
-            <h3 className="text-sm font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>
-                Coaster Layout Elements
-            </h3>
-            <div className="flex gap-2 mb-4">
+        <div className="space-y-3">
+            <h4 className="text-sm font-semibold text-[var(--text-primary)]">Coaster Layout Elements</h4>
+            <div className="flex gap-2">
                 <select
-                    className="w-full rounded-sm px-3 py-2 text-sm focus:outline-none"
-                    style={{ background: 'var(--bg-elevated)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }}
                     value={selectedElementId}
-                    onChange={e => setSelectedElementId(e.target.value)}
+                    onChange={(e) => setSelectedElementId(e.target.value)}
+                    className="flex-1 rounded-sm px-3 py-2 text-sm focus:outline-none"
+                    style={{ background: 'var(--bg-elevated)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }}
                 >
-                    <option value="">Select element to add...</option>
-                    {masterElements.map(el => (
+                    <option value="">Select an element...</option>
+                    {masterElements.map((el) => (
                         <option key={el.id} value={el.id}>{el.name}</option>
                     ))}
                 </select>
                 <button
                     type="button"
-                    onClick={handleAddCoasterElement}
-                    disabled={!selectedElementId}
-                    className="px-4 py-2 text-sm rounded-sm font-medium disabled:opacity-50 flex-shrink-0"
+                    onClick={handleAdd}
+                    disabled={loading || !selectedElementId}
+                    className="px-4 py-2 text-sm font-medium rounded-sm disabled:opacity-50 flex-shrink-0"
                     style={{ background: 'var(--cta)', color: 'var(--cta-text)' }}
                 >
                     Add
                 </button>
             </div>
 
-            <div className="space-y-2 max-h-48 overflow-y-auto">
-                {assignedElements.length === 0 && (
-                    <p className="text-xs" style={{ color: 'var(--text-muted)' }}>No layout elements assigned yet.</p>
-                )}
-                {assignedElements.map((item, idx) => (
-                    <div key={item.id} className="flex items-center justify-between p-2 rounded-sm text-xs" style={{ background: 'var(--bg-elevated)' }}>
-                        <span style={{ color: 'var(--text-primary)' }}>{idx + 1}. {item.elements?.name}</span>
+            <div className="flex flex-wrap gap-2 mt-2">
+                {assignedElements.map((item) => (
+                    <span
+                        key={item.id}
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs rounded-full"
+                        style={{ background: 'var(--bg-elevated)', border: '1px solid var(--input-border)' }}
+                    >
+                        {item.elements?.name}
                         <button
                             type="button"
-                            onClick={() => handleDeleteCoasterElement(item.id)}
-                            className="text-red-400 hover:underline"
+                            onClick={() => handleRemove(item.id)}
+                            className="text-muted hover:text-red-400 ml-1"
                         >
-                            Remove
+                            ×
                         </button>
-                    </div>
+                    </span>
                 ))}
             </div>
         </div>
@@ -1073,19 +1078,38 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                     <label className={labelClass} style={labelStyle}>Specs (JSON)</label>
                                     <textarea className={`${inputClass} font-mono text-xs`} style={inputStyle} rows={4} value={specsText} onChange={e => setSpecsText(e.target.value)} />
                                 </div>
-                                <div className="flex gap-3 pt-2">
-                                    {itemForm.category_id === 'roller-coasters' && editingItemId && (
+                                {itemForm.category_id === 'roller-coasters' && editingItemId && (
+                                    <div className="mt-6 pt-4 border-t border-[var(--border-color)]">
                                         <ItemElementsManager itemId={editingItemId} />
-                                    )}
+                                    </div>
+                                )}
 
-                                    <button onClick={handleSaveItem} disabled={loading}
-                                        className="w-full py-2 text-sm font-medium rounded-sm disabled:opacity-50"
-                                        style={{ background: 'var(--cta)', color: 'var(--cta-text)' }}>
-                                        {loading ? 'Saving...' : editingItemId ? 'Update Item' : 'Save Item'}
-                                    </button>
+                                {/* Action Buttons Container */}
+                                <div className="flex justify-end gap-3 mt-6">
                                     {editingItemId && (
-                                        <button onClick={() => { setEditingItemId(null); setItemForm(emptyItem); setItemIdInput(''); setSpecsText('{}') }} className={btnSecondary} style={btnSecondaryStyle}>Cancel</button>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setEditingItemId(null)
+                                                setItemForm(emptyItem)
+                                                setItemIdInput('')
+                                                setSpecsText('{}')
+                                            }}
+                                            className="px-4 py-2 text-sm rounded-sm font-medium"
+                                            style={{ background: 'var(--bg-elevated)', color: 'var(--text-muted)' }}
+                                        >
+                                            Cancel
+                                        </button>
                                     )}
+                                    <button
+                                        type="button"
+                                        onClick={handleSaveItem}
+                                        disabled={loading}
+                                        className="px-4 py-2 text-sm font-medium rounded-sm disabled:opacity-50"
+                                        style={{ background: 'var(--cta)', color: 'var(--cta-text)' }}
+                                    >
+                                        {loading ? 'Saving...' : editingItemId ? 'Update Item' : 'Create Item'}
+                                    </button>
                                 </div>
                             </div>
                         </div>

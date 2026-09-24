@@ -35,7 +35,7 @@ const STAT_LABELS: { key: keyof Specs; label: string; unit?: string }[] = [
   { key: 'duration', label: 'Duration' },
 ]
 
-type Guess = { id: string; name: string; specs: Specs }
+type Guess = { id: string; name: string; parkName?: string; specs: Specs }
 
 export default function GuessStatsGameClient({ item }: { item: Item }) {
   const [query, setQuery] = useState('')
@@ -142,7 +142,10 @@ export default function GuessStatsGameClient({ item }: { item: Item }) {
                 <button key={s.id} onClick={() => handlePick(s)}
                   className="block w-full text-left px-3 py-2 text-sm hover:opacity-80"
                   style={{ color: 'var(--text-primary)' }}>
-                  {s.name}
+                  <span className="font-medium">{s.name}</span>
+                  <span className="block text-xs" style={{ color: 'var(--text-muted)' }}>
+                    {[s.parkName, s.specs.type].filter(Boolean).join(' · ')}
+                  </span>
                 </button>
               ))}
             </div>
@@ -163,7 +166,10 @@ export default function GuessStatsGameClient({ item }: { item: Item }) {
             <tbody>
               {guesses.map(g => (
                 <tr key={g.id}>
-                  <td className="px-2 py-3 text-left font-medium">{g.name}</td>
+                  <td className="px-2 py-3 text-left font-medium">
+                    {g.name}
+                    {g.parkName && <span className="block text-xs font-normal" style={{ color: 'var(--text-muted)' }}>{g.parkName}</span>}
+                  </td>
                   {STAT_LABELS.map(s => {
                     const a = g.specs[s.key]
                     const b = item.specs[s.key]

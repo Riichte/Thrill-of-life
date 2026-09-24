@@ -7,7 +7,7 @@ export async function searchGuessItemsAction(query: string) {
   const supabase = await createClient()
   const { data } = await supabase
     .from('items')
-    .select('id, name, specs, status')
+    .select('id, name, specs, status, parks(name)')   // ← added parks(name)
     .in('category_id', ['roller-coasters', 'water-rides', 'flat-rides'])
     .ilike('name', `%${query}%`)
     .limit(8)
@@ -15,6 +15,7 @@ export async function searchGuessItemsAction(query: string) {
   return (data ?? []).map(i => ({
     id: i.id as string,
     name: i.name as string,
+    parkName: ((i.parks as unknown as { name: string } | null)?.name ?? '') as string,  // ← new
     specs: {
       type: i.specs?.type ?? null,
       manufacturer: i.specs?.manufacturer ?? null,

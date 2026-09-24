@@ -197,46 +197,66 @@ function ItemElementsManager({ itemId }: { itemId: string }) {
         const { data: master } = await supabase.from('elements').select('*').order('name')
         setMasterElements(master ?? [])
 
-        const { data: assigned } = await supabase
+        const { data: assigned, error } = await supabase
             .from('coaster_elements')
-            .select('id, element_id, sort_order, elements(name)')
+            .select('id, element_id, sort_order, elements(id, name)')
             .eq('item_id', itemId)
             .order('sort_order')
-        setAssignedElements((assigned as any) ?? [])
+
+        if (error) {
+            console.error('Error fetching assigned elements:', error)
+        } else {
+            setAssignedElements((assigned as any) ?? [])
+        }
     }
 
     useEffect(() => {
         if (itemId) loadData()
     }, [itemId])
 
-    const handleAdd = async () => {
-        if (!selectedElementId) return
+    const handleAdd = async (e: React.MouseEvent) => {
+        e.preventDefault() // Prevents page reload or submitting parent form
+        if (!selectedElementId || !itemId) return
+
         setLoading(true)
         const nextOrder = assignedElements.length + 1
-        await supabase.from('coaster_elements').insert({
+
+        const { error } = await supabase.from('coaster_elements').insert({
             item_id: itemId,
             element_id: selectedElementId,
             sort_order: nextOrder
         })
-        setSelectedElementId('')
-        await loadData()
+
+        if (error) {
+            console.error('Failed to add element:', error)
+            alert(`Error adding element: ${error.message}`)
+        } else {
+            setSelectedElementId('')
+            await loadData()
+        }
         setLoading(false)
     }
 
-    const handleRemove = async (id: string) => {
-        await supabase.from('coaster_elements').delete().eq('id', id)
-        await loadData()
+    const handleRemove = async (id: string, e: React.MouseEvent) => {
+        e.preventDefault()
+        const { error } = await supabase.from('coaster_elements').delete().eq('id', id)
+        if (error) {
+            console.error('Failed to delete element:', error)
+        } else {
+            await loadData()
+        }
     }
 
     return (
-        <div className="space-y-3">
-            <h4 className="text-sm font-semibold text-[var(--text-primary)]">Coaster Layout Elements</h4>
+        <div className="space-y-3 my-4 p-4 rounded-sm" style={{ background: 'var(--bg-elevated)', border: '1px solid var(--input-border)' }}>
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Coaster Layout Elements</h4>
+
             <div className="flex gap-2">
                 <select
                     value={selectedElementId}
                     onChange={(e) => setSelectedElementId(e.target.value)}
                     className="flex-1 rounded-sm px-3 py-2 text-sm focus:outline-none"
-                    style={{ background: 'var(--bg-elevated)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }}
+                    style={{ background: 'var(--bg-main)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }}
                 >
                     <option value="">Select an element...</option>
                     {masterElements.map((el) => (
@@ -250,27 +270,32 @@ function ItemElementsManager({ itemId }: { itemId: string }) {
                     className="px-4 py-2 text-sm font-medium rounded-sm disabled:opacity-50 flex-shrink-0"
                     style={{ background: 'var(--cta)', color: 'var(--cta-text)' }}
                 >
-                    Add
+                    {loading ? 'Adding...' : 'Add'}
                 </button>
             </div>
 
-            <div className="flex flex-wrap gap-2 mt-2">
-                {assignedElements.map((item) => (
-                    <span
-                        key={item.id}
-                        className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs rounded-full"
-                        style={{ background: 'var(--bg-elevated)', border: '1px solid var(--input-border)' }}
-                    >
-                        {item.elements?.name}
-                        <button
-                            type="button"
-                            onClick={() => handleRemove(item.id)}
-                            className="text-muted hover:text-red-400 ml-1"
+            {/* List of assigned elements */}
+            <div className="flex flex-wrap gap-2 mt-3 pt-2 border-t border-[var(--input-border)]">
+                {assignedElements.length === 0 ? (
+                    <p className="text-xs text-[var(--text-muted)] italic">No layout elements assigned yet.</p>
+                ) : (
+                    assignedElements.map((item) => (
+                        <span
+                            key={item.id}
+                            className="inline-flex items-center gap-2 px-3 py-1 text-xs rounded-full font-medium"
+                            style={{ background: 'var(--bg-main)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }}
                         >
-                            ×
-                        </button>
-                    </span>
-                ))}
+                            {item.elements?.name ?? 'Unknown'}
+                            <button
+                                type="button"
+                                onClick={(e) => handleRemove(item.id, e)}
+                                className="text-[var(--text-muted)] hover:text-red-400 font-bold ml-1"
+                            >
+                                ×
+                            </button>
+                        </span>
+                    ))
+                )}
             </div>
         </div>
     )

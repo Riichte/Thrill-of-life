@@ -611,8 +611,8 @@ export async function getRandomGuessStatsItem() {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('items')
-    .select('id, name, park_id, category_id, specs, status')
-    .in('category_id', ['roller-coasters', 'water-rides', 'flat-rides'])
+    .select('id, name, park_id, category_id, specs, status, item_images(url, sort_order)')
+    .eq('category_id', 'roller-coasters')
 
   if (error || !data?.length) return null
 
@@ -623,16 +623,22 @@ export async function getRandomGuessStatsItem() {
       .filter(k => s[k] !== undefined && s[k] !== null && s[k] !== '').length
     return count >= 3
   })
-  if (!withStats.length) return null
+  const withStatsAndImage = withStats.filter(i =>
+    (i.item_images as any[])?.some(img => img.sort_order !== -1)
+  )
+  if (!withStatsAndImage.length) return null
 
-  const pick = withStats[Math.floor(Math.random() * withStats.length)]
+  const pick = withStatsAndImage[Math.floor(Math.random() * withStatsAndImage.length)]
+  const image = (pick.item_images as any[]).find(img => img.sort_order !== -1)
   return {
     id: pick.id,
     name: pick.name,
     parkId: pick.park_id,
     categoryId: pick.category_id,
+    imageUrl: image.url,
     specs: {
       type: pick.specs?.type ?? null,
+      model: pick.specs?.model ?? null,
       height: pick.specs?.height ?? null,
       speed: pick.specs?.speed ?? null,
       length: pick.specs?.length ?? null,

@@ -14,6 +14,7 @@ type Specs = {
   duration: string | null
   manufacturer: string | null
   status: string | null
+  model: string | null
 }
 
 type Item = {
@@ -22,11 +23,13 @@ type Item = {
   parkId: string
   categoryId: string
   specs: Specs
+  imageUrl: string
 } | null
 
 const STAT_LABELS: { key: keyof Specs; label: string; unit?: string }[] = [
   { key: 'type', label: 'Type' },
   { key: 'manufacturer', label: 'Manufacturer' },
+  { key: 'model', label: 'Model' },
   { key: 'status', label: 'Status' },
   { key: 'height', label: 'Height', unit: 'm' },
   { key: 'speed', label: 'Speed', unit: 'km/h' },
@@ -63,6 +66,10 @@ export default function GuessStatsGameClient({ item }: { item: Item }) {
     return <div className="p-8 text-center" style={{ color: 'var(--text-muted)' }}>No items available.</div>
   }
 
+
+  const activeStats = STAT_LABELS.filter(
+    s => item.specs[s.key] !== null && item.specs[s.key] !== undefined && item.specs[s.key] !== ''
+  )
   const maxAttempts = 10
   const lost = guesses.length >= maxAttempts && !won
 
@@ -95,7 +102,7 @@ export default function GuessStatsGameClient({ item }: { item: Item }) {
       {won && (
         <div className="w-full max-w-md mb-4 rounded-sm px-4 py-3 flex items-center gap-3"
           style={{ background: 'rgba(16,185,129,0.12)', border: '1px solid var(--score-high)' }}>
-          <span className="text-2xl">🎉</span>
+          <img src={item.imageUrl} alt={item.name} className="w-12 h-12 rounded-sm object-cover flex-shrink-0" />
           <div>
             <p className="font-semibold" style={{ color: 'var(--score-high)' }}>{item.name}</p>
             <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
@@ -160,7 +167,7 @@ export default function GuessStatsGameClient({ item }: { item: Item }) {
             <thead>
               <tr style={{ color: 'var(--text-muted)' }}>
                 <th className="px-2 py-1 text-left">Name</th>
-                {STAT_LABELS.map(s => <th key={s.key} className="px-2 py-1">{s.label}</th>)}
+                {activeStats.map(s => <th key={s.key} className="px-2 py-1">{s.label}</th>)}
               </tr>
             </thead>
             <tbody>
@@ -170,7 +177,7 @@ export default function GuessStatsGameClient({ item }: { item: Item }) {
                     {g.name}
                     {g.parkName && <span className="block text-xs font-normal" style={{ color: 'var(--text-muted)' }}>{g.parkName}</span>}
                   </td>
-                  {STAT_LABELS.map(s => {
+                  {activeStats.map(s => {
                     const a = g.specs[s.key]
                     const b = item.specs[s.key]
                     const ok = String(a ?? '') === String(b ?? '')

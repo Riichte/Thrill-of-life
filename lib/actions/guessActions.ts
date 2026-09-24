@@ -8,7 +8,7 @@ export async function searchGuessItemsAction(query: string) {
   const { data } = await supabase
     .from('items')
     .select('id, name, specs, status, parks(name)')   // ← added parks(name)
-    .in('category_id', ['roller-coasters', 'water-rides', 'flat-rides'])
+    .eq('category_id', 'roller-coasters')
     .ilike('name', `%${query}%`)
     .limit(8)
 
@@ -25,6 +25,7 @@ export async function searchGuessItemsAction(query: string) {
       length: i.specs?.length ?? null,
       inversions: i.specs?.inversions ?? null,
       duration: i.specs?.duration ?? null,
+      model: i.specs?.model ?? null,
     },
   }))
 }

@@ -656,21 +656,25 @@ export async function getRandomGuessStatsItem() {
 
 // Fetch all master elements for dropdowns and master management
 export async function getMasterElements() {
+  const supabase = createClient() // or await createClient() depending on your Supabase helper
   const { data, error } = await supabase
     .from('elements')
     .select('*')
     .order('name')
+    
   if (error) console.error('Error fetching master elements:', error)
   return data ?? []
 }
 
 // Fetch elements associated with a specific coaster ordered by sequence
 export async function getCoasterElements(itemId: string) {
+  const supabase = createClient()
   const { data, error } = await supabase
     .from('coaster_elements')
     .select('id, sort_order, element_id, elements(id, name)')
     .eq('item_id', itemId)
     .order('sort_order')
+
   if (error) console.error('Error fetching coaster elements:', error)
   return data ?? []
 }

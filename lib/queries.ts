@@ -653,16 +653,6 @@ export async function getRandomGuessStatsItem() {
 
 // ─── Coaster Elements ─────────────────────────────────────
 
-export async function getCoasterElements(itemId: string): Promise<{ id: string; name: string; sort_order: number }[]> {
-  const supabase = await createClient()
-  const { data, error } = await supabase
-    .from('coaster_elements')
-    .select('id, name, sort_order')
-    .eq('item_id', itemId)
-    .order('sort_order')
-  if (error) return []
-  return data ?? []
-}
 
 // Fetch all master elements for dropdowns and master management
 export async function getMasterElements() {

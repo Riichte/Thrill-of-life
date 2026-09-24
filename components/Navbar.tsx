@@ -56,7 +56,7 @@ export default function Navbar() {
     const timeout = setTimeout(async () => {
       const [{ data: parks }, { data: items }] = await Promise.all([
         supabase.from('parks').select('id, name, country').ilike('name', `%${searchQuery}%`).limit(3),
-        supabase.from('items').select('id, name, category_id, park_id').ilike('name', `%${searchQuery}%`).limit(5),
+        supabase.from('items').select('id, name, category_id, park_id, specs, parks(name)').ilike('name', `%${searchQuery}%`).limit(5),
       ])
       setSuggestions({ parks: parks ?? [], items: items ?? [] })
       setShowSuggestions(true)
@@ -113,8 +113,13 @@ export default function Navbar() {
         {suggestions.items.map(i => (
           <Link key={i.id} href={`/parks/${i.park_id}/${i.category_id}/${i.id}`} onClick={() => setShowSuggestions(false)}
             className="flex items-center gap-2 px-4 py-2.5 transition-colors hover:opacity-80">
-            <span className="text-xs w-10 flex-shrink-0 capitalize truncate" style={{ color: 'var(--text-muted)' }}>{i.category_id.replace('_', ' ')}</span>
-            <span className="text-sm" style={{ color: 'var(--text-primary)' }}>{i.name}</span>
+            <span className="text-xs w-10 flex-shrink-0 capitalize truncate" style={{ color: 'var(--text-muted)' }}>{i.category_id.replace(/[-_]/g, ' ')}</span>
+            <div className="min-w-0">
+              <span className="text-sm block truncate" style={{ color: 'var(--text-primary)' }}>{i.name}</span>
+              <span className="text-xs block truncate" style={{ color: 'var(--text-muted)' }}>
+                {[i.parks?.name, i.specs?.type].filter(Boolean).join(' · ')}
+              </span>
+            </div>
           </Link>
         ))}
       </div>

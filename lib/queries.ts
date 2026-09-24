@@ -251,7 +251,7 @@ export async function searchAll(query: string) {
       .limit(5),
     supabase
       .from('items')
-      .select('id, name, description, category_id, park_id, item_images(url)')
+      .select('id, name, description, category_id, park_id, specs, parks(name), item_images(url)')
       .or(`name.ilike.${q},description.ilike.${q}`)
       .limit(20),
   ])

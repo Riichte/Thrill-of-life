@@ -184,150 +184,189 @@ function PricesTab({ parks }: { parks: Park[] }) {
     )
 }
 
+
+
+function ItemElementsManager({ itemId }: { itemId: string }) {
+    const supabase = createClient()
+    const [masterElements, setMasterElements] = useState<{ id: string; name: string }[]>([])
+    const [assignedElements, setAssignedElements] = useState<any[]>([])
+    const [selectedElementId, setSelectedElementId] = useState('')
+
+    useEffect(() => {
+        if (itemId) loadData()
+    }, [itemId])
+
+    const loadData = async () => {
+        const [{ data: master }, { data: assigned }] = await Promise.all([
+            supabase.from('elements').select('*').order('name'),
+            supabase.from('coaster_elements').select('*, elements(name)').eq('item_id', itemId).order('sort_order')
+        ])
+        setMasterElements(master ?? [])
+        setAssignedElements(assigned ?? [])
+    }
+
+    const handleAddCoasterElement = async () => {
+        if (!selectedElementId || !itemId) return
+        const nextOrder = assignedElements.length > 0 ? Math.max(...assignedElements.map(a => a.sort_order)) + 1 : 0
+        await supabase.from('coaster_elements').insert({
+            item_id: itemId,
+            element_id: selectedElementId,
+            sort_order: nextOrder
+        })
+        setSelectedElementId('')
+        loadData()
+    }
+
+    const handleDeleteCoasterElement = async (id: string) => {
+        await supabase.from('coaster_elements').delete().eq('id', id)
+        loadData()
+    }
+
+    return (
+        <div className="mt-6 pt-6 border-t" style={{ borderColor: 'var(--border)' }}>
+            <h3 className="text-sm font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>
+                Coaster Layout Elements
+            </h3>
+            <div className="flex gap-2 mb-4">
+                <select
+                    className="w-full rounded-sm px-3 py-2 text-sm focus:outline-none"
+                    style={{ background: 'var(--bg-elevated)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }}
+                    value={selectedElementId}
+                    onChange={e => setSelectedElementId(e.target.value)}
+                >
+                    <option value="">Select element to add...</option>
+                    {masterElements.map(el => (
+                        <option key={el.id} value={el.id}>{el.name}</option>
+                    ))}
+                </select>
+                <button
+                    type="button"
+                    onClick={handleAddCoasterElement}
+                    disabled={!selectedElementId}
+                    className="px-4 py-2 text-sm rounded-sm font-medium disabled:opacity-50 flex-shrink-0"
+                    style={{ background: 'var(--cta)', color: 'var(--cta-text)' }}
+                >
+                    Add
+                </button>
+            </div>
+
+            <div className="space-y-2 max-h-48 overflow-y-auto">
+                {assignedElements.length === 0 && (
+                    <p className="text-xs" style={{ color: 'var(--text-muted)' }}>No layout elements assigned yet.</p>
+                )}
+                {assignedElements.map((item, idx) => (
+                    <div key={item.id} className="flex items-center justify-between p-2 rounded-sm text-xs" style={{ background: 'var(--bg-elevated)' }}>
+                        <span style={{ color: 'var(--text-primary)' }}>{idx + 1}. {item.elements?.name}</span>
+                        <button
+                            type="button"
+                            onClick={() => handleDeleteCoasterElement(item.id)}
+                            className="text-red-400 hover:underline"
+                        >
+                            Remove
+                        </button>
+                    </div>
+                ))}
+            </div>
+        </div>
+    )
+}
+
 // ─── ElementsTab ──────────────────────────────────────────
 
-function ElementsTab({ parks, items }: { parks: Park[]; items: Item[] }) {
+function ElementsTab() {
     const supabase = createClient()
-    const [selectedPark, setSelectedPark] = useState('')
-    const [selectedItem, setSelectedItem] = useState('')
-    const [elements, setElements] = useState<{ id: string; name: string; sort_order: number }[]>([])
+    const [elements, setElements] = useState<{ id: string; name: string }[]>([])
     const [newElementName, setNewElementName] = useState('')
     const [loading, setLoading] = useState(false)
 
     const inputClass = `w-full rounded-sm px-3 py-2 text-sm focus:outline-none`
     const inputStyle = { background: 'var(--bg-elevated)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }
-    const labelClass = `block text-xs font-medium uppercase tracking-wider mb-1`
-    const labelStyle = { color: 'var(--text-muted)' }
 
-    const coasterItems = items.filter(i => i.category_id === 'roller-coasters')
-    const parkCoasters = coasterItems.filter(i => i.park_id === selectedPark)
-
-    const loadElements = async (itemId: string) => {
-        setSelectedItem(itemId)
-        const { data } = await supabase
-            .from('coaster_elements')
-            .select('id, name, sort_order')
-            .eq('item_id', itemId)
-            .order('sort_order')
+    const loadMasterElements = async () => {
+        const { data } = await supabase.from('elements').select('*').order('name')
         setElements(data ?? [])
     }
 
-    const handleAddElement = async () => {
-        if (!newElementName.trim() || !selectedItem) return
+    useEffect(() => {
+        loadMasterElements()
+    }, [])
+
+    const handleAddMasterElement = async () => {
+        if (!newElementName.trim()) return
         setLoading(true)
-        const nextOrder = elements.length > 0 ? Math.max(...elements.map(e => e.sort_order)) + 1 : 0
+        const name = newElementName.trim()
+        const id = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
+
         const { error } = await supabase
-            .from('coaster_elements')
-            .insert({ item_id: selectedItem, name: newElementName.trim(), sort_order: nextOrder })
+            .from('elements')
+            .insert({ id, name })
+
         if (!error) {
             setNewElementName('')
-            loadElements(selectedItem)
+            loadMasterElements()
+        } else {
+            console.error('Error inserting element:', error)
         }
         setLoading(false)
     }
 
-    const handleDeleteElement = async (id: string) => {
-        await supabase.from('coaster_elements').delete().eq('id', id)
-        loadElements(selectedItem)
-    }
-
-    const handleMoveElement = async (id: string, direction: 'up' | 'down') => {
-        const idx = elements.findIndex(e => e.id === id)
-        const swapIdx = direction === 'up' ? idx - 1 : idx + 1
-        if (swapIdx < 0 || swapIdx >= elements.length) return
-
-        const current = elements[idx]
-        const swap = elements[swapIdx]
-
-        await Promise.all([
-            supabase.from('coaster_elements').update({ sort_order: swap.sort_order }).eq('id', current.id),
-            supabase.from('coaster_elements').update({ sort_order: current.sort_order }).eq('id', swap.id),
-        ])
-        loadElements(selectedItem)
+    const handleDeleteMasterElement = async (id: string) => {
+        if (!confirm('Delete this element from the master list?')) return
+        await supabase.from('elements').delete().eq('id', id)
+        loadMasterElements()
     }
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
-                <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>Add Elements</h2>
-                <div className="space-y-4">
-                    <div>
-                        <label className={labelClass} style={labelStyle}>Park</label>
-                        <select className={inputClass} style={{ ...inputStyle }} value={selectedPark}
-                            onChange={e => { setSelectedPark(e.target.value); setSelectedItem(''); setElements([]) }}>
-                            <option value="">Select park</option>
-                            {parks.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-                        </select>
-                    </div>
-                    {selectedPark && (
-                        <div>
-                            <label className={labelClass} style={labelStyle}>Roller Coaster</label>
-                            <select className={inputClass} style={{ ...inputStyle }} value={selectedItem}
-                                onChange={e => loadElements(e.target.value)}>
-                                <option value="">Select coaster</option>
-                                {parkCoasters.map(i => <option key={i.id} value={i.id}>{i.name}</option>)}
-                            </select>
-                        </div>
-                    )}
-                    {selectedItem && (
-                        <div className="flex gap-2 pt-2">
-                            <input
-                                className={inputClass} style={inputStyle}
-                                value={newElementName}
-                                onChange={e => setNewElementName(e.target.value)}
-                                placeholder="e.g. Lift Hill, Loop, Helix..."
-                                onKeyDown={e => { if (e.key === 'Enter') handleAddElement() }}
-                            />
-                            <button onClick={handleAddElement} disabled={loading || !newElementName.trim()}
-                                className="px-4 py-2 text-sm font-medium rounded-sm disabled:opacity-50 flex-shrink-0"
-                                style={{ background: 'var(--cta)', color: 'var(--cta-text)' }}>
-                                Add
-                            </button>
-                        </div>
-                    )}
+                <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>
+                    Add Master Element
+                </h2>
+                <div className="flex gap-2">
+                    <input
+                        className={inputClass}
+                        style={inputStyle}
+                        value={newElementName}
+                        onChange={e => setNewElementName(e.target.value)}
+                        placeholder="e.g. Vertical Loop, Cobra Roll, Immelmann..."
+                        onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAddMasterElement(); } }}
+                    />
+                    <button
+                        type="button"
+                        onClick={handleAddMasterElement}
+                        disabled={loading || !newElementName.trim()}
+                        className="px-4 py-2 text-sm font-medium rounded-sm disabled:opacity-50 flex-shrink-0"
+                        style={{ background: 'var(--cta)', color: 'var(--cta-text)' }}
+                    >
+                        Add Element
+                    </button>
                 </div>
             </div>
 
-            {selectedItem && (
-                <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
-                    <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
-                        Elements ({elements.length}) — in layout order
-                    </h2>
-                    <div className="space-y-2 max-h-[600px] overflow-y-auto">
-                        {elements.length === 0 && (
-                            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>No elements yet. Add the first one.</p>
-                        )}
-                        {elements.map((el, idx) => (
-                            <div key={el.id} className="flex items-center justify-between gap-3 p-3 rounded-sm"
-                                style={{ background: 'var(--bg-elevated)' }}>
-                                <div className="flex items-center gap-3 min-w-0">
-                                    <span className="text-xs w-5 text-right flex-shrink-0" style={{ color: 'var(--text-faint)' }}>
-                                        {idx + 1}
-                                    </span>
-                                    <span className="text-sm" style={{ color: 'var(--text-primary)' }}>{el.name}</span>
-                                </div>
-                                <div className="flex gap-1 flex-shrink-0">
-                                    <button onClick={() => handleMoveElement(el.id, 'up')} disabled={idx === 0}
-                                        className="px-2 py-1 text-xs rounded-sm disabled:opacity-30"
-                                        style={{ background: 'var(--bg-elevated)', color: 'var(--text-muted)', border: '1px solid var(--border)' }}>
-                                        ↑
-                                    </button>
-                                    <button onClick={() => handleMoveElement(el.id, 'down')} disabled={idx === elements.length - 1}
-                                        className="px-2 py-1 text-xs rounded-sm disabled:opacity-30"
-                                        style={{ background: 'var(--bg-elevated)', color: 'var(--text-muted)', border: '1px solid var(--border)' }}>
-                                        ↓
-                                    </button>
-                                    <button onClick={() => handleDeleteElement(el.id)}
-                                        className="px-2 py-1 text-xs rounded-sm"
-                                        style={{ background: 'rgba(239,68,68,0.2)', color: '#ef4444' }}>
-                                        ✕
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+            <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
+                    Available Elements ({elements.length})
+                </h2>
+                <div className="space-y-2 max-h-[600px] overflow-y-auto">
+                    {elements.length === 0 && (
+                        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>No master elements created yet.</p>
+                    )}
+                    {elements.map(el => (
+                        <div key={el.id} className="flex items-center justify-between gap-3 p-3 rounded-sm"
+                            style={{ background: 'var(--bg-elevated)' }}>
+                            <span className="text-sm" style={{ color: 'var(--text-primary)' }}>{el.name}</span>
+                            <button
+                                type="button"
+                                onClick={() => handleDeleteMasterElement(el.id)}
+                                className="px-2 py-1 text-xs rounded-sm"
+                                style={{ background: 'rgba(239,68,68,0.2)', color: '#ef4444' }}
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    ))}
                 </div>
-            )}
+            </div>
         </div>
     )
 }
@@ -1035,8 +1074,14 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                     <textarea className={`${inputClass} font-mono text-xs`} style={inputStyle} rows={4} value={specsText} onChange={e => setSpecsText(e.target.value)} />
                                 </div>
                                 <div className="flex gap-3 pt-2">
-                                    <button onClick={handleSaveItem} disabled={loading} className={btnPrimary} style={btnPrimaryStyle}>
-                                        {loading ? 'Saving...' : editingItemId ? 'Update Item' : 'Add Item'}
+                                    {itemForm.category_id === 'roller-coasters' && editingItemId && (
+                                        <ItemElementsManager itemId={editingItemId} />
+                                    )}
+
+                                    <button onClick={handleSaveItem} disabled={loading}
+                                        className="w-full py-2 text-sm font-medium rounded-sm disabled:opacity-50"
+                                        style={{ background: 'var(--cta)', color: 'var(--cta-text)' }}>
+                                        {loading ? 'Saving...' : editingItemId ? 'Update Item' : 'Save Item'}
                                     </button>
                                     {editingItemId && (
                                         <button onClick={() => { setEditingItemId(null); setItemForm(emptyItem); setItemIdInput(''); setSpecsText('{}') }} className={btnSecondary} style={btnSecondaryStyle}>Cancel</button>

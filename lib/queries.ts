@@ -663,3 +663,24 @@ export async function getCoasterElements(itemId: string): Promise<{ id: string; 
   if (error) return []
   return data ?? []
 }
+
+// Fetch all master elements for dropdowns and master management
+export async function getMasterElements() {
+  const { data, error } = await supabase
+    .from('elements')
+    .select('*')
+    .order('name')
+  if (error) console.error('Error fetching master elements:', error)
+  return data ?? []
+}
+
+// Fetch elements associated with a specific coaster ordered by sequence
+export async function getCoasterElements(itemId: string) {
+  const { data, error } = await supabase
+    .from('coaster_elements')
+    .select('id, sort_order, element_id, elements(id, name)')
+    .eq('item_id', itemId)
+    .order('sort_order')
+  if (error) console.error('Error fetching coaster elements:', error)
+  return data ?? []
+}

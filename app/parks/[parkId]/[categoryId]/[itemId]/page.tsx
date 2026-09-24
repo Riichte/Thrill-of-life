@@ -23,10 +23,18 @@ export default async function ItemPage({ params }: ItemPageProps) {
     : []
   const reviews = await getItemReviews(itemId)
   const communityScore = await getItemCommunityScore(itemId)
-  const coasterElements = item?.category_id === 'roller-coasters'
+  const rawCoasterElements = item?.category_id === 'roller-coasters'
     ? await getCoasterElements(itemId)
     : []
 
+  const coasterElements = rawCoasterElements.map((ce: any) => {
+    const elementObj = Array.isArray(ce.elements) ? ce.elements[0] : ce.elements
+    return {
+      id: ce.id,
+      sort_order: ce.sort_order,
+      name: elementObj?.name ?? 'Unknown Element',
+    }
+  })
   if (!park || !item || !category) notFound()
 
   const images = imageData

@@ -101,9 +101,10 @@ export default function GuessStatsGameClient({ item }: { item: Item }) {
       )}
 
       {won && (
-        <div className="w-full max-w-md mb-4 rounded-sm px-4 py-3 flex items-center gap-3"
+        <Link href={`/parks/${item.parkId}/${item.categoryId}/${item.id}`}
+          className="w-full max-w-md mb-4 rounded-sm px-4 py-3 flex items-center gap-3 hover:opacity-90 transition-opacity"
           style={{ background: 'rgba(16,185,129,0.12)', border: '1px solid var(--score-high)' }}>
-          <img src={item.imageUrl} alt={item.name} className="w-12 h-12 rounded-sm object-cover flex-shrink-0" />
+          <img src={item.imageUrl} alt={item.name} className="w-30 h-30 rounded-sm object-cover flex-shrink-0" />
           <div>
             <p className="font-semibold" style={{ color: 'var(--score-high)' }}>{item.name}</p>
             {item.parkName && (
@@ -113,13 +114,14 @@ export default function GuessStatsGameClient({ item }: { item: Item }) {
               Solved in {guesses.length} {guesses.length === 1 ? 'try' : 'tries'}
             </p>
           </div>
-        </div>
+        </Link>
       )}
 
       {lost && (
-        <div className="w-full max-w-md mb-4 rounded-sm px-4 py-3 flex items-center gap-3"
-          style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid var(--score-low)' }}>
-          <img src={item.imageUrl} alt={item.name} className="w-12 h-12 rounded-sm object-cover flex-shrink-0" />
+        <Link href={`/parks/${item.parkId}/${item.categoryId}/${item.id}`}
+          className="w-full max-w-md mb-4 rounded-sm px-4 py-3 flex items-center gap-3 hover:opacity-90 transition-opacity"
+          style={{ background: 'rgba(16,185,129,0.12)', border: '1px solid var(--score-high)' }}>
+          <img src={item.imageUrl} alt={item.name} className="w-30 h-30 rounded-sm object-cover flex-shrink-0" />
           <div>
             <p className="font-semibold" style={{ color: 'var(--score-low)' }}>{item.name}</p>
             {item.parkName && (
@@ -127,7 +129,7 @@ export default function GuessStatsGameClient({ item }: { item: Item }) {
             )}
             <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Better luck next time</p>
           </div>
-        </div>
+        </Link>
       )}
 
       {/* Hint */}
@@ -188,8 +190,12 @@ export default function GuessStatsGameClient({ item }: { item: Item }) {
                     const a = g.specs[s.key]
                     const b = item.specs[s.key]
                     const ok = String(a ?? '') === String(b ?? '')
-                    const arrow = !ok && typeof a === 'number' && typeof b === 'number'
-                      ? (b > a ? ' ↑' : ' ↓') : ''
+                    const numA = Number(a)
+                    const numB = Number(b)
+                    const numA = Number(a)
+                    const numB = Number(b)
+                    const arrow = !ok && a !== null && b !== null && a !== '' && b !== '' && !isNaN(numA) && !isNaN(numB)
+                      ? (numB > numA ? ' ↑' : ' ↓') : ''
                     return (
                       <td key={s.key} className="px-2 py-3 rounded-sm font-semibold text-white"
                         style={{ background: ok ? 'var(--score-high)' : 'var(--score-low)' }}>

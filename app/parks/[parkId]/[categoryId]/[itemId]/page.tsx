@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { getParkById, getCategoryById, getItemById, getItemImages, getItemVideos, getSimilarRides, getItemReviews, getItemCommunityScore } from '@/lib/queries'
+import { getParkById, getCategoryById, getItemById, getItemImages, getItemVideos, getSimilarRides, getItemReviews, getItemCommunityScore, getCoasterElements } from '@/lib/queries'
 import ItemPageContent from './ItemPageContent'
 import { PhotoCredit } from '@/components/PhotoCredits'
 
@@ -23,6 +23,9 @@ export default async function ItemPage({ params }: ItemPageProps) {
     : []
   const reviews = await getItemReviews(itemId)
   const communityScore = await getItemCommunityScore(itemId)
+  const coasterElements = item?.category_id === 'roller-coasters'
+    ? await getCoasterElements(itemId)
+    : []
 
   if (!park || !item || !category) notFound()
 
@@ -47,6 +50,7 @@ export default async function ItemPage({ params }: ItemPageProps) {
       credits={credits}
       reviews={reviews}
       communityScore={communityScore}
+      coasterElements={coasterElements}
     />
   )
 }

@@ -213,7 +213,7 @@ function ReviewCard({
 
 
 
-export default function ItemPageContent({ park, item, category, images, videos, similarRides, credits = [], reviews = [], communityScore }: {
+export default function ItemPageContent({ park, item, category, images, videos, similarRides, credits = [], reviews = [], communityScore, coasterElements = [] }: {
   park: any
   item: any
   category: any
@@ -223,6 +223,7 @@ export default function ItemPageContent({ park, item, category, images, videos, 
   credits: PhotoCredit[]
   reviews: any[]
   communityScore: { score: number; positive: number; mixed: number; negative: number } | null
+  coasterElements: { id: string; name: string; sort_order: number }[]
 }) {
   const supabase = createClient()
   const { unit, convert, convertHeight, convertSpeed, convertMinHeight } = useUnit()
@@ -875,6 +876,16 @@ export default function ItemPageContent({ park, item, category, images, videos, 
                     {specs.length && <div className="flex justify-between gap-4" style={{ color: 'var(--text-secondary)' }}><span>Length</span><span style={{ color: 'var(--text-primary)' }}>{convertHeight(String(specs.length))}</span></div>}
                     {specs.inversions !== undefined && <div className="flex justify-between gap-4" style={{ color: 'var(--text-secondary)' }}><span>Inversions</span><span style={{ color: 'var(--text-primary)' }}>{specs.inversions}</span></div>}
                     {specs.gForce && <div className="flex justify-between gap-4" style={{ color: 'var(--text-secondary)' }}><span>G-Forces</span><span style={{ color: 'var(--text-primary)' }}>{specs.gForce}</span></div>}
+                    {coasterElements.length > 0 && (
+                      <div className="flex justify-between gap-4" style={{ color: 'var(--text-secondary)' }}>
+                        <span className="flex-shrink-0">Elements</span>
+                        <div className="flex flex-col items-end gap-0.5">
+                          {coasterElements.map(el => (
+                            <span key={el.id} style={{ color: 'var(--text-primary)' }}>{el.name}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                     {specs.duration && <div className="flex justify-between gap-4" style={{ color: 'var(--text-secondary)' }}><span>Duration</span><span style={{ color: 'var(--text-primary)' }}>{specs.duration}</span></div>}
                     {specs.min_height && <div className="flex justify-between gap-4" style={{ color: 'var(--text-secondary)' }}><span>Min Height</span><span style={{ color: 'var(--text-primary)' }}>📏 {convertMinHeight(String(specs.min_height))}</span></div>}
                     {item.former_name && <div className="flex justify-between gap-4" style={{ color: 'var(--text-secondary)' }}><span>Former Name</span><span style={{ color: 'var(--text-primary)' }}>{item.former_name}</span></div>}

@@ -30,7 +30,7 @@ export default function CategoryPageClient({
 }) {
 
 
-    
+
 
     const router = useRouter()
     const pathname = usePathname()
@@ -39,6 +39,7 @@ export default function CategoryPageClient({
     const search = searchParams.get('q') ?? ''
     const sortBy = (searchParams.get('sort') ?? 'name') as 'name' | 'park'
     const filterType = searchParams.get('type') ?? ''
+    const filterManufacturer = searchParams.get('manufacturer') ?? ''
     const limit = parseInt(searchParams.get('limit') ?? '25')
     const page = parseInt(searchParams.get('page') ?? '1')
 
@@ -53,18 +54,24 @@ export default function CategoryPageClient({
         return [...new Set(all)].sort()
     }, [items])
 
+    const manufacturers = useMemo(() => {
+        const all = items.map(i => i.specs?.manufacturer).filter(Boolean) as string[]
+        return [...new Set(all)].sort()
+    }, [items])
+
     const filtered = useMemo(() => {
         let result = items.filter(item =>
             (!search || item.name.toLowerCase().includes(search.toLowerCase()) ||
                 item.parks?.name.toLowerCase().includes(search.toLowerCase())) &&
-            (!filterType || item.specs?.type === filterType)
+            (!filterType || item.specs?.type === filterType) &&
+            (!filterManufacturer || item.specs?.manufacturer === filterManufacturer)  // ← add here
         )
         const statusOrder = (s: string) => ['defunct', 'sbno'].includes(s) ? 2 : s === 'coming_soon' ? 1 : 0
 
         if (sortBy === 'name') result = [...result].sort((a, b) => a.name.localeCompare(b.name))
         if (sortBy === 'park') result = [...result].sort((a, b) => (a.parks?.name ?? '').localeCompare(b.parks?.name ?? ''))
         return result
-    }, [items, search, sortBy, filterType])
+    }, [items, search, sortBy, filterType, filterManufacturer])
 
     const totalPages = Math.ceil(filtered.length / limit)
     const paginated = filtered.slice((page - 1) * limit, page * limit)
@@ -104,13 +111,12 @@ export default function CategoryPageClient({
                             {types.map(t => <option key={t} value={t}>{t}</option>)}
                         </select>
                     </div>
-                    <div className="min-w-[100px]">
-                        <label className="block text-xs font-medium uppercase tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>Show</label>
-                        <select value={limit} onChange={e => updateParams({ limit: e.target.value, page: '1' })}
+                    <div className="min-w-[160px]">
+                        <label className="block text-xs font-medium uppercase tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>Manufacturer</label>
+                        <select value={filterManufacturer} onChange={e => updateParams({ manufacturer: e.target.value, page: '1' })}
                             className="w-full rounded-sm px-3 py-2 text-sm focus:outline-none" style={inputStyle}>
-                            <option value={25}>25</option>
-                            <option value={50}>50</option>
-                            <option value={100}>100</option>
+                            <option value="">All Manufacturers</option>
+                            {manufacturers.map(m => <option key={m} value={m}>{m}</option>)}
                         </select>
                     </div>
                 </div>

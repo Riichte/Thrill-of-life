@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import ImageManager from './ImageManager'
 
-type AdminTab = 'parks' | 'items' | 'images' | 'park-images' | 'images-manager' | 'videos' | 'manufacturers' | 'osts' | 'prices' | 'bulk-import'
+type AdminTab = 'parks' | 'items' | 'images' | 'park-images' | 'images-manager' | 'videos' | 'manufacturers' | 'models' | 'osts' | 'prices' | 'bulk-import'
 type Park = { id: string; name: string; description: string; logo_url: string; cover_image_url: string; country: string; company: string; park_type: string; location: string }
 type Category = { id: string; name: string }
 type Item = { id: string; park_id: string; category_id: string; name: string; description: string; location_in_park: string; specs: any; status: string; former_name: string }
@@ -192,6 +192,10 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
     const [tab, setTab] = useState<AdminTab>('parks')
     const [loading, setLoading] = useState(false)
     const [manufacturers, setManufacturers] = useState<{ id: string; name: string }[]>([])
+    const [models, setModels] = useState<{ id: string; name: string; manufacturer: string }[]>([])
+    const [modelName, setModelName] = useState('')
+    const [modelMfr, setModelMfr] = useState('')
+    const [editingModelId, setEditingModelId] = useState<string | null>(null)
     const [mfrName, setMfrName] = useState('')
     const [editingMfrId, setEditingMfrId] = useState<string | null>(null)
     const [error, setError] = useState('')
@@ -237,12 +241,18 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
 
     useEffect(() => {
         loadManufacturers()
+        loadModels()
         loadOsts()
     }, [])
 
     const loadManufacturers = async () => {
         const { data } = await supabase.from('manufacturers').select('*').order('name')
         if (data) setManufacturers(data)
+    }
+
+    const loadModels = async () => {
+        const { data } = await supabase.from('models').select('*').order('name')
+        if (data) setModels(data)
     }
 
     const extractYouTubeId = (url: string): string | null => {
@@ -536,6 +546,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
         switch (categoryId) {
             case 'roller-coasters': return [
                 { key: 'manufacturer', label: 'Manufacturer' },
+                { key: 'model', label: 'Model' },
                 { key: 'height', label: 'Height (m)', type: 'number' },
                 { key: 'drop', label: 'Drop (m)', type: 'number' },
                 { key: 'speed', label: 'Speed (km/h)', type: 'number' },
@@ -655,7 +666,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
 
                 {/* Tabs */}
                 <div className="flex gap-1 mb-8 border-b overflow-x-auto" style={{ borderColor: 'var(--border)' }}>
-                    {(['parks', 'items', 'images', 'park-images', 'images-manager', 'videos', 'manufacturers', 'osts', 'prices', 'bulk-import'] as AdminTab[]).map(t => (
+                    {(['parks', 'items', 'images', 'park-images', 'images-manager', 'videos', 'manufacturers', 'models', 'osts', 'prices', 'bulk-import'] as AdminTab[]).map(t => (
                         <button
                             key={t}
                             onClick={() => setTab(t)}
@@ -669,8 +680,9 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                         t === 'images-manager' ? 'Image Search' :
                                             t === 'videos' ? 'Ride Videos' :
                                                 t === 'manufacturers' ? 'Manufacturers' :
-                                                    t === 'prices' ? 'Prices' :
-                                                        t.charAt(0).toUpperCase() + t.slice(1)}
+                                                    t === 'models' ? 'Models' :
+                                                        t === 'prices' ? 'Prices' :
+                                                            t.charAt(0).toUpperCase() + t.slice(1)}
                         </button>
                     ))}
                 </div>
@@ -808,7 +820,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                                 }
                                             }}>
                                             <option value="">Select type</option>
-                                            {itemForm.category_id === 'roller-coasters' && ['Steel Coaster', 'Wooden Coaster', 'Hybrid Coaster', 'Kiddie Coaster', 'Family Coaster', 'Sit Down Coaster', 'Inverted Coaster', 'Suspended Coaster', 'Wing Coaster', 'Flying Coaster', 'Stand Up Coaster', 'Bobsled Coaster', 'Pipeline Coaster', 'Floorless Coaster', 'Indoor Coaster', 'Launched Coaster', 'Side Friction Coaster', 'Single Rail Coaster', 'Spinning Coaster', 'Water Coaster', 'Mega Coaster', 'Hyper Coaster', 'Giga Coaster', 'Strata Coaster', 'Wild Mouse Coaster', 'Diving Coaster', 'Shuttle Coaster', 'Powered Coaster', 'Fourth Dimension Coaster', 'Mine Train Coaster', 'Motorbike Coaster'].map(t => <option key={t} value={t}>{t}</option>)}
+                                            {itemForm.category_id === 'roller-coasters' && ['Steel', 'Wood', 'Hybrid'].map(t => <option key={t} value={t}>{t}</option>)}
                                             {itemForm.category_id === 'flat-rides' && ['Drop Tower', 'Ferris Wheel', 'Carousel', 'Swing Ride', 'Tilt-A-Whirl', 'Scrambler', 'Bumper Cars', 'Gondola', 'Enterprise', 'Pirate Ship', 'Top Spin', 'Frisbee', 'Gyro Tower', 'Flying Carpet', 'Balloon Ride', 'Observation Tower', 'Simulator', 'Monorail', 'Sky Ride', 'Train Ride'].map(t => <option key={t} value={t}>{t}</option>)}
                                             {itemForm.category_id === 'water-rides' && ['Log Flume', 'Rapids', 'Shoot the Chute', 'Water Coaster', 'River Ride', 'Splash Battle', 'Water Slide', 'Lazy River', 'Wave Pool', 'Water Play Area'].map(t => <option key={t} value={t}>{t}</option>)}
                                             {itemForm.category_id === 'dark-rides' && ['Dark Ride', 'Interactive Dark Ride', '4D Cinema', 'Flying Theatre', 'Haunted House', 'Tunnel of Love', 'Ghost Train', 'Motion Simulator', 'Omnimover', 'Trackless Ride', 'Boat Dark Ride'].map(t => <option key={t} value={t}>{t}</option>)}
@@ -833,6 +845,25 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                                 }}>
                                                 <option value="">Select manufacturer</option>
                                                 {manufacturers.map(m => <option key={m.id} value={m.name}>{m.name}</option>)}
+                                            </select>
+                                        ) : field.key === 'model' ? (
+                                            <select className={inputClass} style={inputStyle}
+                                                value={(() => { try { return JSON.parse(specsText)?.model ?? '' } catch { return '' } })()}
+                                                onChange={e => {
+                                                    try {
+                                                        const parsed = JSON.parse(specsText)
+                                                        setSpecsText(JSON.stringify({ ...parsed, model: e.target.value }, null, 2))
+                                                    } catch {
+                                                        setSpecsText(JSON.stringify({ model: e.target.value }, null, 2))
+                                                    }
+                                                }}>
+                                                <option value="">Select model</option>
+                                                {models
+                                                    .filter(m => {
+                                                        const mfr = (() => { try { return JSON.parse(specsText)?.manufacturer } catch { return '' } })()
+                                                        return !mfr || m.manufacturer === mfr
+                                                    })
+                                                    .map(m => <option key={m.id} value={m.name}>{m.name}</option>)}
                                             </select>
                                         ) : (
                                             <input type={field.type === 'number' ? 'number' : 'text'} className={inputClass} style={inputStyle}
@@ -1236,6 +1267,59 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                         </div>
                     )
                 }
+
+                {tab === 'models' && (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                            <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>{editingModelId ? 'Edit Model' : 'Add Model'}</h2>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className={labelClass} style={labelStyle}>Manufacturer</label>
+                                    <select className={inputClass} style={inputStyle} value={modelMfr} onChange={e => setModelMfr(e.target.value)}>
+                                        <option value="">Select manufacturer</option>
+                                        {manufacturers.map(m => <option key={m.id} value={m.name}>{m.name}</option>)}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className={labelClass} style={labelStyle}>Model name</label>
+                                    <input className={inputClass} style={inputStyle} value={modelName} onChange={e => setModelName(e.target.value)} placeholder="e.g. Mega Coaster" />
+                                </div>
+                                <div className="flex gap-3">
+                                    <button className={btnPrimary} style={btnPrimaryStyle} onClick={async () => {
+                                        if (!modelName.trim() || !modelMfr) return
+                                        const slug = `${modelMfr}-${modelName}`.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
+                                        if (editingModelId) await supabase.from('models').update({ name: modelName.trim(), manufacturer: modelMfr }).eq('id', editingModelId)
+                                        else await supabase.from('models').insert({ id: slug, name: modelName.trim(), manufacturer: modelMfr })
+                                        setModelName(''); setEditingModelId(null); loadModels()
+                                        notify(editingModelId ? 'Model updated' : 'Model added')
+                                    }}>{editingModelId ? 'Update' : 'Add Model'}</button>
+                                    {editingModelId && <button className={btnSecondary} style={btnSecondaryStyle} onClick={() => { setEditingModelId(null); setModelName('') }}>Cancel</button>}
+                                </div>
+                            </div>
+                        </div>
+                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                            <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Models ({models.length})</h2>
+                            <div className="space-y-2 max-h-[600px] overflow-y-auto">
+                                {models.map(m => (
+                                    <div key={m.id} className="flex items-center justify-between gap-3 p-3 rounded-sm" style={{ background: 'var(--bg-elevated)' }}>
+                                        <div>
+                                            <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{m.name}</p>
+                                            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{m.manufacturer}</p>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <button className={btnEdit} style={btnEditStyle} onClick={() => { setEditingModelId(m.id); setModelName(m.name); setModelMfr(m.manufacturer) }}>Edit</button>
+                                            <button className={btnDanger} style={btnDangerStyle} onClick={async () => {
+                                                if (!confirm(`Delete "${m.name}"?`)) return
+                                                await supabase.from('models').delete().eq('id', m.id)
+                                                loadModels(); notify('Model deleted')
+                                            }}>Delete</button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {tab === 'osts' && (
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8" style={{ overflow: 'visible' }}>

@@ -858,7 +858,7 @@ export default function ItemPageContent({ park, item, category, images, videos, 
                 setIsRatingOpen(true)
               }}
               ratingBreakdown={ratingBreakdown}
-              tags={[specs.type, specs.manufacturer, category.name].filter(Boolean) as string[]}
+              tags={[specs.type, specs.manufacturer, specs.model, category.name].filter(Boolean) as string[]}
               showFavorite={true}
               isFavorited={isFavorited}
               onFavoriteToggle={handleFavoriteToggle}
@@ -868,6 +868,7 @@ export default function ItemPageContent({ park, item, category, images, videos, 
                   <div className="space-y-2 text-sm">
                     {specs.type && <div className="flex justify-between gap-4" style={{ color: 'var(--text-secondary)' }}><span>Type</span><span style={{ color: 'var(--text-primary)' }}>{specs.type}</span></div>}
                     {specs.manufacturer && <div className="flex justify-between gap-4" style={{ color: 'var(--text-secondary)' }}><span>Manufacturer</span><span style={{ color: 'var(--text-primary)' }}>{specs.manufacturer}</span></div>}
+                    {specs.model && <div className="flex justify-between gap-4" style={{ color: 'var(--text-secondary)' }}><span>Model</span><span style={{ color: 'var(--text-primary)' }}>{specs.model}</span></div>}
                     {specs.height && <div className="flex justify-between gap-4" style={{ color: 'var(--text-secondary)' }}><span>Height</span><span style={{ color: 'var(--text-primary)' }}>{convertHeight(String(specs.height))}</span></div>}
                     {specs.drop && <div className="flex justify-between gap-4" style={{ color: 'var(--text-secondary)' }}><span>Drop</span><span style={{ color: 'var(--text-primary)' }}>{convertHeight(String(specs.drop))}</span></div>}
                     {specs.speed && <div className="flex justify-between gap-4" style={{ color: 'var(--text-secondary)' }}><span>Speed</span><span style={{ color: 'var(--text-primary)' }}>{convertSpeed(String(specs.speed))}</span></div>}

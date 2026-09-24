@@ -192,8 +192,6 @@ export default function GuessStatsGameClient({ item }: { item: Item }) {
                     const ok = String(a ?? '') === String(b ?? '')
                     const numA = Number(a)
                     const numB = Number(b)
-                    const numA = Number(a)
-                    const numB = Number(b)
                     const arrow = !ok && a !== null && b !== null && a !== '' && b !== '' && !isNaN(numA) && !isNaN(numB)
                       ? (numB > numA ? ' ↑' : ' ↓') : ''
                     return (

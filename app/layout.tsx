@@ -47,11 +47,7 @@ export default function RootLayout({
     >
       <head>
         {/* Umami Analytics */}
-        <Script
-          defer
-          src="https://cloud.umami.is/script.js"
-          data-website-id="ee932eaa-3e81-4faa-907d-6585b99d6a40"
-        />
+        <script defer src="https://cloud.umami.is/script.js" data-website-id="3a61fb80-6921-4eb8-92bf-b3f984364e23"></script>
       </head>
       <body className="min-h-full flex flex-col">
         <Providers>

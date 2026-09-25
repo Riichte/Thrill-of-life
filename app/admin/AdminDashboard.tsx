@@ -256,7 +256,7 @@ function ItemElementsManager({ itemId }: { itemId: string }) {
                     value={selectedElementId}
                     onChange={(e) => setSelectedElementId(e.target.value)}
                     className="flex-1 rounded-sm px-3 py-2 text-sm focus:outline-none"
-                    style={{ background: 'var(--bg-main)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }}
+                    style={{ background: 'var(--cta)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }}
                 >
                     <option value="">Select an element...</option>
                     {masterElements.map((el) => (

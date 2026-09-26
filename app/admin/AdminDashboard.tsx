@@ -1190,6 +1190,31 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                         </div>
                         <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', overflow: 'visible' }}>
                             <div className="flex gap-3 mb-4 items-center flex-wrap">
+                                <input
+                                    type="checkbox"
+                                    title="Select all visible items"
+                                    checked={(() => {
+                                        const visible = items.filter(i =>
+                                            (!listParkFilter || i.park_id === listParkFilter) &&
+                                            (!listCategoryFilter || i.category_id === listCategoryFilter) &&
+                                            (!listManufacturerFilter || i.specs?.manufacturer === listManufacturerFilter)
+                                        )
+                                        return visible.length > 0 && visible.every(i => selectedItems.has(i.id))
+                                    })()}
+                                    onChange={e => {
+                                        const visible = items.filter(i =>
+                                            (!listParkFilter || i.park_id === listParkFilter) &&
+                                            (!listCategoryFilter || i.category_id === listCategoryFilter) &&
+                                            (!listManufacturerFilter || i.specs?.manufacturer === listManufacturerFilter)
+                                        )
+                                        setSelectedItems(prev => {
+                                            const next = new Set(prev)
+                                            visible.forEach(i => e.target.checked ? next.add(i.id) : next.delete(i.id))
+                                            return next
+                                        })
+                                    }}
+                                    className="flex-shrink-0"
+                                />
                                 <h2 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>Items</h2>
                                 <select className={inputClass} style={{ ...inputStyle, maxWidth: '200px' }}
                                     value={listParkFilter} onChange={e => setListParkFilter(e.target.value)}>

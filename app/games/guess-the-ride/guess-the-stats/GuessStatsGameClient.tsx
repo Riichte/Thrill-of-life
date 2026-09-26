@@ -203,9 +203,6 @@ export default function GuessStatsGameClient({ item }: { item: Item }) {
               ))}
             </tbody>
           </table>
-          <p className="text-xs mt-2" style={{ color: 'var(--text-faint)' }}>
-            ↑ = the answer is higher · ↓ = the answer is lower
-          </p>
         </div>
       )}
 

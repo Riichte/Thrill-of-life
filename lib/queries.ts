@@ -619,7 +619,7 @@ export async function getRandomGuessStatsItem() {
   // keep only items with at least 3 usable stats
   const withStats = data.filter(i => {
     const s = i.specs || {}
-    const count = ['type', 'height', 'speed', 'length', 'inversions', 'duration', 'manufacturer']
+    const count = ['type', 'height', 'speed', 'length', 'inversions', 'duration', 'manufacturer', 'model']
       .filter(k => s[k] !== undefined && s[k] !== null && s[k] !== '').length
     return count >= 3
   })

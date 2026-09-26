@@ -137,22 +137,22 @@ export default function CategoryPageClient({
                                 <option value="">All Manufacturers</option>
                                 {manufacturers.map(m => <option key={m} value={m}>{m}</option>)}
                             </select>
-                            <div className="w-36 flex-shrink-0">
-                                <label className="block text-xs font-medium uppercase tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>Country</label>
-                                <select value={filterCountry} onChange={e => updateParams({ country: e.target.value, page: '1' })}
-                                    className="w-full rounded-sm px-3 py-2 text-sm focus:outline-none" style={inputStyle}>
-                                    <option value="">All Countries</option>
-                                    {countries.map(c => <option key={c} value={c}>{c}</option>)}
-                                </select>
-                            </div>
-                            <div className="w-40 flex-shrink-0">
-                                <label className="block text-xs font-medium uppercase tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>Model</label>
-                                <select value={filterModel} onChange={e => updateParams({ model: e.target.value, page: '1' })}
-                                    className="w-full rounded-sm px-3 py-2 text-sm focus:outline-none" style={inputStyle}>
-                                    <option value="">All Models</option>
-                                    {models.map(m => <option key={m} value={m}>{m}</option>)}
-                                </select>
-                            </div>
+                        </div>
+                        <div className="w-36 flex-shrink-0">
+                            <label className="block text-xs font-medium uppercase tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>Country</label>
+                            <select value={filterCountry} onChange={e => updateParams({ country: e.target.value, page: '1' })}
+                                className="w-full rounded-sm px-3 py-2 text-sm focus:outline-none" style={inputStyle}>
+                                <option value="">All Countries</option>
+                                {countries.map(c => <option key={c} value={c}>{c}</option>)}
+                            </select>
+                        </div>
+                        <div className="w-40 flex-shrink-0">
+                            <label className="block text-xs font-medium uppercase tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>Model</label>
+                            <select value={filterModel} onChange={e => updateParams({ model: e.target.value, page: '1' })}
+                                className="w-full rounded-sm px-3 py-2 text-sm focus:outline-none" style={inputStyle}>
+                                <option value="">All Models</option>
+                                {models.map(m => <option key={m} value={m}>{m}</option>)}
+                            </select>
                         </div>
                     </div>
                 </div>

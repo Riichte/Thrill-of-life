@@ -23,6 +23,33 @@ const TYPE_OPTIONS_BY_CATEGORY: Record<string, string[]> = {
     'transport': ['Monorail', 'Train', 'Ski Lift', 'Boat', 'Bus', 'Cable Car', 'Horse Drawn Carriage', 'Electric Vehicle', 'Tram'],
 }
 
+// ─── Duration normalization ────────────────────────────────
+function secondsToMinSec(totalSeconds: number): string {
+    const m = Math.floor(totalSeconds / 60)
+    const s = totalSeconds % 60
+    return `${m}:${String(s).padStart(2, '0')}`
+}
+
+function normalizeDuration(duration: any): { value: string; changed: boolean } {
+    if (duration === null || duration === undefined || duration === '') {
+        return { value: duration, changed: false }
+    }
+    const str = String(duration).trim()
+
+    // already in M:SS or MM:SS format — leave as is
+    if (/^\d+:\d{2}$/.test(str)) return { value: str, changed: false }
+
+    // plain number, optionally with s/sec/secs/seconds suffix — treat as seconds
+    const match = str.match(/^(\d+(\.\d+)?)\s*(s|sec|secs|seconds)?$/i)
+    if (match) {
+        const seconds = Math.round(parseFloat(match[1]))
+        return { value: secondsToMinSec(seconds), changed: true }
+    }
+
+    // anything else — leave untouched
+    return { value: duration, changed: false }
+}
+
 // ─── PricesTab ────────────────────────────────────────────
 
 function PricesTab({ parks }: { parks: Park[] }) {
@@ -745,7 +772,9 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
     const [bulkType, setBulkType] = useState('')
     const [bulkManufacturer, setBulkManufacturer] = useState('')
     const [bulkModel, setBulkModel] = useState('')
-
+    const [durationPreview, setDurationPreview] = useState<{ id: string; name: string; before: string; after: string }[]>([])
+    const [showDurationModal, setShowDurationModal] = useState(false)
+    const [fixingDurations, setFixingDurations] = useState(false)
     const getBulkSelectedItems = () => items.filter(i => selectedItems.has(i.id))
 
     // Type options are category-specific, so batch-editing Type only makes
@@ -783,6 +812,42 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
         setSelectedItems(new Set())
         router.refresh()
         setLoading(false)
+    }
+
+    const handlePreviewDurationFix = () => {
+        const changes: { id: string; name: string; before: string; after: string }[] = []
+        for (const item of items) {
+            const raw = item.specs?.duration
+            if (raw === null || raw === undefined || raw === '') continue
+            const { value, changed } = normalizeDuration(raw)
+            if (changed) {
+                changes.push({ id: item.id, name: item.name, before: String(raw), after: value })
+            }
+        }
+        if (changes.length === 0) {
+            notify('No durations need fixing — all already look correct')
+            return
+        }
+        setDurationPreview(changes)
+        setShowDurationModal(true)
+    }
+
+    const handleApplyDurationFix = async () => {
+        setFixingDurations(true)
+        let failures = 0
+        for (const change of durationPreview) {
+            const item = items.find(i => i.id === change.id)
+            if (!item) continue
+            const updatedSpecs = { ...(item.specs || {}), duration: change.after }
+            const { error } = await supabase.from('items').update({ specs: updatedSpecs }).eq('id', change.id)
+            if (error) { failures++; console.error(`Failed updating ${change.id}:`, error) }
+        }
+        setFixingDurations(false)
+        setShowDurationModal(false)
+        setDurationPreview([])
+        if (failures) notify(`Fixed ${durationPreview.length - failures} item(s), ${failures} failed`, true)
+        else notify(`Fixed ${durationPreview.length} item(s)`)
+        router.refresh()
     }
 
     const handleBulkDelete = async () => {
@@ -1231,6 +1296,14 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                     <option value="">All manufacturers</option>
                                     {manufacturers.map(m => <option key={m.id} value={m.name}>{m.name}</option>)}
                                 </select>
+                                <button
+                                    onClick={handlePreviewDurationFix}
+                                    className={btnSecondary}
+                                    style={{ ...btnSecondaryStyle, padding: '6px 12px', fontSize: '13px' }}
+                                    title="Scan all items and convert plain-second durations (e.g. 140) to M:SS format (e.g. 2:20)"
+                                >
+                                    Fix Durations
+                                </button>
                             </div>
 
                             {/* Bulk actions bar — appears once at least one item is checked below */}
@@ -1797,6 +1870,38 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                     }} className={btnPrimary} style={btnPrimaryStyle}>Save</button>
                                     <button onClick={() => setEditingOst(null)} className={btnSecondary} style={btnSecondaryStyle}>Cancel</button>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {showDurationModal && (
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                        <div className="rounded-sm p-6 max-w-lg w-full" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                            <h2 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
+                                Fix Durations — {durationPreview.length} item(s)
+                            </h2>
+                            <p className="text-xs mb-4" style={{ color: 'var(--text-muted)' }}>
+                                These items have a duration stored as plain seconds. Converting to M:SS format.
+                            </p>
+                            <div className="space-y-1 max-h-[400px] overflow-y-auto mb-4">
+                                {durationPreview.map(c => (
+                                    <div key={c.id} className="flex items-center justify-between gap-3 p-2 rounded-sm text-sm"
+                                        style={{ background: 'var(--bg-elevated)' }}>
+                                        <span className="truncate" style={{ color: 'var(--text-primary)' }}>{c.name}</span>
+                                        <span className="flex-shrink-0" style={{ color: 'var(--text-muted)' }}>
+                                            {c.before} → <span style={{ color: 'var(--score-high)' }}>{c.after}</span>
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="flex gap-3">
+                                <button onClick={handleApplyDurationFix} disabled={fixingDurations} className={btnPrimary} style={btnPrimaryStyle}>
+                                    {fixingDurations ? 'Applying...' : `Apply to ${durationPreview.length} item(s)`}
+                                </button>
+                                <button onClick={() => { setShowDurationModal(false); setDurationPreview([]) }} className={btnSecondary} style={btnSecondaryStyle}>
+                                    Cancel
+                                </button>
                             </div>
                         </div>
                     </div>

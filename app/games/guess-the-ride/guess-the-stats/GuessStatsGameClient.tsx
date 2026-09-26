@@ -146,7 +146,7 @@ export default function GuessStatsGameClient({ item }: { item: Item }) {
         <div className="w-full max-w-md rounded-sm px-4 py-3 mb-4 text-sm flex justify-between"
           style={{ background: 'var(--card-bg)', border: '1px solid var(--accent)' }}>
           <span style={{ color: 'var(--text-muted)' }}>Hint · {hint.label}</span>
-          <span className="font-semibold">{fmt(hint.key, hint.unit, item.specs[hint.key])}</span>
+          <span className="font-semibold">{fmt(hint.key, STAT_LABELS.find(s => s.key === hint.key)?.unit, item.specs[hint.key])}</span>
         </div>
       )}
 

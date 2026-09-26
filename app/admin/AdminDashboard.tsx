@@ -13,6 +13,16 @@ type Item = { id: string; park_id: string; category_id: string; name: string; de
 const emptyPark: Omit<Park, 'id'> = { name: '', description: '', logo_url: '', cover_image_url: '', country: '', company: '', park_type: 'Theme Park', location: '' }
 const emptyItem: Omit<Item, 'id'> = { park_id: '', category_id: '', name: '', description: '', location_in_park: '', specs: {}, status: 'operating', former_name: '' }
 
+// Type options by category, shared between the single-item form and the bulk-edit bar
+const TYPE_OPTIONS_BY_CATEGORY: Record<string, string[]> = {
+    'roller-coasters': ['Steel', 'Wood', 'Hybrid'],
+    'flat-rides': ['Drop Tower', 'Ferris Wheel', 'Carousel', 'Swing Ride', 'Tilt-A-Whirl', 'Scrambler', 'Bumper Cars', 'Gondola', 'Enterprise', 'Pirate Ship', 'Top Spin', 'Frisbee', 'Gyro Tower', 'Flying Carpet', 'Balloon Ride', 'Observation Tower', 'Simulator', 'Monorail', 'Sky Ride', 'Train Ride'],
+    'water-rides': ['Log Flume', 'Rapids', 'Shoot the Chute', 'Water Coaster', 'River Ride', 'Splash Battle', 'Water Slide', 'Lazy River', 'Wave Pool', 'Water Play Area'],
+    'dark-rides': ['Dark Ride', 'Interactive Dark Ride', '4D Cinema', 'Flying Theatre', 'Haunted House', 'Tunnel of Love', 'Ghost Train', 'Motion Simulator', 'Omnimover', 'Trackless Ride', 'Boat Dark Ride'],
+    'restaurants': ['Sit Down', 'Fast Food', 'Buffet', 'Food Stand', 'Café', 'Dessert & Snacks', 'Bar & Lounge', 'Themed Restaurant'],
+    'transport': ['Monorail', 'Train', 'Ski Lift', 'Boat', 'Bus', 'Cable Car', 'Horse Drawn Carriage', 'Electric Vehicle', 'Tram'],
+}
+
 // ─── PricesTab ────────────────────────────────────────────
 
 function PricesTab({ parks }: { parks: Park[] }) {
@@ -731,6 +741,50 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
     const [osts, setOsts] = useState<any[]>([])
     const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set())
 
+    // ─── Bulk edit (Type / Manufacturer / Model) for selected items ───
+    const [bulkType, setBulkType] = useState('')
+    const [bulkManufacturer, setBulkManufacturer] = useState('')
+    const [bulkModel, setBulkModel] = useState('')
+
+    const getBulkSelectedItems = () => items.filter(i => selectedItems.has(i.id))
+
+    // Type options are category-specific, so batch-editing Type only makes
+    // sense when every selected item shares the same category.
+    const getBulkCommonCategory = (): string | null => {
+        const sel = getBulkSelectedItems()
+        if (!sel.length) return null
+        const cats = new Set(sel.map(i => i.category_id))
+        return cats.size === 1 ? sel[0].category_id : null
+    }
+
+    const handleBulkApplySpecs = async () => {
+        if (selectedItems.size === 0) return
+        if (!bulkType && !bulkManufacturer && !bulkModel) {
+            notify('Choose at least one field to apply', true)
+            return
+        }
+        setLoading(true)
+        let failures = 0
+        for (const id of selectedItems) {
+            const item = items.find(i => i.id === id)
+            if (!item) continue
+            const updatedSpecs = { ...(item.specs || {}) }
+            if (bulkType) updatedSpecs.type = bulkType
+            if (bulkManufacturer) updatedSpecs.manufacturer = bulkManufacturer
+            if (bulkModel) updatedSpecs.model = bulkModel
+            const { error } = await supabase.from('items').update({ specs: updatedSpecs }).eq('id', id)
+            if (error) { failures++; console.error(`Failed updating ${id}:`, error) }
+        }
+        if (failures) notify(`Updated ${selectedItems.size - failures} item(s), ${failures} failed`, true)
+        else notify(`Updated ${selectedItems.size} item(s)`)
+        setBulkType('')
+        setBulkManufacturer('')
+        setBulkModel('')
+        setSelectedItems(new Set())
+        router.refresh()
+        setLoading(false)
+    }
+
     const handleBulkDelete = async () => {
         if (!confirm(`Delete ${selectedItems.size} items?`)) return
         setLoading(true)
@@ -757,6 +811,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
     const btnEditStyle = { background: 'var(--bg-elevated)', color: 'var(--accent)' }
     const [listParkFilter, setListParkFilter] = useState('')
     const [listCategoryFilter, setListCategoryFilter] = useState('')
+    const [listManufacturerFilter, setListManufacturerFilter] = useState('')
     const [bulkText, setBulkText] = useState('')
     const [bulkResults, setBulkResults] = useState<string[]>([])
     const getSpecFields = (categoryId: string): { key: string; label: string; type?: 'number' | 'text' }[] => {
@@ -1037,12 +1092,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                                 }
                                             }}>
                                             <option value="">Select type</option>
-                                            {itemForm.category_id === 'roller-coasters' && ['Steel', 'Wood', 'Hybrid'].map(t => <option key={t} value={t}>{t}</option>)}
-                                            {itemForm.category_id === 'flat-rides' && ['Drop Tower', 'Ferris Wheel', 'Carousel', 'Swing Ride', 'Tilt-A-Whirl', 'Scrambler', 'Bumper Cars', 'Gondola', 'Enterprise', 'Pirate Ship', 'Top Spin', 'Frisbee', 'Gyro Tower', 'Flying Carpet', 'Balloon Ride', 'Observation Tower', 'Simulator', 'Monorail', 'Sky Ride', 'Train Ride'].map(t => <option key={t} value={t}>{t}</option>)}
-                                            {itemForm.category_id === 'water-rides' && ['Log Flume', 'Rapids', 'Shoot the Chute', 'Water Coaster', 'River Ride', 'Splash Battle', 'Water Slide', 'Lazy River', 'Wave Pool', 'Water Play Area'].map(t => <option key={t} value={t}>{t}</option>)}
-                                            {itemForm.category_id === 'dark-rides' && ['Dark Ride', 'Interactive Dark Ride', '4D Cinema', 'Flying Theatre', 'Haunted House', 'Tunnel of Love', 'Ghost Train', 'Motion Simulator', 'Omnimover', 'Trackless Ride', 'Boat Dark Ride'].map(t => <option key={t} value={t}>{t}</option>)}
-                                            {itemForm.category_id === 'restaurants' && ['Sit Down', 'Fast Food', 'Buffet', 'Food Stand', 'Café', 'Dessert & Snacks', 'Bar & Lounge', 'Themed Restaurant'].map(t => <option key={t} value={t}>{t}</option>)}
-                                            {itemForm.category_id === 'transport' && ['Monorail', 'Train', 'Ski Lift', 'Boat', 'Bus', 'Cable Car', 'Horse Drawn Carriage', 'Electric Vehicle', 'Tram'].map(t => <option key={t} value={t}>{t}</option>)}
+                                            {(TYPE_OPTIONS_BY_CATEGORY[itemForm.category_id] ?? []).map(t => <option key={t} value={t}>{t}</option>)}
                                         </select>
                                     </div>
                                 )}
@@ -1151,16 +1201,68 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                     <option value="">All categories</option>
                                     {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                                 </select>
-                                {selectedItems.size > 0 && (
+                                <select className={inputClass} style={{ ...inputStyle, maxWidth: '180px' }}
+                                    value={listManufacturerFilter} onChange={e => setListManufacturerFilter(e.target.value)}>
+                                    <option value="">All manufacturers</option>
+                                    {manufacturers.map(m => <option key={m.id} value={m.name}>{m.name}</option>)}
+                                </select>
+                            </div>
+
+                            {/* Bulk actions bar — appears once at least one item is checked below */}
+                            {selectedItems.size > 0 && (
+                                <div className="mb-4 p-3 rounded-sm flex flex-wrap items-center gap-2" style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)' }}>
+                                    <span className="text-xs font-medium flex-shrink-0" style={{ color: 'var(--text-muted)' }}>
+                                        {selectedItems.size} selected
+                                    </span>
+                                    <select className={inputClass} style={{ ...inputStyle, maxWidth: '150px' }}
+                                        value={bulkType}
+                                        onChange={e => setBulkType(e.target.value)}
+                                        disabled={!getBulkCommonCategory() || !(TYPE_OPTIONS_BY_CATEGORY[getBulkCommonCategory() as string]?.length)}
+                                        title={!getBulkCommonCategory() ? 'Select items from a single category to batch-edit Type' : undefined}>
+                                        <option value="">Type...</option>
+                                        {(TYPE_OPTIONS_BY_CATEGORY[getBulkCommonCategory() ?? ''] ?? []).map(t => <option key={t} value={t}>{t}</option>)}
+                                    </select>
+                                    <select className={inputClass} style={{ ...inputStyle, maxWidth: '170px' }}
+                                        value={bulkManufacturer}
+                                        onChange={e => { setBulkManufacturer(e.target.value); setBulkModel('') }}>
+                                        <option value="">Manufacturer...</option>
+                                        {manufacturers.map(m => <option key={m.id} value={m.name}>{m.name}</option>)}
+                                    </select>
+                                    <select className={inputClass} style={{ ...inputStyle, maxWidth: '170px' }}
+                                        value={bulkModel}
+                                        onChange={e => setBulkModel(e.target.value)}>
+                                        <option value="">Model...</option>
+                                        {models
+                                            .filter(m => !bulkManufacturer || m.manufacturer === bulkManufacturer)
+                                            .map(m => <option key={m.id} value={m.name}>{m.name}</option>)}
+                                    </select>
+                                    <button onClick={handleBulkApplySpecs} disabled={loading || (!bulkType && !bulkManufacturer && !bulkModel)}
+                                        className={btnPrimary} style={{ ...btnPrimaryStyle, padding: '6px 12px', fontSize: '13px' }}>
+                                        Apply to selected
+                                    </button>
+                                    <button onClick={() => { setSelectedItems(new Set()); setBulkType(''); setBulkManufacturer(''); setBulkModel('') }}
+                                        className={btnSecondary} style={{ ...btnSecondaryStyle, padding: '6px 12px', fontSize: '13px' }}>
+                                        Clear selection
+                                    </button>
                                     <button onClick={handleBulkDelete} disabled={loading}
                                         className={btnDanger} style={{ ...btnDangerStyle, padding: '6px 12px', fontSize: '13px' }}>
-                                        Delete selected ({selectedItems.size})
+                                        Delete selected
                                     </button>
-                                )}
-                            </div>
+                                    {!getBulkCommonCategory() && (
+                                        <span className="text-xs w-full" style={{ color: '#f59e0b' }}>
+                                            Type is disabled because selected items span multiple categories.
+                                        </span>
+                                    )}
+                                </div>
+                            )}
+
                             <div className="space-y-2 max-h-[600px] overflow-y-auto overflow-x-visible">
                                 {parks.filter(p => !listParkFilter || p.id === listParkFilter).map(park => {
-                                    const parkItems = items.filter(i => i.park_id === park.id && (!listCategoryFilter || i.category_id === listCategoryFilter))
+                                    const parkItems = items.filter(i =>
+                                        i.park_id === park.id &&
+                                        (!listCategoryFilter || i.category_id === listCategoryFilter) &&
+                                        (!listManufacturerFilter || i.specs?.manufacturer === listManufacturerFilter)
+                                    )
                                     if (!parkItems.length) return null
                                     return (
                                         <div key={park.id}>
@@ -1189,7 +1291,12 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                                                 />
                                                                 <div className="min-w-0">
                                                                     <p className="text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>{item.name}</p>
-                                                                    <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{item.id} · {item.category_id}</p>
+                                                                    <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                                                                        {item.id} · {item.category_id}
+                                                                        {item.specs?.manufacturer && <> · {item.specs.manufacturer}</>}
+                                                                        {item.specs?.model && <> ({item.specs.model})</>}
+                                                                        {item.specs?.type && <> · {item.specs.type}</>}
+                                                                    </p>
                                                                 </div>
                                                                 <div className="flex gap-2 flex-shrink-0">
                                                                     <button onClick={() => handleEditItem(item)} className={btnEdit} style={btnEditStyle}>Edit</button>

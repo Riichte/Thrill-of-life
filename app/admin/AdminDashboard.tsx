@@ -1130,7 +1130,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                         <input className={inputClass} style={inputStyle} value={parkIdInput} onChange={e => setParkIdInput(e.target.value)} placeholder="europa-park" />
                                     </div>
                                 )}
-                                {(['name', 'description', 'country', 'company', 'location', 'logo_url', 'cover_image_url'] as const).map(field => (
+                                {(['name', 'description', 'company', 'location', 'logo_url', 'cover_image_url'] as const).map(field => (
                                     <div key={field}>
                                         <label className={labelClass} style={labelStyle}>{field.replace(/_/g, ' ')}</label>
                                         {field === 'description' ? (
@@ -1141,9 +1141,12 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                     </div>
                                 ))}
                                 <div>
-                                    <label className={labelClass} style={labelStyle}>Park Type</label>
-                                    <select className={inputClass} style={{ ...inputStyle }} value={parkForm.park_type} onChange={e => setParkForm(p => ({ ...p, park_type: e.target.value }))}>
-                                        {['Theme Park', 'Amusement Park', 'Water Park', 'Resort'].map(t => <option key={t}>{t}</option>)}
+                                    <label className={labelClass} style={labelStyle}>Country</label>
+                                    <select className={inputClass} style={{ ...inputStyle }} value={parkForm.country} onChange={e => setParkForm(p => ({ ...p, country: e.target.value }))}>
+                                        <option value="">Select a country</option>
+                                        {['Australia', 'Austria', 'Belgium', 'Brazil', 'Canada', 'China', 'Czech Republic', 'Denmark', 'Finland', 'France', 'Germany', 'Hungary', 'Italy', 'Japan', 'Mexico', 'Netherlands', 'Norway', 'Poland', 'Portugal', 'Saudi Arabia', 'South Korea', 'Spain', 'Sweden', 'Switzerland', 'UAE', 'UK', 'USA'].map(c => (
+                                            <option key={c} value={c}>{c}</option>
+                                        ))}
                                     </select>
                                 </div>
                                 <div className="flex gap-3 pt-2">

@@ -106,14 +106,14 @@ export default function CategoryPageClient({
                 <h1 className="text-4xl font-bold mb-8 text-center" style={{ color: 'var(--text-primary)' }}>{category.name}</h1>
 
                 {/* Filters */}
-                <div className="rounded-sm p-4 mb-8 flex flex-wrap items-end gap-4" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
-                    <div className="flex-1 min-w-[180px]">
+                <div className="rounded-sm p-4 mb-8 flex items-end gap-3" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                    <div className="w-48 flex-shrink-0">
                         <label className="block text-xs font-medium uppercase tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>Search</label>
                         <input type="text" value={search} onChange={e => updateParams({ q: e.target.value, page: '1' })}
                             placeholder={`Search ${category.name.toLowerCase()}...`}
                             className="w-full rounded-sm px-3 py-2 text-sm focus:outline-none" style={inputStyle} />
                     </div>
-                    <div className="min-w-[140px]">
+                    <div className="w-32 flex-shrink-0">
                         <label className="block text-xs font-medium uppercase tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>Sort by</label>
                         <select value={sortBy} onChange={e => updateParams({ sort: e.target.value })}
                             className="w-full rounded-sm px-3 py-2 text-sm focus:outline-none" style={inputStyle}>
@@ -121,7 +121,7 @@ export default function CategoryPageClient({
                             <option value="park">Park</option>
                         </select>
                     </div>
-                    <div className="min-w-[140px]">
+                    <div className="w-36 flex-shrink-0">
                         <label className="block text-xs font-medium uppercase tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>Type</label>
                         <select value={filterType} onChange={e => updateParams({ type: e.target.value, page: '1' })}
                             className="w-full rounded-sm px-3 py-2 text-sm focus:outline-none" style={inputStyle}>
@@ -129,14 +129,14 @@ export default function CategoryPageClient({
                             {types.map(t => <option key={t} value={t}>{t}</option>)}
                         </select>
                     </div>
-                    <div className="min-w-[160px]">
+                    <div className="w-40 flex-shrink-0">
                         <label className="block text-xs font-medium uppercase tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>Manufacturer</label>
                         <select value={filterManufacturer} onChange={e => updateParams({ manufacturer: e.target.value, model: '', page: '1' })}
                             className="w-full rounded-sm px-3 py-2 text-sm focus:outline-none" style={inputStyle}>
                             <option value="">All Manufacturers</option>
                             {manufacturers.map(m => <option key={m} value={m}>{m}</option>)}
                         </select>
-                        <div className="min-w-[160px]">
+                        <div className="w-36 flex-shrink-0">
                             <label className="block text-xs font-medium uppercase tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>Country</label>
                             <select value={filterCountry} onChange={e => updateParams({ country: e.target.value, page: '1' })}
                                 className="w-full rounded-sm px-3 py-2 text-sm focus:outline-none" style={inputStyle}>
@@ -144,7 +144,7 @@ export default function CategoryPageClient({
                                 {countries.map(c => <option key={c} value={c}>{c}</option>)}
                             </select>
                         </div>
-                        <div className="min-w-[160px]">
+                        <div className="w-40 flex-shrink-0">
                             <label className="block text-xs font-medium uppercase tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>Model</label>
                             <select value={filterModel} onChange={e => updateParams({ model: e.target.value, page: '1' })}
                                 className="w-full rounded-sm px-3 py-2 text-sm focus:outline-none" style={inputStyle}>

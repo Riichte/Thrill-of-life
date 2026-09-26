@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useEffect } from 'react'
 import { searchGuessItemsAction } from '@/lib/actions/guessActions'
+import { useUnit } from '@/lib/unitContext'
 
 type Specs = {
   type: string | null
@@ -27,14 +28,16 @@ type Item = {
   parkName?: string | null
 } | null
 
+const { unit } = useUnit()
+
 const STAT_LABELS: { key: keyof Specs; label: string; unit?: string }[] = [
   { key: 'type', label: 'Type' },
   { key: 'manufacturer', label: 'Manufacturer' },
   { key: 'model', label: 'Model' },
   { key: 'status', label: 'Status' },
-  { key: 'height', label: 'Height', unit: 'm' },
-  { key: 'speed', label: 'Speed', unit: 'km/h' },
-  { key: 'length', label: 'Length', unit: 'm' },
+  { key: 'height', label: 'Height', unit: unit === 'imperial' ? 'ft' : 'm' },
+  { key: 'speed', label: 'Speed', unit: unit === 'imperial' ? 'mph' : 'km/h' },
+  { key: 'length', label: 'Length', unit: unit === 'imperial' ? 'ft' : 'm' },
   { key: 'inversions', label: 'Inversions' },
   { key: 'duration', label: 'Duration' },
 ]
@@ -52,6 +55,7 @@ export default function GuessStatsGameClient({ item }: { item: Item }) {
     if (!item) return null
     const avail = STAT_LABELS.filter(s => item.specs[s.key] !== null && item.specs[s.key] !== '')
     return avail[Math.floor(Math.random() * avail.length)] ?? null
+    const { unit } = useUnit()
   })
 
   useEffect(() => {
@@ -75,10 +79,18 @@ export default function GuessStatsGameClient({ item }: { item: Item }) {
   const formatStatus = (v: string) =>
     v === 'sbno' ? 'SBNO' : v.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
 
-  const fmt = (key: keyof Specs, unit: string | undefined, v: any) => {
+  const fmt = (key: keyof Specs, unit_label: string | undefined, v: any) => {
     if (v === null || v === undefined || v === '') return '—'
-    const s = key === 'status' ? formatStatus(String(v)) : String(v)
-    return unit ? `${s} ${unit}` : s
+    let val = key === 'status' ? formatStatus(String(v)) : String(v)
+    if (unit === 'imperial' && (key === 'height' || key === 'length')) {
+      const num = parseFloat(val)
+      if (!isNaN(num)) val = Math.round(num * 3.28084).toString()
+    }
+    if (unit === 'imperial' && key === 'speed') {
+      const num = parseFloat(val)
+      if (!isNaN(num)) val = Math.round(num * 0.621371).toString()
+    }
+    return unit_label ? `${val} ${unit_label}` : val
   }
 
   const handlePick = (g: Guess) => {

@@ -4,8 +4,9 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import ImageManager from './ImageManager'
+import { useState, useEffect, useMemo } from 'react'
 
-type AdminTab = 'parks' | 'items' | 'images' | 'park-images' | 'images-manager' | 'videos' | 'manufacturers' | 'models' | 'osts' | 'prices' | 'bulk-import' | 'elements'
+type AdminTab = 'parks' | 'items' | 'images' | 'park-images' | 'images-manager' | 'videos' | 'manufacturers' | 'models' | 'osts' | 'prices' | 'bulk-import' | 'elements' | 'data-issues'
 type Park = { id: string; name: string; description: string; logo_url: string; cover_image_url: string; country: string; company: string; park_type: string; location: string }
 type Category = { id: string; name: string }
 type Item = { id: string; park_id: string; category_id: string; name: string; description: string; location_in_park: string; specs: any; status: string; former_name: string }
@@ -777,6 +778,99 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
     const [fixingDurations, setFixingDurations] = useState(false)
     const getBulkSelectedItems = () => items.filter(i => selectedItems.has(i.id))
 
+    // ─── Data Issues: find specs values that don't match master lists ───
+
+    const norm = (s: string) => s.trim().toLowerCase()
+
+    type OrphanGroup = { value: string; itemIds: string[] }
+
+    const orphanManufacturers = useMemo((): OrphanGroup[] => {
+        const validNames = new Set(manufacturers.map(m => norm(m.name)))
+        const groups: Record<string, string[]> = {}
+        for (const item of items) {
+            const mfr = item.specs?.manufacturer
+            if (!mfr || typeof mfr !== 'string') continue
+            if (validNames.has(norm(mfr))) continue
+            groups[mfr] = groups[mfr] ? [...groups[mfr], item.id] : [item.id]
+        }
+        return Object.entries(groups)
+            .map(([value, itemIds]) => ({ value, itemIds }))
+            .sort((a, b) => b.itemIds.length - a.itemIds.length)
+    }, [items, manufacturers])
+
+    const orphanModels = useMemo((): OrphanGroup[] => {
+        const validNames = new Set(models.map(m => norm(m.name)))
+        const groups: Record<string, string[]> = {}
+        for (const item of items) {
+            const model = item.specs?.model
+            if (!model || typeof model !== 'string') continue
+            if (validNames.has(norm(model))) continue
+            groups[model] = groups[model] ? [...groups[model], item.id] : [item.id]
+        }
+        return Object.entries(groups)
+            .map(([value, itemIds]) => ({ value, itemIds }))
+            .sort((a, b) => b.itemIds.length - a.itemIds.length)
+    }, [items, models])
+
+    const orphanTypes = useMemo((): OrphanGroup[] => {
+        const groups: Record<string, string[]> = {}
+        for (const item of items) {
+            const type = item.specs?.type
+            if (!type || typeof type !== 'string') continue
+            const validForCategory = TYPE_OPTIONS_BY_CATEGORY[item.category_id]
+            if (!validForCategory) continue // category has no controlled type list, skip
+            if (validForCategory.some(t => norm(t) === norm(type))) continue
+            const key = `${type} (${item.category_id})`
+            groups[key] = groups[key] ? [...groups[key], item.id] : [item.id]
+        }
+        return Object.entries(groups)
+            .map(([value, itemIds]) => ({ value, itemIds }))
+            .sort((a, b) => b.itemIds.length - a.itemIds.length)
+    }, [items])
+
+    // Elements: coaster_elements rows whose element_id isn't in the master elements table.
+    // Loaded on-demand since it requires a join query across all items.
+    const [orphanElements, setOrphanElements] = useState<{ elementId: string; itemId: string; itemName: string; rowId: string }[] | null>(null)
+    const [loadingOrphanElements, setLoadingOrphanElements] = useState(false)
+
+    const scanOrphanElements = async () => {
+        setLoadingOrphanElements(true)
+        try {
+            const { data: masterElements } = await supabase.from('elements').select('id')
+            const validIds = new Set((masterElements ?? []).map(e => e.id))
+            const { data: rows, error } = await supabase
+                .from('coaster_elements')
+                .select('id, element_id, item_id')
+            if (error) throw error
+            const itemMap = Object.fromEntries(items.map(i => [i.id, i.name]))
+            const orphans = (rows ?? [])
+                .filter(r => !validIds.has(r.element_id))
+                .map(r => ({ elementId: r.element_id, itemId: r.item_id, itemName: itemMap[r.item_id] ?? r.item_id, rowId: r.id }))
+            setOrphanElements(orphans)
+        } catch (err: any) {
+            notify(err.message, true)
+            setOrphanElements([])
+        }
+        setLoadingOrphanElements(false)
+    }
+
+    const handleDeleteOrphanElementRow = async (rowId: string) => {
+        const { error } = await supabase.from('coaster_elements').delete().eq('id', rowId)
+        if (error) { notify(error.message, true); return }
+        setOrphanElements(prev => prev ? prev.filter(o => o.rowId !== rowId) : prev)
+        notify('Removed orphaned element assignment')
+    }
+
+    // Jump from a Data Issues group straight into the Items tab bulk-edit flow
+    const fixOrphanGroup = (itemIds: string[], kind: 'manufacturer' | 'model' | 'type') => {
+        setSelectedItems(new Set(itemIds))
+        setBulkType('')
+        setBulkManufacturer('')
+        setBulkModel('')
+        setTab('items')
+        notify(`${itemIds.length} item(s) selected — pick the correct ${kind} above and click "Apply to selected"`)
+    }
+
     // Type options are category-specific, so batch-editing Type only makes
     // sense when every selected item shares the same category.
     const getBulkCommonCategory = (): string | null => {
@@ -1003,7 +1097,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
 
                 {/* Tabs */}
                 <div className="flex gap-1 mb-8 border-b overflow-x-auto" style={{ borderColor: 'var(--border)' }}>
-                    {(['parks', 'items', 'images', 'park-images', 'images-manager', 'videos', 'manufacturers', 'models', 'osts', 'prices', 'bulk-import', 'elements'] as AdminTab[]).map(t => (
+                    {(['parks', 'items', 'images', 'park-images', 'images-manager', 'videos', 'manufacturers', 'models', 'osts', 'prices', 'bulk-import', 'elements', 'data-issues'] as AdminTab[]).map(t => (
                         <button
                             key={t}
                             onClick={() => setTab(t)}
@@ -1019,7 +1113,8 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                                 t === 'manufacturers' ? 'Manufacturers' :
                                                     t === 'models' ? 'Models' :
                                                         t === 'prices' ? 'Prices' :
-                                                            t.charAt(0).toUpperCase() + t.slice(1)}
+                                                            t === 'data-issues' ? 'Data Issues' :
+                                                                t.charAt(0).toUpperCase() + t.slice(1)}
                         </button>
                     ))}
                 </div>
@@ -1984,6 +2079,140 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                         </div>
                     )
                 }
+                {tab === 'data-issues' && (
+                    <div className="space-y-8">
+                        <div className="rounded-sm p-4" style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)' }}>
+                            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
+                                These are values found in your items that don't match anything in your master lists
+                                (Manufacturers, Models, or the Type options for that category). Click a group to select
+                                every affected item and jump to the Items tab, where you can apply the correct value in bulk.
+                            </p>
+                        </div>
+
+                        {/* Manufacturers */}
+                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                            <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
+                                Unrecognized Manufacturers ({orphanManufacturers.length})
+                            </h2>
+                            {orphanManufacturers.length === 0 ? (
+                                <p className="text-sm" style={{ color: 'var(--text-muted)' }}>No mismatches found.</p>
+                            ) : (
+                                <div className="space-y-2">
+                                    {orphanManufacturers.map(g => (
+                                        <div key={g.value} className="flex items-center justify-between gap-3 p-3 rounded-sm"
+                                            style={{ background: 'var(--bg-elevated)' }}>
+                                            <div className="min-w-0">
+                                                <p className="text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>"{g.value}"</p>
+                                                <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{g.itemIds.length} item(s)</p>
+                                            </div>
+                                            <button onClick={() => fixOrphanGroup(g.itemIds, 'manufacturer')}
+                                                className="px-3 py-1.5 text-xs rounded-sm flex-shrink-0"
+                                                style={{ background: 'var(--cta)', color: 'var(--cta-text)' }}>
+                                                Select & Fix
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Models */}
+                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                            <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
+                                Unrecognized Models ({orphanModels.length})
+                            </h2>
+                            {orphanModels.length === 0 ? (
+                                <p className="text-sm" style={{ color: 'var(--text-muted)' }}>No mismatches found.</p>
+                            ) : (
+                                <div className="space-y-2">
+                                    {orphanModels.map(g => (
+                                        <div key={g.value} className="flex items-center justify-between gap-3 p-3 rounded-sm"
+                                            style={{ background: 'var(--bg-elevated)' }}>
+                                            <div className="min-w-0">
+                                                <p className="text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>"{g.value}"</p>
+                                                <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{g.itemIds.length} item(s)</p>
+                                            </div>
+                                            <button onClick={() => fixOrphanGroup(g.itemIds, 'model')}
+                                                className="px-3 py-1.5 text-xs rounded-sm flex-shrink-0"
+                                                style={{ background: 'var(--cta)', color: 'var(--cta-text)' }}>
+                                                Select & Fix
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Types */}
+                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                            <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
+                                Unrecognized Types ({orphanTypes.length})
+                            </h2>
+                            {orphanTypes.length === 0 ? (
+                                <p className="text-sm" style={{ color: 'var(--text-muted)' }}>No mismatches found.</p>
+                            ) : (
+                                <div className="space-y-2">
+                                    {orphanTypes.map(g => (
+                                        <div key={g.value} className="flex items-center justify-between gap-3 p-3 rounded-sm"
+                                            style={{ background: 'var(--bg-elevated)' }}>
+                                            <div className="min-w-0">
+                                                <p className="text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>"{g.value}"</p>
+                                                <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{g.itemIds.length} item(s)</p>
+                                            </div>
+                                            <button onClick={() => fixOrphanGroup(g.itemIds, 'type')}
+                                                className="px-3 py-1.5 text-xs rounded-sm flex-shrink-0"
+                                                style={{ background: 'var(--cta)', color: 'var(--cta-text)' }}>
+                                                Select & Fix
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Coaster Elements */}
+                        <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                            <div className="flex items-center justify-between mb-4">
+                                <h2 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>
+                                    Orphaned Coaster Elements {orphanElements !== null && `(${orphanElements.length})`}
+                                </h2>
+                                <button onClick={scanOrphanElements} disabled={loadingOrphanElements}
+                                    className="px-4 py-2 text-sm font-medium rounded-sm disabled:opacity-50"
+                                    style={{ background: 'var(--bg-elevated)', color: 'var(--text-primary)' }}>
+                                    {loadingOrphanElements ? 'Scanning...' : orphanElements === null ? 'Scan' : 'Rescan'}
+                                </button>
+                            </div>
+                            <p className="text-xs mb-4" style={{ color: 'var(--text-muted)' }}>
+                                Checks every coaster_elements row against your master Elements list. This requires a
+                                separate scan since it isn't part of the items already loaded on this page.
+                            </p>
+                            {orphanElements === null ? (
+                                <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Click "Scan" to check.</p>
+                            ) : orphanElements.length === 0 ? (
+                                <p className="text-sm" style={{ color: 'var(--text-muted)' }}>No orphaned element assignments found.</p>
+                            ) : (
+                                <div className="space-y-2 max-h-[500px] overflow-y-auto">
+                                    {orphanElements.map(o => (
+                                        <div key={o.rowId} className="flex items-center justify-between gap-3 p-3 rounded-sm"
+                                            style={{ background: 'var(--bg-elevated)' }}>
+                                            <div className="min-w-0">
+                                                <p className="text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>
+                                                    Unknown element id "{o.elementId}"
+                                                </p>
+                                                <p className="text-xs" style={{ color: 'var(--text-muted)' }}>on {o.itemName}</p>
+                                            </div>
+                                            <button onClick={() => handleDeleteOrphanElementRow(o.rowId)}
+                                                className="px-3 py-1.5 text-xs rounded-sm flex-shrink-0"
+                                                style={{ background: 'rgba(239,68,68,0.2)', color: '#ef4444' }}>
+                                                Remove
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
                 {tab === 'elements' && (
                     <ElementsTab />
                 )}

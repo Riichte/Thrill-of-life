@@ -28,35 +28,34 @@ type Item = {
   parkName?: string | null
 } | null
 
-const { unit } = useUnit()
-
-const STAT_LABELS: { key: keyof Specs; label: string; unit?: string }[] = [
-  { key: 'type', label: 'Type' },
-  { key: 'manufacturer', label: 'Manufacturer' },
-  { key: 'model', label: 'Model' },
-  { key: 'status', label: 'Status' },
-  { key: 'height', label: 'Height', unit: unit === 'imperial' ? 'ft' : 'm' },
-  { key: 'speed', label: 'Speed', unit: unit === 'imperial' ? 'mph' : 'km/h' },
-  { key: 'length', label: 'Length', unit: unit === 'imperial' ? 'ft' : 'm' },
-  { key: 'inversions', label: 'Inversions' },
-  { key: 'duration', label: 'Duration' },
-]
-
 type Guess = { id: string; name: string; parkName?: string; specs: Specs }
 
 export default function GuessStatsGameClient({ item }: { item: Item }) {
+  const { unit } = useUnit()
   const [query, setQuery] = useState('')
   const [suggestions, setSuggestions] = useState<Guess[]>([])
   const [guesses, setGuesses] = useState<Guess[]>([])
   const [won, setWon] = useState(false)
 
-  // one random hint, chosen once
+  const STAT_LABELS: { key: keyof Specs; label: string; unit?: string }[] = [
+    { key: 'type', label: 'Type' },
+    { key: 'manufacturer', label: 'Manufacturer' },
+    { key: 'model', label: 'Model' },
+    { key: 'status', label: 'Status' },
+    { key: 'height', label: 'Height', unit: unit === 'imperial' ? 'ft' : 'm' },
+    { key: 'speed', label: 'Speed', unit: unit === 'imperial' ? 'mph' : 'km/h' },
+    { key: 'length', label: 'Length', unit: unit === 'imperial' ? 'ft' : 'm' },
+    { key: 'inversions', label: 'Inversions' },
+    { key: 'duration', label: 'Duration' },
+  ]
+
   const [hint] = useState(() => {
     if (!item) return null
     const avail = STAT_LABELS.filter(s => item.specs[s.key] !== null && item.specs[s.key] !== '')
     return avail[Math.floor(Math.random() * avail.length)] ?? null
-    const { unit } = useUnit()
   })
+
+
 
   useEffect(() => {
     if (query.trim().length < 2) { setSuggestions([]); return }

@@ -333,8 +333,7 @@ export async function getItemsByGlobalCategory(categoryId: string) {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('items')
-    .select('*, parks(name), item_images(url, attribution_author, license, sort_order)')
-    .eq('category_id', categoryId)
+    .select('*, parks(name, country), item_images(url, attribution_author, license, sort_order)')    .eq('category_id', categoryId)
     .order('name')
   if (error) return []
   return data ?? []

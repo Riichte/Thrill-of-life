@@ -11,7 +11,7 @@ interface Item {
     park_id: string
     category_id: string
     specs: any
-    parks: { name: string } | null
+    parks: { name: string; country: string } | null
     item_images: { url: string; attribution_author?: string; license?: string }[]
     status: string
 }
@@ -40,8 +40,24 @@ export default function CategoryPageClient({
     const sortBy = (searchParams.get('sort') ?? 'name') as 'name' | 'park'
     const filterType = searchParams.get('type') ?? ''
     const filterManufacturer = searchParams.get('manufacturer') ?? ''
+    const filterCountry = searchParams.get('country') ?? ''
+    const filterModel = searchParams.get('model') ?? ''
     const limit = parseInt(searchParams.get('limit') ?? '25')
     const page = parseInt(searchParams.get('page') ?? '1')
+
+    const countries = useMemo(() => {
+        const all = items.map(i => i.parks?.country).filter(Boolean) as string[]
+        return [...new Set(all)].sort()
+    }, [items])
+
+    const models = useMemo(() => {
+        return [...new Set(
+            items
+                .filter(i => !filterManufacturer || i.specs?.manufacturer === filterManufacturer)
+                .map(i => i.specs?.model)
+                .filter(Boolean) as string[]
+        )].sort()
+    }, [items, filterManufacturer])
 
     const updateParams = (updates: Record<string, string>) => {
         const params = new URLSearchParams(searchParams.toString())
@@ -64,7 +80,9 @@ export default function CategoryPageClient({
             (!search || item.name.toLowerCase().includes(search.toLowerCase()) ||
                 item.parks?.name.toLowerCase().includes(search.toLowerCase())) &&
             (!filterType || item.specs?.type === filterType) &&
-            (!filterManufacturer || item.specs?.manufacturer === filterManufacturer)  // ← add here
+            (!filterManufacturer || item.specs?.manufacturer === filterManufacturer) &&
+            (!filterCountry || item.parks?.country === filterCountry) &&
+            (!filterModel || item.specs?.model === filterModel)
         )
         const statusOrder = (s: string) => ['defunct', 'sbno'].includes(s) ? 2 : s === 'coming_soon' ? 1 : 0
 
@@ -113,11 +131,27 @@ export default function CategoryPageClient({
                     </div>
                     <div className="min-w-[160px]">
                         <label className="block text-xs font-medium uppercase tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>Manufacturer</label>
-                        <select value={filterManufacturer} onChange={e => updateParams({ manufacturer: e.target.value, page: '1' })}
+                        <select value={filterManufacturer} onChange={e => updateParams({ manufacturer: e.target.value, model: '', page: '1' })}
                             className="w-full rounded-sm px-3 py-2 text-sm focus:outline-none" style={inputStyle}>
                             <option value="">All Manufacturers</option>
                             {manufacturers.map(m => <option key={m} value={m}>{m}</option>)}
                         </select>
+                        <div className="min-w-[160px]">
+                            <label className="block text-xs font-medium uppercase tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>Country</label>
+                            <select value={filterCountry} onChange={e => updateParams({ country: e.target.value, page: '1' })}
+                                className="w-full rounded-sm px-3 py-2 text-sm focus:outline-none" style={inputStyle}>
+                                <option value="">All Countries</option>
+                                {countries.map(c => <option key={c} value={c}>{c}</option>)}
+                            </select>
+                        </div>
+                        <div className="min-w-[160px]">
+                            <label className="block text-xs font-medium uppercase tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>Model</label>
+                            <select value={filterModel} onChange={e => updateParams({ model: e.target.value, page: '1' })}
+                                className="w-full rounded-sm px-3 py-2 text-sm focus:outline-none" style={inputStyle}>
+                                <option value="">All Models</option>
+                                {models.map(m => <option key={m} value={m}>{m}</option>)}
+                            </select>
+                        </div>
                     </div>
                 </div>
 

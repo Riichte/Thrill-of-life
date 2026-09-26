@@ -68,9 +68,7 @@ export default function GuessStatsGameClient({ item }: { item: Item }) {
   }
 
 
-  const activeStats = STAT_LABELS.filter(
-    s => item.specs[s.key] !== null && item.specs[s.key] !== undefined && item.specs[s.key] !== ''
-  )
+  const activeStats = STAT_LABELS
   const maxAttempts = 10
   const lost = guesses.length >= maxAttempts && !won
 

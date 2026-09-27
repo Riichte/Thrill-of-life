@@ -997,6 +997,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
             ]
             case 'flat-rides': return [
                 { key: 'manufacturer', label: 'Manufacturer' },
+                { key: 'model', label: 'Model' },
                 { key: 'height', label: 'Height (m)', type: 'number' },
                 { key: 'duration', label: 'Duration (e.g. 2min)' },
                 { key: 'year_opened', label: 'Year Opened', type: 'number' },
@@ -1004,6 +1005,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
             ]
             case 'dark-rides': return [
                 { key: 'manufacturer', label: 'Manufacturer' },
+                { key: 'model', label: 'Model' },
                 { key: 'duration', label: 'Duration (e.g. 5min)' },
                 { key: 'year_opened', label: 'Year Opened', type: 'number' },
                 { key: 'technology', label: 'Technology (e.g. trackless, screens)' },
@@ -1025,6 +1027,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
             ]
             case 'transport': return [
                 { key: 'manufacturer', label: 'Manufacturer' },
+                { key: 'model', label: 'Model' },
                 { key: 'year_opened', label: 'Year Opened', type: 'number' },
             ]
             case 'shops': return [
@@ -1043,6 +1046,37 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                 try {
                     const parkId = item.park_id || itemForm.park_id
                     const categoryId = item.category_id || itemForm.category_id
+
+                    // Validate against existing lists
+                    if (item.manufacturer) {
+                        const exactMfr = manufacturers.find(m => m.name.toLowerCase() === item.manufacturer.toLowerCase())
+                        const closeMfr = exactMfr || manufacturers.find(m =>
+                            m.name.toLowerCase().includes(item.manufacturer.toLowerCase()) ||
+                            item.manufacturer.toLowerCase().includes(m.name.toLowerCase())
+                        )
+                        if (!closeMfr) {
+                            results.push(`❌ Skipped: ${item.name} — manufacturer "${item.manufacturer}" not in list`)
+                            continue
+                        }
+                        item.manufacturer = closeMfr.name
+                    }
+                    if (item.model) {
+                        const exactModel = models.find(m => m.name.toLowerCase() === item.model.toLowerCase())
+                        const closeModel = exactModel || models.find(m =>
+                            m.name.toLowerCase().includes(item.model.toLowerCase()) ||
+                            item.model.toLowerCase().includes(m.name.toLowerCase())
+                        )
+                        if (!closeModel) {
+                            results.push(`❌ Skipped: ${item.name} — model "${item.model}" not in list`)
+                            continue
+                        }
+                        item.model = closeModel.name
+                    }
+                    const validTypes = TYPE_OPTIONS_BY_CATEGORY[categoryId] ?? []
+                    if (item.type && validTypes.length && !validTypes.some(t => t.toLowerCase() === item.type.toLowerCase())) {
+                        results.push(`❌ Skipped: ${item.name} — type "${item.type}" not in list`)
+                        continue
+                    }
                     const { error } = await supabase.from('items').insert({
                         id: `${parkId}-${item.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}`,
                         park_id: parkId,
@@ -1054,6 +1088,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                         specs: {
                             type: item.type,
                             manufacturer: item.manufacturer,
+                            model: item.model,
                             height: item.height,
                             drop: item.drop,
                             speed: item.speed,

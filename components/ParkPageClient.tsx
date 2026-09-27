@@ -7,6 +7,9 @@ import { SteamInfoPanel } from '@/components/SteamInfoPanel'
 import { createClient } from '@/lib/supabase/client'
 import PhotoCredits, { PhotoCredit } from '@/components/PhotoCredits'
 import PriceCard from '@/components/PriceCard'
+import { useRouter } from 'next/navigation'
+
+const router = useRouter()
 
 interface Park {
   id: string
@@ -288,6 +291,7 @@ export default function ParkPageClient({
       setSubmitError(err.message || 'Something went wrong.')
     } finally {
       setSubmitting(false)
+      router.refresh()
     }
   }
 

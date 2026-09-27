@@ -1061,8 +1061,9 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                         item.manufacturer = closeMfr.name
                     }
                     if (item.model) {
-                        const exactModel = models.find(m => m.name.toLowerCase() === item.model.toLowerCase())
-                        const closeModel = exactModel || models.find(m =>
+                        const modelsForMfr = item.manufacturer ? models.filter(m => m.manufacturer === item.manufacturer) : models
+                        const exactModel = modelsForMfr.find(m => m.name.toLowerCase() === item.model.toLowerCase())
+                        const closeModel = exactModel || modelsForMfr.find(m =>
                             m.name.toLowerCase().includes(item.model.toLowerCase()) ||
                             item.model.toLowerCase().includes(m.name.toLowerCase())
                         )

@@ -1119,6 +1119,51 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
         setLoading(false)
     }
 
+    const handleBulkFillMissing = async () => {
+        setLoading(true)
+        const results: string[] = []
+        try {
+            const parsed = JSON.parse(bulkText)
+            for (const entry of parsed) {
+                try {
+                    const existing = items.find(i =>
+                        i.park_id === itemForm.park_id &&
+                        i.name.toLowerCase() === entry.name.toLowerCase()
+                    )
+                    if (!existing) {
+                        results.push(`❌ Not found: ${entry.name}`)
+                        continue
+                    }
+                    const currentSpecs = existing.specs || {}
+                    const mergedSpecs = { ...currentSpecs }
+                    const fields = ['type', 'manufacturer', 'model', 'height', 'drop', 'speed', 'length', 'gForce', 'inversions', 'duration', 'year_opened', 'min_height', 'technology', 'cuisine', 'capacity', 'price_range']
+                    let changed = false
+                    for (const key of fields) {
+                        const isEmpty = mergedSpecs[key] === undefined || mergedSpecs[key] === null || mergedSpecs[key] === ''
+                        if (isEmpty && entry[key] !== undefined && entry[key] !== null && entry[key] !== '') {
+                            mergedSpecs[key] = entry[key]
+                            changed = true
+                        }
+                    }
+                    if (!changed) {
+                        results.push(`⏭️ No missing fields: ${entry.name}`)
+                        continue
+                    }
+                    const { error } = await supabase.from('items').update({ specs: mergedSpecs }).eq('id', existing.id)
+                    if (error) throw error
+                    results.push(`✅ Filled: ${entry.name}`)
+                } catch (err: any) {
+                    results.push(`❌ Error: ${entry.name} — ${err.message}`)
+                }
+            }
+        } catch {
+            results.push('❌ Invalid JSON')
+        }
+        setBulkResults(results)
+        setLoading(false)
+        router.refresh()
+    }
+
     return (
         <div className="min-h-screen" style={{ background: 'var(--bg-tertiary)', color: 'var(--text-primary)', overflow: 'visible' }}>
             <div className="px-4 py-8 max-w-6xl mx-auto" style={{ overflow: 'visible' }}>
@@ -2107,6 +2152,9 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                 </div>
                                 <button onClick={handleBulkImport} disabled={loading} className={btnPrimary} style={btnPrimaryStyle}>
                                     {loading ? 'Importing...' : 'Import All'}
+                                </button>
+                                <button onClick={handleBulkFillMissing} disabled={loading} className={btnSecondary} style={btnSecondaryStyle}>
+                                    {loading ? 'Updating...' : 'Fill Missing Data Only'}
                                 </button>
                             </div>
                             {bulkResults.length > 0 && (

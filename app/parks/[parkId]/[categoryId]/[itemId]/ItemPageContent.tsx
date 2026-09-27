@@ -535,6 +535,18 @@ export default function ItemPageContent({ park, item, category, images, videos, 
         )
       }
 
+      if (!isVisited) {
+        await supabase.from('visited').upsert({
+          user_id: user.id, item_id: item.id,
+          item_type: item.category_id, park_id: park.id
+        }, { onConflict: 'user_id,item_id' })
+        await supabase.from('visited').upsert({
+          user_id: user.id, item_id: park.id,
+          item_type: 'park', park_id: park.id
+        }, { onConflict: 'user_id,item_id' })
+        setIsVisited(true)
+      }
+
       if (reviewTitle.trim() || reviewText.trim()) {
         setUserReview({ title: reviewTitle, text: reviewText })
       }
@@ -902,7 +914,7 @@ export default function ItemPageContent({ park, item, category, images, videos, 
                 border: `1px solid ${isVisited ? 'var(--score-high)' : 'var(--border)'}`,
                 color: isVisited ? 'var(--score-high)' : 'var(--text-muted)',
               }}>
-              {isVisited ? '✓ Visited' : '+ Mark as Visited'}
+              {isVisited ? '✓ Experienced' : '+ Mark as Experienced'}
             </button>
           </div>
         </div>

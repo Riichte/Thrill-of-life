@@ -276,9 +276,14 @@ export default function ParkPageClient({
         await supabase.from('user_points').upsert({ user_id: userId, points: newPoints }, { onConflict: 'user_id' })
       }
 
-      if (reviewTitle.trim() || reviewText.trim()) {
-        setUserReview({ title: reviewTitle, text: reviewText })
+      if (!isVisited) {
+        await supabase.from('visited').upsert({
+          user_id: userId, item_id: park.id, item_type: 'park', park_id: park.id
+        }, { onConflict: 'user_id,item_id' })
+        setIsVisited(true)
       }
+
+      setUserReview({ title: reviewTitle, text: reviewText })
     } catch (err: any) {
       setSubmitError(err.message || 'Something went wrong.')
     } finally {

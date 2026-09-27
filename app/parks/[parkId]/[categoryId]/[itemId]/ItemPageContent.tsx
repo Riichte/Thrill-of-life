@@ -92,7 +92,7 @@ type UserReactions = { yes: boolean; no: boolean; funny: boolean; award: boolean
 
 const initialReactions: ReviewReactions = { yes: 0, no: 0, funny: 0, award: 0 }
 const initialUserReactions: UserReactions = { yes: false, no: false, funny: false, award: false }
-const router = useRouter()
+
 
 function ReviewCard({
   reviewId, author, score, title, text, isOwn,
@@ -229,6 +229,7 @@ export default function ItemPageContent({ park, item, category, images, videos, 
   coasterElements: { id: string; name: string; sort_order: number }[]
 }) {
   const supabase = createClient()
+  const router = useRouter()
   const { unit, convert, convertHeight, convertSpeed, convertMinHeight } = useUnit()
   const [reviewFilter, setReviewFilter] = useState('all')
   const [isRatingOpen, setIsRatingOpen] = useState(false)

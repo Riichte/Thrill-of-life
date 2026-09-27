@@ -55,7 +55,7 @@ type ReviewReactions = { yes: number; no: number; funny: number; award: number }
 type UserReactions = { yes: boolean; no: boolean; funny: boolean; award: boolean }
 const initialReactions: ReviewReactions = { yes: 0, no: 0, funny: 0, award: 0 }
 const initialUserReactions: UserReactions = { yes: false, no: false, funny: false, award: false }
-const router = useRouter()
+
 
 function getScoreColor(s: number) {
   return s >= 80 ? '#10b981' : s >= 60 ? '#f59e0b' : s >= 40 ? '#f97316' : '#ef4444'
@@ -165,6 +165,7 @@ export default function ParkPageClient({
   reviews = [], communityScore, prices = [],
 }: ParkPageClientProps) {
   const supabase = createClient()
+  const router = useRouter()
   const [isFavorited, setIsFavorited] = useState(initialFavorited)
   const [isVisited, setIsVisited] = useState(false)
   const [isRatingOpen, setIsRatingOpen] = useState(false)

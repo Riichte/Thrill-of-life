@@ -175,11 +175,11 @@ export default function ProfileClient({
   const parkName = (id?: string) => (id ? parks.find(p => p.id === id)?.name ?? id : '')
   const itemLink = (it: any) => `/parks/${it.park_id}/${it.category_id}/${it.id}`
 
-  const activityItems: ActivityItem[] = [
+  const activityItems: ActivityItem[] = ([
     ...reviews.map(r => {
       const sc = r.review_ratings ?? []
       return {
-        date: r.created_at, text: 'Rated',
+        date: r.created_at, icon: '⭐', text: 'Rated',
         linkText: r.items?.name ?? parkName(r.item_id),
         href: r.items ? itemLink(r.items) : `/parks/${r.item_id}`,
         sub: r.title ?? undefined,
@@ -187,12 +187,12 @@ export default function ProfileClient({
       }
     }),
     ...favorites.map(f => ({
-      date: f.created_at, text: 'Added to favorites',
+      date: f.created_at, icon: '❤️', text: 'Added to favorites',
       linkText: f.items?.name ?? parkName(f.item_id),
       href: f.items ? itemLink(f.items) : `/parks/${f.item_id}`,
     })),
     ...visited.map((v: any) => ({
-      date: v.created_at ?? '', text: 'Marked as visited',
+      date: v.created_at ?? '', icon: '✅', text: 'Marked as visited',
       linkText: v.items?.name ?? parkName(v.item_id),
       href: v.items ? itemLink(v.items) : `/parks/${v.item_id}`,
     })),
@@ -200,23 +200,24 @@ export default function ProfileClient({
       const rv = r.reviews?.items
       return {
         date: r.created_at ?? '',
+        icon: r.type === 'yes' ? '👍' : r.type === 'no' ? '👎' : r.type === 'funny' ? '😄' : '🏆',
         text: r.type === 'yes' ? 'Marked a review helpful' : r.type === 'no' ? 'Marked a review unhelpful' : r.type === 'funny' ? 'Found a review funny' : 'Awarded a review',
         linkText: rv?.name ?? parkName(r.reviews?.item_id),
         href: rv ? itemLink(rv) : `/parks/${r.reviews?.item_id}`,
       }
     }),
     ...follows.map((f: any) => ({
-      date: f.created_at ?? '', text: 'Started following',
+      date: f.created_at ?? '', icon: '🤝', text: 'Started following',
       linkText: f.profiles?.username, href: `/users/${f.profiles?.id}`,
     })),
     ...followers.map((f: any) => ({
-      date: f.created_at ?? '', text: 'New follower',
+      date: f.created_at ?? '', icon: '👋', text: 'New follower',
       linkText: f.profiles?.username, href: `/users/${f.profiles?.id}`,
     })),
     ...activityLog.map((a: any) => ({
-      date: a.created_at ?? '', text: a.detail ?? '',
+      date: a.created_at ?? '', icon: a.type === 'home_park' ? '🏠' : '🔗', text: a.detail ?? '',
     })),
-  ].filter(a => a.date).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  ] as any[]).filter((a: any) => a.date).sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
   const handleSaveBio = async () => {
     if (!profile) return

@@ -219,6 +219,22 @@ export default function ProfileClient({
     })),
   ] as any[]).filter((a: any) => a.date).sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
+  const groupedActivity = groupByDate(activityItems)
+
+  const handleFollow = async () => {
+    if (!viewerId || !profile) return
+    if (isFollowing) {
+      await supabase.from('followers').delete()
+        .eq('follower_id', viewerId).eq('following_id', profile.id)
+      setIsFollowing(false)
+      setFollowerCountState(prev => prev - 1)
+    } else {
+      await supabase.from('followers').insert({ follower_id: viewerId, following_id: profile.id })
+      setIsFollowing(true)
+      setFollowerCountState(prev => prev + 1)
+    }
+  }
+
   const handleSaveBio = async () => {
     if (!profile) return
     setSaving(true)

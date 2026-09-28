@@ -14,6 +14,8 @@ import {
 } from '@/lib/queries'
 import ProfileClient from '@/components/ProfileClient'
 
+export const dynamic = 'force-dynamic'
+
 export default async function PublicProfilePage({ params }: { params: Promise<{ userId: string }> }) {
   const { userId } = await params
   const supabase = await createClient()

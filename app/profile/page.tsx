@@ -16,6 +16,8 @@ import {
 import { getProfileVisited } from '@/lib/queries'
 import ProfileClient from '@/components/ProfileClient'
 
+export const dynamic = 'force-dynamic'
+
 export default async function ProfilePage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()

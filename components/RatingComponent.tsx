@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { useRouter } from 'next/navigation'
 
 interface Item {
   id: string
@@ -100,7 +101,7 @@ export default function RatingComponent({
   category: Category
 }) {
   const dimensions = ratingDimensions[item.category_id] || ratingDimensions.rides
-
+  const router = useRouter()
   const [isOpen, setIsOpen] = useState(false)
   const [hasRated, setHasRated] = useState(false)
   const [userRatings, setUserRatings] = useState<Record<string, number>>(
@@ -143,6 +144,7 @@ export default function RatingComponent({
     setSubmittedScore(calculateOverall())
     setHasRated(true)
     setIsOpen(false)
+    router.refresh()
   }
 
   const score = submittedScore ?? 0

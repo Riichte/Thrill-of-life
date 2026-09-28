@@ -127,14 +127,25 @@ export default async function Home() {
 
       <div className="container mx-auto px-4 py-10 md:py-14">
 
-        <Link href="/games/guess-the-ride" className="block mb-10">
-          <div className="rounded-2xl p-6 text-center transition-transform hover:-translate-y-0.5"
-            style={{ background: 'var(--card-bg)', border: '1px solid var(--accent)' }}>
-            <span className="text-3xl"></span>
-            <h2 className="text-2xl font-bold mt-2 mb-1" style={{ color: 'var(--text-primary)' }}>Can you guess the ride?</h2>
-            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Test your theme park knowledge — play now!</p>
-          </div>
-        </Link>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
+          <Link href="/games/guess-the-ride" className="block">
+            <div className="rounded-2xl p-6 text-center h-full transition-transform hover:-translate-y-0.5"
+              style={{ background: 'var(--card-bg)', border: '1px solid var(--accent)' }}>
+              <span className="text-3xl"></span>
+              <h2 className="text-2xl font-bold mt-2 mb-1" style={{ color: 'var(--text-primary)' }}>Guess the ride</h2>
+              <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Guess from the image — play now!</p>
+            </div>
+          </Link>
+
+          <Link href="/games/guess-the-ride/guess-the-stats" className="block">
+            <div className="rounded-2xl p-6 text-center h-full transition-transform hover:-translate-y-0.5"
+              style={{ background: 'var(--card-bg)', border: '1px solid var(--accent)' }}>
+              <span className="text-3xl"></span>
+              <h2 className="text-2xl font-bold mt-2 mb-1" style={{ color: 'var(--text-primary)' }}>Guess by stats</h2>
+              <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Guess from the stats — play now!</p>
+            </div>
+          </Link>
+        </div>
 
         <HomeMarqueeRow
           title="Parks"

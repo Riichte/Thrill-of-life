@@ -1040,6 +1040,8 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
     const handleBulkImport = async () => {
         setLoading(true)
         const results: string[] = []
+        const usedIds = new Set(items.map(i => i.id))
+        const pool: any[] = items.map(i => ({ park_id: i.park_id, category_id: i.category_id, name: i.name, specs: i.specs }))
         try {
             const parsed = JSON.parse(bulkText)
             for (const item of parsed) {
@@ -1047,39 +1049,50 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                     const parkId = item.park_id || itemForm.park_id
                     const categoryId = item.category_id || itemForm.category_id
 
-                    // Validate against existing lists
+                    // Validate against existing lists — blank out anything not found, but still import
+                    const warnings: string[] = []
                     if (item.manufacturer) {
-                        const exactMfr = manufacturers.find(m => m.name.toLowerCase() === item.manufacturer.toLowerCase())
-                        const closeMfr = exactMfr || manufacturers.find(m =>
-                            m.name.toLowerCase().includes(item.manufacturer.toLowerCase()) ||
-                            item.manufacturer.toLowerCase().includes(m.name.toLowerCase())
-                        )
-                        if (!closeMfr) {
-                            results.push(`❌ Skipped: ${item.name} — manufacturer "${item.manufacturer}" not in list`)
-                            continue
-                        }
-                        item.manufacturer = closeMfr.name
+                        const mfrLower = item.manufacturer.toLowerCase()
+                        const match = manufacturers.find(m => m.name.toLowerCase() === mfrLower)
+                            || manufacturers.find(m => m.name.toLowerCase().includes(mfrLower) || mfrLower.includes(m.name.toLowerCase()))
+                        if (match) item.manufacturer = match.name
+                        else { warnings.push(`manufacturer "${item.manufacturer}"`); item.manufacturer = '' }
                     }
                     if (item.model) {
                         const modelsForMfr = item.manufacturer ? models.filter(m => m.manufacturer === item.manufacturer) : models
-                        const exactModel = modelsForMfr.find(m => m.name.toLowerCase() === item.model.toLowerCase())
-                        const closeModel = exactModel || modelsForMfr.find(m =>
-                            m.name.toLowerCase().includes(item.model.toLowerCase()) ||
-                            item.model.toLowerCase().includes(m.name.toLowerCase())
-                        )
-                        if (!closeModel) {
-                            results.push(`❌ Skipped: ${item.name} — model "${item.model}" not in list`)
-                            continue
-                        }
-                        item.model = closeModel.name
+                        const modelLower = item.model.toLowerCase()
+                        const match = modelsForMfr.find(m => m.name.toLowerCase() === modelLower)
+                            || modelsForMfr.find(m => m.name.toLowerCase().includes(modelLower) || modelLower.includes(m.name.toLowerCase()))
+                        if (match) item.model = match.name
+                        else { warnings.push(`model "${item.model}"`); item.model = '' }
                     }
                     const validTypes = TYPE_OPTIONS_BY_CATEGORY[categoryId] ?? []
-                    if (item.type && validTypes.length && !validTypes.some(t => t.toLowerCase() === item.type.toLowerCase())) {
-                        results.push(`❌ Skipped: ${item.name} — type "${item.type}" not in list`)
+                    if (item.type && validTypes.length) {
+                        const match = validTypes.find(t => t.toLowerCase() === item.type.toLowerCase())
+                        if (match) item.type = match
+                        else { warnings.push(`type "${item.type}"`); item.type = '' }
+                    }
+
+                    const compareKeys = ['type', 'manufacturer', 'model', 'height', 'drop', 'speed', 'length', 'inversions', 'year_opened']
+                    const given = compareKeys.filter(k => item[k] !== undefined && item[k] !== null && item[k] !== '')
+                    const isDuplicate = pool.some(p =>
+                        p.park_id === parkId && p.category_id === categoryId &&
+                        p.name.toLowerCase() === item.name.toLowerCase() &&
+                        given.every(k => String(p.specs?.[k] ?? '').toLowerCase() === String(item[k]).toLowerCase())
+                    )
+                    if (isDuplicate) {
+                        results.push(`⏭️ Skipped (already exists): ${item.name}`)
                         continue
                     }
+
+                    const baseId = `${parkId}-${item.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}`
+                    let uniqueId = baseId
+                    let n = 1
+                    while (usedIds.has(uniqueId)) { n++; uniqueId = `${baseId}-${n}` }
+                    usedIds.add(uniqueId)
+
                     const { error } = await supabase.from('items').insert({
-                        id: `${parkId}-${item.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}`,
+                        id: uniqueId,
                         park_id: parkId,
                         category_id: categoryId,
                         name: item.name,
@@ -1107,7 +1120,8 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                         status: item.status || 'operating',
                     })
                     if (error) throw error
-                    results.push(`✅ Added: ${item.name}`)
+                    results.push(`✅ Added: ${item.name}${warnings.length ? ` (left empty: ${warnings.join(', ')})` : ''}`)
+                    pool.push({ park_id: parkId, category_id: categoryId, name: item.name, specs: item })
                 } catch (err: any) {
                     results.push(`❌ Error: ${item.name} — ${err.message}`)
                 }

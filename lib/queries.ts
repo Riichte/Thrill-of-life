@@ -142,11 +142,17 @@ export async function getProfileReviews(userId: string) {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('reviews')
-    .select('*, review_ratings(*), items(id, name, park_id, category_id)')
+    .select('*, review_ratings(*)')
     .eq('user_id', userId)
     .order('created_at', { ascending: false })
-  if (error) return []
-  return data ?? []
+  if (error) { console.error('getProfileReviews error:', error); return [] }
+  const ids = (data ?? []).map(r => r.item_id)
+  const { data: items } = await supabase
+    .from('items')
+    .select('id, name, park_id, category_id')
+    .in('id', ids)
+  const map = Object.fromEntries((items ?? []).map(i => [i.id, i]))
+  return (data ?? []).map(r => ({ ...r, items: map[r.item_id] ?? null }))
 }
 
 export async function getProfileFavorites(userId: string) {
@@ -571,14 +577,7 @@ export async function getProfileVisited(userId: string) {
 }
 
 export async function getProfileAllReviews(userId: string) {
-  const supabase = await createClient()
-  const { data, error } = await supabase
-    .from('reviews')
-    .select('*, review_ratings(*), items(id, name, park_id, category_id)')
-    .eq('user_id', userId)
-    .order('created_at', { ascending: false })
-  if (error) return []
-  return data ?? []
+  return getProfileReviews(userId)
 }
 
 // ─── Guess the Ride game ──────────────────────────────────

@@ -118,7 +118,28 @@ export default function RatingComponent({
     )
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) { window.location.href = '/auth/login'; return }
+
+    let { data: review } = await supabase.from('reviews').select('id')
+      .eq('user_id', user.id).eq('item_id', item.id).maybeSingle()
+
+    if (!review) {
+      const { data, error } = await supabase.from('reviews')
+        .insert({ user_id: user.id, item_id: item.id }).select('id').single()
+      if (error) { alert(error.message); return }
+      review = data
+    } else {
+      await supabase.from('review_ratings').delete().eq('review_id', review.id)
+    }
+
+    const { error } = await supabase.from('review_ratings').insert(
+      dimensions.map(d => ({ review_id: review!.id, category: d.id, score: userRatings[d.id] }))
+    )
+    if (error) { alert(error.message); return }
+
     setSubmittedScore(calculateOverall())
     setHasRated(true)
     setIsOpen(false)

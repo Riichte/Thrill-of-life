@@ -558,12 +558,16 @@ export async function getParkPrices(parkId: string) {
 export async function getProfileVisited(userId: string) {
   const supabase = await createClient()
   const { data, error } = await supabase
-    .from('visited')
-    .select('*')
-    .eq('user_id', userId)
+    .from('visited').select('*').eq('user_id', userId)
     .order('created_at', { ascending: false })
-  if (error) return []
-  return data ?? []
+  if (error || !data?.length) return []
+  const ids = data.filter(v => v.item_type !== 'park').map(v => v.item_id)
+  const { data: items } = await supabase
+    .from('items')
+    .select('id, name, park_id, category_id, item_images(url), parks(name)')
+    .in('id', ids)
+  const map = Object.fromEntries((items ?? []).map(i => [i.id, i]))
+  return data.map(v => ({ ...v, items: map[v.item_id] ?? null, parks: map[v.item_id]?.parks ?? null }))
 }
 
 export async function getProfileAllReviews(userId: string) {
@@ -673,5 +677,28 @@ export async function getCoasterElements(itemId: string) {
     .order('sort_order')
 
   if (error) console.error('Error fetching coaster elements:', error)
+  return data ?? []
+}
+
+
+
+export async function getProfileNewFollowers(userId: string) {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('followers')
+    .select('created_at, profiles!followers_follower_id_fkey(id, username)')
+    .eq('following_id', userId)
+    .order('created_at', { ascending: false })
+  if (error) return []
+  return data ?? []
+}
+
+export async function getProfileActivityLog(userId: string) {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('profile_activity').select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+  if (error) return []
   return data ?? []
 }

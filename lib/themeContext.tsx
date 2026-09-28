@@ -1,10 +1,10 @@
 'use client'
 import { createContext, useContext, useEffect, useState } from 'react'
 
-export type ThemeId = 'dark-steam' | 'dark-neon' | 'light-blueprint' | 'light-tropical'
+export type ThemeId = 'dark-Blue' | 'dark-neon' | 'light-blueprint' | 'light-tropical'
 
 export const themes: { id: ThemeId; label: string; dark: boolean }[] = [
-    { id: 'dark-steam', label: 'Steam', dark: true },
+    { id: 'dark-Blue', label: 'Deep', dark: true },
     { id: 'dark-neon', label: 'Neon', dark: true },
     { id: 'light-blueprint', label: 'Blueprint', dark: false },
     { id: 'light-tropical', label: 'Tropical', dark: false },
@@ -13,10 +13,10 @@ export const themes: { id: ThemeId; label: string; dark: boolean }[] = [
 const ThemeContext = createContext<{
     theme: ThemeId
     setTheme: (t: ThemeId) => void
-}>({ theme: 'dark-steam', setTheme: () => { } })
+}>({ theme: 'dark-Blue', setTheme: () => { } })
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-    const [theme, setThemeState] = useState<ThemeId>('dark-steam')
+    const [theme, setThemeState] = useState<ThemeId>('dark-Blue')
 
     useEffect(() => {
         const saved = localStorage.getItem('theme') as ThemeId | null

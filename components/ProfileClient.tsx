@@ -56,16 +56,18 @@ interface ProfileClientProps {
   reactions?: any[]
   follows?: any[]
   visited?: any[]
+  followers?: any[]
+  activityLog?: any[]
 }
 
-type ActivityItem =
-  | { type: 'review'; date: string; review: Review }
-  | { type: 'favorite'; date: string; favorite: Favorite }
-  | { type: 'reaction'; date: string; reaction: any }
-  | { type: 'follow'; date: string; follow: any }
-
-function getScoreColor(s: number) {
-  return s >= 80 ? '#10b981' : s >= 60 ? '#f59e0b' : s >= 40 ? '#f97316' : '#ef4444'
+type ActivityItem = {
+  date: string
+  icon: string
+  text: string
+  linkText?: string
+  href?: string
+  sub?: string
+  score?: number
 }
 
 function ScoreCircle({ score }: { score: number }) {
@@ -118,6 +120,8 @@ export default function ProfileClient({
   reactions: profileReactions = [],
   follows = [],
   visited = [],
+  followers = [],
+  activityLog = [],
 }: ProfileClientProps) {
 
   const supabase = createClient()
@@ -168,29 +172,51 @@ export default function ProfileClient({
     )
     : null
 
-  // Build activity feed
+  const parkName = (id?: string) => (id ? parks.find(p => p.id === id)?.name ?? id : '')
+  const itemLink = (it: any) => `/parks/${it.park_id}/${it.category_id}/${it.id}`
+
   const activityItems: ActivityItem[] = [
-    ...reviews.map(r => ({ type: 'review' as const, date: r.created_at, review: r })),
-    ...favorites.map(f => ({ type: 'favorite' as const, date: (f as any).created_at ?? '', favorite: f })),
-    ...profileReactions.map((r: any) => ({ type: 'reaction' as const, date: r.created_at ?? '', reaction: r })),
-    ...follows.map((f: any) => ({ type: 'follow' as const, date: f.created_at ?? '', follow: f })),
-  ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-
-  const groupedActivity = groupByDate(activityItems)
-
-  const handleFollow = async () => {
-    if (!viewerId || !profile) return
-    if (isFollowing) {
-      await supabase.from('followers').delete()
-        .eq('follower_id', viewerId).eq('following_id', profile.id)
-      setIsFollowing(false)
-      setFollowerCountState(prev => prev - 1)
-    } else {
-      await supabase.from('followers').insert({ follower_id: viewerId, following_id: profile.id })
-      setIsFollowing(true)
-      setFollowerCountState(prev => prev + 1)
-    }
-  }
+    ...reviews.map(r => {
+      const sc = r.review_ratings ?? []
+      return {
+        date: r.created_at, text: 'Rated',
+        linkText: r.items?.name ?? parkName(r.item_id),
+        href: r.items ? itemLink(r.items) : `/parks/${r.item_id}`,
+        sub: r.title ?? undefined,
+        score: sc.length ? Math.round(sc.reduce((s, x) => s + x.score, 0) / sc.length) : undefined,
+      }
+    }),
+    ...favorites.map(f => ({
+      date: f.created_at, text: 'Added to favorites',
+      linkText: f.items?.name ?? parkName(f.item_id),
+      href: f.items ? itemLink(f.items) : `/parks/${f.item_id}`,
+    })),
+    ...visited.map((v: any) => ({
+      date: v.created_at ?? '', text: 'Marked as visited',
+      linkText: v.items?.name ?? parkName(v.item_id),
+      href: v.items ? itemLink(v.items) : `/parks/${v.item_id}`,
+    })),
+    ...profileReactions.map((r: any) => {
+      const rv = r.reviews?.items
+      return {
+        date: r.created_at ?? '',
+        text: r.type === 'yes' ? 'Marked a review helpful' : r.type === 'no' ? 'Marked a review unhelpful' : r.type === 'funny' ? 'Found a review funny' : 'Awarded a review',
+        linkText: rv?.name ?? parkName(r.reviews?.item_id),
+        href: rv ? itemLink(rv) : `/parks/${r.reviews?.item_id}`,
+      }
+    }),
+    ...follows.map((f: any) => ({
+      date: f.created_at ?? '', text: 'Started following',
+      linkText: f.profiles?.username, href: `/users/${f.profiles?.id}`,
+    })),
+    ...followers.map((f: any) => ({
+      date: f.created_at ?? '', text: 'New follower',
+      linkText: f.profiles?.username, href: `/users/${f.profiles?.id}`,
+    })),
+    ...activityLog.map((a: any) => ({
+      date: a.created_at ?? '', text: a.detail ?? '',
+    })),
+  ].filter(a => a.date).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
   const handleSaveBio = async () => {
     if (!profile) return
@@ -205,6 +231,9 @@ export default function ProfileClient({
     if (!profile) return
     setSaving(true)
     await supabase.from('profiles').update(socialsInput).eq('id', profile.id)
+    await supabase.from('profile_activity').insert({
+      user_id: profile.id, type: 'socials', detail: 'Updated socials',
+    })
     setSocials(socialsInput)
     setIsEditingSocials(false)
     setSaving(false)
@@ -214,6 +243,10 @@ export default function ProfileClient({
     if (!profile) return
     setSaving(true)
     await supabase.from('profiles').update({ home_park_id: homeParkInput || null }).eq('id', profile.id)
+    await supabase.from('profile_activity').insert({
+      user_id: profile.id, type: 'home_park',
+      detail: 'Set home park to ' + (parks.find(p => p.id === homeParkInput)?.name ?? 'none'),
+    })
     setHomeParkId(homeParkInput)
     setIsEditingHomePark(false)
     setSaving(false)
@@ -233,7 +266,7 @@ export default function ProfileClient({
   const hasSocials = Object.values(socials).some(Boolean)
 
   return (
-    <div className="min-h-screen style={{ background: 'var(--bg-tertiary)' }} style={{ color: 'var(--text-primary)' }}">
+    <div className="min-h-screen" style={{ background: 'var(--bg-tertiary)', color: 'var(--text-primary)' }}>
 
       {/* Banner */}
       <div className="h-36" style={{ background: 'linear-gradient(to right, var(--bg-tertiary), var(--bg-elevated), var(--bg-tertiary))' }} />
@@ -247,8 +280,7 @@ export default function ProfileClient({
             style={{ background: 'linear-gradient(to bottom right, var(--bg-elevated), var(--card-bg))', borderColor: 'var(--bg-tertiary)', color: 'var(--accent)' }}>
             {username?.[0]?.toUpperCase() ?? '?'}
           </div>
-          {username?.[0]?.toUpperCase() ?? '?'}
-        </div>
+
 
         {/* Username + follow outside the flex-1 pb-2 */}
         <div className="flex-1 pb-2">
@@ -524,103 +556,28 @@ export default function ProfileClient({
           {activeTab === 'activity' && (
             <div className="space-y-8">
               {activityItems.length === 0 && (
-                <p className="style={{ color: 'var(--text-muted)' }} text-sm">No activity yet.</p>
+                <p className="text-sm" style={{ color: 'var(--text-muted)' }}>No activity yet.</p>
               )}
               {Object.entries(groupedActivity).map(([dateLabel, items]) => (
                 <div key={dateLabel}>
-                  <p className="text-xs font-semibold uppercase tracking-wider style={{ color: 'var(--text-muted)' }} mb-3 flex items-center gap-2">
-                    <span className="h-px flex-1 style={{ background: 'var(--border)' }}" />
-                    {dateLabel}
-                    <span className="h-px flex-1 style={{ background: 'var(--border)' }}" />
-                  </p>
+                  <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--text-muted)' }}>{dateLabel}</p>
                   <div className="space-y-3">
-                    {items.map((item, i) => {
-                      if (item.type === 'review') {
-                        const avg = item.review.review_ratings.length > 0
-                          ? Math.round(item.review.review_ratings.reduce((s, r) => s + r.score, 0) / item.review.review_ratings.length)
-                          : 0
-                        return (
-                          <div key={i} className="flex gap-4 items-start style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-4 hover:style={{ borderColor: 'var(--input-border)' }} transition-colors">
-                            <div className="text-2xl">⭐</div>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-xs style={{ color: 'var(--text-muted)' }} mb-1">Rated a ride</p>
-                              {item.review.items && (
-                                <Link href={`/parks/${item.review.items.park_id}/${item.review.items.category_id}/${item.review.items.id}`}
-                                  className="text-sm font-semibold style={{ color: 'var(--accent)' }} hover:underline">
-                                  {item.review.items.name}
-                                </Link>
-                              )}
-                              {item.review.title && (
-                                <p className="text-sm style={{ color: 'var(--text-primary)' }} mt-0.5">"{item.review.title}"</p>
-                              )}
-                              {item.review.body && (
-                                <p className="text-xs style={{ color: 'var(--text-secondary)' }} mt-1 line-clamp-2">{item.review.body}</p>
-                              )}
-                            </div>
-                            <ScoreCircle score={avg} />
-                          </div>
-                        )
-                      }
-                      if (item.type === 'favorite') {
-                        const favItem = item.favorite.items
-                        if (!favItem) return null
-                        const image = favItem.item_images?.[0]?.url
-                        return (
-                          <div key={i} className="flex gap-4 items-center style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-4 hover:style={{ borderColor: 'var(--input-border)' }} transition-colors">
-                            <div className="text-2xl">❤️</div>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-xs style={{ color: 'var(--text-muted)' }} mb-1">Added to favorites</p>
-                              <Link href={`/parks/${favItem.park_id}/${favItem.category_id}/${favItem.id}`}
-                                className="text-sm font-semibold style={{ color: 'var(--accent)' }} hover:underline">
-                                {favItem.name}
-                              </Link>
-                            </div>
-                            {image && (
-                              <img src={image} alt={favItem.name}
-                                className="w-16 h-10 object-cover rounded-sm flex-shrink-0" />
-                            )}
-                          </div>
-                        )
-                      }
-
-                      if (item.type === 'reaction') {
-                        const reactionEmoji = item.reaction.type === 'yes' ? '👍' : item.reaction.type === 'no' ? '👎' : item.reaction.type === 'funny' ? '😄' : '🏆'
-                        const reactionLabel = item.reaction.type === 'yes' ? 'Marked a review helpful' : item.reaction.type === 'no' ? 'Marked a review unhelpful' : item.reaction.type === 'funny' ? 'Found a review funny' : 'Awarded a review'
-                        const itemData = item.reaction.reviews?.items
-                        return (
-                          <div key={i} className="flex gap-4 items-center style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-4 hover:style={{ borderColor: 'var(--input-border)' }} transition-colors">
-                            <div className="text-2xl">{reactionEmoji}</div>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-xs style={{ color: 'var(--text-muted)' }} mb-1">{reactionLabel}</p>
-                              {itemData && (
-                                <Link href={`/parks/${itemData.park_id}/${itemData.category_id}/${itemData.id}`}
-                                  className="text-sm font-semibold style={{ color: 'var(--accent)' }} hover:underline">
-                                  {itemData.name}
-                                </Link>
-                              )}
-                            </div>
-                          </div>
-                        )
-                      }
-                      if (item.type === 'follow') {
-                        const followed = item.follow.profiles
-                        return (
-                          <div key={i} className="flex gap-4 items-center style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-sm p-4 hover:style={{ borderColor: 'var(--input-border)' }} transition-colors">
-                            <div className="text-2xl">🤝</div>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-xs style={{ color: 'var(--text-muted)' }} mb-1">Started following</p>
-                              {followed && (
-                                <Link href={`/users/${followed.id}`}
-                                  className="text-sm font-semibold style={{ color: 'var(--accent)' }} hover:underline">
-                                  {followed.username}
-                                </Link>
-                              )}
-                            </div>
-                          </div>
-                        )
-                      }
-                      return null
-                    })}
+                    {items.map((item, i) => (
+                      <div key={i} className="flex gap-4 items-center rounded-sm p-4"
+                        style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                        <div className="text-2xl">{item.icon}</div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>{item.text}</p>
+                          {item.linkText && item.href && (
+                            <Link href={item.href} className="text-sm font-semibold hover:underline" style={{ color: 'var(--accent)' }}>
+                              {item.linkText}
+                            </Link>
+                          )}
+                          {item.sub && <p className="text-sm mt-0.5" style={{ color: 'var(--text-primary)' }}>"{item.sub}"</p>}
+                        </div>
+                        {item.score !== undefined && <ScoreCircle score={item.score} />}
+                      </div>
+                    ))}
                   </div>
                 </div>
               ))}
@@ -640,12 +597,10 @@ export default function ProfileClient({
                     style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
                     <ScoreCircle score={avg} />
                     <div className="flex-1 min-w-0">
-                      {review.items && (
-                        <Link href={`/parks/${review.items.park_id}/${review.items.category_id}/${review.items.id}`}
-                          className="hover:underline font-semibold text-sm" style={{ color: 'var(--accent)' }}>
-                          {review.items.name}
-                        </Link>
-                      )}
+                      <Link href={review.items ? `/parks/${review.items.park_id}/${review.items.category_id}/${review.items.id}` : `/parks/${review.item_id}`}
+                        className="hover:underline font-semibold text-sm" style={{ color: 'var(--accent)' }}>
+                        {review.items?.name ?? parkName(review.item_id)}
+                      </Link>
                       {review.title && <p className="text-sm font-medium mt-0.5" style={{ color: 'var(--text-primary)' }}>{review.title}</p>}
                       {review.body && <p className="text-sm leading-relaxed mt-1 line-clamp-3" style={{ color: 'var(--text-secondary)' }}>{review.body}</p>}
                       <p className="text-xs mt-2" style={{ color: 'var(--text-faint)' }}>{new Date(review.created_at).toLocaleDateString()}</p>
@@ -662,7 +617,12 @@ export default function ProfileClient({
               {favorites.length === 0 && <p className="style={{ color: 'var(--text-muted)' }} text-sm col-span-2">No favorites yet.</p>}
               {favorites.map(fav => {
                 const item = fav.items
-                if (!item) return null
+                if (!item) return (
+                  <Link key={fav.id} href={`/parks/${fav.item_id}`} className="rounded-sm p-3 text-sm font-semibold"
+                    style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}>
+                    {parkName(fav.item_id)}
+                  </Link>
+                )
                 const image = item.item_images?.[0]?.url
                 return (
                   <Link key={fav.id} href={`/parks/${item.park_id}/${item.category_id}/${item.id}`}

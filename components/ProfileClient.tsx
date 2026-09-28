@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { FaInstagram, FaYoutube, FaTiktok, FaXTwitter, FaFacebook } from 'react-icons/fa6'
-
+import RatingBreakdown from '@/components/RatingBreakdown'
 
 interface Profile {
   id: string
@@ -619,7 +619,9 @@ export default function ProfileClient({
                           {review.items?.name ?? parkName(review.item_id)}
                         </Link>
                         {review.title && <p className="text-sm font-medium mt-0.5" style={{ color: 'var(--text-primary)' }}>{review.title}</p>}
-                        {review.body && <p className="text-sm leading-relaxed mt-1 line-clamp-3" style={{ color: 'var(--text-secondary)' }}>{review.body}</p>}
+                        {review.body
+                          ? <p className="text-sm leading-relaxed mt-1 line-clamp-3" style={{ color: 'var(--text-secondary)' }}>{review.body}</p>
+                          : <RatingBreakdown ratings={review.review_ratings} />}
                         <p className="text-xs mt-2" style={{ color: 'var(--text-faint)' }}>{new Date(review.created_at).toLocaleDateString()}</p>
                       </div>
                     </div>

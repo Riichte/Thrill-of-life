@@ -9,6 +9,7 @@ import { createClient } from '@/lib/supabase/client'
 import PhotoCredits, { PhotoCredit } from '@/components/PhotoCredits'
 import { useUnit } from '@/lib/unitContext'
 import { useRouter } from 'next/navigation'
+import RatingBreakdown from '@/components/RatingBreakdown'
 
 
 
@@ -165,21 +166,9 @@ function ReviewCard({
         </div>
         <div className="pt-3 mb-3" style={{ borderTop: '1px solid var(--border)' }}>
           {title && <p className="text-lg font-bold mb-1" style={{ color: 'var(--text-primary)' }}>{title}</p>}
-          {text ? (
-            <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{text}</p>
-          ) : (
-            review_ratings && review_ratings.length > 0 && (
-              <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1">
-                {review_ratings.map((r: any) => (
-                  <span key={r.category} className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                    <span className="capitalize">{r.category.replace(/_/g, ' ')}</span>
-                    {': '}
-                    <span className="font-semibold" style={{ color: 'var(--accent)' }}>{r.score}</span>
-                  </span>
-                ))}
-              </div>
-            )
-          )}
+          {text
+            ? <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{text}</p>
+            : <RatingBreakdown ratings={review_ratings ?? []} />}
         </div>
         {!isOwn && (
           <div className="pt-3 mt-2" style={{ borderTop: '1px solid var(--border)' }}>
@@ -830,6 +819,7 @@ export default function ItemPageContent({ park, item, category, images, videos, 
                       score={avg}
                       title={review.title}
                       text={review.body}
+                      review_ratings={review.review_ratings}
                       isOwn={false}
                       reactions={reviewReactions}
                       userReactions={reviewUserReactions}

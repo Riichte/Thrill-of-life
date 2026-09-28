@@ -7,6 +7,7 @@ import { SteamInfoPanel } from '@/components/SteamInfoPanel'
 import { createClient } from '@/lib/supabase/client'
 import PhotoCredits, { PhotoCredit } from '@/components/PhotoCredits'
 import PriceCard from '@/components/PriceCard'
+import RatingBreakdown from '@/components/RatingBreakdown'
 import { useRouter } from 'next/navigation'
 
 
@@ -61,7 +62,8 @@ function getScoreColor(s: number) {
   return s >= 80 ? '#10b981' : s >= 60 ? '#f59e0b' : s >= 40 ? '#f97316' : '#ef4444'
 }
 
-function ReviewCard({ reviewId, author, authorId, score, title, text, isOwn, reactions, userReactions, userPoints, onReact, onEdit }: {
+function ReviewCard({ reviewId, author, authorId, score, title, text, ratings, isOwn, reactions, userReactions, userPoints, onReact, onEdit }: {
+  ratings?: { category: string; score: number }[]
   reviewId: string
   author: string
   authorId?: string
@@ -124,7 +126,9 @@ function ReviewCard({ reviewId, author, authorId, score, title, text, isOwn, rea
         </div>
         <div className="pt-3 mb-3" style={{ borderTop: '1px solid var(--border)' }}>
           {title && <p className="text-lg font-bold mb-1" style={{ color: 'var(--text-primary)' }}>{title}</p>}
-          {text && <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{text}</p>}
+          {text
+            ? <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{text}</p>
+            : <RatingBreakdown ratings={ratings ?? []} />}
         </div>
         {!isOwn && (
           <div className="pt-3 mt-2" style={{ borderTop: '1px solid var(--border)' }}>
@@ -507,6 +511,7 @@ export default function ParkPageClient({
                 score={myScore}
                 title={userReview.title}
                 text={userReview.text}
+                ratings={Object.entries(userRatings).map(([category, score]) => ({ category, score }))}
                 isOwn={true}
                 reactions={initialReactions}
                 userReactions={initialUserReactions}
@@ -530,6 +535,7 @@ export default function ParkPageClient({
                     score={avg}
                     title={review.title}
                     text={review.body}
+                    ratings={review.review_ratings}
                     isOwn={false}
                     reactions={reactions[review.id] ?? initialReactions}
                     userReactions={myReactions[review.id] ?? initialUserReactions}

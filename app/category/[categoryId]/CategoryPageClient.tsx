@@ -38,7 +38,7 @@ const toSeconds = (v: any) => {
 }
 
 // height or drop (whichever is bigger), converted from meters to feet
-const heightFt = (specs: any) => Math.max(num(specs?.height), num(specs?.drop)) * 3.28084
+const heightFt = (specs: any) => Math.round(Math.max(num(specs?.height), num(specs?.drop)) * 3.28084)
 
 const getSize = (specs: any) => {
     const h = heightFt(specs)

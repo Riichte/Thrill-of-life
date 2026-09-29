@@ -145,7 +145,7 @@ export function HomeMarqueeRow({
                       src={item.image}
                       alt={item.title}
                       fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      className="object-cover transition-transform duration-500 group-hover:scale-105 animate-fade-slide"
                       loading="lazy"
                       quality={100}
                     />

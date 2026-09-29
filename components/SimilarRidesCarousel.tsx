@@ -99,7 +99,7 @@ export function SimilarRidesCarousel({ title = 'Similar Rides', subtitle, items,
                   <div className="relative aspect-[16/9] overflow-hidden" style={{ background: 'var(--bg-tertiary)' }}>
                     {ride.image ? (
                       <Image src={ride.image} alt={ride.name} fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        className="object-cover transition-transform duration-500 group-hover:scale-105 animate-fade-slide"
                         loading="lazy"
                         quality={100} />
                     ) : (

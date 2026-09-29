@@ -573,7 +573,7 @@ export default function ItemPageContent({ park, item, category, images, videos, 
 
   const specs = item.specs || {}
   const hasSpecs = Object.keys(specs).length > 0
-  const currentType = item.specs?.type
+  const currentModel = item.specs?.model
 
 
   console.log('current unit:', unit)
@@ -834,7 +834,7 @@ export default function ItemPageContent({ park, item, category, images, videos, 
             {similarRides.length > 0 && (
               <SimilarRidesCarousel
                 title="Similar Rides"
-                subtitle={`Other ${currentType} coasters you might enjoy`}
+                subtitle={`Other ${currentModel} coasters you might enjoy`}
                 items={similarRides}
                 currentRideId={item.id}
               />

@@ -68,7 +68,7 @@ export function SteamInfoPanel({
     s >= 80 ? 'var(--score-high)' : s >= 60 ? 'var(--score-mid)' : s >= 40 ? '#f97316' : 'var(--score-low)'
 
   const scoreLabel2 = (s: number) =>
-    s >= 75 ? 'Mostly positive' : s >= 50 ? 'Mixed' : 'Needs improvement'
+    s >= 75 ? 'Mostly positive' : s >= 50 ? '-' : 'Needs improvement'
 
   return (
     <div

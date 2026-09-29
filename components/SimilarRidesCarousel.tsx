@@ -101,7 +101,7 @@ export function SimilarRidesCarousel({ title = 'Similar Rides', subtitle, items,
                       <Image src={ride.image} alt={ride.name} fill
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
                         loading="lazy"
-                        quality={75} />
+                        quality={100} />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-sm"
                         style={{ color: 'var(--text-faint)' }}>No image</div>

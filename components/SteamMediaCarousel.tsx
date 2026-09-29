@@ -101,7 +101,7 @@ export function SteamMediaCarousel({ slides, autoAdvanceMs, className = '' }: St
               />
             ) : (
               <Image src={slide.src} alt={slide.alt ?? 'Media'} fill
-                className="object-cover" priority={i === 0} loading="lazy" quality={75}
+                className="object-cover" priority={i === 0} loading="lazy" quality={100}
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 85vw"
               />
             )}

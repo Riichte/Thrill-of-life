@@ -147,7 +147,7 @@ export function HomeMarqueeRow({
                       fill
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
                       loading="lazy"
-                      quality={75}
+                      quality={100}
                     />
                   </div>
                   <div className="p-5 space-y-2">

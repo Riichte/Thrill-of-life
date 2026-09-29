@@ -85,9 +85,9 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
                     {/* Type badge if available */}
                     <div className="mt-auto flex flex-wrap items-center gap-2">
-                      {item.specs?.type && (
+                      {item.specs?.model && (
                         <span className="inline-block text-xs px-2.5 py-1 rounded bg-[#66c0f4]/10 border border-[#66c0f4]/20" style={{ color: 'var(--accent)' }}>
-                          {item.specs.type}
+                          {item.specs.model}
                         </span>
                       )}
                       {['sbno', 'defunct'].includes(item.status) && (

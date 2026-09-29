@@ -164,14 +164,20 @@ export default function CategoryPageClient({
 
                 {/* Grid */}
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                    {paginated.map(item => {
+                    {paginated.map((item, index) => {
                         const image = (item.item_images?.find((img: any) => img.sort_order === 0) ?? item.item_images?.[0])?.url
                         return (
                             <Link
                                 key={item.id}
                                 href={`/parks/${item.park_id}/${item.category_id}/${item.id}`}
                                 className="group rounded-sm overflow-hidden transition-colors aspect-square flex flex-col"
-                                style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}
+                                style={{
+                                    background: 'var(--card-bg)',
+                                    border: '1px solid var(--border)',
+                                    animation: 'slideUpFade 0.6s ease-out forwards',
+                                    animationDelay: `${Math.floor(index / 5) * 0.15}s`,
+                                    opacity: 0,
+                                }}
                                 onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--accent)')}
                                 onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}>
                                 <div className="flex-1 overflow-hidden" style={{ background: 'var(--bg-tertiary)' }}>

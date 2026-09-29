@@ -108,13 +108,13 @@ export async function getItemVideos(itemId: string): Promise<string[]> {
 
 // ─── Similar rides ───────────────────────────────────────
 
-export async function getSimilarRides(itemId: string, type: string, limit = 6) {
+export async function getSimilarRides(itemId: string, model: string, limit = 6) {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('items')
     .select('*, item_images(url)')
     .neq('id', itemId)
-    .filter('specs->>type', 'eq', type)
+    .filter('specs->>model', 'eq', model)
     .limit(limit)
   if (error) return []
 

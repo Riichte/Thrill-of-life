@@ -126,8 +126,6 @@ export function SimilarRidesCarousel({ title = 'Similar Rides', subtitle, items,
                     </h3>
                     <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>{ride.parkName}</p>
                     <div className="mt-4 flex gap-4 text-xs pt-4" style={{ color: 'var(--text-secondary)', borderTop: '1px solid var(--border)' }}>
-                      {ride.specs?.height && <span>↑ {ride.specs.height}</span>}
-                      {ride.specs?.speed && <span>→ {ride.specs.speed}</span>}
                       {ride.averageRating && <span className="ml-auto">★ {ride.averageRating}</span>}
                     </div>
                   </div>

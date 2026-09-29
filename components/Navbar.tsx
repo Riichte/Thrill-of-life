@@ -13,7 +13,6 @@ import { CURRENCIES } from '@/lib/useCurrency'
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
-  const [language, setLanguage] = useState<'EN' | 'FR'>('EN')
   const { unit, setUnit } = useUnit()
   const { theme, setTheme } = useTheme()
   const { currency, setCurrency } = useCurrencyContext()

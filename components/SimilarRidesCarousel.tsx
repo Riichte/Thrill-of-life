@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { FadeImage } from '@/components/FadeImage'
 
 interface SimilarRide {
   id: string
@@ -98,10 +99,11 @@ export function SimilarRidesCarousel({ title = 'Similar Rides', subtitle, items,
                   {/* Image */}
                   <div className="relative aspect-[16/9] overflow-hidden" style={{ background: 'var(--bg-tertiary)' }}>
                     {ride.image ? (
-                      <Image src={ride.image} alt={ride.name} fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-105 animate-fade-slide"
+                      <FadeImage src={ride.image} alt={ride.name} fill
+                        sizes="(max-width: 768px) 100vw, 25vw"
+                        className="object-cover group-hover:scale-105"
                         loading="lazy"
-                        quality={100} />
+                        quality={75} />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-sm"
                         style={{ color: 'var(--text-faint)' }}>No image</div>

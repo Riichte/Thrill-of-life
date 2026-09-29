@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { ChevronLeft, ChevronRight, Play } from 'lucide-react'
+import { FadeImage } from '@/components/FadeImage'
 
 export type SteamSlide = {
   src: string
@@ -100,8 +101,8 @@ export function SteamMediaCarousel({ slides, autoAdvanceMs, className = '' }: St
                 allowFullScreen
               />
             ) : (
-              <Image src={slide.src} alt={slide.alt ?? 'Media'} fill
-                className="object-cover animate-fade-slide" priority={i === 0} loading="lazy" quality={75}
+              <FadeImage src={slide.src} alt={slide.alt ?? 'Media'} fill
+                className="object-cover" priority={i === 0} quality={75}
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 85vw"
               />
             )}
@@ -191,8 +192,8 @@ export function SteamMediaCarousel({ slides, autoAdvanceMs, className = '' }: St
                     </span>
                   </div>
                 ) : (
-                  <Image src={slide.src} alt={slide.alt ?? ''} fill
-                    className="object-cover animate-fade-slide"
+                  <FadeImage src={slide.src} alt={slide.alt ?? ''} fill
+                    className="object-cover"
                     quality={60} sizes="116px" loading="lazy"
                   />
                 )}

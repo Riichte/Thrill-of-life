@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { FadeImage } from '@/components/FadeImage'
 
 type HomeMarqueeCard = {
   id: string
@@ -141,13 +142,14 @@ export function HomeMarqueeRow({
                   onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--accent)')}
                   onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}>
                   <div className="relative aspect-[16/9] overflow-hidden" style={{ background: 'var(--bg-tertiary)' }}>
-                    <Image
+                    <FadeImage
                       src={item.image}
                       alt={item.title}
                       fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-105 animate-fade-slide"
+                      sizes="(max-width: 768px) 100vw, 25vw"
+                      className="object-cover group-hover:scale-105"
                       loading="lazy"
-                      quality={100}
+                      quality={75}
                     />
                   </div>
                   <div className="p-5 space-y-2">

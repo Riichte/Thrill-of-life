@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
+import { FadeImage } from '@/components/FadeImage'
 
 interface Item {
     id: string
@@ -180,11 +181,12 @@ export default function CategoryPageClient({
                                 }}
                                 onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--accent)')}
                                 onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}>
-                                <div className="flex-1 overflow-hidden" style={{ background: 'var(--bg-tertiary)' }}>
+                                <div className="relative flex-1 overflow-hidden" style={{ background: 'var(--bg-tertiary)' }}>
                                     {image ? (
-                                        <img src={image} alt={item.name}
-                                            className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300 animate-fade-slide"
-                                            loading="lazy" />
+                                        <FadeImage src={image} alt={item.name} fill
+                                            sizes="(max-width: 768px) 50vw, 20vw"
+                                            quality={75}
+                                            className="object-cover object-top group-hover:scale-105" />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center text-xs" style={{ color: 'var(--text-faint)' }}>
                                             No image

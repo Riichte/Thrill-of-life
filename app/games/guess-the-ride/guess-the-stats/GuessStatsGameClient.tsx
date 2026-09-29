@@ -43,8 +43,8 @@ export default function GuessStatsGameClient({ item }: { item: Item }) {
     { key: 'model', label: 'Model' },
     { key: 'status', label: 'Status' },
     { key: 'height', label: 'Height', unit: unit === 'imperial' ? 'ft' : '' },
-    { key: 'speed', label: 'Speed', unit: unit === 'imperial' ? 'mph' : 'km/h' },
-    { key: 'length', label: 'Length', unit: unit === 'imperial' ? 'ft' : 'm' },
+    { key: 'speed', label: 'Speed', unit: unit === 'imperial' ? 'mph' : '' },
+    { key: 'length', label: 'Length', unit: unit === 'imperial' ? 'ft' : '' },
     { key: 'inversions', label: 'Inversions' },
     { key: 'duration', label: 'Duration' },
   ]

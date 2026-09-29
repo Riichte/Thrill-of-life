@@ -18,8 +18,8 @@ export default async function ItemPage({ params }: ItemPageProps) {
   const category = item ? await getCategoryById(item.category_id) : null
   const imageData = await getItemImages(itemId)
   const videos = await getItemVideos(itemId)
-  const similarRides = item?.specs?.type
-    ? await getSimilarRides(item.id, item.specs.type)
+  const similarRides = item?.specs?.model
+    ? await getSimilarRides(item.id, item.specs.model)
     : []
   const reviews = await getItemReviews(itemId)
   const communityScore = await getItemCommunityScore(itemId)

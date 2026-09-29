@@ -177,7 +177,8 @@ export default function CategoryPageClient({
                                 <div className="aspect-square overflow-hidden" style={{ background: 'var(--bg-tertiary)' }}>
                                     {image ? (
                                         <img src={image} alt={item.name}
-                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 animate-fade-slide"
+                                            loading="lazy" />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center text-xs" style={{ color: 'var(--text-faint)' }}>
                                             No image

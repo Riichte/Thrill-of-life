@@ -22,6 +22,36 @@ interface Category {
     name: string
 }
 
+
+const num = (v: any) => {
+    const n = parseFloat(String(v ?? '').replace(/[^0-9.]/g, ''))
+    return isNaN(n) ? 0 : n
+}
+
+const toSeconds = (v: any) => {
+    const s = String(v ?? '')
+    if (s.includes(':')) {
+        const [m, sec] = s.split(':')
+        return num(m) * 60 + num(sec)
+    }
+    return num(s)
+}
+
+// height or drop (whichever is bigger), converted from meters to feet
+const heightFt = (specs: any) => Math.max(num(specs?.height), num(specs?.drop)) * 3.28084
+
+const getSize = (specs: any) => {
+    const h = heightFt(specs)
+    if (h >= 500 && h < 600) return 'Exa Coaster'
+    if (h >= 400 && h < 500) return 'Strata Coaster'
+    if (h >= 300 && h < 400) return 'Giga Coaster'
+    if (h >= 200 && h < 300) return 'Hyper Coaster'
+    if (h >= 100 && h < 200) return 'Mega Coaster'
+    return ''
+}
+
+const SIZES = ['Mega Coaster', 'Hyper Coaster', 'Giga Coaster', 'Strata Coaster', 'Exa Coaster']
+
 export default function CategoryPageClient({
     category,
     items,
@@ -38,7 +68,9 @@ export default function CategoryPageClient({
     const searchParams = useSearchParams()
 
     const search = searchParams.get('q') ?? ''
-    const sortBy = (searchParams.get('sort') ?? 'name') as 'name' | 'park'
+    const sortBy = searchParams.get('sort') ?? 'name'
+    const order = searchParams.get('order') ?? 'asc'
+    const filterSize = searchParams.get('size') ?? ''
     const filterType = searchParams.get('type') ?? ''
     const filterManufacturer = searchParams.get('manufacturer') ?? ''
     const filterCountry = searchParams.get('country') ?? ''
@@ -83,14 +115,20 @@ export default function CategoryPageClient({
             (!filterType || item.specs?.type === filterType) &&
             (!filterManufacturer || item.specs?.manufacturer === filterManufacturer) &&
             (!filterCountry || item.parks?.country === filterCountry) &&
-            (!filterModel || item.specs?.model === filterModel)
+            (!filterModel || item.specs?.model === filterModel) &&
+            (!filterSize || getSize(item.specs) === filterSize)
         )
-        const statusOrder = (s: string) => ['defunct', 'sbno'].includes(s) ? 2 : s === 'coming_soon' ? 1 : 0
-
-        if (sortBy === 'name') result = [...result].sort((a, b) => a.name.localeCompare(b.name))
-        if (sortBy === 'park') result = [...result].sort((a, b) => (a.parks?.name ?? '').localeCompare(b.parks?.name ?? ''))
+        const dir = order === 'desc' ? -1 : 1
+        result = [...result].sort((a, b) => {
+            if (sortBy === 'name') return dir * a.name.localeCompare(b.name)
+            if (sortBy === 'park') return dir * (a.parks?.name ?? '').localeCompare(b.parks?.name ?? '')
+            if (sortBy === 'size') return dir * (heightFt(a.specs) - heightFt(b.specs))
+            if (sortBy === 'year') return dir * (num(a.specs?.year_opened) - num(b.specs?.year_opened))
+            if (sortBy === 'duration') return dir * (toSeconds(a.specs?.duration) - toSeconds(b.specs?.duration))
+            return dir * (num(a.specs?.[sortBy]) - num(b.specs?.[sortBy]))
+        })
         return result
-    }, [items, search, sortBy, filterType, filterManufacturer])
+    }, [items, search, sortBy, order, filterType, filterManufacturer, filterCountry, filterModel, filterSize])
 
     const totalPages = Math.ceil(filtered.length / limit)
     const paginated = filtered.slice((page - 1) * limit, page * limit)
@@ -115,13 +153,26 @@ export default function CategoryPageClient({
                                 placeholder={`Search ${category.name.toLowerCase()}...`}
                                 className="w-full rounded-sm px-3 py-2 text-sm focus:outline-none" style={inputStyle} />
                         </div>
-                        <div className="w-32 flex-shrink-0">
+                        <div className="w-44 flex-shrink-0">
                             <label className="block text-xs font-medium uppercase tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>Sort by</label>
-                            <select value={sortBy} onChange={e => updateParams({ sort: e.target.value })}
-                                className="w-full rounded-sm px-3 py-2 text-sm focus:outline-none" style={inputStyle}>
-                                <option value="name">Name</option>
-                                <option value="park">Park</option>
-                            </select>
+                            <div className="flex gap-1">
+                                <select value={sortBy} onChange={e => updateParams({ sort: e.target.value })}
+                                    className="w-full rounded-sm px-3 py-2 text-sm focus:outline-none" style={inputStyle}>
+                                    <option value="name">Name</option>
+                                    <option value="park">Park</option>
+                                    <option value="year">Year</option>
+                                    <option value="size">Size</option>
+                                    <option value="speed">Speed</option>
+                                    <option value="length">Length</option>
+                                    <option value="duration">Duration</option>
+                                    <option value="inversions">Inversions</option>
+                                </select>
+                                <button onClick={() => updateParams({ order: order === 'asc' ? 'desc' : 'asc' })}
+                                    title={order === 'asc' ? 'Ascending' : 'Descending'}
+                                    className="rounded-sm px-2 text-sm" style={inputStyle}>
+                                    {order === 'asc' ? '↑' : '↓'}
+                                </button>
+                            </div>
                         </div>
                         <div className="w-36 flex-shrink-0">
                             <label className="block text-xs font-medium uppercase tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>Type</label>
@@ -131,6 +182,16 @@ export default function CategoryPageClient({
                                 {types.map(t => <option key={t} value={t}>{t}</option>)}
                             </select>
                         </div>
+                        {category.id === 'roller-coasters' && (
+                            <div className="w-40 flex-shrink-0">
+                                <label className="block text-xs font-medium uppercase tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>Size</label>
+                                <select value={filterSize} onChange={e => updateParams({ size: e.target.value, page: '1' })}
+                                    className="w-full rounded-sm px-3 py-2 text-sm focus:outline-none" style={inputStyle}>
+                                    <option value="">All Sizes</option>
+                                    {SIZES.map(s => <option key={s} value={s}>{s}</option>)}
+                                </select>
+                            </div>
+                        )}
                         <div className="w-40 flex-shrink-0">
                             <label className="block text-xs font-medium uppercase tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>Manufacturer</label>
                             <select value={filterManufacturer} onChange={e => updateParams({ manufacturer: e.target.value, model: '', page: '1' })}

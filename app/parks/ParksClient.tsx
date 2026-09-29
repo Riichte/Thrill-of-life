@@ -103,10 +103,6 @@ export default function ParksClient({ parks }: { parks: Park[] }) {
                       style={{ background: 'var(--accent-bg)', color: 'var(--accent)' }}>
                       {park.country}
                     </span>
-                    <span className="px-2 py-1 rounded"
-                      style={{ background: 'var(--badge-blue-bg)', color: 'var(--badge-blue-text)' }}>
-                      {park.park_type}
-                    </span>
                   </div>
                 </div>
               </div>

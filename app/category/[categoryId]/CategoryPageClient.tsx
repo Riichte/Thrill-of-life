@@ -170,14 +170,14 @@ export default function CategoryPageClient({
                             <Link
                                 key={item.id}
                                 href={`/parks/${item.park_id}/${item.category_id}/${item.id}`}
-                                className="group rounded-sm overflow-hidden transition-colors"
+                                className="group rounded-sm overflow-hidden transition-colors aspect-square flex flex-col"
                                 style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}
                                 onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--accent)')}
                                 onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}>
-                                <div className="aspect-square overflow-hidden" style={{ background: 'var(--bg-tertiary)' }}>
+                                <div className="flex-1 overflow-hidden" style={{ background: 'var(--bg-tertiary)' }}>
                                     {image ? (
                                         <img src={image} alt={item.name}
-                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 animate-fade-slide"
+                                            className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300 animate-fade-slide"
                                             loading="lazy" />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center text-xs" style={{ color: 'var(--text-faint)' }}>
@@ -185,7 +185,7 @@ export default function CategoryPageClient({
                                         </div>
                                     )}
                                 </div>
-                                <div className="p-3">
+                                <div className="p-3" style={{ background: 'var(--card-bg)', borderTop: '1px solid var(--border)' }}>
                                     <p className="text-sm font-semibold truncate transition-colors"
                                         style={{ color: 'var(--text-primary)' }}
                                         onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}

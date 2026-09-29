@@ -45,22 +45,21 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
       {/* Items Grid */}
       {items.length > 0 ? (
         <div className="container mx-auto px-4 pb-16">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
             {sortedItems.map((item) => (
               <Link
                 key={item.id}
                 href={`/parks/${parkId}/${categoryId}/${item.id}`}
                 className="group"
               >
-                <div className="style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-lg overflow-hidden hover:border-[#66c0f4] transition-all duration-300 hover:-translate-y-1 h-full flex flex-col">
+                <div className="style={{ background: 'var(--card-bg)' }} border style={{ borderColor: 'var(--border)' }} rounded-lg overflow-hidden hover:border-[#66c0f4] transition-all duration-300 hover:-translate-y-1 aspect-square flex flex-col">
                   {/* Image */}
-                  <div className="relative w-full aspect-[16/9] bg-black overflow-hidden">
+                  <div className="relative flex-1 overflow-hidden">
                     {(item.item_images?.find((img: any) => img.sort_order === 0) ?? item.item_images?.[0])?.url ? (
                       <Image
                         src={(item.item_images?.find((img: any) => img.sort_order === 0) ?? item.item_images?.[0])?.url ?? ''}
                         alt={item.name}
                         fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-300 animate-fade-slide"
                         loading="lazy"
                         quality={100}
                         sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"

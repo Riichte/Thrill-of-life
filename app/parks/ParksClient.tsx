@@ -72,20 +72,20 @@ export default function ParksClient({ parks }: { parks: Park[] }) {
         </div>
 
         {/* Parks Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
           {filteredParks.map(park => (
             <Link key={park.id} href={`/parks/${park.id}`} className="block group">
-              <div className="rounded-lg overflow-hidden transition-colors"
+              <div className="rounded-lg overflow-hidden transition-colors aspect-square flex flex-col"
                 style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}
                 onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-elevated)')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'var(--card-bg)')}>
-                <div className="relative w-full h-48 overflow-hidden">
+                <div className="relative flex-1 overflow-hidden">
                   {park.cover_image_url ? (
                     <Image
                       src={park.cover_image_url}
                       alt={park.name}
                       fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-300 animate-fade-slide"
+                      className="object-cover object-top group-hover:scale-105 transition-transform duration-300 animate-fade-slide"
                       loading="lazy"
                       quality={100}
                       sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
@@ -94,13 +94,10 @@ export default function ParksClient({ parks }: { parks: Park[] }) {
                     <div className="w-full h-full flex items-center justify-center text-4xl" style={{ background: 'var(--bg-elevated)' }}>🏟️</div>
                   )}
                 </div>
-                <div className="p-4">
-                  <h3 className="text-xl font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
+                <div className="p-4" style={{ background: 'var(--card-bg)', borderTop: '1px solid var(--border)' }}>
+                  <h3 className="text-lg font-semibold mb-1 truncate" style={{ color: 'var(--text-primary)' }}>
                     {park.name}
                   </h3>
-                  <p className="text-sm mb-2" style={{ color: 'var(--text-secondary)' }}>
-                    {park.description}
-                  </p>
                   <div className="flex flex-wrap gap-2 text-xs">
                     <span className="px-2 py-1 rounded"
                       style={{ background: 'var(--accent-bg)', color: 'var(--accent)' }}>

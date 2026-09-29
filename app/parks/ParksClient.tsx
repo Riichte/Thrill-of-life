@@ -95,7 +95,7 @@ export default function ParksClient({ parks }: { parks: Park[] }) {
                   )}
                 </div>
                 <div className="p-4" style={{ background: 'var(--card-bg)', borderTop: '1px solid var(--border)' }}>
-                  <h3 className="text-lg font-semibold mb-1 truncate" style={{ color: 'var(--text-primary)' }}>
+                  <h3 className="text-xs font-semibold mb-1 truncate" style={{ color: 'var(--text-primary)' }}>
                     {park.name}
                   </h3>
                   <div className="flex flex-wrap gap-2 text-xs">

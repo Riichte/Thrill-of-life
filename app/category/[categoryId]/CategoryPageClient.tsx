@@ -261,7 +261,7 @@ export default function CategoryPageClient({
                                         onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-primary)')}>
                                         {item.name}
                                     </p>
-                                    <p className="text-xs mt-0.5 truncate" style={{ color: 'var(--text-muted)' }}>{item.parks?.name ?? ''}</p>
+                                    <p className="text-[10px] mt-0.5 truncate" style={{ color: 'var(--text-muted)' }}>{item.parks?.name ?? ''}</p>
                                     {item.specs?.type && (
                                         <p className="text-xs mt-0.5 truncate" style={{ color: 'var(--text-faint)' }}>{item.specs.type}</p>
                                     )}

@@ -165,16 +165,6 @@ export default function Navbar() {
             {/* Right Side */}
             <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
 
-              {/* Language */}
-              <div className="flex items-center rounded-lg p-1" style={{ background: 'var(--bg-elevated)' }}>
-                {(['EN', 'FR'] as const).map(lang => (
-                  <button key={lang} onClick={() => setLanguage(lang)}
-                    className="px-3 py-1 rounded text-sm font-medium transition-colors"
-                    style={{ background: language === lang ? 'var(--cta)' : 'transparent', color: language === lang ? 'var(--cta-text)' : 'var(--text-muted)' }}>
-                    {lang}
-                  </button>
-                ))}
-              </div>
 
               {/* Units */}
               <div className="flex items-center rounded-lg p-1" style={{ background: 'var(--bg-elevated)' }}>
@@ -340,7 +330,7 @@ export default function Navbar() {
               className="px-4 py-3 text-sm font-medium border-b-2 border-transparent transition-colors whitespace-nowrap"
               style={{ color: 'var(--accent)' }}>
               Guess by Stats
-            </Link>            
+            </Link>
           </div>
 
           {isOpen && (

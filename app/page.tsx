@@ -9,45 +9,45 @@ export const dynamic = 'force-dynamic'
 export default async function Home() {
   const shuffle = <T,>(arr: T[]) => [...arr].sort(() => Math.random() - 0.5)
   const supabase = await createClient()
-  const { data: parks } = await supabase.from('parks').select('*').limit(60)
+  const { data: parks } = await supabase.from('parks').select('*').limit(20)
   const recentReviews = await getRecentReviews(10)
 
   const { data: coasterItems } = await supabase
     .from('items')
     .select('id, name, park_id, item_images(url, attribution_author, license)')
     .eq('category_id', 'roller-coasters')
-    .limit(60)
+    .limit(20)
 
   const { data: waterItems } = await supabase
     .from('items')
     .select('id, name, park_id, item_images(url, attribution_author, license)')
     .eq('category_id', 'water-rides')
-    .limit(60)
+    .limit(20)
 
   const { data: darkRideItems } = await supabase
     .from('items')
     .select('id, name, park_id, item_images(url, attribution_author, license)')
     .eq('category_id', 'dark-rides')
-    .limit(60)
+    .limit(20)
 
   const { data: flatRideItems } = await supabase
     .from('items')
     .select('id, name, park_id, item_images(url, attribution_author, license)')
     .eq('category_id', 'flat-rides')
-    .limit(60)
+    .limit(20)
 
   const { data: mixItems } = await supabase
     .from('items')
     .select('id, name, park_id, category_id, item_images(url, attribution_author, license)')
     .in('category_id', ['restaurants', 'shows', 'shops', 'hotels'])
-    .limit(60)
+    .limit(20)
 
   const highlightCategories = ['dark-rides', 'flat-rides', 'hotels', 'transport', 'shows', 'shops']
   const { data: highlightItems } = await supabase
     .from('items')
     .select('id, name, park_id, category_id, item_images(url, attribution_author, license)')
     .in('category_id', highlightCategories)
-    .limit(60)
+    .limit(20)
 
 
   const homeRollerCoasterCards: HomeMarqueeCard[] = shuffle(coasterItems ?? [])

@@ -77,7 +77,7 @@ export default function CategoryPageClient({
     const filterModel = searchParams.get('model') ?? ''
     const limit = parseInt(searchParams.get('limit') ?? '25')
     const page = parseInt(searchParams.get('page') ?? '1')
-
+    const [isLoading, setIsLoading] = useState(false)
     const countries = useMemo(() => {
         const all = items.map(i => i.parks?.country).filter(Boolean) as string[]
         return [...new Set(all)].sort()
@@ -93,6 +93,7 @@ export default function CategoryPageClient({
     }, [items, filterManufacturer])
 
     const updateParams = (updates: Record<string, string>) => {
+        setIsLoading(true)
         const params = new URLSearchParams(searchParams.toString())
         Object.entries(updates).forEach(([k, v]) => v ? params.set(k, v) : params.delete(k))
         router.replace(`${pathname}?${params.toString()}`, { scroll: false })
@@ -223,6 +224,10 @@ export default function CategoryPageClient({
                 <p className="text-sm mb-6" style={{ color: 'var(--text-muted)' }}>
                     {filtered.length} {category.name.toLowerCase()} found — page {page} of {totalPages || 1}
                 </p>
+
+                {isLoading && <LoadingSpinner />}
+                {/* Grid */}
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4"></div>
 
                 {/* Grid */}
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">

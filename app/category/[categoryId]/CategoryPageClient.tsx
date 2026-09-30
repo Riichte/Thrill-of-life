@@ -219,9 +219,24 @@ export default function CategoryPageClient({
                 </div>
 
                 {/* Count */}
-                <p className="text-sm mb-6" style={{ color: 'var(--text-muted)' }}>
-                    {filtered.length} {category.name.toLowerCase()} found — page {page} of {totalPages || 1}
-                </p>
+                <div className="flex items-center justify-between mb-6">
+                    <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
+                        {filtered.length} {category.name.toLowerCase()} found — page {page} of {totalPages || 1}
+                    </p>
+                    <label className="text-sm" style={{ color: 'var(--text-muted)' }}>
+                        Results per page:
+                        <select
+                            value={searchParams.get('limit') ?? '25'}
+                            onChange={e => updateParams({ limit: e.target.value, page: '1' })}
+                            className="ml-2 px-3 py-1 rounded-sm text-sm focus:outline-none"
+                            style={{ background: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }}>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                            <option value={String(filtered.length)}>All</option>
+                        </select>
+                    </label>
+                </div>
 
 
                 {/* Grid */}
@@ -283,23 +298,39 @@ export default function CategoryPageClient({
                 {/* Pagination */}
                 {totalPages > 1 && (
                     <div className="flex items-center justify-center gap-2 mt-8">
-                        <button onClick={() => { updateParams({ page: String(Math.max(1, page - 1)) }); window.scrollTo(0, 0) }}
+                        <button onClick={() => updateParams({ page: String(Math.max(1, page - 1)) })}
+                            disabled={page === 1}
                             className="px-4 py-2 rounded-sm text-sm font-medium disabled:opacity-40"
                             style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}>
                             ← Prev
                         </button>
-                        {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-                            <button key={p} onClick={() => { updateParams({ page: String(p) }); window.scrollTo(0, 0) }}
-                                className="px-3 py-2 rounded-sm text-sm font-medium"
-                                style={{
-                                    background: p === page ? 'var(--accent)' : 'var(--card-bg)',
-                                    border: '1px solid var(--border)',
-                                    color: p === page ? 'var(--bg-tertiary)' : 'var(--text-muted)'
-                                }}>
-                                {p}
-                            </button>
-                        ))}
-                        <button onClick={() => { updateParams({ page: String(Math.min(totalPages, page + 1)) }); window.scrollTo(0, 0) }}
+                        {(totalPages <= 6
+                            ? Array.from({ length: totalPages }, (_, i) => i + 1)
+                            : (() => {
+                                const first = [1, 2, 3]
+                                const last = [totalPages - 2, totalPages - 1, totalPages]
+                                const pages: (number | -1)[] = [...first]
+                                if (first[2] < last[0] - 1) pages.push(-1)
+                                last.forEach(p => { if (!pages.includes(p)) pages.push(p) })
+                                return pages
+                            })()
+                        ).map((p, i) =>
+                            p === -1 ? (
+                                <span key={`ellipsis-${i}`} style={{ color: 'var(--text-muted)' }}>…</span>
+                            ) : (
+                                <button key={p} onClick={() => updateParams({ page: String(p) })}
+                                    className="px-3 py-2 rounded-sm text-sm font-medium"
+                                    style={{
+                                        background: p === page ? 'var(--accent)' : 'var(--card-bg)',
+                                        border: '1px solid var(--border)',
+                                        color: p === page ? 'var(--bg-tertiary)' : 'var(--text-muted)'
+                                    }}>
+                                    {p}
+                                </button>
+                            )
+                        )}
+                        <button onClick={() => updateParams({ page: String(Math.min(totalPages, page + 1)) })}
+                            disabled={page === totalPages}
                             className="px-4 py-2 rounded-sm text-sm font-medium disabled:opacity-40"
                             style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}>
                             Next →

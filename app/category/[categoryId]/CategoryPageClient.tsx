@@ -4,7 +4,6 @@ import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
 import { FadeImage } from '@/components/FadeImage'
-import LoadingSpinner from '@/components/LoadingSpinner'
 
 interface Item {
     id: string

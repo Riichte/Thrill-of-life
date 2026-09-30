@@ -22,7 +22,7 @@ export default function CategoryPageClient({ park, category, items }: {
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  const limit = searchParams.get('limit') === 'all' ? items.length : parseInt(searchParams.get('limit') ?? '25')
+  const limit = searchParams.get('limit') === 'all' ? items.length : parseInt(searchParams.get('limit') ?? '25', 10)
   const page = parseInt(searchParams.get('page') ?? '1')
 
   const totalPages = limit >= items.length ? 1 : Math.ceil(items.length / limit)
@@ -80,7 +80,7 @@ export default function CategoryPageClient({ park, category, items }: {
               Results per page:
               <select
                 value={searchParams.get('limit') ?? '25'}
-                onChange={e => router.replace(updateParams({ limit: e.target.value, page: '1' }), { scroll: false })}
+                onChange={e => router.replace(updateParams({ page: String(Math.max(1, page - 1)) }), { scroll: false })}
                 className="ml-2 px-3 py-1 rounded-sm text-sm focus:outline-none"
                 style={inputStyle}
               >
@@ -162,7 +162,7 @@ export default function CategoryPageClient({ park, category, items }: {
                   <span key={`ellipsis-${i}`} style={{ color: 'var(--text-muted)' }}>…</span>
                 ) : (
                   <button key={p}
-                    onClick={() => router.push(updateParams({ page: String(p) }))}
+                    onClick={() => { router.push(updateParams({ page: String(p) })); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
                     className="px-3 py-2 rounded-sm text-sm font-medium"
                     style={{
                       background: p === page ? 'var(--accent)' : 'var(--card-bg)',
@@ -175,7 +175,7 @@ export default function CategoryPageClient({ park, category, items }: {
               )}
 
               <button
-                onClick={() => router.push(updateParams({ page: String(Math.min(totalPages, page + 1)) }))}
+                onClick={() => { router.push(updateParams({ page: String(Math.min(totalPages, page + 1)) })); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
                 disabled={page === totalPages}
                 className="px-4 py-2 rounded-sm text-sm font-medium disabled:opacity-40"
                 style={inputStyle}>

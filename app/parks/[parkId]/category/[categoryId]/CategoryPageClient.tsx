@@ -101,11 +101,11 @@ export default function CategoryPageClient({ park, category, items }: {
               const image = item.item_images?.find(img => img.sort_order === 0) ?? item.item_images?.[0]
               return (
                 <Link key={item.id} href={`/parks/${park.id}/${category.id}/${item.id}`} className="group">
-                  <div className="rounded-lg overflow-hidden transition-all duration-300 hover:-translate-y-1 aspect-square flex flex-col"
+                  <div className="rounded-lg overflow-hidden transition-all duration-300 hover:-translate-y-1"
                     style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}
                     onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--accent)')}
                     onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}>
-                    <div className="relative flex-1 overflow-hidden">
+                    <div className="relative h-48 overflow-hidden">
                       {image?.url ? (
                         <Image src={image.url} alt={item.name} fill loading="lazy" quality={100}
                           sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw" />

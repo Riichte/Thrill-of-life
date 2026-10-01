@@ -572,7 +572,7 @@ export async function getProfileVisited(userId: string) {
   const ids = data.filter(v => v.item_type !== 'park').map(v => v.item_id)
   const { data: items } = await supabase
     .from('items')
-    .select('id, name, park_id, category_id, item_images(url), parks(name)')
+    .select('id, name, park_id, category_id, specs, item_images(url), parks(name)')
     .in('id', ids)
   const map = Object.fromEntries((items ?? []).map(i => [i.id, i]))
   return data.map(v => ({ ...v, items: map[v.item_id] ?? null, parks: map[v.item_id]?.parks ?? null }))

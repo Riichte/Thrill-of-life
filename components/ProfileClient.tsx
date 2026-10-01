@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { FaInstagram, FaYoutube, FaTiktok, FaXTwitter, FaFacebook } from 'react-icons/fa6'
 import RatingBreakdown from '@/components/RatingBreakdown'
+import { useUnit } from '@/lib/unitContext'
 
 interface Profile {
   id: string
@@ -125,6 +126,7 @@ export default function ProfileClient({
 }: ProfileClientProps) {
 
   const supabase = createClient()
+  const { unit } = useUnit()
   const [activeTab, setActiveTab] = useState<'activity' | 'reviews' | 'favorites' | 'visited'>('activity')
   const [isFollowing, setIsFollowing] = useState(initialIsFollowing)
   const [followerCountState, setFollowerCountState] = useState(followerCount)
@@ -171,6 +173,39 @@ export default function ProfileClient({
       }, 0) / reviews.length
     )
     : null
+
+  const coasterCount = visited.filter(v => v.item_type === 'roller-coasters' || v.items?.category_id === 'roller-coasters').length
+
+  const totalLengthM = visited
+    .filter(v => v.items?.category_id === 'roller-coasters')
+    .reduce((sum, v) => {
+      const len = parseFloat(v.items?.specs?.length)
+      return isNaN(len) ? sum : sum + len
+    }, 0)
+
+  const totalDistance = unit === 'imperial'
+    ? `${(totalLengthM / 1000 * 0.621).toFixed(1)} mi`
+    : `${(totalLengthM / 1000).toFixed(1)} km`
+
+  const modelScores: Record<string, { total: number; count: number }> = {}
+  visited
+    .filter(v => v.items?.category_id === 'roller-coasters' && v.items?.specs?.model)
+    .forEach(v => {
+      const model = v.items.specs.model
+      const review = reviews.find(r => r.item_id === v.item_id || r.items?.id === v.item_id)
+      const ratings = review?.review_ratings ?? []
+      const score = ratings.length ? ratings.reduce((s: number, r: any) => s + r.score, 0) / ratings.length : null
+      if (score !== null) {
+        if (!modelScores[model]) modelScores[model] = { total: 0, count: 0 }
+        modelScores[model].total += score
+        modelScores[model].count += 1
+      }
+    })
+
+  const favoriteModel = Object.entries(modelScores)
+    .map(([model, { total, count }]) => ({ model, avg: total / count, count }))
+    .filter(m => m.count >= 1)
+    .sort((a, b) => b.avg - a.avg)[0]?.model ?? null
 
   const parkName = (id?: string) => (id ? parks.find(p => p.id === id)?.name ?? id : '')
   const itemLink = (it: any) => `/parks/${it.park_id}/${it.category_id}/${it.id}`
@@ -411,6 +446,20 @@ export default function ProfileClient({
                   <span style={{ color: 'var(--text-muted)' }}>Following</span>
                   <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>{followingCount}</span>
                 </div>
+                <div className="flex justify-between text-sm">
+                  <span style={{ color: 'var(--text-muted)' }}>Coasters Ridden</span>
+                  <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>🎢 {coasterCount}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span style={{ color: 'var(--text-muted)' }}>Distance Ridden</span>
+                  <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>{totalDistance}</span>
+                </div>
+                {favoriteModel && (
+                  <div className="flex justify-between text-sm gap-2">
+                    <span style={{ color: 'var(--text-muted)' }}>Fav. Model</span>
+                    <span className="font-semibold text-right" style={{ color: 'var(--text-primary)' }}>{favoriteModel}</span>
+                  </div>
+                )}
 
                 {/* Home Park */}
                 <div className="pt-2.5 mt-1" style={{ borderTop: '1px solid var(--border)' }}>
@@ -687,30 +736,37 @@ export default function ProfileClient({
                           </h3>
                           <div className="space-y-2">
                             {parks.map((v, i) => (
-                              <Link key={i} href={`/parks/${v.item_id}`}
-                                className="flex items-center gap-3 p-3 rounded-sm transition-colors"
-                                style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                              <div key={i} className="p-3 rounded-sm" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
                                 {(() => {
                                   const review = reviews.find(r => r.items?.id === v.item_id || r.item_id === v.item_id)
-                                  console.log('looking for', v.item_id, 'in reviews:', reviews.map(r => r.item_id))
                                   const ratings = review?.review_ratings ?? []
                                   const avg = ratings.length > 0
                                     ? Math.round(ratings.reduce((s: number, r: any) => s + r.score, 0) / ratings.length)
                                     : null
-                                  return avg ? (
-                                    <span className="text-sm font-bold w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
-                                      style={{
-                                        background: avg >= 75 ? 'rgba(16,185,129,0.2)' : avg >= 50 ? 'rgba(245,158,11,0.2)' : 'rgba(239,68,68,0.2)',
-                                        color: avg >= 75 ? '#10b981' : avg >= 50 ? '#f59e0b' : '#ef4444'
-                                      }}>
-                                      {avg}
-                                    </span>
-                                  ) : <span className="text-lg">🏟️</span>
+                                  return (
+                                    <div className="flex items-center gap-3 mb-1">
+                                      {avg !== null ? (
+                                        <ScoreCircle score={avg} />
+                                      ) : <span className="text-lg">🏟️</span>}
+                                      <Link href={`/parks/${v.item_id}`} className="text-sm font-semibold hover:underline" style={{ color: 'var(--accent)' }}>
+                                        {v.item_id.split('-').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+                                      </Link>
+                                    </div>
+                                  )
                                 })()}
-                                <span className="text-sm font-medium" style={{ color: 'var(--accent)' }}>
-                                  {v.item_id.split('-').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
-                                </span>
-                              </Link>
+                                {(() => {
+                                  const review = reviews.find(r => r.items?.id === v.item_id || r.item_id === v.item_id)
+                                  const ratings = review?.review_ratings ?? []
+                                  return ratings.length > 0 ? (
+                                    <>
+                                      <p className="text-xs mb-1" style={{ color: 'var(--text-faint)' }}>
+                                        {new Date(reviews.find(r => r.item_id === v.item_id)?.created_at ?? '').toLocaleDateString()}
+                                      </p>
+                                      <RatingBreakdown ratings={ratings} />
+                                    </>
+                                  ) : null
+                                })()}
+                              </div>
                             ))}
                           </div>
                         </div>

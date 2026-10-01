@@ -117,7 +117,7 @@ export default function CategoryPageClient({ park, category, items }: {
                       )}
                     </div>
                     <div className="p-3" style={{ background: 'var(--card-bg)', borderTop: '1px solid var(--border)' }}>
-                      <h3 className="text-lg font-semibold transition-colors mb-2" style={{ color: 'var(--text-primary)' }}>
+                      <h3 className="text-sm font-semibold transition-colors mb-2" style={{ color: 'var(--text-primary)' }}>
                         {item.name}
                       </h3>
                       {item.description && (

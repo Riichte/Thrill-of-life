@@ -120,9 +120,6 @@ export default function CategoryPageClient({ park, category, items }: {
                       <h3 className="text-sm font-semibold transition-colors mb-2" style={{ color: 'var(--text-primary)' }}>
                         {item.name}
                       </h3>
-                      {item.description && (
-                        <p className="text-sm line-clamp-2 mb-3" style={{ color: 'var(--text-muted)' }}>{item.description}</p>
-                      )}
                       <div className="mt-auto flex flex-wrap items-center gap-2">
                         {item.specs?.model && (
                           <span className="inline-block text-xs px-2.5 py-1 rounded" style={{ background: 'var(--accent-bg)', color: 'var(--accent)', border: '1px solid var(--accent)' }}>

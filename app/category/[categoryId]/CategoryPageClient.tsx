@@ -23,8 +23,7 @@ interface Category {
 }
 
 
-const [localSearch, setLocalSearch] = useState(search)
-const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
 
 
 const num = (v: any) => {
@@ -72,6 +71,8 @@ export default function CategoryPageClient({
     const searchParams = useSearchParams()
 
     const search = searchParams.get('q') ?? ''
+    const [localSearch, setLocalSearch] = useState(search)
+    const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
     const sortBy = searchParams.get('sort') ?? 'name'
     const order = searchParams.get('order') ?? 'asc'
     const filterSize = searchParams.get('size') ?? ''

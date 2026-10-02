@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
 import { FadeImage } from '@/components/FadeImage'
@@ -21,6 +21,10 @@ interface Category {
     id: string
     name: string
 }
+
+
+const [localSearch, setLocalSearch] = useState(search)
+const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
 
 const num = (v: any) => {
@@ -148,7 +152,11 @@ export default function CategoryPageClient({
                     <div className="flex items-end gap-3" style={{ minWidth: 'max-content' }}>
                         <div className="w-48 flex-shrink-0">
                             <label className="block text-xs font-medium uppercase tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>Search</label>
-                            <input type="text" value={search} onChange={e => updateParams({ q: e.target.value, page: '1' })}
+                            <input type="text" value={localSearch} onChange={e => {
+                                setLocalSearch(e.target.value)
+                                if (debounceRef.current) clearTimeout(debounceRef.current)
+                                debounceRef.current = setTimeout(() => updateParams({ q: e.target.value, page: '1' }), 300)
+                            }}
                                 placeholder={`Search ${category.name.toLowerCase()}...`}
                                 className="w-full rounded-sm px-3 py-2 text-sm focus:outline-none" style={inputStyle} />
                         </div>

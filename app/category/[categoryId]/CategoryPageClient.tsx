@@ -284,18 +284,29 @@ export default function CategoryPageClient({
                                         </div>
                                     )}
                                 </div>
-                                <div className="p-3" style={{ background: 'var(--card-bg)', borderTop: '1px solid var(--border)' }}>
-                                    <p className="text-sm font-semibold truncate transition-colors"
-                                        style={{ color: 'var(--text-primary)' }}
-                                        onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
-                                        onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-primary)')}>
-                                        {item.name}
-                                    </p>
-                                    <p className="text-xs mt-0.5 truncate" style={{ color: 'var(--text-muted)' }}>{item.parks?.name ?? ''}</p>
+                                <div className="p-2.5 flex items-center justify-between gap-2 bg-[var(--card-bg)] border-t border-[var(--border)]">
+                                    <div className="min-w-0 flex-1">
+                                        {/* Title - reduced to text-xs */}
+                                        <p className="text-xs font-semibold truncate transition-colors text-[var(--text-primary)] hover:text-[var(--accent)] cursor-pointer">
+                                            {item.name}
+                                        </p>
 
+                                        {/* Subtitle / Park Name - reduced to text-[10px] */}
+                                        {item.parks?.name && (
+                                            <p className="text-[10px] truncate text-[var(--text-muted)] leading-tight">
+                                                {item.parks.name}
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    {/* Status Badge - moved to right side with smaller text-[9px] font */}
                                     {['sbno', 'defunct'].includes(item.status) && (
-                                        <span className="text-xs mt-0.5 px-1.5 py-0.5 rounded-sm font-semibold uppercase tracking-wide inline-block"
-                                            style={{ background: item.status === 'defunct' ? 'rgba(239,68,68,0.15)' : 'rgba(249,115,22,0.15)', color: item.status === 'defunct' ? '#ef4444' : '#f97316' }}>
+                                        <span
+                                            className={`shrink-0 text-[9px] px-1 py-0.5 rounded-sm font-semibold uppercase tracking-wide inline-block ${item.status === 'defunct'
+                                                    ? 'bg-red-500/15 text-red-500'
+                                                    : 'bg-orange-500/15 text-orange-500'
+                                                }`}
+                                        >
                                             {item.status === 'sbno' ? 'SBNO' : 'Defunct'}
                                         </span>
                                     )}

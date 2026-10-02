@@ -292,9 +292,7 @@ export default function CategoryPageClient({
                                         {item.name}
                                     </p>
                                     <p className="text-xs mt-0.5 truncate" style={{ color: 'var(--text-muted)' }}>{item.parks?.name ?? ''}</p>
-                                    {item.specs?.type && (
-                                        <p className="text-xs mt-0.5 truncate" style={{ color: 'var(--text-faint)' }}>{item.specs.type}</p>
-                                    )}
+
                                     {['sbno', 'defunct'].includes(item.status) && (
                                         <span className="text-xs mt-0.5 px-1.5 py-0.5 rounded-sm font-semibold uppercase tracking-wide inline-block"
                                             style={{ background: item.status === 'defunct' ? 'rgba(239,68,68,0.15)' : 'rgba(249,115,22,0.15)', color: item.status === 'defunct' ? '#ef4444' : '#f97316' }}>
@@ -310,7 +308,7 @@ export default function CategoryPageClient({
                 {/* Pagination */}
                 {totalPages > 1 && (
                     <div className="flex items-center justify-center gap-2 mt-8">
-                        <button onClick={() => { updateParams({ page: String(Math.max(1, page - 1)) });  }}
+                        <button onClick={() => { updateParams({ page: String(Math.max(1, page - 1)) }); }}
                             disabled={page === 1}
                             className="px-4 py-2 rounded-sm text-sm font-medium disabled:opacity-40"
                             style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}>
@@ -330,7 +328,7 @@ export default function CategoryPageClient({
                             p === -1 ? (
                                 <span key={`ellipsis-${i}`} style={{ color: 'var(--text-muted)' }}>…</span>
                             ) : (
-                                <button key={p} onClick={() => { updateParams({ page: String(p) });  }}
+                                <button key={p} onClick={() => { updateParams({ page: String(p) }); }}
                                     className="px-3 py-2 rounded-sm text-sm font-medium"
                                     style={{
                                         background: p === page ? 'var(--accent)' : 'var(--card-bg)',
@@ -341,7 +339,7 @@ export default function CategoryPageClient({
                                 </button>
                             )
                         )}
-                        <button onClick={() => { updateParams({ page: String(Math.min(totalPages, page + 1)) });  }}
+                        <button onClick={() => { updateParams({ page: String(Math.min(totalPages, page + 1)) }); }}
                             disabled={page === totalPages}
                             className="px-4 py-2 rounded-sm text-sm font-medium disabled:opacity-40"
                             style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}>

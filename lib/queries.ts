@@ -342,7 +342,7 @@ export async function getItemsByGlobalCategory(categoryId: string) {
     .select('*, parks(name, country), item_images(url, sort_order)')
     .eq('category_id', categoryId)
     .order('name')
-    .limit(500)
+    .limit(2000)
   if (error) return []
   return data ?? []
 }

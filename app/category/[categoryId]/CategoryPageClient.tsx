@@ -307,7 +307,7 @@ export default function CategoryPageClient({
                 {/* Pagination */}
                 {totalPages > 1 && (
                     <div className="flex items-center justify-center gap-2 mt-8">
-                        <button onClick={() => updateParams({ page: String(Math.max(1, page - 1)) })}
+                        <button onClick={() => { updateParams({ page: String(Math.max(1, page - 1)) }); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
                             disabled={page === 1}
                             className="px-4 py-2 rounded-sm text-sm font-medium disabled:opacity-40"
                             style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}>
@@ -327,7 +327,7 @@ export default function CategoryPageClient({
                             p === -1 ? (
                                 <span key={`ellipsis-${i}`} style={{ color: 'var(--text-muted)' }}>…</span>
                             ) : (
-                                <button key={p} onClick={() => updateParams({ page: String(p) })}
+                                <button key={p} onClick={() => { updateParams({ page: String(p) }); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
                                     className="px-3 py-2 rounded-sm text-sm font-medium"
                                     style={{
                                         background: p === page ? 'var(--accent)' : 'var(--card-bg)',
@@ -338,7 +338,7 @@ export default function CategoryPageClient({
                                 </button>
                             )
                         )}
-                        <button onClick={() => updateParams({ page: String(Math.min(totalPages, page + 1)) })}
+                        <button onClick={() => { updateParams({ page: String(Math.min(totalPages, page + 1)) }); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
                             disabled={page === totalPages}
                             className="px-4 py-2 rounded-sm text-sm font-medium disabled:opacity-40"
                             style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}>

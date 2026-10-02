@@ -82,6 +82,9 @@ export default function CategoryPageClient({
     const filterModel = searchParams.get('model') ?? ''
     const limit = parseInt(searchParams.get('limit') ?? '25')
     const page = parseInt(searchParams.get('page') ?? '1')
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+    }, [page])
     const countries = useMemo(() => {
         const all = items.map(i => i.parks?.country).filter(Boolean) as string[]
         return [...new Set(all)].sort()
@@ -307,7 +310,7 @@ export default function CategoryPageClient({
                 {/* Pagination */}
                 {totalPages > 1 && (
                     <div className="flex items-center justify-center gap-2 mt-8">
-                        <button onClick={() => { updateParams({ page: String(Math.max(1, page - 1)) }); setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100) }}
+                        <button onClick={() => { updateParams({ page: String(Math.max(1, page - 1)) });  }}
                             disabled={page === 1}
                             className="px-4 py-2 rounded-sm text-sm font-medium disabled:opacity-40"
                             style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}>
@@ -327,7 +330,7 @@ export default function CategoryPageClient({
                             p === -1 ? (
                                 <span key={`ellipsis-${i}`} style={{ color: 'var(--text-muted)' }}>…</span>
                             ) : (
-                                <button key={p} onClick={() => { updateParams({ page: String(p) }); setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100) }}
+                                <button key={p} onClick={() => { updateParams({ page: String(p) });  }}
                                     className="px-3 py-2 rounded-sm text-sm font-medium"
                                     style={{
                                         background: p === page ? 'var(--accent)' : 'var(--card-bg)',
@@ -338,7 +341,7 @@ export default function CategoryPageClient({
                                 </button>
                             )
                         )}
-                        <button onClick={() => { updateParams({ page: String(Math.min(totalPages, page + 1)) }); setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100) }}
+                        <button onClick={() => { updateParams({ page: String(Math.min(totalPages, page + 1)) });  }}
                             disabled={page === totalPages}
                             className="px-4 py-2 rounded-sm text-sm font-medium disabled:opacity-40"
                             style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}>

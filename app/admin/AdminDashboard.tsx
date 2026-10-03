@@ -1187,7 +1187,9 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                         if (match) item.model = match.name
                         else { warnings.push(`model "${item.model}"`); item.model = '' }
                     }
-                    const validTypes = TYPE_OPTIONS_BY_CATEGORY[categoryId] ?? []
+                    const validTypes = categoryId === 'roller-coasters' ? ROLLER_COASTER_TYPES
+                        : categoryId === 'restaurants' ? RESTAURANT_TYPES
+                        : (dynamicTypes[categoryId] ?? [])
                     if (item.type && validTypes.length) {
                         const match = validTypes.find(t => t.toLowerCase() === item.type.toLowerCase())
                         if (match) item.type = match

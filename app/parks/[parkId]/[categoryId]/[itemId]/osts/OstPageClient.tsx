@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 
@@ -20,26 +20,89 @@ interface OstRating {
     experience: number
 }
 
-const dimensions = [
+const DIMS = [
     { id: 'emotion', label: 'Emotion' },
-    { id: 'nostalgia', label: 'Nostalgia Factor' },
+    { id: 'nostalgia', label: 'Nostalgia' },
     { id: 'appeal', label: 'Appeal' },
-    { id: 'experience', label: 'Experience Enhancement' },
+    { id: 'experience', label: 'Experience' },
 ]
 
-function ScoreCircle({ score }: { score: number }) {
+// ─── YouTube IFrame API ──────────────────────────────────────────────────────
+
+declare global {
+    interface Window {
+        YT: any
+        onYouTubeIframeAPIReady: () => void
+    }
+}
+
+function loadYTApi(): Promise<void> {
+    return new Promise(resolve => {
+        if (window.YT && window.YT.Player) { resolve(); return }
+        const prev = window.onYouTubeIframeAPIReady
+        window.onYouTubeIframeAPIReady = () => { prev?.(); resolve() }
+        if (!document.getElementById('yt-iframe-api')) {
+            const s = document.createElement('script')
+            s.id = 'yt-iframe-api'
+            s.src = 'https://www.youtube.com/iframe_api'
+            document.head.appendChild(s)
+        }
+    })
+}
+
+function fmt(sec: number) {
+    if (!isFinite(sec) || sec < 0) return '0:00'
+    const m = Math.floor(sec / 60)
+    const s = Math.floor(sec % 60)
+    return `${m}:${s.toString().padStart(2, '0')}`
+}
+
+// ─── Rating Modal ────────────────────────────────────────────────────────────
+
+function RatingModal({ ost, initial, onSave, onClose }: {
+    ost: Ost
+    initial: OstRating
+    onSave: (r: OstRating) => void
+    onClose: () => void
+}) {
+    const [vals, setVals] = useState<OstRating>(initial)
     return (
-        <svg className="w-12 h-12" viewBox="0 0 100 100">
-            <circle cx="50" cy="50" r="45" fill="none" stroke="var(--border)" strokeWidth="2" />
-            <circle cx="50" cy="50" r="45" fill="none" stroke="var(--accent)" strokeWidth="2"
-                strokeDasharray={`${(score / 100) * 282.7}`} strokeDashoffset="0" strokeLinecap="round"
-                style={{ transform: 'rotate(-90deg)', transformOrigin: '50% 50%' }} />
-            <text x="50" y="50" textAnchor="middle" dy="0.3em" fill="var(--text-primary)" fontWeight="bold" fontSize="24">
-                {score}
-            </text>
-        </svg>
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-black/70" onClick={onClose} />
+            <div className="relative z-10 w-full max-w-sm rounded-sm p-6"
+                style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                <div className="flex items-center justify-between mb-5">
+                    <h3 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Rate · {ost.title}</h3>
+                    <button onClick={onClose} style={{ color: 'var(--text-muted)' }}>✕</button>
+                </div>
+                <div className="space-y-4">
+                    {DIMS.map(d => (
+                        <div key={d.id}>
+                            <div className="flex justify-between mb-1">
+                                <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{d.label}</span>
+                                <span className="text-xs font-bold" style={{ color: 'var(--accent)' }}>{vals[d.id as keyof OstRating]}</span>
+                            </div>
+                            <input type="range" min="0" max="100"
+                                value={vals[d.id as keyof OstRating]}
+                                onChange={e => setVals(v => ({ ...v, [d.id]: +e.target.value }))}
+                                className="w-full"
+                                style={{ background: `linear-gradient(to right, var(--accent) 0%, var(--accent) ${vals[d.id as keyof OstRating]}%, var(--border) ${vals[d.id as keyof OstRating]}%, var(--border) 100%)` }}
+                            />
+                        </div>
+                    ))}
+                </div>
+                <div className="flex gap-2 mt-6">
+                    <button onClick={onClose} className="flex-1 py-2 rounded-sm text-sm"
+                        style={{ background: 'var(--bg-elevated)', color: 'var(--text-muted)' }}>Cancel</button>
+                    <button onClick={() => onSave(vals)} className="flex-1 py-2 rounded-sm text-sm font-medium"
+                        style={{ background: 'var(--cta)', color: 'var(--cta-text)' }}>Save</button>
+                </div>
+            </div>
+        </div>
     )
 }
+
+// ─── Main Component ──────────────────────────────────────────────────────────
 
 export default function OstPageClient({ park, item, category, osts }: {
     park: any
@@ -48,94 +111,184 @@ export default function OstPageClient({ park, item, category, osts }: {
     osts: Ost[]
 }) {
     const supabase = createClient()
+
+    // Auth
     const [user, setUser] = useState<any>(null)
+
+    // Player state
+    const playerRef = useRef<any>(null)
+    const intervalRef = useRef<NodeJS.Timeout | null>(null)
+    const [playerReady, setPlayerReady] = useState(false)
+    const [currentIdx, setCurrentIdx] = useState(0)
+    const [isPlaying, setIsPlaying] = useState(false)
+    const [progress, setProgress] = useState(0)       // 0–1
+    const [currentTime, setCurrentTime] = useState(0)
+    const [duration, setDuration] = useState(0)
+    const [volume, setVolume] = useState(80)
+    const [isMuted, setIsMuted] = useState(false)
+    const [showVolume, setShowVolume] = useState(false)
+
+    // Ratings / favorites
     const [userRatings, setUserRatings] = useState<Record<string, OstRating>>({})
-    const [ratings, setRatings] = useState<Record<string, { emotion: number[]; nostalgia: number[]; appeal: number[]; experience: number[] }>>({})
+    const [avgRatings, setAvgRatings] = useState<Record<string, number>>({})
     const [favorites, setFavorites] = useState<Set<string>>(new Set())
-    const [isRatingOpen, setIsRatingOpen] = useState<string | null>(null)
-    const [tempRatings, setTempRatings] = useState<OstRating>({ emotion: 50, nostalgia: 50, appeal: 50, experience: 50 })
+    const [ratingModal, setRatingModal] = useState<string | null>(null)
+
+    const currentOst = osts[currentIdx] ?? null
+
+    // ── Load YT API + create player ──────────────────────────────────────────
+
+    useEffect(() => {
+        if (!osts.length) return
+        loadYTApi().then(() => {
+            playerRef.current = new window.YT.Player('yt-hidden-player', {
+                height: '1',
+                width: '1',
+                videoId: osts[0]!.youtube_video_id,
+                playerVars: { autoplay: 0, controls: 0, rel: 0, modestbranding: 1 },
+                events: {
+                    onReady: (e: any) => {
+                        e.target.setVolume(volume)
+                        setPlayerReady(true)
+                    },
+                    onStateChange: (e: any) => {
+                        const s = e.data
+                        if (s === window.YT.PlayerState.PLAYING) {
+                            setIsPlaying(true)
+                            setDuration(playerRef.current.getDuration())
+                            startInterval()
+                        } else if (s === window.YT.PlayerState.PAUSED) {
+                            setIsPlaying(false)
+                            stopInterval()
+                        } else if (s === window.YT.PlayerState.ENDED) {
+                            setIsPlaying(false)
+                            stopInterval()
+                            handleNext()
+                        }
+                    },
+                },
+            })
+        })
+        return () => { stopInterval(); playerRef.current?.destroy() }
+    }, [])   // eslint-disable-line
+
+    // ── Interval helpers ─────────────────────────────────────────────────────
+
+    const startInterval = useCallback(() => {
+        stopInterval()
+        intervalRef.current = setInterval(() => {
+            const p = playerRef.current
+            if (!p) return
+            const t = p.getCurrentTime?.() ?? 0
+            const d = p.getDuration?.() ?? 0
+            setCurrentTime(t)
+            setDuration(d)
+            setProgress(d > 0 ? t / d : 0)
+        }, 500)
+    }, [])
+
+    const stopInterval = useCallback(() => {
+        if (intervalRef.current) { clearInterval(intervalRef.current); intervalRef.current = null }
+    }, [])
+
+    // ── Load user data ───────────────────────────────────────────────────────
 
     useEffect(() => {
         const load = async () => {
             const { data: { user } } = await supabase.auth.getUser()
             setUser(user)
 
-            // Load all ratings
+            // avg ratings for all osts
             const { data: allRatings } = await supabase
-                .from('ost_ratings')
-                .select('*')
-                .in('ost_id', osts.map(o => o.id))
-
-            const ratingsByOst: Record<string, any> = {}
-            osts.forEach(o => {
-                ratingsByOst[o.id] = { emotion: [], nostalgia: [], appeal: [], experience: [] }
-            })
-
+                .from('ost_ratings').select('*').in('ost_id', osts.map(o => o.id))
+            const grouped: Record<string, OstRating[]> = {}
             allRatings?.forEach(r => {
-                ratingsByOst[r.ost_id].emotion.push(r.emotion)
-                ratingsByOst[r.ost_id].nostalgia.push(r.nostalgia)
-                ratingsByOst[r.ost_id].appeal.push(r.appeal)
-                ratingsByOst[r.ost_id].experience.push(r.experience)
+                if (!grouped[r.ost_id]) grouped[r.ost_id] = []
+                grouped[r.ost_id]!.push(r)
             })
-
-            setRatings(ratingsByOst)
+            const avgs: Record<string, number> = {}
+            Object.entries(grouped).forEach(([id, rows]) => {
+                const total = rows.reduce((s, r) => s + r.emotion + r.nostalgia + r.appeal + r.experience, 0)
+                avgs[id] = Math.round(total / (rows.length * 4))
+            })
+            setAvgRatings(avgs)
 
             if (!user) return
 
-            // Load user's ratings
-            const { data: userRatingData } = await supabase
-                .from('ost_ratings')
-                .select('*')
-                .eq('user_id', user.id)
-                .in('ost_id', osts.map(o => o.id))
+            const { data: myRatings } = await supabase
+                .from('ost_ratings').select('*').eq('user_id', user.id).in('ost_id', osts.map(o => o.id))
+            const ur: Record<string, OstRating> = {}
+            myRatings?.forEach(r => { ur[r.ost_id] = { emotion: r.emotion, nostalgia: r.nostalgia, appeal: r.appeal, experience: r.experience } })
+            setUserRatings(ur)
 
-            const userRatingMap: Record<string, OstRating> = {}
-            userRatingData?.forEach(r => {
-                userRatingMap[r.ost_id] = {
-                    emotion: r.emotion,
-                    nostalgia: r.nostalgia,
-                    appeal: r.appeal,
-                    experience: r.experience,
-                }
-            })
-            setUserRatings(userRatingMap)
-
-            // Load favorites
-            const { data: favData } = await supabase
-                .from('ost_favorites')
-                .select('ost_id')
-                .eq('user_id', user.id)
-
+            const { data: favData } = await supabase.from('ost_favorites').select('ost_id').eq('user_id', user.id)
             setFavorites(new Set(favData?.map(f => f.ost_id) ?? []))
         }
         load()
     }, [osts])
 
-    const handleSaveRating = async (ostId: string) => {
-        if (!user) {
-            window.location.href = `/auth/login?redirect=${encodeURIComponent(window.location.pathname)}`
-            return
-        }
+    // ── Player controls ──────────────────────────────────────────────────────
 
-        await supabase.from('ost_ratings').upsert({
-            ost_id: ostId,
-            user_id: user.id,
-            emotion: tempRatings.emotion,
-            nostalgia: tempRatings.nostalgia,
-            appeal: tempRatings.appeal,
-            experience: tempRatings.experience,
-        }, { onConflict: 'ost_id,user_id' })
+    const loadTrack = (idx: number, autoplay = false) => {
+        setCurrentIdx(idx)
+        setProgress(0); setCurrentTime(0); setDuration(0)
+        if (!playerRef.current) return
+        const vid = osts[idx]!.youtube_video_id
+        if (autoplay) playerRef.current.loadVideoById(vid)
+        else playerRef.current.cueVideoById(vid)
+    }
 
-        setIsRatingOpen(null)
-        setUserRatings(prev => ({ ...prev, [ostId]: tempRatings }))
+    const handlePlayPause = () => {
+        if (!playerReady || !playerRef.current) return
+        isPlaying ? playerRef.current.pauseVideo() : playerRef.current.playVideo()
+    }
+
+    const handlePrev = () => {
+        const idx = currentIdx > 0 ? currentIdx - 1 : osts.length - 1
+        loadTrack(idx, isPlaying)
+    }
+
+    const handleNext = () => {
+        const idx = currentIdx < osts.length - 1 ? currentIdx + 1 : 0
+        loadTrack(idx, isPlaying)
+    }
+
+    const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const p = +e.target.value / 100
+        const t = p * duration
+        playerRef.current?.seekTo(t, true)
+        setProgress(p); setCurrentTime(t)
+    }
+
+    const handleVolume = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const v = +e.target.value
+        setVolume(v)
+        setIsMuted(v === 0)
+        playerRef.current?.setVolume(v)
+        if (v > 0) playerRef.current?.unMute()
+    }
+
+    const handleMuteToggle = () => {
+        if (isMuted) { playerRef.current?.unMute(); playerRef.current?.setVolume(volume); setIsMuted(false) }
+        else { playerRef.current?.mute(); setIsMuted(true) }
+    }
+
+    const handleTrackClick = (idx: number) => {
+        if (idx === currentIdx) { handlePlayPause() }
+        else { loadTrack(idx, true) }
+    }
+
+    // ── Rating / favorite ────────────────────────────────────────────────────
+
+    const handleSaveRating = async (ostId: string, rating: OstRating) => {
+        if (!user) { window.location.href = `/auth/login?redirect=${encodeURIComponent(window.location.pathname)}`; return }
+        await supabase.from('ost_ratings').upsert({ ost_id: ostId, user_id: user.id, ...rating }, { onConflict: 'ost_id,user_id' })
+        setUserRatings(prev => ({ ...prev, [ostId]: rating }))
+        setRatingModal(null)
     }
 
     const handleFavorite = async (ostId: string) => {
-        if (!user) {
-            window.location.href = `/auth/login?redirect=${encodeURIComponent(window.location.pathname)}`
-            return
-        }
-
+        if (!user) { window.location.href = `/auth/login?redirect=${encodeURIComponent(window.location.pathname)}`; return }
         if (favorites.has(ostId)) {
             await supabase.from('ost_favorites').delete().eq('ost_id', ostId).eq('user_id', user.id)
             setFavorites(prev => new Set([...prev].filter(id => id !== ostId)))
@@ -145,114 +298,259 @@ export default function OstPageClient({ park, item, category, osts }: {
         }
     }
 
-    const getAvgRating = (ostId: string) => {
-        const r = ratings[ostId]
-        if (!r) return 0
-        const all = [...r.emotion, ...r.nostalgia, ...r.appeal, ...r.experience]
-        return all.length ? Math.round(all.reduce((a, b) => a + b) / all.length) : 0
-    }
+    const thumb = (videoId: string) => `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`
+
+    // ── Render ───────────────────────────────────────────────────────────────
 
     return (
-        <div className="min-h-screen" style={{ background: 'var(--bg-tertiary)', color: 'var(--text-primary)' }}>
-            <div className="container mx-auto px-4 py-8 max-w-4xl">
-                <nav className="mb-6">
-                    <Link href="/parks" className="text-blue-400 hover:text-blue-300 text-sm">Parks</Link>
-                    <span className="mx-2 text-gray-500">/</span>
-                    <Link href={`/parks/${park.id}`} className="text-blue-400 hover:text-blue-300 text-sm">{park.name}</Link>
-                    <span className="mx-2 text-gray-500">/</span>
-                    <Link href={`/parks/${park.id}/${category.id}/${item.id}`} className="text-blue-400 hover:text-blue-300 text-sm">{item.name}</Link>
-                    <span className="mx-2 text-gray-500">/</span>
-                    <span className="text-gray-300 text-sm">Soundtrack</span>
-                </nav>
+        <>
+            {/* Hidden YT player */}
+            <div style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', opacity: 0, pointerEvents: 'none' }}>
+                <div id="yt-hidden-player" />
+            </div>
 
-                <h1 className="text-4xl font-bold mb-2">🎵 {item.name} Soundtrack</h1>
-                <p style={{ color: 'var(--text-muted)' }}>{osts.length} tracks</p>
+            <div className="min-h-screen pb-36" style={{ background: 'var(--bg-tertiary)', color: 'var(--text-primary)' }}>
+                <div className="container mx-auto px-4 py-8 max-w-3xl">
 
-                <div className="mt-8 space-y-4">
-                    {osts.map(ost => {
-                        const avg = getAvgRating(ost.id)
-                        const userRating = userRatings[ost.id]
-                        const isFavorited = favorites.has(ost.id)
+                    {/* Breadcrumb */}
+                    <nav className="mb-6 flex items-center gap-2 text-sm flex-wrap">
+                        <Link href="/parks" style={{ color: 'var(--accent)' }}>Parks</Link>
+                        <span style={{ color: 'var(--text-faint)' }}>/</span>
+                        <Link href={`/parks/${park.id}`} style={{ color: 'var(--accent)' }}>{park.name}</Link>
+                        <span style={{ color: 'var(--text-faint)' }}>/</span>
+                        <Link href={`/parks/${park.id}/${category.id}/${item.id}`} style={{ color: 'var(--accent)' }}>{item.name}</Link>
+                        <span style={{ color: 'var(--text-faint)' }}>/</span>
+                        <span style={{ color: 'var(--text-muted)' }}>Soundtrack</span>
+                    </nav>
 
-                        return (
-                            <div key={ost.id} className="rounded-sm p-6 flex gap-4"
-                                style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                    {/* Header */}
+                    <div className="mb-8">
+                        <h1 className="text-3xl font-bold mb-1">🎵 {item.name}</h1>
+                        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>{osts.length} track{osts.length !== 1 ? 's' : ''}</p>
+                    </div>
 
-                                {/* YouTube embed - small */}
-                                <div className="w-32 h-20 flex-shrink-0 rounded-sm overflow-hidden bg-black">
-                                    <iframe width="100%" height="100%" src={`https://www.youtube.com/embed/${ost.youtube_video_id}`}
-                                        frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                        allowFullScreen
-                                    ></iframe>
-                                </div>
+                    {/* Tracklist */}
+                    {osts.length === 0 ? (
+                        <p style={{ color: 'var(--text-muted)' }}>No tracks yet.</p>
+                    ) : (
+                        <div className="rounded-sm overflow-hidden" style={{ border: '1px solid var(--border)' }}>
+                            {osts.map((ost, idx) => {
+                                const active = idx === currentIdx
+                                const avg = avgRatings[ost.id]
+                                const fav = favorites.has(ost.id)
+                                const myR = userRatings[ost.id]
 
-                                {/* Info */}
-                                <div className="flex-1 min-w-0">
-                                    <h3 className="text-lg font-semibold">{ost.title}</h3>
-                                    {ost.composer && <p className="text-sm" style={{ color: 'var(--text-muted)' }}>🎼 {ost.composer}</p>}
-                                    {ost.location && <p className="text-sm" style={{ color: 'var(--text-muted)' }}>📍 {ost.location}</p>}
-                                    {ost.description && <p className="text-sm mt-2" style={{ color: 'var(--text-secondary)' }}>{ost.description}</p>}
+                                return (
+                                    <div key={ost.id}
+                                        className="flex items-center gap-3 px-4 py-3 transition-colors group"
+                                        style={{
+                                            background: active ? 'var(--accent-bg)' : 'var(--card-bg)',
+                                            borderBottom: idx < osts.length - 1 ? '1px solid var(--border)' : undefined,
+                                            cursor: 'pointer',
+                                        }}>
 
-                                    <div className="mt-3 flex gap-2">
-                                        <button onClick={() => {
-                                            setIsRatingOpen(ost.id)
-                                            setTempRatings(userRating || { emotion: 50, nostalgia: 50, appeal: 50, experience: 50 })
-                                        }}
-                                            className="text-xs px-3 py-1 rounded-sm transition-colors"
-                                            style={{ background: 'var(--cta)', color: 'var(--cta-text)' }}>
-                                            {userRating ? '✏️ Edit Rating' : '⭐ Rate'}
+                                        {/* Index / play indicator */}
+                                        <button
+                                            onClick={() => handleTrackClick(idx)}
+                                            className="w-8 h-8 flex items-center justify-center flex-shrink-0 rounded-sm transition-colors"
+                                            style={{ color: active ? 'var(--accent)' : 'var(--text-faint)' }}
+                                            title={active && isPlaying ? 'Pause' : 'Play'}
+                                        >
+                                            {active && isPlaying ? (
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                                    <rect x="5" y="4" width="4" height="16" /><rect x="15" y="4" width="4" height="16" />
+                                                </svg>
+                                            ) : active ? (
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                                    <polygon points="5,3 19,12 5,21" />
+                                                </svg>
+                                            ) : (
+                                                <span className="text-xs w-6 text-center select-none group-hover:hidden">{idx + 1}</span>
+                                            )}
+                                            {!active && (
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"
+                                                    className="hidden group-hover:block">
+                                                    <polygon points="5,3 19,12 5,21" />
+                                                </svg>
+                                            )}
                                         </button>
-                                        <button onClick={() => handleFavorite(ost.id)}
-                                            className="text-xs px-3 py-1 rounded-sm transition-colors"
-                                            style={{ background: isFavorited ? '#ef4444' : 'var(--bg-elevated)', color: isFavorited ? 'white' : 'var(--text-muted)' }}>
-                                            {isFavorited ? '❤️ Favorited' : '🤍 Favorite'}
-                                        </button>
+
+                                        {/* Thumbnail */}
+                                        <div className="flex-shrink-0 rounded-sm overflow-hidden"
+                                            style={{ width: 48, height: 32 }}
+                                            onClick={() => handleTrackClick(idx)}>
+                                            <img src={thumb(ost.youtube_video_id)} alt={ost.title}
+                                                className="w-full h-full object-cover"
+                                                style={{ opacity: active ? 1 : 0.7 }} />
+                                        </div>
+
+                                        {/* Info */}
+                                        <div className="flex-1 min-w-0" onClick={() => handleTrackClick(idx)}>
+                                            <p className="text-sm font-medium truncate"
+                                                style={{ color: active ? 'var(--accent)' : 'var(--text-primary)' }}>
+                                                {ost.title}
+                                            </p>
+                                            {ost.composer && (
+                                                <p className="text-xs truncate mt-0.5" style={{ color: 'var(--text-muted)' }}>{ost.composer}</p>
+                                            )}
+                                            {ost.location && (
+                                                <p className="text-xs truncate" style={{ color: 'var(--text-faint)' }}>📍 {ost.location}</p>
+                                            )}
+                                        </div>
+
+                                        {/* Avg score */}
+                                        <div className="flex-shrink-0 w-8 text-center">
+                                            {avg !== undefined ? (
+                                                <span className="text-xs font-bold" style={{ color: 'var(--accent)' }}>{avg}</span>
+                                            ) : (
+                                                <span className="text-xs" style={{ color: 'var(--text-faint)' }}>—</span>
+                                            )}
+                                        </div>
+
+                                        {/* Actions */}
+                                        <div className="flex items-center gap-1 flex-shrink-0">
+                                            <button
+                                                onClick={() => setRatingModal(ost.id)}
+                                                className="text-xs px-2 py-1 rounded-sm transition-opacity opacity-0 group-hover:opacity-100"
+                                                style={{ background: 'var(--bg-elevated)', color: myR ? 'var(--accent)' : 'var(--text-muted)' }}
+                                                title={myR ? 'Edit rating' : 'Rate'}>
+                                                {myR ? '★' : '☆'}
+                                            </button>
+                                            <button
+                                                onClick={() => handleFavorite(ost.id)}
+                                                className="text-xs px-2 py-1 rounded-sm transition-opacity opacity-0 group-hover:opacity-100"
+                                                style={{ color: fav ? '#ef4444' : 'var(--text-muted)', background: 'var(--bg-elevated)' }}
+                                                title={fav ? 'Unfavorite' : 'Favorite'}>
+                                                {fav ? '♥' : '♡'}
+                                            </button>
+                                        </div>
                                     </div>
-                                </div>
-
-                                {/* Score circle */}
-                                <div className="flex-shrink-0">
-                                    {avg > 0 ? <ScoreCircle score={avg} /> : <p style={{ color: 'var(--text-faint)' }}>—</p>}
-                                </div>
-                            </div>
-                        )
-                    })}
+                                )
+                            })}
+                        </div>
+                    )}
                 </div>
+            </div>
 
-                {/* Rating Modal */}
-                {isRatingOpen && (
-                    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-                        <div className="rounded-sm p-6 max-w-md w-full" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
-                            <h2 className="text-lg font-semibold mb-4">Rate Track</h2>
-                            <div className="space-y-4">
-                                {dimensions.map(dim => (
-                                    <div key={dim.id}>
-                                        <label className="text-sm font-medium">{dim.label}</label>
-                                        <input type="range" min="0" max="100" value={tempRatings[dim.id as keyof OstRating]}
-                                            onChange={e => setTempRatings({ ...tempRatings, [dim.id]: parseInt(e.target.value) })}
-                                            className="w-full mt-1"
-                                            style={{ background: `linear-gradient(to right, var(--accent) 0%, var(--accent) ${tempRatings[dim.id as keyof OstRating]}%, var(--border) ${tempRatings[dim.id as keyof OstRating]}%, var(--border) 100%)` }}
-                                        />
-                                        <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>{tempRatings[dim.id as keyof OstRating]}</p>
-                                    </div>
-                                ))}
+            {/* ── Fixed Bottom Player ─────────────────────────────────────────────── */}
+            {osts.length > 0 && (
+                <div className="fixed bottom-0 left-0 right-0 z-[100] px-4 py-3"
+                    style={{ background: 'var(--navbar-bg)', borderTop: '1px solid var(--border)' }}>
+                    <div className="container mx-auto max-w-5xl flex items-center gap-4">
+
+                        {/* Thumbnail + info */}
+                        {currentOst && (
+                            <div className="flex items-center gap-3 flex-shrink-0 w-48 min-w-0">
+                                <div className="rounded-sm overflow-hidden flex-shrink-0" style={{ width: 44, height: 30 }}>
+                                    <img src={thumb(currentOst.youtube_video_id)} alt={currentOst.title}
+                                        className="w-full h-full object-cover" />
+                                </div>
+                                <div className="min-w-0">
+                                    <p className="text-xs font-semibold truncate" style={{ color: 'var(--text-primary)' }}>{currentOst.title}</p>
+                                    {currentOst.composer && (
+                                        <p className="text-[10px] truncate" style={{ color: 'var(--text-muted)' }}>{currentOst.composer}</p>
+                                    )}
+                                </div>
                             </div>
-                            <div className="flex gap-3 mt-6">
-                                <button onClick={() => setIsRatingOpen(null)}
-                                    className="flex-1 px-4 py-2 rounded-sm text-sm"
-                                    style={{ background: 'var(--bg-elevated)', color: 'var(--text-muted)' }}>
-                                    Cancel
+                        )}
+
+                        {/* Controls */}
+                        <div className="flex flex-col items-center gap-1 flex-1 min-w-0">
+                            <div className="flex items-center gap-3">
+                                {/* Prev */}
+                                <button onClick={handlePrev} title="Previous"
+                                    style={{ color: 'var(--text-muted)' }}
+                                    className="hover:opacity-80 transition-opacity">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                        <polygon points="19,20 9,12 19,4" /><rect x="5" y="4" width="2" height="16" />
+                                    </svg>
                                 </button>
-                                <button onClick={() => handleSaveRating(isRatingOpen)}
-                                    className="flex-1 px-4 py-2 rounded-sm text-sm"
-                                    style={{ background: 'var(--cta)', color: 'var(--cta-text)' }}>
-                                    Save Rating
+
+                                {/* Play/Pause */}
+                                <button onClick={handlePlayPause}
+                                    disabled={!playerReady}
+                                    className="w-8 h-8 rounded-full flex items-center justify-center transition-opacity disabled:opacity-40"
+                                    style={{ background: 'var(--accent)', color: 'var(--bg-tertiary)' }}>
+                                    {isPlaying ? (
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                            <rect x="5" y="4" width="4" height="16" /><rect x="15" y="4" width="4" height="16" />
+                                        </svg>
+                                    ) : (
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                            <polygon points="6,3 20,12 6,21" />
+                                        </svg>
+                                    )}
                                 </button>
+
+                                {/* Next */}
+                                <button onClick={handleNext} title="Next"
+                                    style={{ color: 'var(--text-muted)' }}
+                                    className="hover:opacity-80 transition-opacity">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                        <polygon points="5,4 15,12 5,20" /><rect x="17" y="4" width="2" height="16" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            {/* Progress bar */}
+                            <div className="flex items-center gap-2 w-full max-w-md">
+                                <span className="text-[10px] flex-shrink-0 w-8 text-right" style={{ color: 'var(--text-faint)' }}>{fmt(currentTime)}</span>
+                                <div className="relative flex-1 h-1 rounded-full cursor-pointer" style={{ background: 'var(--border)' }}>
+                                    <div className="absolute left-0 top-0 h-full rounded-full"
+                                        style={{ width: `${progress * 100}%`, background: 'var(--accent)' }} />
+                                    <input type="range" min="0" max="100" value={progress * 100}
+                                        onChange={handleSeek}
+                                        className="absolute inset-0 w-full opacity-0 cursor-pointer h-full" />
+                                </div>
+                                <span className="text-[10px] flex-shrink-0 w-8" style={{ color: 'var(--text-faint)' }}>{fmt(duration)}</span>
                             </div>
                         </div>
+
+                        {/* Volume */}
+                        <div className="flex items-center gap-2 flex-shrink-0 w-32">
+                            <button onClick={handleMuteToggle} style={{ color: 'var(--text-muted)' }} className="flex-shrink-0">
+                                {isMuted || volume === 0 ? (
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M11 5L6 9H2v6h4l5 4V5z" /><line x1="22" y1="9" x2="16" y2="15" stroke="currentColor" strokeWidth="2" /><line x1="16" y1="9" x2="22" y2="15" stroke="currentColor" strokeWidth="2" />
+                                    </svg>
+                                ) : (
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M11 5L6 9H2v6h4l5 4V5z" /><path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14" stroke="currentColor" fill="none" strokeWidth="2" strokeLinecap="round" />
+                                    </svg>
+                                )}
+                            </button>
+                            <div className="relative flex-1 h-1 rounded-full" style={{ background: 'var(--border)' }}>
+                                <div className="absolute left-0 top-0 h-full rounded-full"
+                                    style={{ width: `${isMuted ? 0 : volume}%`, background: 'var(--text-muted)' }} />
+                                <input type="range" min="0" max="100" value={isMuted ? 0 : volume}
+                                    onChange={handleVolume}
+                                    className="absolute inset-0 w-full opacity-0 cursor-pointer h-full" />
+                            </div>
+                        </div>
+
+                        {/* YouTube link */}
+                        {currentOst && (
+                            <a href={`https://www.youtube.com/watch?v=${currentOst.youtube_video_id}`}
+                                target="_blank" rel="noopener noreferrer"
+                                className="flex-shrink-0 text-[10px] px-2 py-1 rounded-sm transition-opacity hover:opacity-80"
+                                style={{ color: 'var(--text-faint)', border: '1px solid var(--border)' }}
+                                title="Open in YouTube">
+                                YT ↗
+                            </a>
+                        )}
                     </div>
-                )}
-            </div>
-        </div>
+                </div>
+            )}
+
+            {/* Rating modal */}
+            {ratingModal && (
+                <RatingModal
+                    ost={osts.find(o => o.id === ratingModal)!}
+                    initial={userRatings[ratingModal] ?? { emotion: 50, nostalgia: 50, appeal: 50, experience: 50 }}
+                    onSave={r => handleSaveRating(ratingModal, r)}
+                    onClose={() => setRatingModal(null)}
+                />
+            )}
+        </>
     )
 }

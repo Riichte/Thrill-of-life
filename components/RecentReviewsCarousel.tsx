@@ -11,6 +11,7 @@ type RecentReview = {
   itemId: string
   itemName: string
   parkId: string
+  categoryId: string
   parkName: string
   score: number | null
   createdAt: string
@@ -63,7 +64,7 @@ export function RecentReviewsCarousel({ reviews }: { reviews: RecentReview[] }) 
       <div ref={stripRef} className="flex gap-3 overflow-x-auto pb-2"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
         {reviews.map(r => (
-          <Link key={r.id} href={`/parks/${r.parkId}/${r.itemId}`}
+          <Link key={r.id} href={`/parks/${r.parkId}/${r.categoryId}/${r.itemId}`}
             className="flex-shrink-0 w-56 rounded-lg p-4 transition-colors group"
             style={{
               background: 'var(--card-bg)',

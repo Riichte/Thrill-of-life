@@ -426,7 +426,7 @@ export async function getRecentReviews(limit = 10) {
     supabase.from('profiles').select('id, username').in('id', userIds),
     supabase
       .from('items')
-      .select('id, name, park_id, parks(name)')
+      .select('id, name, park_id, category_id, parks(name)')
       .in('id', itemIds),
   ])
 
@@ -446,6 +446,7 @@ export async function getRecentReviews(limit = 10) {
       itemId: r.item_id,
       itemName: item?.name ?? 'Unknown',
       parkId: item?.park_id ?? '',
+      categoryId: item?.category_id ?? '',
       parkName: (item?.parks as { name: string } | null)?.name ?? '',
       score: avg,
       createdAt: r.created_at,

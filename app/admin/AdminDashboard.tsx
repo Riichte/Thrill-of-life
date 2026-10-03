@@ -1638,10 +1638,18 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                     <select className={inputClass} style={{ ...inputStyle, maxWidth: '150px' }}
                                         value={bulkType}
                                         onChange={e => setBulkType(e.target.value)}
-                                        disabled={!getBulkCommonCategory() || !(TYPE_OPTIONS_BY_CATEGORY[getBulkCommonCategory() as string]?.length)}
+                                        disabled={!getBulkCommonCategory() || !((() => {
+                                            const cat = getBulkCommonCategory()
+                                            if (!cat) return []
+                                            return cat === 'roller-coasters' ? ROLLER_COASTER_TYPES : cat === 'restaurants' ? RESTAURANT_TYPES : (dynamicTypes[cat] ?? [])
+                                        })().length)}
                                         title={!getBulkCommonCategory() ? 'Select items from a single category to batch-edit Type' : undefined}>
                                         <option value="">Type...</option>
-                                        {(TYPE_OPTIONS_BY_CATEGORY[getBulkCommonCategory() ?? ''] ?? []).map(t => <option key={t} value={t}>{t}</option>)}
+                                        {((() => {
+                                            const cat = getBulkCommonCategory()
+                                            if (!cat) return []
+                                            return cat === 'roller-coasters' ? ROLLER_COASTER_TYPES : cat === 'restaurants' ? RESTAURANT_TYPES : (dynamicTypes[cat] ?? [])
+                                        })()).map(t => <option key={t} value={t}>{t}</option>)}
                                     </select>
                                     <select className={inputClass} style={{ ...inputStyle, maxWidth: '170px' }}
                                         value={bulkManufacturer}

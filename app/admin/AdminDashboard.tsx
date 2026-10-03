@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import ImageManager from './ImageManager'
 import { useState, useEffect, useMemo } from 'react'
 
-type AdminTab = 'parks' | 'items' | 'images' | 'park-images' | 'images-manager' | 'videos' | 'manufacturers' | 'models' | 'osts' | 'prices' | 'bulk-import' | 'elements' | 'data-issues'
+type AdminTab = 'parks' | 'items' | 'images' | 'park-images' | 'images-manager' | 'videos' | 'manufacturers' | 'models' | 'osts' | 'prices' | 'bulk-import' | 'elements' | 'item-types' | 'data-issues'
 type Park = { id: string; name: string; description: string; logo_url: string; cover_image_url: string; country: string; company: string; park_type: string; location: string }
 type Category = { id: string; name: string }
 type Item = { id: string; park_id: string; category_id: string; name: string; description: string; location_in_park: string; specs: any; status: string; former_name: string }
@@ -14,14 +14,9 @@ const emptyPark: Omit<Park, 'id'> = { name: '', description: '', logo_url: '', c
 const emptyItem: Omit<Item, 'id'> = { park_id: '', category_id: '', name: '', description: '', location_in_park: '', specs: {}, status: 'operating', former_name: '' }
 
 // Type options by category, shared between the single-item form and the bulk-edit bar
-const TYPE_OPTIONS_BY_CATEGORY: Record<string, string[]> = {
-    'roller-coasters': ['Steel', 'Wood', 'Hybrid'],
-    'flat-rides': ['Drop Tower', 'Ferris Wheel', 'Carousel', 'Swing Ride', 'Tilt-A-Whirl', 'Scrambler', 'Bumper Cars', 'Gondola', 'Enterprise', 'Pirate Ship', 'Top Spin', 'Frisbee', 'Gyro Tower', 'Flying Carpet', 'Balloon Ride', 'Observation Tower', 'Simulator', 'Monorail', 'Sky Ride', 'Train Ride'],
-    'water-rides': ['Log Flume', 'Rapids', 'Shoot the Chute', 'Water Coaster', 'River Ride', 'Splash Battle', 'Water Slide', 'Lazy River', 'Wave Pool', 'Water Play Area'],
-    'dark-rides': ['Dark Ride', 'Interactive Dark Ride', '4D Cinema', 'Flying Theatre', 'Haunted House', 'Tunnel of Love', 'Ghost Train', 'Motion Simulator', 'Omnimover', 'Trackless Ride', 'Boat Dark Ride'],
-    'restaurants': ['Sit Down', 'Fast Food', 'Buffet', 'Food Stand', 'Café', 'Dessert & Snacks', 'Bar & Lounge', 'Themed Restaurant'],
-    'transport': ['Monorail', 'Train', 'Ski Lift', 'Boat', 'Bus', 'Cable Car', 'Horse Drawn Carriage', 'Electric Vehicle', 'Tram'],
-}
+const ROLLER_COASTER_TYPES = ['Steel', 'Wood', 'Hybrid']
+const RESTAURANT_TYPES = ['Sit Down', 'Fast Food', 'Buffet', 'Food Stand', 'Café', 'Dessert & Snacks', 'Bar & Lounge', 'Themed Restaurant']
+const DYNAMIC_TYPE_CATEGORIES = ['flat-rides', 'dark-rides', 'water-rides', 'transport']
 
 // ─── Duration normalization ────────────────────────────────
 function secondsToMinSec(totalSeconds: number): string {
@@ -338,6 +333,119 @@ function ItemElementsManager({ itemId }: { itemId: string }) {
     )
 }
 
+function ItemTypesTab() {
+    const supabase = createClient()
+    const MANAGED_CATEGORIES = [
+        { id: 'flat-rides', label: 'Flat Rides' },
+        { id: 'dark-rides', label: 'Dark Rides' },
+        { id: 'water-rides', label: 'Water Rides' },
+        { id: 'transport', label: 'Transport' },
+    ]
+    const [selectedCategory, setSelectedCategory] = useState('flat-rides')
+    const [types, setTypes] = useState<{ id: string; name: string; category_id: string }[]>([])
+    const [newTypeName, setNewTypeName] = useState('')
+    const [loading, setLoading] = useState(false)
+
+    const inputClass = `w-full rounded-sm px-3 py-2 text-sm focus:outline-none`
+    const inputStyle = { background: 'var(--bg-elevated)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }
+
+    const loadTypes = async (categoryId: string) => {
+        const { data } = await supabase.from('item_types').select('*').eq('category_id', categoryId).order('name')
+        setTypes(data ?? [])
+    }
+
+    useEffect(() => {
+        loadTypes(selectedCategory)
+    }, [selectedCategory])
+
+    const handleAdd = async () => {
+        if (!newTypeName.trim()) return
+        setLoading(true)
+        const { error } = await supabase.from('item_types').insert({ name: newTypeName.trim(), category_id: selectedCategory })
+        if (!error) {
+            setNewTypeName('')
+            loadTypes(selectedCategory)
+        }
+        setLoading(false)
+    }
+
+    const handleDelete = async (id: string) => {
+        if (!confirm('Delete this type?')) return
+        await supabase.from('item_types').delete().eq('id', id)
+        loadTypes(selectedCategory)
+    }
+
+    return (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>Add Item Type</h2>
+                <div className="space-y-4">
+                    <div>
+                        <label className="block text-xs font-medium uppercase tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>Category</label>
+                        <div className="flex gap-2 flex-wrap">
+                            {MANAGED_CATEGORIES.map(cat => (
+                                <button
+                                    key={cat.id}
+                                    onClick={() => setSelectedCategory(cat.id)}
+                                    className="px-3 py-1.5 text-xs rounded-sm font-medium transition-colors"
+                                    style={selectedCategory === cat.id
+                                        ? { background: 'var(--cta)', color: 'var(--cta-text)' }
+                                        : { background: 'var(--bg-elevated)', color: 'var(--text-muted)' }}
+                                >
+                                    {cat.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="flex gap-2">
+                        <input
+                            className={inputClass}
+                            style={inputStyle}
+                            value={newTypeName}
+                            onChange={e => setNewTypeName(e.target.value)}
+                            placeholder={`e.g. ${selectedCategory === 'flat-rides' ? 'Drop Tower' : selectedCategory === 'dark-rides' ? 'Trackless Ride' : selectedCategory === 'water-rides' ? 'Log Flume' : 'Monorail'}`}
+                            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAdd() } }}
+                        />
+                        <button
+                            type="button"
+                            onClick={handleAdd}
+                            disabled={loading || !newTypeName.trim()}
+                            className="px-4 py-2 text-sm font-medium rounded-sm disabled:opacity-50 flex-shrink-0"
+                            style={{ background: 'var(--cta)', color: 'var(--cta-text)' }}
+                        >
+                            Add
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
+                    {MANAGED_CATEGORIES.find(c => c.id === selectedCategory)?.label} Types ({types.length})
+                </h2>
+                <div className="space-y-2 max-h-[600px] overflow-y-auto">
+                    {types.length === 0 && (
+                        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>No types added yet.</p>
+                    )}
+                    {types.map(t => (
+                        <div key={t.id} className="flex items-center justify-between gap-3 p-3 rounded-sm" style={{ background: 'var(--bg-elevated)' }}>
+                            <span className="text-sm" style={{ color: 'var(--text-primary)' }}>{t.name}</span>
+                            <button
+                                type="button"
+                                onClick={() => handleDelete(t.id)}
+                                className="px-2 py-1 text-xs rounded-sm"
+                                style={{ background: 'rgba(239,68,68,0.2)', color: '#ef4444' }}
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    )
+}
+
 // ─── ElementsTab ──────────────────────────────────────────
 
 function ElementsTab() {
@@ -492,11 +600,13 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
     const [videoParkSearch, setVideoParkSearch] = useState('')
     const [itemParkSearch, setItemParkSearch] = useState('')
     const [selectedParkForOst, setSelectedParkForOst] = useState('')
+    const [dynamicTypes, setDynamicTypes] = useState<Record<string, string[]>>({})
 
     useEffect(() => {
         loadManufacturers()
         loadModels()
         loadOsts()
+        loadDynamicTypes()
     }, [])
 
     const loadManufacturers = async () => {
@@ -507,6 +617,17 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
     const loadModels = async () => {
         const { data } = await supabase.from('models').select('*').order('name')
         if (data) setModels(data)
+    }
+
+    const loadDynamicTypes = async () => {
+        const { data } = await supabase.from('item_types').select('*').order('name')
+        if (!data) return
+        const grouped: Record<string, string[]> = {}
+        for (const row of data) {
+            if (!grouped[row.category_id]) grouped[row.category_id] = []
+            grouped[row.category_id].push(row.name)
+        }
+        setDynamicTypes(grouped)
     }
 
     const extractYouTubeId = (url: string): string | null => {
@@ -816,8 +937,11 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
         for (const item of items) {
             const type = item.specs?.type
             if (!type || typeof type !== 'string') continue
-            const validForCategory = TYPE_OPTIONS_BY_CATEGORY[item.category_id]
-            if (!validForCategory) continue // category has no controlled type list, skip
+            let validForCategory: string[] | undefined
+            if (item.category_id === 'roller-coasters') validForCategory = ROLLER_COASTER_TYPES
+            else if (item.category_id === 'restaurants') validForCategory = RESTAURANT_TYPES
+            else if (DYNAMIC_TYPE_CATEGORIES.includes(item.category_id)) validForCategory = dynamicTypes[item.category_id]
+            if (!validForCategory) continue
             if (validForCategory.some(t => norm(t) === norm(type))) continue
             const key = `${type} (${item.category_id})`
             groups[key] = groups[key] ? [...groups[key], item.id] : [item.id]
@@ -825,7 +949,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
         return Object.entries(groups)
             .map(([value, itemIds]) => ({ value, itemIds }))
             .sort((a, b) => b.itemIds.length - a.itemIds.length)
-    }, [items])
+    }, [items, dynamicTypes])
 
     // Elements: coaster_elements rows whose element_id isn't in the master elements table.
     // Loaded on-demand since it requires a join query across all items.
@@ -997,7 +1121,6 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
             ]
             case 'flat-rides': return [
                 { key: 'manufacturer', label: 'Manufacturer' },
-                { key: 'model', label: 'Model' },
                 { key: 'height', label: 'Height (m)', type: 'number' },
                 { key: 'duration', label: 'Duration (e.g. 2min)' },
                 { key: 'year_opened', label: 'Year Opened', type: 'number' },
@@ -1005,7 +1128,6 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
             ]
             case 'dark-rides': return [
                 { key: 'manufacturer', label: 'Manufacturer' },
-                { key: 'model', label: 'Model' },
                 { key: 'duration', label: 'Duration (e.g. 5min)' },
                 { key: 'year_opened', label: 'Year Opened', type: 'number' },
                 { key: 'technology', label: 'Technology (e.g. trackless, screens)' },
@@ -1027,7 +1149,6 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
             ]
             case 'transport': return [
                 { key: 'manufacturer', label: 'Manufacturer' },
-                { key: 'model', label: 'Model' },
                 { key: 'year_opened', label: 'Year Opened', type: 'number' },
             ]
             case 'shops': return [
@@ -1191,7 +1312,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
 
                 {/* Tabs */}
                 <div className="flex gap-1 mb-8 border-b overflow-x-auto" style={{ borderColor: 'var(--border)' }}>
-                    {(['parks', 'items', 'images', 'park-images', 'images-manager', 'videos', 'manufacturers', 'models', 'osts', 'prices', 'bulk-import', 'elements', 'data-issues'] as AdminTab[]).map(t => (
+                    {(['parks', 'items', 'images', 'park-images', 'images-manager', 'videos', 'manufacturers', 'models', 'osts', 'prices', 'bulk-import', 'elements', 'item-types', 'data-issues'] as AdminTab[]).map(t => (
                         <button
                             key={t}
                             onClick={() => setTab(t)}
@@ -1208,7 +1329,8 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                                     t === 'models' ? 'Models' :
                                                         t === 'prices' ? 'Prices' :
                                                             t === 'data-issues' ? 'Data Issues' :
-                                                                t.charAt(0).toUpperCase() + t.slice(1)}
+                                                                t === 'item-types' ? 'Item Types' :
+                                                                    t.charAt(0).toUpperCase() + t.slice(1)}
                         </button>
                     ))}
                 </div>
@@ -1335,24 +1457,31 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                         <option value="coming_soon">Coming Soon</option>
                                     </select>
                                 </div>
-                                {['roller-coasters', 'flat-rides', 'water-rides', 'dark-rides', 'restaurants', 'transport'].includes(itemForm.category_id) && (
-                                    <div>
-                                        <label className={labelClass} style={labelStyle}>Type</label>
-                                        <select className={inputClass} style={inputStyle}
-                                            value={(() => { try { return JSON.parse(specsText)?.type ?? '' } catch { return '' } })()}
-                                            onChange={e => {
-                                                try {
-                                                    const parsed = JSON.parse(specsText)
-                                                    setSpecsText(JSON.stringify({ ...parsed, type: e.target.value }, null, 2))
-                                                } catch {
-                                                    setSpecsText(JSON.stringify({ type: e.target.value }, null, 2))
-                                                }
-                                            }}>
-                                            <option value="">Select type</option>
-                                            {(TYPE_OPTIONS_BY_CATEGORY[itemForm.category_id] ?? []).map(t => <option key={t} value={t}>{t}</option>)}
-                                        </select>
-                                    </div>
-                                )}
+                                {['roller-coasters', 'flat-rides', 'water-rides', 'dark-rides', 'restaurants', 'transport'].includes(itemForm.category_id) && (() => {
+                                    const typeOptions = itemForm.category_id === 'roller-coasters'
+                                        ? ROLLER_COASTER_TYPES
+                                        : itemForm.category_id === 'restaurants'
+                                            ? RESTAURANT_TYPES
+                                            : (dynamicTypes[itemForm.category_id] ?? [])
+                                    return (
+                                        <div>
+                                            <label className={labelClass} style={labelStyle}>Type</label>
+                                            <select className={inputClass} style={inputStyle}
+                                                value={(() => { try { return JSON.parse(specsText)?.type ?? '' } catch { return '' } })()}
+                                                onChange={e => {
+                                                    try {
+                                                        const parsed = JSON.parse(specsText)
+                                                        setSpecsText(JSON.stringify({ ...parsed, type: e.target.value }, null, 2))
+                                                    } catch {
+                                                        setSpecsText(JSON.stringify({ type: e.target.value }, null, 2))
+                                                    }
+                                                }}>
+                                                <option value="">Select type</option>
+                                                {typeOptions.map(t => <option key={t} value={t}>{t}</option>)}
+                                            </select>
+                                        </div>
+                                    )
+                                })()}
                                 {getSpecFields(itemForm.category_id).map(field => (
                                     <div key={field.key}>
                                         <label className={labelClass} style={labelStyle}>{field.label}</label>
@@ -2313,9 +2442,8 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                         </div>
                     </div>
                 )}
-                {tab === 'elements' && (
-                    <ElementsTab />
-                )}
+                {tab === 'elements' && <ElementsTab />}
+                {tab === 'item-types' && <ItemTypesTab />}
             </div >
         </div >
     )

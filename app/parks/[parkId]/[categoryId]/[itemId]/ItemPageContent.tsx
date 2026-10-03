@@ -14,74 +14,81 @@ import RatingBreakdown from '@/components/RatingBreakdown'
 
 
 const ratingDimensions: Record<string, { id: string; label: string }[]> = {
-  rides: [
+  'rides': [
     { id: 'intensity', label: 'Intensity' },
     { id: 'comfort', label: 'Comfort' },
     { id: 'theming', label: 'Theming' },
     { id: 'fun_factor', label: 'Fun Factor' },
     { id: 'capacity', label: 'Capacity' },
   ],
-  roller_coasters: [
+  'roller-coasters': [
     { id: 'intensity', label: 'Intensity' },
     { id: 'comfort', label: 'Comfort' },
     { id: 'theming', label: 'Theming' },
     { id: 'fun_factor', label: 'Fun Factor' },
     { id: 'capacity', label: 'Capacity' },
   ],
-  flat_rides: [
+  'flat-rides': [
     { id: 'intensity', label: 'Intensity' },
     { id: 'comfort', label: 'Comfort' },
     { id: 'theming', label: 'Theming' },
     { id: 'fun_factor', label: 'Fun Factor' },
     { id: 'capacity', label: 'Capacity' },
   ],
-  water_rides: [
-    { id: 'intensity', label: 'Intensity' },
+  'water-rides': [
+    { id: 'wetness', label: 'Wetness Level' },
     { id: 'comfort', label: 'Comfort' },
     { id: 'theming', label: 'Theming' },
     { id: 'fun_factor', label: 'Fun Factor' },
     { id: 'capacity', label: 'Capacity' },
   ],
-  dark_rides: [
-    { id: 'theming', label: 'Theming' },
+  'dark-rides': [
+    { id: 'ambiance', label: 'Ambiance / Music' },
     { id: 'fun_factor', label: 'Fun Factor' },
     { id: 'capacity', label: 'Capacity' },
     { id: 'technology', label: 'Technology / Effects' },
     { id: 'story', label: 'Story / Immersion' },
   ],
-  shows: [
+  'shows': [
     { id: 'theming', label: 'Theming' },
     { id: 'fun_factor', label: 'Fun Factor' },
     { id: 'capacity', label: 'Capacity' },
     { id: 'story', label: 'Story / Immersion' },
     { id: 'technology', label: 'Technology / Effects' },
   ],
-  restaurants: [
+  'restaurants': [
     { id: 'food_quality', label: 'Food Quality' },
     { id: 'value', label: 'Value' },
     { id: 'wait_time', label: 'Speed / Wait Time' },
     { id: 'atmosphere', label: 'Atmosphere' },
     { id: 'service', label: 'Service' },
   ],
-  hotels: [
+  'hotels': [
     { id: 'comfort', label: 'Comfort' },
     { id: 'value', label: 'Value' },
     { id: 'atmosphere', label: 'Atmosphere' },
     { id: 'service', label: 'Service' },
     { id: 'cleanliness', label: 'Cleanliness' },
   ],
-  shops: [
+  'shops': [
     { id: 'value', label: 'Value' },
     { id: 'atmosphere', label: 'Atmosphere' },
     { id: 'service', label: 'Service' },
     { id: 'product_quality', label: 'Product Quality' },
   ],
-  parks: [
+  'parks': [
     { id: 'theming', label: 'Theming' },
     { id: 'value', label: 'Value' },
     { id: 'cleanliness', label: 'Cleanliness' },
-    { id: 'operation', label: 'Staff operation' },
+    { id: 'operation', label: 'Staff Operation' },
     { id: 'line_up', label: 'Ride Line Up' },
+  ],
+  'transport': [
+    { id: 'comfort', label: 'Comfort' },
+    { id: 'theming', label: 'Theming' },
+    { id: 'capacity', label: 'Capacity' },
+    { id: 'station_location', label: 'Station Location' },
+    { id: 'coverage', label: 'Park Coverage' },
   ],
 }
 
@@ -234,7 +241,7 @@ export default function ItemPageContent({ park, item, category, images, videos, 
   const [osts, setOsts] = useState<{ id: string; title: string }[]>([])
   const [reactions, setReactions] = useState<Record<string, ReviewReactions>>({})
   const [myReactions, setMyReactions] = useState<Record<string, UserReactions>>({})
-  const dimensions = ratingDimensions[item.category_id] || ratingDimensions.rides
+  const dimensions = ratingDimensions[item.category_id] || ratingDimensions['rides']
   const [userRatings, setUserRatings] = useState<Record<string, number>>(
     dimensions.reduce((acc, dim) => ({ ...acc, [dim.id]: 50 }), {})
   )

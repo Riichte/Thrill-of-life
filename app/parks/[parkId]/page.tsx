@@ -14,8 +14,10 @@ export async function generateMetadata({ params }: { params: Promise<{ parkId: s
   }
 }
 
-export default async function ParkPage({ params }: { params: Promise<{ parkId: string }> }) {
+export default async function ParkPage({ params, searchParams }: { params: Promise<{ parkId: string }>; searchParams: Promise<{ mode?: string }> }) {
   const { parkId } = await params
+  const { mode } = await searchParams
+  const soundtrackMode = mode === 'soundtrack'
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -65,8 +67,8 @@ export default async function ParkPage({ params }: { params: Promise<{ parkId: s
         if (imgs[0]) categoryImages[cat.id] = imgs[0].url
       }
     })
-      )
-const prices = await getParkPrices(parkId)
+  )
+  const prices = await getParkPrices(parkId)
   const parkImageData = await getParkImages(parkId)
   const carouselImages = parkImageData.filter(img => (img as any).sort_order !== -1)
   const slides = carouselImages.length > 0
@@ -86,6 +88,27 @@ const prices = await getParkPrices(parkId)
   const reviews = await getParkReviews(parkId)
   const communityScore = await getParkCommunityScore(parkId)
 
+  // Park-level OSTs (soundtrack mode)
+  let parkOsts: any[] = []
+  if (soundtrackMode) {
+    const { data: ostData } = await supabase
+      .from('osts')
+      .select('id, title, youtube_video_id, composer, location, description, item_id, items(name, category_id)')
+      .in('item_id', items.map(i => i.id))
+      .order('created_at')
+    parkOsts = (ostData ?? []).map(o => ({
+      id: o.id,
+      title: o.title,
+      youtube_video_id: o.youtube_video_id,
+      composer: o.composer,
+      location: o.location,
+      description: o.description,
+      item_id: o.item_id,
+      item_name: (o.items as any)?.name ?? null,
+      category_id: (o.items as any)?.category_id ?? null,
+    }))
+  }
+
   return (
     <ParkPageClient
       park={park}
@@ -98,6 +121,8 @@ const prices = await getParkPrices(parkId)
       reviews={reviews}
       communityScore={communityScore}
       prices={prices}
+      soundtrackMode={soundtrackMode}
+      parkOsts={parkOsts}
     />
   )
 }

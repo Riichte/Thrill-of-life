@@ -9,7 +9,7 @@ import PhotoCredits, { PhotoCredit } from '@/components/PhotoCredits'
 import PriceCard from '@/components/PriceCard'
 import RatingBreakdown from '@/components/RatingBreakdown'
 import { useRouter } from 'next/navigation'
-
+import OstPlayer, { OstTrack } from '@/components/OstPlayer'
 
 interface Park {
   id: string
@@ -41,6 +41,8 @@ interface ParkPageClientProps {
   reviews: any[]
   communityScore: { score: number; positive: number; mixed: number; negative: number } | null
   prices: any[]
+  soundtrackMode?: boolean
+  parkOsts?: OstTrack[]
 }
 
 const parkDimensions = [
@@ -167,6 +169,7 @@ export default function ParkPageClient({
   park, slides, categoriesWithImages, categoryImages,
   userId, isFavorited: initialFavorited, credits = [],
   reviews = [], communityScore, prices = [],
+  soundtrackMode = false, parkOsts = [],
 }: ParkPageClientProps) {
   const supabase = createClient()
   const router = useRouter()
@@ -326,7 +329,7 @@ export default function ParkPageClient({
   const mediaSlides = slides.map(src => ({ src, alt: park.name }))
 
   return (
-    <div className="min-h-screen style={{ background: 'var(--bg-tertiary)' }} style={{ color: 'var(--text-primary)' }}">
+    <div className="min-h-screen" style={{ background: 'var(--bg-tertiary)', color: 'var(--text-primary)' }}>
       <div className="container mx-auto px-4 py-8">
         <nav className="mb-6">
           <Link href="/parks" className="text-blue-400 hover:text-blue-300 text-sm">Parks</Link>
@@ -386,9 +389,7 @@ export default function ParkPageClient({
               {isVisited ? '✓ Visited' : '+ Mark as Visited'}
             </button>
 
-            {/* {prices.length > 0 && (
-  <PriceCard prices={prices} parkCurrency={prices[0]?.currency ?? 'EUR'} />
-)} */}
+            {/* {prices.length > 0 && (<PriceCard prices={prices} parkCurrency={prices[0]?.currency ?? 'EUR'} />)} */}
           </div>
         </div>
 
@@ -473,7 +474,10 @@ export default function ParkPageClient({
             {categoriesWithImages.map(category => {
               const image = categoryImages[category.id]
               return (
-                <Link key={category.id} href={`/parks/${park.id}/category/${category.id}`}
+                <Link key={category.id}
+                  href={soundtrackMode
+                    ? `/parks/${park.id}/category/${category.id}?mode=soundtrack`
+                    : `/parks/${park.id}/category/${category.id}`}
                   className="group relative h-48 rounded-sm overflow-hidden border style={{ borderColor: 'var(--border)' }} hover:border-[#66c0f4] transition-colors">
                   {image ? (
                     <img src={image} alt={category.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
@@ -493,70 +497,81 @@ export default function ParkPageClient({
           </div>
         </div>
 
-        {/* Reviews Section */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-semibold mb-6">All Reviews</h2>
-          <div className="flex gap-2 mb-8 overflow-x-auto pb-2 border-b border-gray-700">
-            {['all', 'positive', 'mixed', 'negative'].map(f => (
-              <button key={f} className="px-4 py-2 whitespace-nowrap font-medium capitalize text-gray-400 hover:text-gray-300 transition-colors">
-                {f} Reviews
-              </button>
-            ))}
+        {/* Soundtrack mode: park OST player */}
+        {soundtrackMode ? (
+          <div className="mb-12 pb-36">
+            <h2 className="text-2xl font-semibold mb-4">🎵 Park Soundtracks</h2>
+            <p className="text-sm mb-6" style={{ color: 'var(--text-muted)' }}>
+              {parkOsts.length} track{parkOsts.length !== 1 ? 's' : ''} across all attractions
+            </p>
+            <OstPlayer osts={parkOsts} showGroupHeaders={true} />
           </div>
-          <div className="space-y-6">
-            {userReview && myScore !== null && (
-              <ReviewCard
-                reviewId="user"
-                author="You"
-                score={myScore}
-                title={userReview.title}
-                text={userReview.text}
-                ratings={Object.entries(userRatings).map(([category, score]) => ({ category, score }))}
-                isOwn={true}
-                reactions={initialReactions}
-                userReactions={initialUserReactions}
-                userPoints={userPoints}
-                onReact={() => { }}
-                onEdit={() => setIsRatingOpen(true)}
-              />
-            )}
-            {reviews
-              .filter(r => !userId || r.user_id !== userId)
-              .map(review => {
-                const avg = review.review_ratings?.length > 0
-                  ? Math.round(review.review_ratings.reduce((s: number, r: any) => s + r.score, 0) / review.review_ratings.length)
-                  : 0
-                return (
+        ) : (
+          <>
+            {/* Reviews Section */}
+            <div className="mb-12">
+              <h2 className="text-2xl font-semibold mb-6">All Reviews</h2>
+              <div className="flex gap-2 mb-8 overflow-x-auto pb-2 border-b border-gray-700">
+                {['all', 'positive', 'mixed', 'negative'].map(f => (
+                  <button key={f} className="px-4 py-2 whitespace-nowrap font-medium capitalize text-gray-400 hover:text-gray-300 transition-colors">
+                    {f} Reviews
+                  </button>
+                ))}
+              </div>
+              <div className="space-y-6">
+                {userReview && myScore !== null && (
                   <ReviewCard
-                    key={review.id}
-                    reviewId={review.id}
-                    author={review.profiles?.username ?? 'Anonymous'}
-                    authorId={review.user_id}
-                    score={avg}
-                    title={review.title}
-                    text={review.body}
-                    ratings={review.review_ratings}
-                    isOwn={false}
-                    reactions={reactions[review.id] ?? initialReactions}
-                    userReactions={myReactions[review.id] ?? initialUserReactions}
+                    reviewId="user"
+                    author="You"
+                    score={myScore}
+                    title={userReview.title}
+                    text={userReview.text}
+                    ratings={Object.entries(userRatings).map(([category, score]) => ({ category, score }))}
+                    isOwn={true}
+                    reactions={initialReactions}
+                    userReactions={initialUserReactions}
                     userPoints={userPoints}
-                    onReact={handleReact}
+                    onReact={() => { }}
+                    onEdit={() => setIsRatingOpen(true)}
                   />
-                )
-              })}
-            {reviews.length === 0 && (
-              <p className="style={{ color: 'var(--text-muted)' }} text-sm">No reviews yet. Be the first to rate this park!</p>
-            )}
-          </div>
-        </div>
+                )}
+                {reviews
+                  .filter(r => !userId || r.user_id !== userId)
+                  .map(review => {
+                    const avg = review.review_ratings?.length > 0
+                      ? Math.round(review.review_ratings.reduce((s: number, r: any) => s + r.score, 0) / review.review_ratings.length)
+                      : 0
+                    return (
+                      <ReviewCard
+                        key={review.id}
+                        reviewId={review.id}
+                        author={review.profiles?.username ?? 'Anonymous'}
+                        authorId={review.user_id}
+                        score={avg}
+                        title={review.title}
+                        text={review.body}
+                        ratings={review.review_ratings}
+                        isOwn={false}
+                        reactions={reactions[review.id] ?? initialReactions}
+                        userReactions={myReactions[review.id] ?? initialUserReactions}
+                        userPoints={userPoints}
+                        onReact={handleReact}
+                      />
+                    )
+                  })}
+                {reviews.length === 0 && (
+                  <p className="style={{ color: 'var(--text-muted)' }} text-sm">No reviews yet. Be the first to rate this park!</p>
+                )}
+              </div>
+            </div>
 
-        <div className="flex justify-center mb-8">
-          <Link href="/parks" className="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-lg font-semibold transition-colors">
-            Back to All Parks
-          </Link>
-        </div>
-
-        <PhotoCredits credits={credits} />
+            <div className="flex justify-center mb-8">
+              <Link href="/parks" className="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-lg font-semibold transition-colors">
+                Back to All Parks
+              </Link>
+            </div>
+          </>
+        )}
       </div>
     </div>
   )

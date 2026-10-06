@@ -18,7 +18,7 @@ export default function SoundtracksClient({ categories, ostsByCategory }: { cate
 
                 <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {/* Parks entry */}
-                    <Link href="/soundtracks/parks"
+                    <Link href="/parks?mode=soundtrack"
                         className="rounded-sm p-4 transition-colors"
                         style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}
                         onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--accent)')}

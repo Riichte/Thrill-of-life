@@ -22,7 +22,7 @@ export default async function OstPage({ params }: OstPageProps) {
 
     const { data: osts } = await supabase
         .from('osts')
-        .select('*')
+        .select('id, title, youtube_video_id, composer, location, description, item_id')
         .eq('item_id', itemId)
         .order('created_at')
 

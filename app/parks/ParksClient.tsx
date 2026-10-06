@@ -17,7 +17,11 @@ type Park = {
   location: string
 }
 
-export default function ParksClient({ parks }: { parks: Park[] }) {
+export default function ParksClient({ parks, soundtrackMode = false, ostCountByPark = {} }: {
+  parks: Park[]
+  soundtrackMode?: boolean
+  ostCountByPark?: Record<string, number>
+}) {
   const [filters, setFilters] = useState({ country: '', park_type: '' })
   const [isLoading, setIsLoading] = useState(true)
 
@@ -43,8 +47,13 @@ export default function ParksClient({ parks }: { parks: Park[] }) {
     <div className="min-h-screen" style={{ background: 'var(--bg-tertiary)', color: 'var(--text-primary)' }}>
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold mb-8 text-center" style={{ color: 'var(--text-primary)' }}>
-          Theme Parks
+          {soundtrackMode ? 'Park Soundtracks' : 'Theme Parks'}
         </h1>
+        {soundtrackMode && (
+          <p className="text-center mb-6 text-sm" style={{ color: 'var(--text-muted)' }}>
+            Browsing parks with soundtracks — <a href="/parks" style={{ color: 'var(--accent)' }}>exit soundtrack mode</a>
+          </p>
+        )}
 
         {/* Filters */}
         <div className="p-6 rounded-lg mb-8" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
@@ -74,7 +83,7 @@ export default function ParksClient({ parks }: { parks: Park[] }) {
         {/* Parks Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
           {filteredParks.map(park => (
-            <Link key={park.id} href={`/parks/${park.id}`} className="block group">
+            <Link key={park.id} href={soundtrackMode ? `/parks/${park.id}?mode=soundtrack` : `/parks/${park.id}`} className="block group">
               <div className="rounded-lg overflow-hidden transition-colors aspect-square flex flex-col"
                 style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}
                 onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-elevated)')}
@@ -99,10 +108,15 @@ export default function ParksClient({ parks }: { parks: Park[] }) {
                     {park.name}
                   </h3>
                   <div className="flex flex-wrap gap-2 text-xs">
-                    <span className="px-2 py-1 rounded"
-                      style={{ background: 'var(--accent-bg)', color: 'var(--accent)' }}>
-                      {park.country}
-                    </span>
+                    {soundtrackMode ? (
+                      <span className="px-2 py-1 rounded" style={{ background: 'var(--accent-bg)', color: 'var(--accent)' }}>
+                        🎵 {ostCountByPark[park.id] ?? 0} tracks
+                      </span>
+                    ) : (
+                      <span className="px-2 py-1 rounded" style={{ background: 'var(--accent-bg)', color: 'var(--accent)' }}>
+                        {park.country}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>

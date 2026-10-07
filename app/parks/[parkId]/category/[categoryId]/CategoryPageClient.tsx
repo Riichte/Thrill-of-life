@@ -102,7 +102,7 @@ export default function CategoryPageClient({ park, category, items, soundtrackMo
             {paginated.map((item) => {
               const image = item.item_images?.find(img => img.sort_order === 0) ?? item.item_images?.[0]
               return (
-                <Link key={item.id} href={`/parks/${park.id}/${category.id}/${item.id}${soundtrackMode ? '/osts' : ''}`} className="group">
+                <Link key={item.id} href={`/parks/${park.id}/${category.id}/${item.id}${soundtrackMode ? '?mode=soundtrack' : ''}`} className="group">
                   <div className="rounded-sm overflow-hidden transition-colors aspect-square flex flex-col"
                     style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}
                     onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--accent)')}

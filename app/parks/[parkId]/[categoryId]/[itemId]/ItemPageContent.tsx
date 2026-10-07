@@ -10,7 +10,7 @@ import PhotoCredits, { PhotoCredit } from '@/components/PhotoCredits'
 import { useUnit } from '@/lib/unitContext'
 import { useRouter } from 'next/navigation'
 import RatingBreakdown from '@/components/RatingBreakdown'
-
+import OstPlayer, { OstTrack } from '@/components/OstPlayer'
 
 
 const ratingDimensions: Record<string, { id: string; label: string }[]> = {
@@ -212,7 +212,7 @@ function ReviewCard({
 
 
 
-export default function ItemPageContent({ park, item, category, images, videos, similarRides, credits = [], reviews = [], communityScore, coasterElements = [] }: {
+export default function ItemPageContent({ park, item, category, images, videos, similarRides, credits = [], reviews = [], communityScore, coasterElements = [], soundtrackMode = false, itemOsts = [], soundtrackScore = null }: {
   park: any
   item: any
   category: any
@@ -223,6 +223,9 @@ export default function ItemPageContent({ park, item, category, images, videos, 
   reviews: any[]
   communityScore: { score: number; positive: number; mixed: number; negative: number } | null
   coasterElements: { id: string; name: string; sort_order: number }[]
+  soundtrackMode?: boolean
+  itemOsts?: OstTrack[]
+  soundtrackScore?: number | null
 }) {
   const supabase = createClient()
   const router = useRouter()
@@ -591,9 +594,9 @@ export default function ItemPageContent({ park, item, category, images, videos, 
         <nav className="mb-6">
           <Link href="/parks" className="text-blue-400 hover:text-blue-300 text-sm">Parks</Link>
           <span className="mx-2 text-gray-500">/</span>
-          <Link href={`/parks/${park.id}`} className="text-blue-400 hover:text-blue-300 text-sm">{park.name}</Link>
+          <Link href={soundtrackMode ? `/parks/${park.id}?mode=soundtrack` : `/parks/${park.id}`} className="text-blue-400 hover:text-blue-300 text-sm">{park.name}</Link>
           <span className="mx-2 text-gray-500">/</span>
-          <Link href={`/parks/${park.id}/category/${category.id}`} className="text-blue-400 hover:text-blue-300 text-sm">{category.name}</Link>
+          <Link href={soundtrackMode ? `/parks/${park.id}/category/${category.id}?mode=soundtrack` : `/parks/${park.id}/category/${category.id}`} className="text-blue-400 hover:text-blue-300 text-sm">{category.name}</Link>
           <span className="mx-2 text-gray-500">/</span>
           <span className="text-gray-300 text-sm">{item.name}</span>
         </nav>
@@ -640,8 +643,19 @@ export default function ItemPageContent({ park, item, category, images, videos, 
               </div>
             ) : null}
 
+            {/* Soundtrack mode: OST player */}
+            {soundtrackMode && (
+              <div className="mt-6 pb-36">
+                <h2 className="text-2xl font-semibold mb-4">Soundtrack</h2>
+                <p className="text-sm mb-6" style={{ color: 'var(--text-muted)' }}>
+                  {itemOsts.length} track{itemOsts.length !== 1 ? 's' : ''}
+                </p>
+                <OstPlayer osts={itemOsts} />
+              </div>
+            )}
+
             {/* OST Playlist */}
-            {osts && osts.length > 0 && (
+            {!soundtrackMode && osts && osts.length > 0 && (
               <div className="mt-6 rounded-sm overflow-hidden" style={{ border: '1px solid var(--border)' }}>
                 <div className="px-4 py-3 flex items-center justify-between"
                   style={{ borderBottom: '1px solid var(--border)', background: 'var(--card-bg)' }}>
@@ -783,7 +797,7 @@ export default function ItemPageContent({ park, item, category, images, videos, 
             )}
 
             {/* Reviews Section */}
-            <div className="mb-12">
+            <div className="mb-12" style={soundtrackMode ? { display: 'none' } : undefined}>
               <h2 className="text-2xl font-semibold mb-6">All Reviews</h2>
               <div className="flex gap-2 mb-8 overflow-x-auto pb-2 border-b border-gray-700">
                 {['all', 'positive', 'mixed', 'negative', 'funny'].map((f) => (
@@ -861,10 +875,11 @@ export default function ItemPageContent({ park, item, category, images, videos, 
             <SteamInfoPanel
               headerImage={images?.find(img => img.sort_order === -1)?.url || null}
               headerImageAlt={item.name}
-              score={overallScore}
-              scoreLabel="Overall score"
-              myScore={myScore}
-              hasRated={hasRated}
+              score={(soundtrackMode ? soundtrackScore : overallScore) || undefined}
+              scoreLabel={soundtrackMode ? 'Soundtrack score' : 'Overall score'}
+              myScore={soundtrackMode ? null : myScore}
+              hasRated={soundtrackMode ? false : hasRated}
+              hideMyScore={soundtrackMode}
               onRateClick={() => {
                 if (!user) {
                   window.location.href = `/auth/login?redirect=${encodeURIComponent(window.location.pathname)}`
@@ -872,7 +887,7 @@ export default function ItemPageContent({ park, item, category, images, videos, 
                 }
                 setIsRatingOpen(true)
               }}
-              ratingBreakdown={ratingBreakdown}
+              ratingBreakdown={!soundtrackMode && communityScore ? ratingBreakdown : undefined}
               tags={[specs.type, specs.manufacturer, specs.model, category.name].filter(Boolean) as string[]}
               showFavorite={true}
               isFavorited={isFavorited}

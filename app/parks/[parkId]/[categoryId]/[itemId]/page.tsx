@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import { getParkById, getCategoryById, getItemById, getItemImages, getItemVideos, getSimilarRides, getItemReviews, getItemCommunityScore, getCoasterElements } from '@/lib/queries'
 import ItemPageContent from './ItemPageContent'
 import { PhotoCredit } from '@/components/PhotoCredits'
+import { createClient } from '@/lib/supabase/server'
 
 interface ItemPageProps {
   params: Promise<{
@@ -9,10 +10,13 @@ interface ItemPageProps {
     categoryId: string
     itemId: string
   }>
+  searchParams: Promise<{ mode?: string }>
 }
 
-export default async function ItemPage({ params }: ItemPageProps) {
+export default async function ItemPage({ params, searchParams }: ItemPageProps) {
   const { parkId, itemId } = await params
+  const { mode } = await searchParams
+  const soundtrackMode = mode === 'soundtrack'
   const park = await getParkById(parkId)
   const item = await getItemById(parkId, itemId)
   const category = item ? await getCategoryById(item.category_id) : null
@@ -37,6 +41,28 @@ export default async function ItemPage({ params }: ItemPageProps) {
   })
   if (!park || !item || !category) notFound()
 
+  let itemOsts: any[] = []
+  let soundtrackScore: number | null = null
+  if (soundtrackMode) {
+    const supabase = await createClient()
+    const { data: ostData } = await supabase
+      .from('osts')
+      .select('id, title, youtube_video_id, composer, location, description, item_id')
+      .eq('item_id', itemId)
+      .order('created_at')
+    itemOsts = ostData ?? []
+    if (itemOsts.length > 0) {
+      const { data: ostRatings } = await supabase
+        .from('ost_ratings')
+        .select('emotion, nostalgia, appeal, experience')
+        .in('ost_id', itemOsts.map(o => o.id))
+      if (ostRatings?.length) {
+        const total = ostRatings.reduce((s, r) => s + r.emotion + r.nostalgia + r.appeal + r.experience, 0)
+        soundtrackScore = Math.round(total / (ostRatings.length * 4))
+      }
+    }
+  }
+
   const images = imageData
   const credits: PhotoCredit[] = imageData
     .filter(img => img.attribution_author)
@@ -59,6 +85,9 @@ export default async function ItemPage({ params }: ItemPageProps) {
       reviews={reviews}
       communityScore={communityScore}
       coasterElements={coasterElements}
+      soundtrackMode={soundtrackMode}
+      itemOsts={itemOsts}
+      soundtrackScore={soundtrackScore}
     />
   )
 }

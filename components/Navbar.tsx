@@ -72,6 +72,8 @@ export default function Navbar() {
 
   const username = user?.user_metadata?.username ?? user?.email?.split('@')[0] ?? 'Account'
 
+  const isAdmin = user?.email === 'rietsch.adrien@gmail.com'
+
   const categories = [
     { name: 'Parks', href: '/parks' },
     { name: 'Roller Coasters', href: '/category/roller-coasters' },
@@ -82,7 +84,7 @@ export default function Navbar() {
     { name: 'Shows', href: '/category/shows' },
     { name: 'Shops', href: '/category/shops' },
     { name: 'Hotels', href: '/category/hotels' },
-    { name: '🎵 Soundtracks', href: '/soundtracks' },
+    ...(isAdmin ? [{ name: '🎵 Soundtracks', href: '/soundtracks' }] : []),
   ]
 
   const handleSearchSubmit = (val: string) => {

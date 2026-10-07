@@ -43,6 +43,7 @@ interface ParkPageClientProps {
   prices: any[]
   soundtrackMode?: boolean
   parkOsts?: OstTrack[]
+  soundtrackScore?: number | null
 }
 
 const parkDimensions = [
@@ -169,7 +170,7 @@ export default function ParkPageClient({
   park, slides, categoriesWithImages, categoryImages,
   userId, isFavorited: initialFavorited, credits = [],
   reviews = [], communityScore, prices = [],
-  soundtrackMode = false, parkOsts = [],
+  soundtrackMode = false, parkOsts = [], soundtrackScore = null,
 }: ParkPageClientProps) {
   const supabase = createClient()
   const router = useRouter()
@@ -350,10 +351,11 @@ export default function ParkPageClient({
             <SteamInfoPanel
               headerImage={park.logo_url}
               headerImageAlt={park.name}
-              score={overallScore || undefined}
-              scoreLabel="Overall score"
-              myScore={myScore}
-              hasRated={hasRated}
+              score={(soundtrackMode ? soundtrackScore : overallScore) || undefined}
+              scoreLabel={soundtrackMode ? 'Soundtrack score' : 'Overall score'}
+              myScore={soundtrackMode ? null : myScore}
+              hasRated={soundtrackMode ? false : hasRated}
+              hideMyScore={soundtrackMode}
               onRateClick={() => {
                 if (!userId) {
                   window.location.href = `/auth/login?redirect=/parks/${park.id}`
@@ -361,7 +363,7 @@ export default function ParkPageClient({
                 }
                 setIsRatingOpen(true)
               }}
-              ratingBreakdown={communityScore ? ratingBreakdown : undefined}
+              ratingBreakdown={!soundtrackMode && communityScore ? ratingBreakdown : undefined}
               tags={[park.country, park.company, park.park_type].filter(Boolean)}
               showFavorite={true}
               isFavorited={isFavorited}

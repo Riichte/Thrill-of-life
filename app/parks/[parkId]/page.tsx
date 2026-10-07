@@ -109,6 +109,18 @@ export default async function ParkPage({ params, searchParams }: { params: Promi
     }))
   }
 
+  let soundtrackScore: number | null = null
+  if (soundtrackMode && parkOsts.length > 0) {
+    const { data: ostRatings } = await supabase
+      .from('ost_ratings')
+      .select('emotion, nostalgia, appeal, experience')
+      .in('ost_id', parkOsts.map(o => o.id))
+    if (ostRatings?.length) {
+      const total = ostRatings.reduce((s, r) => s + r.emotion + r.nostalgia + r.appeal + r.experience, 0)
+      soundtrackScore = Math.round(total / (ostRatings.length * 4))
+    }
+  }
+
   return (
     <ParkPageClient
       park={park}
@@ -123,6 +135,7 @@ export default async function ParkPage({ params, searchParams }: { params: Promi
       prices={prices}
       soundtrackMode={soundtrackMode}
       parkOsts={parkOsts}
+      soundtrackScore={soundtrackScore}
     />
   )
 }

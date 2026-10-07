@@ -30,6 +30,7 @@ type SteamInfoPanelProps = {
   isFavorited?: boolean
   onFavoriteToggle?: () => void
   showFavorite?: boolean
+  hideMyScore?: boolean
 }
 
 export function SteamInfoPanel({
@@ -53,6 +54,7 @@ export function SteamInfoPanel({
   isFavorited = false,
   onFavoriteToggle,
   showFavorite = false,
+  hideMyScore = false,
 }: SteamInfoPanelProps) {
   const [favorited, setFavorited] = useState(isFavorited)
   const [favAnimating, setFavAnimating] = useState(false)
@@ -115,6 +117,7 @@ export function SteamInfoPanel({
         )}
 
         {/* My Score */}
+        {!hideMyScore && (
         <div className="flex items-center gap-4 pb-4" style={{ borderBottom: '1px solid var(--border)' }}>
           <div
             className="relative flex h-20 w-20 shrink-0 items-center justify-center rounded-full"
@@ -148,6 +151,7 @@ export function SteamInfoPanel({
             )}
           </div>
         </div>
+        )}
 
         {/* Favorite Button */}
         {showFavorite && (

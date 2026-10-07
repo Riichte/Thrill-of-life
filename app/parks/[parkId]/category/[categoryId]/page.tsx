@@ -1,16 +1,20 @@
 import { notFound } from 'next/navigation'
 import { getParkById, getCategoryById, getItemsByCategory } from '@/lib/queries'
 import CategoryPageClient from './CategoryPageClient'
+import { createClient } from '@/lib/supabase/server'
 
 interface CategoryPageProps {
   params: Promise<{
     parkId: string
     categoryId: string
   }>
+  searchParams: Promise<{ mode?: string }>
 }
 
-export default async function CategoryPage({ params }: CategoryPageProps) {
+export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
   const { parkId, categoryId } = await params
+  const { mode } = await searchParams
+  const soundtrackMode = mode === 'soundtrack'
 
   const park = await getParkById(parkId)
   const category = await getCategoryById(categoryId)
@@ -20,5 +24,17 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
   if (!park || !category) notFound()
 
-  return <CategoryPageClient park={park} category={category} items={sortedItems} />
+  const ostCounts: Record<string, number> = {}
+  let finalItems = sortedItems
+  if (soundtrackMode) {
+    const supabase = await createClient()
+    const { data: osts } = await supabase
+      .from('osts')
+      .select('item_id')
+      .in('item_id', sortedItems.map(i => i.id))
+    osts?.forEach(o => { ostCounts[o.item_id] = (ostCounts[o.item_id] || 0) + 1 })
+    finalItems = sortedItems.filter(i => ostCounts[i.id])
+  }
+
+  return <CategoryPageClient park={park} category={category} items={finalItems} soundtrackMode={soundtrackMode} ostCounts={ostCounts} />
 }

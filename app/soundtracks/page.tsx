@@ -38,7 +38,7 @@ export default async function SoundtracksPage() {
         .filter(p => !!p.cover_image_url)
         .map(p => ({
             id: p.id,
-            href: `/soundtracks/parks/${p.id}`,
+            href: `/parks/${p.id}?mode=soundtrack`,
             image: p.cover_image_url,
             title: p.name,
             subtitle: p.country,

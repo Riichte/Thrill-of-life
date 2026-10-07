@@ -26,7 +26,7 @@ export default async function SoundtrackParksPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {(parks ?? []).map(park => (
-            <Link key={park.id} href={`/soundtracks/parks/${park.id}`}
+            <Link key={park.id} href={`/parks/${park.id}?mode=soundtrack`}
               className="rounded-sm overflow-hidden transition-colors group hover:border-[var(--accent)]"
               style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
 

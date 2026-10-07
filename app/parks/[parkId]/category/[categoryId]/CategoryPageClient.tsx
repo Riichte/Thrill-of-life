@@ -14,10 +14,12 @@ interface Item {
   specs?: { model?: string }
 }
 
-export default function CategoryPageClient({ park, category, items }: {
+export default function CategoryPageClient({ park, category, items, soundtrackMode = false, ostCounts = {} }: {
   park: any
   category: any
   items: Item[]
+  soundtrackMode?: boolean
+  ostCounts?: Record<string, number>
 }) {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -59,7 +61,7 @@ export default function CategoryPageClient({ park, category, items }: {
           <nav className="flex items-center gap-2 text-sm">
             <Link href="/parks" style={{ color: 'var(--accent)' }}>Parks</Link>
             <span style={{ color: 'var(--text-muted)' }}>/</span>
-            <Link href={`/parks/${park.id}`} style={{ color: 'var(--accent)' }}>{park.name}</Link>
+            <Link href={soundtrackMode ? `/parks/${park.id}?mode=soundtrack` : `/parks/${park.id}`} style={{ color: 'var(--accent)' }}>{park.name}</Link>
             <span style={{ color: 'var(--text-muted)' }}>/</span>
             <span style={{ color: 'var(--text-primary)' }}>{category.name}</span>
           </nav>
@@ -100,7 +102,7 @@ export default function CategoryPageClient({ park, category, items }: {
             {paginated.map((item) => {
               const image = item.item_images?.find(img => img.sort_order === 0) ?? item.item_images?.[0]
               return (
-                <Link key={item.id} href={`/parks/${park.id}/${category.id}/${item.id}`} className="group">
+                <Link key={item.id} href={`/parks/${park.id}/${category.id}/${item.id}${soundtrackMode ? '/osts' : ''}`} className="group">
                   <div className="rounded-sm overflow-hidden transition-colors aspect-square flex flex-col"
                     style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}
                     onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--accent)')}
@@ -121,7 +123,12 @@ export default function CategoryPageClient({ park, category, items }: {
                         {item.name}
                       </h3>
                       <div className="mt-auto flex flex-wrap items-center gap-2">
-                        {item.specs?.model && (
+                        {soundtrackMode && (
+                          <span className="inline-block text-xs px-2.5 py-1 rounded" style={{ background: 'var(--accent-bg)', color: 'var(--accent)', border: '1px solid var(--accent)' }}>
+                            {ostCounts[item.id] ?? 0} track{(ostCounts[item.id] ?? 0) !== 1 ? 's' : ''}
+                          </span>
+                        )}
+                        {!soundtrackMode && item.specs?.model && (
                           <span className="inline-block text-xs px-2.5 py-1 rounded" style={{ background: 'var(--accent-bg)', color: 'var(--accent)', border: '1px solid var(--accent)' }}>
                             {item.specs.model}
                           </span>

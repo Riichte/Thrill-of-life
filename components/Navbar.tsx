@@ -130,7 +130,7 @@ export default function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50" style={{ background: 'var(--navbar-bg)', borderBottom: '1px solid var(--navbar-border)' }}>
-      <div className="w-full py-1.5 text-center text-xs font-medium" style={{ background: 'var(--accent-bg)', color: 'var(--accent)', borderBottom: '1px solid var(--border)' }}>
+      <div className="w-full py-1.5 text-center text-xs font-medium relative" style={{ background: 'linear-gradient(to right, var(--navbar-bg), var(--accent-bg) 20%, var(--accent-bg) 80%, var(--navbar-bg))', color: 'var(--accent)', borderBottom: '1px solid var(--border)' }}>
         Early access - Work in progress
       </div>
       {/* Top Row */}

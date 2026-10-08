@@ -1,9 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
-import { useState, useEffect, useRef, useCallback } from 'react'
 import { FadeImage } from '@/components/FadeImage'
+import { useState, useEffect, useRef, useCallback } from 'react'
+
 
 interface SimilarRide {
   id: string

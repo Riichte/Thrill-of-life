@@ -1,9 +1,9 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import Image from 'next/image'
-import { ChevronLeft, ChevronRight, Play } from 'lucide-react'
 import { FadeImage } from '@/components/FadeImage'
+import { ChevronLeft, ChevronRight, Play } from 'lucide-react'
+
 
 export type SteamSlide = {
   src: string

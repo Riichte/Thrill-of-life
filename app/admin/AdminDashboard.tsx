@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import ImageManager from './ImageManager'
 import { useState, useEffect, useMemo } from 'react'
+import { FadeImage } from '@/components/FadeImage'
 
 type AdminTab = 'parks' | 'items' | 'images' | 'park-images' | 'images-manager' | 'videos' | 'manufacturers' | 'models' | 'osts' | 'prices' | 'bulk-import' | 'elements' | 'item-types' | 'data-issues'
 type Park = { id: string; name: string; description: string; logo_url: string; cover_image_url: string; country: string; company: string; park_type: string; location: string }
@@ -1821,7 +1822,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                     {itemImages.map(img => (
                                         <div key={img.id} className="flex items-center justify-between gap-3 p-3 rounded-sm" style={{ background: 'var(--bg-elevated)' }}>
                                             <div className="flex items-center gap-3 min-w-0">
-                                                <img src={img.url} alt="" className="w-16 h-10 object-cover rounded-sm flex-shrink-0" onError={e => { e.currentTarget.style.display = 'none' }} />
+                                                <FadeImage src={img.url} alt="" className="w-16 h-10 object-cover rounded-sm flex-shrink-0" onError={e => { e.currentTarget.style.display = 'none' }} />
                                                 <div className="min-w-0">
                                                     <p className="text-xs truncate" style={{ color: 'var(--text-primary)' }}>{img.url}</p>
                                                     <p className="text-xs" style={{ color: 'var(--text-muted)' }}>#{img.sort_order}</p>
@@ -1890,7 +1891,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                     {parkImages.map(img => (
                                         <div key={img.id} className="flex items-center justify-between gap-3 p-3 rounded-sm" style={{ background: 'var(--bg-elevated)' }}>
                                             <div className="flex items-center gap-3 min-w-0">
-                                                <img src={img.url} alt="" className="w-16 h-10 object-cover rounded-sm flex-shrink-0" onError={e => { e.currentTarget.style.display = 'none' }} />
+                                                <FadeImage src={img.url} alt="" className="w-16 h-10 object-cover rounded-sm flex-shrink-0" onError={e => { e.currentTarget.style.display = 'none' }} />
                                                 <div className="min-w-0">
                                                     <p className="text-xs truncate" style={{ color: 'var(--text-primary)' }}>{img.url}</p>
                                                     <p className="text-xs" style={{ color: 'var(--text-muted)' }}>#{img.sort_order}</p>

@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import { FaInstagram, FaYoutube, FaTiktok, FaXTwitter, FaFacebook } from 'react-icons/fa6'
 import RatingBreakdown from '@/components/RatingBreakdown'
 import { useUnit } from '@/lib/unitContext'
+import { FadeImage } from '@/components/FadeImage'
 
 interface Profile {
   id: string
@@ -698,7 +699,7 @@ export default function ProfileClient({
                       style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
                       {image && (
                         <div className="h-32 overflow-hidden">
-                          <img src={image} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                          <FadeImage src={image} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                         </div>
                       )}
                       <div className="p-3">
@@ -786,7 +787,7 @@ export default function ProfileClient({
                                 <Link key={i} href={`/parks/${it.park_id}/${it.category_id}/${it.id}`}
                                   className="flex items-center gap-3 p-3 rounded-sm transition-colors group"
                                   style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
-                                  {image && <img src={image} alt={it.name} className="w-14 h-10 object-cover rounded-sm flex-shrink-0" />}
+                                  {image && <FadeImage src={image} alt={it.name} className="w-14 h-10 object-cover rounded-sm flex-shrink-0" />}
                                   <span className="flex-1 text-sm font-medium group-hover:underline" style={{ color: 'var(--accent)' }}>{it.name}</span>
                                   <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{v.parks?.name ?? ''}</span>
                                 </Link>

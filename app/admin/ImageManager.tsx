@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { searchImages } from '@/lib/imageSearch';
 import { saveImageToItemAction, deleteImageAction, fetchSavedImages, saveParkImageAction } from '@/lib/actions/imageActions';
 import { createClient } from '@/lib/supabase/client';
+import { FadeImage } from '@/components/FadeImage'
 
 interface ImageResult {
   url: string;
@@ -213,7 +214,7 @@ export default function ImageManager({ items: initialItems, categories, parks }:
           <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-4">
             {results.map((image, idx) => (
               <div key={idx} className="border style={{ borderColor: 'var(--border)' }} rounded-sm overflow-hidden bg-[#0e1419]">
-                <img
+                <FadeImage
                   src={image.url}
                   alt={image.title}
                   className="w-full h-40 object-cover"
@@ -273,7 +274,7 @@ export default function ImageManager({ items: initialItems, categories, parks }:
                   key={image.id}
                   className="border style={{ borderColor: 'var(--border)' }} rounded-sm overflow-hidden bg-[#0e1419] relative group"
                 >
-                  <img
+                  <FadeImage
                     src={image.url}
                     alt="saved"
                     className="w-full h-32 object-cover"

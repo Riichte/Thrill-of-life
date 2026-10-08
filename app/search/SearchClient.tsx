@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { FadeImage } from '@/components/FadeImage'
 
 interface Park {
   id: string
@@ -79,7 +80,7 @@ export default function SearchClient({ query, results }: { query: string; result
                   className="flex gap-4 items-center bg-[#1b2838] border border-[#2a475e] rounded-sm p-4 hover:border-[#66c0f4] transition-colors group"
                 >
                   {park.cover_image_url && (
-                    <img
+                    <FadeImage
                       src={park.cover_image_url}
                       alt={park.name}
                       className="w-20 h-14 object-cover rounded-sm flex-shrink-0"
@@ -114,7 +115,7 @@ export default function SearchClient({ query, results }: { query: string; result
                     className="flex gap-4 items-center bg-[#1b2838] border border-[#2a475e] rounded-sm p-4 hover:border-[#66c0f4] transition-colors group"
                   >
                     {image && (
-                      <img
+                      <FadeImage
                         src={image}
                         alt={item.name}
                         className="w-20 h-14 object-cover rounded-sm flex-shrink-0"

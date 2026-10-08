@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useEffect } from 'react'
 import { searchGuessItemsAction } from '@/lib/actions/guessActions'
 import { useUnit } from '@/lib/unitContext'
+import { FadeImage } from '@/components/FadeImage'
 
 type Specs = {
   type: string | null
@@ -113,7 +114,7 @@ export default function GuessStatsGameClient({ item }: { item: Item }) {
         <Link href={`/parks/${item.parkId}/${item.categoryId}/${item.id}`}
           className="w-full max-w-md mb-4 rounded-sm px-4 py-3 flex items-center gap-3 hover:opacity-90 transition-opacity"
           style={{ background: 'rgba(16,185,129,0.12)', border: '1px solid var(--score-high)' }}>
-          <img src={item.imageUrl} alt={item.name} className="w-30 h-30 rounded-sm object-cover flex-shrink-0" />
+          <FadeImage src={item.imageUrl} alt={item.name} className="w-30 h-30 rounded-sm object-cover flex-shrink-0" />
           <div>
             <p className="font-semibold" style={{ color: 'var(--score-high)' }}>{item.name}</p>
             {item.parkName && (
@@ -130,7 +131,7 @@ export default function GuessStatsGameClient({ item }: { item: Item }) {
         <Link href={`/parks/${item.parkId}/${item.categoryId}/${item.id}`}
           className="w-full max-w-md mb-4 rounded-sm px-4 py-3 flex items-center gap-3 hover:opacity-90 transition-opacity"
           style={{ background: 'rgba(16,185,129,0.12)', border: '1px solid var(--score-high)' }}>
-          <img src={item.imageUrl} alt={item.name} className="w-30 h-30 rounded-sm object-cover flex-shrink-0" />
+          <FadeImage src={item.imageUrl} alt={item.name} className="w-30 h-30 rounded-sm object-cover flex-shrink-0" />
           <div>
             <p className="font-semibold" style={{ color: 'var(--score-low)' }}>{item.name}</p>
             {item.parkName && (

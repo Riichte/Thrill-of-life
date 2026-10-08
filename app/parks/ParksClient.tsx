@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
+import { FadeImage } from '@/components/FadeImage'
 import { useState, useMemo, useEffect } from 'react'
 import LoadingSpinner from '@/components/LoadingSpinner'
 
@@ -90,7 +90,7 @@ export default function ParksClient({ parks, soundtrackMode = false, ostCountByP
                 onMouseLeave={e => (e.currentTarget.style.background = 'var(--card-bg)')}>
                 <div className="relative flex-1 overflow-hidden">
                   {park.cover_image_url ? (
-                    <Image
+                    <FadeImage
                       src={park.cover_image_url}
                       alt={park.name}
                       fill

@@ -2,6 +2,7 @@
 
 import type { ReactNode } from 'react'
 import { useState } from 'react'
+import { FadeImage } from '@/components/FadeImage'
 
 export type SteamMetaRow = {
   label: string
@@ -79,7 +80,7 @@ export function SteamInfoPanel({
     >
       {headerImage && (
         <div className="relative h-[220px] w-full shrink-0 overflow-hidden md:h-[260px]" style={{ background: 'var(--bg-tertiary)' }}>
-          <img src={headerImage} alt={headerImageAlt} className={`h-full w-full ${headerImage?.toLowerCase().endsWith('.png') ? 'object-contain p-4' : 'object-cover'}`} />
+          <FadeImage src={headerImage} alt={headerImageAlt} className={`h-full w-full ${headerImage?.toLowerCase().endsWith('.png') ? 'object-contain p-4' : 'object-cover'}`} />
           <div className="absolute inset-0 bg-gradient-to-t from-[var(--card-bg)] via-[var(--card-bg)]/20 to-transparent" />
           {ribbon && (
             <span className="absolute left-3 top-3 rounded-sm px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide style={{ color: 'var(--text-primary)' }}"
@@ -88,7 +89,7 @@ export function SteamInfoPanel({
             </span>
           )}
           {logoUrl && (
-            <img src={logoUrl} alt={logoAlt}
+            <FadeImage src={logoUrl} alt={logoAlt}
               className="absolute bottom-3 left-3 max-h-14 max-w-[45%] object-contain object-left-bottom drop-shadow-lg md:max-h-16" />
           )}
         </div>

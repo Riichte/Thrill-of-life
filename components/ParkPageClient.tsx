@@ -10,6 +10,7 @@ import PriceCard from '@/components/PriceCard'
 import RatingBreakdown from '@/components/RatingBreakdown'
 import { useRouter } from 'next/navigation'
 import OstPlayer, { OstTrack } from '@/components/OstPlayer'
+import { FadeImage } from '@/components/FadeImage'
 
 interface Park {
   id: string
@@ -482,7 +483,8 @@ export default function ParkPageClient({
                     : `/parks/${park.id}/category/${category.id}`}
                   className="group relative h-48 rounded-sm overflow-hidden border style={{ borderColor: 'var(--border)' }} hover:border-[#66c0f4] transition-colors">
                   {image ? (
-                    <img src={image} alt={category.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    <FadeImage src={image} alt={category.name} fill sizes="(max-width: 768px) 50vw, 25vw"
+                      className="object-cover group-hover:scale-105 transition-transform duration-300" />
                   ) : (
                     <div className="w-full h-full style={{ background: 'var(--card-bg)' }}" />
                   )}

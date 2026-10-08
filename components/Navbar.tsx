@@ -10,6 +10,7 @@ import { useUnit } from '@/lib/unitContext'
 import { useTheme, themes } from '@/lib/themeContext'
 import { useCurrencyContext } from '@/lib/currencyContext'
 import { CURRENCIES } from '@/lib/useCurrency'
+import { FadeImage } from '@/components/FadeImage'
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
@@ -140,7 +141,7 @@ export default function Navbar() {
           <div className="flex items-center justify-between gap-4">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-3 flex-shrink-0">
-              <img
+              <FadeImage
                 src="/ThrillOfLife_Logo.jpg"
                 alt="Thrill of Life logo"
                 className="w-10 h-10 sm:w-12 sm:h-12 object-contain"

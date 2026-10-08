@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
+import { FadeImage } from '@/components/FadeImage'
 import { useSearchParams, useRouter } from 'next/navigation'
 
 interface Item {
@@ -109,7 +109,7 @@ export default function CategoryPageClient({ park, category, items, soundtrackMo
                     onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}>
                     <div className="relative flex-1 overflow-hidden">
                       {image?.url ? (
-                        <Image src={image.url} alt={item.name} fill loading="lazy" quality={100}
+                        <FadeImage src={image.url} alt={item.name} fill loading="lazy" quality={100}
                           sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center"

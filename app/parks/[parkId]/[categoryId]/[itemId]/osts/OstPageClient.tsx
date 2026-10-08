@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { FadeImage } from '@/components/FadeImage'
 
 interface Ost {
     id: string
@@ -379,7 +380,7 @@ export default function OstPageClient({ park, item, category, osts }: {
                                         <div className="flex-shrink-0 rounded-sm overflow-hidden"
                                             style={{ width: 48, height: 32 }}
                                             onClick={() => handleTrackClick(idx)}>
-                                            <img src={thumb(ost.youtube_video_id)} alt={ost.title}
+                                            <FadeImage src={thumb(ost.youtube_video_id)} alt={ost.title}
                                                 className="w-full h-full object-cover"
                                                 style={{ opacity: active ? 1 : 0.7 }} />
                                         </div>
@@ -442,7 +443,7 @@ export default function OstPageClient({ park, item, category, osts }: {
                         {currentOst && (
                             <div className="flex items-center gap-3 flex-shrink-0 w-48 min-w-0">
                                 <div className="rounded-sm overflow-hidden flex-shrink-0" style={{ width: 44, height: 30 }}>
-                                    <img src={thumb(currentOst.youtube_video_id)} alt={currentOst.title}
+                                    <FadeImage src={thumb(currentOst.youtube_video_id)} alt={currentOst.title}
                                         className="w-full h-full object-cover" />
                                 </div>
                                 <div className="min-w-0">

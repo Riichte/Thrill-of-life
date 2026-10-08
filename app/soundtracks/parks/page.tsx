@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
+import { FadeImage } from '@/components/FadeImage'
 
 export default async function SoundtrackParksPage() {
   const supabase = await createClient()
@@ -32,7 +33,7 @@ export default async function SoundtrackParksPage() {
 
               {park.cover_image_url && (
                 <div className="h-32 overflow-hidden">
-                  <img src={park.cover_image_url} alt={park.name}
+                  <FadeImage src={park.cover_image_url} alt={park.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                 </div>
               )}

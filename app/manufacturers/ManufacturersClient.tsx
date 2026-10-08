@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
+import { FadeImage } from '@/components/FadeImage'
 
 type Manufacturer = { name: string; slug: string; count: number; image: string | null }
 
@@ -30,7 +31,7 @@ export default function ManufacturersClient({ manufacturers }: { manufacturers: 
               <div className="style={{ background: 'var(--card-bg)' }} rounded-lg overflow-hidden border style={{ borderColor: 'var(--border)' }} hover:border-[#66c0f4] transition-colors group">
                 <div className="relative w-full h-40 overflow-hidden bg-[#0e1621]">
                   {m.image ? (
-                    <img src={m.image} alt={m.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    <FadeImage src={m.image} alt={m.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-[#4a6a82] text-4xl">🎢</div>
                   )}

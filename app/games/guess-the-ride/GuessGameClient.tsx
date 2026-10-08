@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { FadeImage } from '@/components/FadeImage'
 
 type Item = {
   id: string
@@ -118,7 +119,7 @@ export default function GuessGameClient({ item }: { item: Item }) {
       )}
 
             <div className="w-full max-w-md aspect-video rounded-sm overflow-hidden mb-4 relative" style={{ border: '1px solid var(--border)' }}>
-        <img
+        <FadeImage
           src={item.imageUrl}
           alt="Guess this ride"
           className="absolute"

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { FadeImage } from '@/components/FadeImage'
 
 export default function Signup() {
   const [email, setEmail] = useState('')
@@ -39,7 +40,7 @@ export default function Signup() {
         {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-3">
-            <img src="/ThrillOfLife_Logo.jpg" alt="Thrill of Life" className="w-12 h-12 object-contain" />
+            <FadeImage src="/ThrillOfLife_Logo.jpg" alt="Thrill of Life" className="w-12 h-12 object-contain" />
             <span className="text-2xl font-bold text-white font-logo">Thrill of Life</span>
           </Link>
         </div>

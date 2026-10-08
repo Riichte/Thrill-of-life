@@ -2,7 +2,7 @@
 
 /* ─── Default (Dark Steam) ─────────────────────────────── */
 :root,
-[data-theme="dark-steam"] {
+[data-theme="dark-Blue"] {
   --bg-primary: #1b2838;
   --bg-secondary: #16202d;
   --bg-tertiary: #0e1621;
@@ -215,6 +215,11 @@ body {
   color: var(--text-primary);
   font-family: Arial, Helvetica, sans-serif;
   transition: background-color 0.2s, color 0.2s;
+}
+
+select option {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
 }
 
 .font-custom {

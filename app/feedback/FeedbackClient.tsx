@@ -48,7 +48,7 @@ export default function FeedbackClient() {
   )
 
   return (
-    <div className="min-h-screen style={{ background: 'var(--card-bg)' }} style={{ color: 'var(--text-primary)' }}">
+    <div className="min-h-screen style={{ background: 'var(--bg-tertiary)' }} style={{ color: 'var(--text-primary)' }}">
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         <nav className="mb-6">
           <Link href="/" className="text-blue-400 hover:text-blue-300 text-sm">Home</Link>

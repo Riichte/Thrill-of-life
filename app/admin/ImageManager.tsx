@@ -228,7 +228,8 @@ export default function ImageManager({ items: initialItems, categories, parks }:
                   <p className="text-xs text-[#6a8a9a]">{image.source}</p>
                   <button
                     onClick={() => handleSaveImage(image, idx)}
-                    className="mt-2 w-full px-2 py-1 style={{ background: 'var(--cta)' }} hover:bg-[#5a7a28] style={{ color: 'var(--text-primary)' }} text-xs rounded-sm transition-colors"
+                    className="mt-2 w-full px-2 py-1 text-xs rounded-sm transition-colors"
+                    style={{ background: 'var(--cta)', color: 'var(--cta-text)' }}
                   >
                     Save
                   </button>

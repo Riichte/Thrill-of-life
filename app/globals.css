@@ -217,8 +217,8 @@ body {
   transition: background-color 0.2s, color 0.2s;
 }
 
-.font-logo {
-  font-family: var(--font-logo), cursive;
+.font-custom {
+  font-family: var(--font-custom), sans-serif;
 }
 
 /* ─── Home page marquee ────────────────────────────────── */

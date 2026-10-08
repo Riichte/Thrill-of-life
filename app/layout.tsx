@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Great_Vibes } from "next/font/google";
 import Script from "next/script";
+import localFont from "next/font/local";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Providers from "@/components/Providers";
@@ -16,10 +17,14 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const logoFont = Great_Vibes({
+const logoFont = localFont({
+  src: "./fonts/Thrill of Life Font.woff2",
   variable: "--font-logo",
-  subsets: ["latin"],
-  weight: "400",
+});
+
+const customFont = localFont({
+  src: "./fonts/Thrill of Life Font.woff2",
+  variable: "--font-custom",
 });
 
 export const metadata: Metadata = {
@@ -43,7 +48,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${logoFont.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${logoFont.variable} ${customFont.variable} h-full antialiased`}
     >
       <head>
         {/* Umami Analytics */}

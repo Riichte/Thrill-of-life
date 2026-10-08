@@ -11,6 +11,7 @@ import { useTheme, themes } from '@/lib/themeContext'
 import { useCurrencyContext } from '@/lib/currencyContext'
 import { CURRENCIES } from '@/lib/useCurrency'
 import { FadeImage } from '@/components/FadeImage'
+import { logoFont } from '@/lib/fonts'
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
@@ -146,7 +147,7 @@ export default function Navbar() {
                 alt="Thrill of Life logo"
                 className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
               />
-              <span className="text-xl font-bold hidden sm:inline font-logo neon-text" style={{ color: 'var(--text-primary)' }}>
+              <span className={`text-xl hidden sm:inline neon-text ${logoFont.className}`} style={{ color: 'var(--text-primary)' }}>
                 Thrill of Life
               </span>
             </Link>

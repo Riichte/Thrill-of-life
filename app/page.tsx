@@ -14,38 +14,38 @@ export default async function Home() {
 
   const { data: coasterItems } = await supabase
     .from('items')
-    .select('id, name, park_id, category_id, item_images(url, attribution_author, license)')
+    .select('id, name, park_id, category_id, item_images(url, attribution_author, license), parks(name)')    
     .eq('category_id', 'roller-coasters')
     .limit(200)
 
   const { data: waterItems } = await supabase
     .from('items')
-    .select('id, name, park_id, category_id, item_images(url, attribution_author, license)')
+    .select('id, name, park_id, category_id, item_images(url, attribution_author, license), parks(name)')
     .eq('category_id', 'water-rides')
     .limit(200)
 
   const { data: darkRideItems } = await supabase
     .from('items')
-    .select('id, name, park_id, category_id, item_images(url, attribution_author, license)')
+    .select('id, name, park_id, category_id, item_images(url, attribution_author, license), parks(name)')    
     .eq('category_id', 'dark-rides')
     .limit(200)
 
   const { data: flatRideItems } = await supabase
     .from('items')
-    .select('id, name, park_id, category_id, item_images(url, attribution_author, license)')
+    .select('id, name, park_id, category_id, item_images(url, attribution_author, license), parks(name)')
     .eq('category_id', 'flat-rides')
     .limit(200)
 
   const { data: mixItems } = await supabase
     .from('items')
-    .select('id, name, park_id, category_id, item_images(url, attribution_author, license)')
+    .select('id, name, park_id, category_id, item_images(url, attribution_author, license), parks(name)')
     .in('category_id', ['restaurants', 'shows', 'shops', 'hotels'])
     .limit(200)
 
   const highlightCategories = ['dark-rides', 'flat-rides', 'hotels', 'transport', 'shows', 'shops']
   const { data: highlightItems } = await supabase
     .from('items')
-    .select('id, name, park_id, category_id, item_images(url, attribution_author, license)')
+    .select('id, name, park_id, category_id, item_images(url, attribution_author, license), parks(name)')
     .in('category_id', highlightCategories)
     .limit(200)
 
@@ -57,6 +57,7 @@ export default async function Home() {
       href: `/parks/${i.park_id}/${i.category_id}/${i.id}`,
       image: i.item_images[0].url,
       title: i.name,
+      subtitle: (i.parks as any)?.name ?? null,
       attribution: i.item_images[0].attribution_author ?? null,
       license: i.item_images[0].license ?? null,
     }))
@@ -68,6 +69,7 @@ export default async function Home() {
       href: `/parks/${i.park_id}/${i.category_id}/${i.id}`,
       image: i.item_images[0].url,
       title: i.name,
+      subtitle: (i.parks as any)?.name ?? null,
       attribution: i.item_images[0].attribution_author ?? null,
       license: i.item_images[0].license ?? null,
     }))
@@ -79,7 +81,7 @@ export default async function Home() {
       href: `/parks/${i.park_id}/${i.category_id}/${i.id}`,
       image: i.item_images[0].url,
       title: i.name,
-      subtitle: 'Dark ride',
+      subtitle: (i.parks as any)?.name ?? null,
       attribution: i.item_images[0].attribution_author ?? null,
       license: i.item_images[0].license ?? null,
     }))
@@ -91,7 +93,7 @@ export default async function Home() {
       href: `/parks/${i.park_id}/${i.category_id}/${i.id}`,
       image: i.item_images[0].url,
       title: i.name,
-      subtitle: 'Flat ride',
+      subtitle: (i.parks as any)?.name ?? null,
       attribution: i.item_images[0].attribution_author ?? null,
       license: i.item_images[0].license ?? null,
     }))
@@ -103,7 +105,7 @@ export default async function Home() {
       href: `/parks/${i.park_id}/${i.category_id}/${i.id}`,
       image: i.item_images[0].url,
       title: i.name,
-      subtitle: i.category_id.replace(/-/g, ' '),
+      subtitle: (i.parks as any)?.name ?? null,
       attribution: i.item_images[0].attribution_author ?? null,
       license: i.item_images[0].license ?? null,
     }))

@@ -85,6 +85,7 @@ export default function Navbar() {
     { name: 'Shops', href: '/category/shops' },
     { name: 'Hotels', href: '/category/hotels' },
     ...(isAdmin ? [{ name: '🎵 Soundtracks', href: '/soundtracks' }] : []),
+    { name: 'Feedback', href: '/feedback' },
   ]
 
   const handleSearchSubmit = (val: string) => {
@@ -129,6 +130,9 @@ export default function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50" style={{ background: 'var(--navbar-bg)', borderBottom: '1px solid var(--navbar-border)' }}>
+      <div className="w-full py-1.5 text-center text-xs font-medium" style={{ background: 'var(--accent-bg)', color: 'var(--accent)', borderBottom: '1px solid var(--border)' }}>
+        Early access - Work in progress
+      </div>
       {/* Top Row */}
       <div className="px-4 py-3" style={{ background: 'var(--navbar-bg)' }}>
         <div className="container mx-auto">

@@ -7,11 +7,11 @@ import { useState, useEffect, useMemo } from 'react'
 import { FadeImage } from '@/components/FadeImage'
 
 type AdminTab = 'parks' | 'items' | 'images' | 'park-images' | 'images-manager' | 'videos' | 'manufacturers' | 'models' | 'osts' | 'prices' | 'bulk-import' | 'elements' | 'item-types' | 'data-issues'
-type Park = { id: string; name: string; description: string; logo_url: string; cover_image_url: string; country: string; company: string; park_type: string; location: string }
+type Park = { id: string; name: string; description: string; logo_url: string; cover_image_url: string; country: string; company: string; park_type: string; location: string; former_name: string }
 type Category = { id: string; name: string }
 type Item = { id: string; park_id: string; category_id: string; name: string; description: string; location_in_park: string; specs: any; status: string; former_name: string }
 
-const emptyPark: Omit<Park, 'id'> = { name: '', description: '', logo_url: '', cover_image_url: '', country: '', company: '', park_type: 'Theme Park', location: '' }
+const emptyPark: Omit<Park, 'id'> = { name: '', description: '', logo_url: '', cover_image_url: '', country: '', company: '', park_type: 'Theme Park', location: '', former_name: '' }
 const emptyItem: Omit<Item, 'id'> = { park_id: '', category_id: '', name: '', description: '', location_in_park: '', specs: {}, status: 'operating', former_name: '' }
 
 // Type options by category, shared between the single-item form and the bulk-edit bar
@@ -657,7 +657,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
     const handleEditPark = (park: Park) => {
         setEditingParkId(park.id)
         setParkIdInput(park.id)
-        setParkForm({ name: park.name, description: park.description, logo_url: park.logo_url, cover_image_url: park.cover_image_url, country: park.country, company: park.company, park_type: park.park_type, location: park.location })
+        setParkForm({ name: park.name, description: park.description, logo_url: park.logo_url, cover_image_url: park.cover_image_url, country: park.country, company: park.company, park_type: park.park_type, location: park.location, former_name: park.former_name ?? '' })
     }
 
     const handleSavePark = async () => {
@@ -1360,6 +1360,10 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                         )}
                                     </div>
                                 ))}
+                                <div>
+                                    <label className={labelClass} style={labelStyle}>Former Name (if renamed)</label>
+                                    <input className={inputClass} style={inputStyle} value={parkForm.former_name} onChange={e => setParkForm(p => ({ ...p, former_name: e.target.value }))} placeholder="e.g. Old Park Name" />
+                                </div>
                                 <div>
                                     <label className={labelClass} style={labelStyle}>Country</label>
                                     <select className={inputClass} style={{ ...inputStyle }} value={parkForm.country} onChange={e => setParkForm(p => ({ ...p, country: e.target.value }))}>

@@ -13,6 +13,22 @@ interface ItemPageProps {
   searchParams: Promise<{ mode?: string }>
 }
 
+export async function generateMetadata({ params }: ItemPageProps) {
+  const { parkId, itemId } = await params
+  const item = await getItemById(parkId, itemId)
+  if (!item) return {}
+  const park = await getParkById(parkId)
+  const images = await getItemImages(itemId)
+  const title = park ? `${item.name} at ${park.name}` : item.name
+  const description = item.description || `${title}. Ratings, reviews, specs and photos.`
+  return {
+    title,
+    description,
+    alternates: { canonical: `/parks/${parkId}/${item.category_id}/${itemId}` },
+    openGraph: { title, description, images: images[0]?.url ? [images[0].url] : [] },
+  }
+}
+
 export default async function ItemPage({ params, searchParams }: ItemPageProps) {
   const { parkId, itemId } = await params
   const { mode } = await searchParams
@@ -74,6 +90,28 @@ export default async function ItemPage({ params, searchParams }: ItemPageProps) 
     }))
 
   return (
+    <>
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'Product',
+          name: item.name,
+          description: item.description ?? undefined,
+          image: images[0]?.url,
+          ...(communityScore && reviews.length > 0 ? {
+            aggregateRating: {
+              '@type': 'AggregateRating',
+              ratingValue: communityScore.score,
+              bestRating: 100,
+              worstRating: 0,
+              reviewCount: reviews.length,
+            },
+          } : {}),
+        }),
+      }}
+    />
     <ItemPageContent
       park={park}
       item={item}
@@ -89,5 +127,6 @@ export default async function ItemPage({ params, searchParams }: ItemPageProps) 
       itemOsts={itemOsts}
       soundtrackScore={soundtrackScore}
     />
+    </>
   )
 }

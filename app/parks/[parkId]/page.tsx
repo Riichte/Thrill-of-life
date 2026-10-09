@@ -9,7 +9,8 @@ export async function generateMetadata({ params }: { params: Promise<{ parkId: s
   const { parkId } = await params
   const park = await getParkById(parkId)
   return {
-    title: park ? `${park.name} — Thrill of Life` : 'Park — Thrill of Life',
+    title: park ? park.name : 'Park',
+    alternates: { canonical: `/parks/${parkId}` },
     description: park?.description ?? 'Theme park reviews and ratings.',
   }
 }

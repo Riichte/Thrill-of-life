@@ -3,6 +3,19 @@ import { getItemsByGlobalCategory, getAllCategories } from '@/lib/queries'
 import CategoryPageClient from './CategoryPageClient'
 
 export const revalidate = 3600
+
+export async function generateMetadata({ params }: { params: Promise<{ categoryId: string }> }) {
+  const { categoryId } = await params
+  const categories = await getAllCategories()
+  const category = categories.find(c => c.id === categoryId)
+  if (!category) return {}
+  return {
+    title: `All ${category.name}`,
+    description: `Browse and rate ${category.name.toLowerCase()} from theme parks around the world.`,
+    alternates: { canonical: `/category/${categoryId}` },
+  }
+}
+
 export default async function CategoryPage({
   params,
 }: {

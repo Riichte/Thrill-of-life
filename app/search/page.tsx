@@ -1,6 +1,8 @@
 import { searchAll } from '@/lib/queries'
 import SearchClient from './SearchClient'
 
+export const metadata = { robots: { index: false, follow: true } }
+
 export default async function SearchPage({
   searchParams,
 }: {

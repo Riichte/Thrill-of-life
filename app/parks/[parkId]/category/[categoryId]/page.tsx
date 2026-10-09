@@ -38,3 +38,15 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
 
   return <CategoryPageClient park={park} category={category} items={finalItems} soundtrackMode={soundtrackMode} ostCounts={ostCounts} />
 }
+
+export async function generateMetadata({ params }: CategoryPageProps) {
+  const { parkId, categoryId } = await params
+  const park = await getParkById(parkId)
+  const category = await getCategoryById(categoryId)
+  if (!park || !category) return {}
+  return {
+    title: `${category.name} at ${park.name}`,
+    description: `All ${category.name.toLowerCase()} at ${park.name} with ratings, reviews and photos.`,
+    alternates: { canonical: `/parks/${parkId}/category/${categoryId}` },
+  }
+}

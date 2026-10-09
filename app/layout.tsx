@@ -19,8 +19,10 @@ const geistMono = Geist_Mono({
 
 
 export const metadata: Metadata = {
-  title: 'Thrill of Life',
+  metadataBase: new URL('https://www.thrill-of-life.com/'),
+  title: { default: 'Thrill of Life', template: '%s | Thrill of Life' },
   description: 'Browse and rate theme parks, roller coasters, and rides.',
+  twitter: { card: 'summary_large_image' },
   icons: {
     icon: '/favicon.ico',
     apple: '/favicon.ico',

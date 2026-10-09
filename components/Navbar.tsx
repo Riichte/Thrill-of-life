@@ -87,6 +87,7 @@ export default function Navbar() {
     { name: 'Shops', href: '/category/shops' },
     { name: 'Hotels', href: '/category/hotels' },
     ...(isAdmin ? [{ name: '🎵 Soundtracks', href: '/soundtracks' }] : []),
+    { name: 'Stats for Nerd', href: '/stats' },
     { name: 'Feedback', href: '/feedback' },
   ]
 

@@ -25,6 +25,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: BASE },
     { url: `${BASE}/parks` },
     { url: `${BASE}/soundtracks` },
+    { url: `${BASE}/stats` },
     ...categories.map(c => ({ url: `${BASE}/category/${c.id}` })),
     ...(parks ?? []).map(p => ({ url: `${BASE}/parks/${p.id}` })),
     ...items.map(i => ({ url: `${BASE}/parks/${i.park_id}/${i.category_id}/${i.id}` })),

@@ -704,3 +704,37 @@ export async function getProfileActivityLog(userId: string) {
   if (error) return []
   return data ?? []
 }
+
+// ─── Stats for Nerd ───────────────────────────────────────
+
+export async function getStatGraphs() {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('stat_graphs')
+    .select('*')
+    .eq('published', true)
+    .order('sort_order')
+    .order('created_at')
+  if (error) return []
+  return data ?? []
+}
+
+export async function getStatItems(categoryId: string) {
+  const supabase = await createClient()
+  let all: { id: string; category_id: string; specs: any }[] = []
+  let from = 0
+  const pageSize = 1000
+  while (true) {
+    const { data } = await supabase
+      .from('items')
+      .select('id, category_id, specs')
+      .eq('category_id', categoryId)
+      .order('id')
+      .range(from, from + pageSize - 1)
+    if (!data || data.length === 0) break
+    all = [...all, ...data]
+    if (data.length < pageSize) break
+    from += pageSize
+  }
+  return all
+}

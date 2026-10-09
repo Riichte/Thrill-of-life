@@ -3,10 +3,11 @@
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import ImageManager from './ImageManager'
+import StatsGraphsTab from './StatsGraphsTab'
 import { useState, useEffect, useMemo } from 'react'
 import { FadeImage } from '@/components/FadeImage'
 
-type AdminTab = 'parks' | 'items' | 'images' | 'park-images' | 'images-manager' | 'videos' | 'manufacturers' | 'models' | 'osts' | 'prices' | 'bulk-import' | 'elements' | 'item-types' | 'data-issues'
+type AdminTab = 'parks' | 'items' | 'images' | 'park-images' | 'images-manager' | 'videos' | 'manufacturers' | 'models' | 'osts' | 'prices' | 'bulk-import' | 'elements' | 'item-types' | 'data-issues' | 'stats'
 type Park = { id: string; name: string; description: string; logo_url: string; cover_image_url: string; country: string; company: string; park_type: string; location: string; former_name: string }
 type Category = { id: string; name: string }
 type Item = { id: string; park_id: string; category_id: string; name: string; description: string; location_in_park: string; specs: any; status: string; former_name: string }
@@ -1190,7 +1191,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                     }
                     const validTypes = categoryId === 'roller-coasters' ? ROLLER_COASTER_TYPES
                         : categoryId === 'restaurants' ? RESTAURANT_TYPES
-                        : (dynamicTypes[categoryId] ?? [])
+                            : (dynamicTypes[categoryId] ?? [])
                     if (item.type && validTypes.length) {
                         const match = validTypes.find(t => t.toLowerCase() === item.type.toLowerCase())
                         if (match) item.type = match
@@ -1315,7 +1316,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
 
                 {/* Tabs */}
                 <div className="flex gap-1 mb-8 border-b overflow-x-auto" style={{ borderColor: 'var(--border)' }}>
-                    {(['parks', 'items', 'images', 'park-images', 'images-manager', 'videos', 'manufacturers', 'models', 'osts', 'prices', 'bulk-import', 'elements', 'item-types', 'data-issues'] as AdminTab[]).map(t => (
+                    {(['parks', 'items', 'images', 'park-images', 'images-manager', 'videos', 'manufacturers', 'models', 'osts', 'prices', 'bulk-import', 'elements', 'item-types', 'data-issues', 'stats'] as AdminTab[]).map(t => (
                         <button
                             key={t}
                             onClick={() => setTab(t)}
@@ -2459,6 +2460,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                 )}
                 {tab === 'elements' && <ElementsTab />}
                 {tab === 'item-types' && <ItemTypesTab />}
+                {tab === 'stats' && <StatsGraphsTab items={items} categories={categories} />}
             </div >
         </div >
     )

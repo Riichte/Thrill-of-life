@@ -14,11 +14,11 @@ type Item = { id: string; park_id: string; category_id: string; name: string; de
 
 const emptyPark: Omit<Park, 'id'> = { name: '', description: '', logo_url: '', cover_image_url: '', country: '', company: '', park_type: 'Theme Park', location: '', former_name: '' }
 const emptyItem: Omit<Item, 'id'> = { park_id: '', category_id: '', name: '', description: '', location_in_park: '', specs: {}, status: 'operating', former_name: '' }
-
-// Type options by category, shared between the single-item form and the bulk-edit bar
 const ROLLER_COASTER_TYPES = ['Steel', 'Wood', 'Hybrid']
 const RESTAURANT_TYPES = ['Sit Down', 'Fast Food', 'Buffet', 'Food Stand', 'Café', 'Dessert & Snacks', 'Bar & Lounge', 'Themed Restaurant']
 const DYNAMIC_TYPE_CATEGORIES = ['flat-rides', 'dark-rides', 'water-rides', 'transport']
+const [videoStartTime, setVideoStartTime] = useState('')
+const [videoEndTime, setVideoEndTime] = useState('')
 
 // ─── Duration normalization ────────────────────────────────
 function secondsToMinSec(totalSeconds: number): string {
@@ -825,12 +825,19 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
         if (!videoId) { notify('Invalid YouTube URL', true); return }
         setLoading(true)
 
+        const startTimeNum = videoStartTime.trim() ? parseInt(videoStartTime, 10) : null
+        const endTimeNum = videoEndTime.trim() ? parseInt(videoEndTime, 10) : null
+
         // Find if we're editing an existing video
         const existingVideo = itemVideos.find(v => v.video_id === videoId)
 
         if (existingVideo) {
-            // Update existing video title
-            const { error } = await supabase.from('item_videos').update({ title: videoTitle.trim() || 'Ride Video' }).eq('id', existingVideo.id)
+            // Update existing video title and times
+            const { error } = await supabase.from('item_videos').update({
+                title: videoTitle.trim() || 'Ride Video',
+                start_time: startTimeNum,
+                end_time: endTimeNum
+            }).eq('id', existingVideo.id)
             if (error) notify(error.message, true)
             else { notify('Video updated'); loadVideos(videoItemId) }
         } else {
@@ -840,6 +847,8 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                 url: videoUrl.trim(),
                 video_id: videoId,
                 title: videoTitle.trim() || 'Ride Video',
+                start_time: startTimeNum,
+                end_time: endTimeNum,
             })
             if (error) notify(error.message, true)
             else { notify('Video added'); loadVideos(videoItemId) }
@@ -847,6 +856,8 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
 
         setVideoUrl('')
         setVideoTitle('')
+        setVideoStartTime('')
+        setVideoEndTime('')
         setLoading(false)
     }
 
@@ -1986,6 +1997,16 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                                             <label className={labelClass} style={labelStyle}>Video Title</label>
                                             <input className={inputClass} style={inputStyle} value={videoTitle} onChange={e => setVideoTitle(e.target.value)} />
                                         </div>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label className={labelClass} style={labelStyle}>Start Time (seconds)</label>
+                                                <input type="number" className={inputClass} style={inputStyle} value={videoStartTime} onChange={e => setVideoStartTime(e.target.value)} placeholder="e.g. 15" />
+                                            </div>
+                                            <div>
+                                                <label className={labelClass} style={labelStyle}>End Time (seconds)</label>
+                                                <input type="number" className={inputClass} style={inputStyle} value={videoEndTime} onChange={e => setVideoEndTime(e.target.value)} placeholder="e.g. 120" />
+                                            </div>
+                                        </div>
                                         <button onClick={handleAddVideo} disabled={loading} className={btnPrimary} style={btnPrimaryStyle}>
                                             {loading ? 'Adding...' : 'Add Video'}
                                         </button>
@@ -1997,14 +2018,23 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                             <div className="rounded-sm p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', overflow: 'visible' }}>
                                 <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Videos ({itemVideos.length})</h2>
                                 <div className="space-y-2 max-h-[800px] overflow-y-auto">
-                                    {itemVideos.map(vid => (
+                                    {itemVideos.map((vid: any) => (
                                         <div key={vid.id} className="flex items-center justify-between gap-3 p-3 rounded-sm" style={{ background: 'var(--bg-elevated)' }}>
                                             <div className="min-w-0">
                                                 <p className="text-sm truncate" style={{ color: 'var(--text-primary)' }}>{vid.title}</p>
-                                                <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{vid.video_id}</p>
+                                                <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                                                    {vid.video_id}
+                                                    {vid.start_time !== null && ` · Start: ${vid.start_time}s`}
+                                                    {vid.end_time !== null && ` · End: ${vid.end_time}s`}
+                                                </p>
                                             </div>
                                             <div className="flex gap-2 flex-shrink-0">
-                                                <button onClick={() => { setVideoTitle(vid.title); setVideoUrl(`https://www.youtube.com/watch?v=${vid.video_id}`) }} className={btnEdit} style={btnEditStyle}>Edit Title</button>
+                                                <button onClick={() => {
+                                                    setVideoTitle(vid.title)
+                                                    setVideoUrl(`https://www.youtube.com/watch?v=${vid.video_id}`)
+                                                    setVideoStartTime(vid.start_time !== null ? String(vid.start_time) : '')
+                                                    setVideoEndTime(vid.end_time !== null ? String(vid.end_time) : '')
+                                                }} className={btnEdit} style={btnEditStyle}>Edit</button>
                                                 <button onClick={() => handleDeleteVideo(vid.id)} className={btnDanger} style={btnDangerStyle}>Delete</button>
                                             </div>
                                         </div>
@@ -2013,8 +2043,7 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
                             </div>
                         )}
                     </div>
-                )
-                }
+                )}
 
                 {/* ─── Manufacturers Tab ─── */}
                 {

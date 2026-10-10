@@ -17,8 +17,7 @@ const emptyItem: Omit<Item, 'id'> = { park_id: '', category_id: '', name: '', de
 const ROLLER_COASTER_TYPES = ['Steel', 'Wood', 'Hybrid']
 const RESTAURANT_TYPES = ['Sit Down', 'Fast Food', 'Buffet', 'Food Stand', 'Café', 'Dessert & Snacks', 'Bar & Lounge', 'Themed Restaurant']
 const DYNAMIC_TYPE_CATEGORIES = ['flat-rides', 'dark-rides', 'water-rides', 'transport']
-const [videoStartTime, setVideoStartTime] = useState('')
-const [videoEndTime, setVideoEndTime] = useState('')
+
 
 // ─── Duration normalization ────────────────────────────────
 function secondsToMinSec(totalSeconds: number): string {
@@ -584,6 +583,8 @@ export default function AdminDashboard({ parks, categories, items }: { parks: Pa
     const [videoUrl, setVideoUrl] = useState('')
     const [videoTitle, setVideoTitle] = useState('')
     const [itemVideos, setItemVideos] = useState<{ id: string; url: string; video_id: string; title: string }[]>([])
+    const [videoStartTime, setVideoStartTime] = useState('')
+    const [videoEndTime, setVideoEndTime] = useState('')
     const [videoParkId, setVideoParkId] = useState('')
     const [videoCategoryId, setVideoCategoryId] = useState('')
     const [parkImageParkId, setParkImageParkId] = useState('')

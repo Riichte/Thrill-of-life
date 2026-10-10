@@ -624,24 +624,40 @@ export default function ItemPageContent({ park, item, category, images, videos, 
                 slides={mediaSlides}
                 autoAdvanceMs={mediaSlides.length > 1 ? 8000 : undefined}
               />
-            ) : videos && videos.length > 0 ? (
-              <div className="rounded-sm overflow-hidden" style={{ border: '1px solid var(--border)' }}>
-                <div className="aspect-video">
-                  <iframe
-                    width="100%"
-                    height="100%"
-                    src={`https://www.youtube.com/embed/${videos[0]}`}
-                    title={`${item.name} Video`}
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  />
+            ) : videos && videos.length > 0 ? (() => {
+              const currentVideo = videos[0];
+              const videoId = typeof currentVideo === 'string' ? currentVideo : currentVideo.video_id;
+              const startTime = typeof currentVideo === 'object' ? currentVideo.start_time : null;
+              const endTime = typeof currentVideo === 'object' ? currentVideo.end_time : null;
+
+              // Build embed URL with start and end query params
+              let embedUrl = `https://www.youtube.com/embed/${videoId}`;
+              const params = [];
+              if (startTime !== null && startTime !== undefined) params.push(`start=${startTime}`);
+              if (endTime !== null && endTime !== undefined) params.push(`end=${endTime}`);
+              if (params.length > 0) embedUrl += `?${params.join('&')}`;
+
+              return (
+                <div className="rounded-sm overflow-hidden" style={{ border: '1px solid var(--border)' }}>
+                  <div className="aspect-video">
+                    <iframe
+                      width="100%"
+                      height="100%"
+                      src={embedUrl}
+                      title={`${item.name} Video`}
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                  <div className="p-4 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                    <p className="font-medium mb-1" style={{ color: 'var(--text-primary)' }}>
+                      {videoTitles[videoId] || `${item.name} Experience`}
+                    </p>
+                  </div>
                 </div>
-                <div className="p-4 text-sm" style={{ color: 'var(--text-secondary)' }}>
-                  <p className="font-medium mb-1" style={{ color: 'var(--text-primary)' }}>{videoTitles[videos[0]] || `${item.name} Experience`}</p>
-                </div>
-              </div>
-            ) : null}
+              );
+            })() : null}
 
             {/* Soundtrack mode: OST player */}
             {soundtrackMode && (
